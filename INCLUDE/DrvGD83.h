@@ -1,0 +1,20 @@
+#ifndef __DRVGD83_H
+#define __DRVGD83_H
+
+#define DrvGD83_FUNENABLE
+
+#ifdef DrvGD83_FUNENABLE
+  #define DrvGD83_API
+#else
+  #define DrvGD83_API extern
+#endif
+
+DrvGD83_API void DrvMC8332_TxPort_SetValidable(IO_ONOFF onoff);
+DrvGD83_API void DrvGD83_UART_TxCommand(u8 * pBuf, u16 len);
+DrvGD83_API bool DrvMc8332_UART_TxTail(void);
+void DrvMC8332_UART_TxInterrupt(void);
+void DrvMC8332_UART_Interrupt(void);
+
+u8 DrvMC8332_AtNotify_Queue_front(u8 **pBuf);
+u8 DrvMC8332_PocNotify_Queue_front(u8 **pBuf);
+#endif
