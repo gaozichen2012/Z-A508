@@ -10,7 +10,7 @@ typedef	enum {
 /******************************************************************************
 ;--------1-LED hardware macro define
 ******************************************************************************/
-#define GPIO_LED_Green          GPIOB
+#define GPIO_LED_Green          GPIOD
 #define GPIO_LED_Red            GPIOD
 
 #define GPIO_PIN_LED_Green      GPIO_PIN_3
@@ -27,32 +27,32 @@ typedef	enum {
 /******************************************************************************
 ;--------3-UART1:GD83 hardware macro define
 ******************************************************************************/
-#define GPIO_C_Reset            GPIOA 
-#define GPIO_C_ONOFF            GPIOA 
+#define GPIO_C_Reset            GPIOB
+#define GPIO_C_ONOFF            GPIOB 
 
-#define GPIO_PIN_C_Reset        GPIO_PIN_3
-#define GPIO_PIN_C_ONOFF        GPIO_PIN_6
+#define GPIO_PIN_C_Reset        GPIO_PIN_4
+#define GPIO_PIN_C_ONOFF        GPIO_PIN_3
 
 /******************************************************************************
 ;--------4-Audio&MIC hardware macro define
 ******************************************************************************/
-#define GPIO_AF_Mute            GPIOG
-#define GPIO_MIC_Mute           GPIOD
+#define GPIO_AF_Mute            GPIOD
+#define GPIO_MIC_Mute           GPIOB
 #define GPIO_Noise_Mute         GPIOD
 
-#define GPIO_PIN_AF_Mute        GPIO_PIN_0
-#define GPIO_PIN_MIC_Mute       GPIO_PIN_4
+#define GPIO_PIN_AF_Mute        GPIO_PIN_4
+#define GPIO_PIN_MIC_Mute       GPIO_PIN_5
 #define GPIO_PIN_Noise_Mute     GPIO_PIN_7
 
 /******************************************************************************
 ;--------5-KEY hardware macro define
 ******************************************************************************/
-#define GPIO_Key_2              GPIOB
+#define GPIO_Key_2              GPIOA
 #define GPIO_Key_3              GPIOB
 #define GPIO_Key_PTT            GPIOE
 
 #define GPIO_PIN_Key_2          GPIO_PIN_6
-#define GPIO_PIN_Key_3          GPIO_PIN_5
+#define GPIO_PIN_Key_3          GPIO_PIN_7
 #define GPIO_PIN_Key_PTT        GPIO_PIN_5
 
 #define ReadInput_KEY_2         GPIO_ReadInputPin(GPIO_Key_2, GPIO_PIN_Key_2)

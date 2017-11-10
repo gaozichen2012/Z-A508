@@ -1,47 +1,44 @@
 ###############################################################################
 #
-# IAR ELF Linker V2.20.1.176 for STM8                     09/Nov/2017  18:27:14
+# IAR ELF Linker V2.20.1.176 for STM8                     09/Nov/2017  19:20:00
 # Copyright 2010-2015 IAR Systems AB.
 #
-#    Output file  =  
-#        C:\Users\Administrator\Desktop\A-518P\STM8SDEMO4\PRJ\Debug\Exe\A508_DEMO1.out
-#    Map file     =  
-#        C:\Users\Administrator\Desktop\A-518P\STM8SDEMO4\PRJ\Debug\List\A508_DEMO1.map
+#    Output file  =  E:\1-source\A508\PRJ\Debug\Exe\A508_DEMO1.out
+#    Map file     =  E:\1-source\A508\PRJ\Debug\List\A508_DEMO1.map
 #    Command line =  
-#        C:\Users\Administrator\Desktop\A-518P\STM8SDEMO4\PRJ\Debug\Obj\ApiAtCmd.o
-#        C:\Users\Administrator\Desktop\A-518P\STM8SDEMO4\PRJ\Debug\Obj\ApiPocCmd.o
-#        C:\Users\Administrator\Desktop\A-518P\STM8SDEMO4\PRJ\Debug\Obj\CommonLib.o
-#        C:\Users\Administrator\Desktop\A-518P\STM8SDEMO4\PRJ\Debug\Obj\Delay.o
-#        C:\Users\Administrator\Desktop\A-518P\STM8SDEMO4\PRJ\Debug\Obj\DrvGD83.o
-#        C:\Users\Administrator\Desktop\A-518P\STM8SDEMO4\PRJ\Debug\Obj\main.o
-#        C:\Users\Administrator\Desktop\A-518P\STM8SDEMO4\PRJ\Debug\Obj\McuConfig.o
-#        C:\Users\Administrator\Desktop\A-518P\STM8SDEMO4\PRJ\Debug\Obj\stm8s_adc2.o
-#        C:\Users\Administrator\Desktop\A-518P\STM8SDEMO4\PRJ\Debug\Obj\stm8s_awu.o
-#        C:\Users\Administrator\Desktop\A-518P\STM8SDEMO4\PRJ\Debug\Obj\stm8s_beep.o
-#        C:\Users\Administrator\Desktop\A-518P\STM8SDEMO4\PRJ\Debug\Obj\stm8s_clk.o
-#        C:\Users\Administrator\Desktop\A-518P\STM8SDEMO4\PRJ\Debug\Obj\stm8s_exti.o
-#        C:\Users\Administrator\Desktop\A-518P\STM8SDEMO4\PRJ\Debug\Obj\stm8s_flash.o
-#        C:\Users\Administrator\Desktop\A-518P\STM8SDEMO4\PRJ\Debug\Obj\stm8s_gpio.o
-#        C:\Users\Administrator\Desktop\A-518P\STM8SDEMO4\PRJ\Debug\Obj\stm8s_i2c.o
-#        C:\Users\Administrator\Desktop\A-518P\STM8SDEMO4\PRJ\Debug\Obj\stm8s_it.o
-#        C:\Users\Administrator\Desktop\A-518P\STM8SDEMO4\PRJ\Debug\Obj\stm8s_itc.o
-#        C:\Users\Administrator\Desktop\A-518P\STM8SDEMO4\PRJ\Debug\Obj\stm8s_iwdg.o
-#        C:\Users\Administrator\Desktop\A-518P\STM8SDEMO4\PRJ\Debug\Obj\stm8s_rst.o
-#        C:\Users\Administrator\Desktop\A-518P\STM8SDEMO4\PRJ\Debug\Obj\stm8s_spi.o
-#        C:\Users\Administrator\Desktop\A-518P\STM8SDEMO4\PRJ\Debug\Obj\stm8s_tim1.o
-#        C:\Users\Administrator\Desktop\A-518P\STM8SDEMO4\PRJ\Debug\Obj\stm8s_tim2.o
-#        C:\Users\Administrator\Desktop\A-518P\STM8SDEMO4\PRJ\Debug\Obj\stm8s_tim3.o
-#        C:\Users\Administrator\Desktop\A-518P\STM8SDEMO4\PRJ\Debug\Obj\stm8s_tim4.o
-#        C:\Users\Administrator\Desktop\A-518P\STM8SDEMO4\PRJ\Debug\Obj\stm8s_uart1.o
-#        C:\Users\Administrator\Desktop\A-518P\STM8SDEMO4\PRJ\Debug\Obj\stm8s_uart3.o
-#        C:\Users\Administrator\Desktop\A-518P\STM8SDEMO4\PRJ\Debug\Obj\stm8s_wwdg.o
-#        C:\Users\Administrator\Desktop\A-518P\STM8SDEMO4\PRJ\Debug\Obj\sysclock.o
-#        C:\Users\Administrator\Desktop\A-518P\STM8SDEMO4\PRJ\Debug\Obj\System.o
-#        --redirect _Printf=_PrintfSmall --redirect _Scanf=_ScanfSmall -o
-#        C:\Users\Administrator\Desktop\A-518P\STM8SDEMO4\PRJ\Debug\Exe\A508_DEMO1.out
-#        --map
-#        C:\Users\Administrator\Desktop\A-518P\STM8SDEMO4\PRJ\Debug\List\A508_DEMO1.map
-#        --config "C:\Program Files\IAR Systems\Embedded Workbench
+#        E:\1-source\A508\PRJ\Debug\Obj\ApiAtCmd.o
+#        E:\1-source\A508\PRJ\Debug\Obj\ApiPocCmd.o
+#        E:\1-source\A508\PRJ\Debug\Obj\CommonLib.o
+#        E:\1-source\A508\PRJ\Debug\Obj\Delay.o
+#        E:\1-source\A508\PRJ\Debug\Obj\DrvGD83.o
+#        E:\1-source\A508\PRJ\Debug\Obj\main.o
+#        E:\1-source\A508\PRJ\Debug\Obj\McuConfig.o
+#        E:\1-source\A508\PRJ\Debug\Obj\stm8s_adc2.o
+#        E:\1-source\A508\PRJ\Debug\Obj\stm8s_awu.o
+#        E:\1-source\A508\PRJ\Debug\Obj\stm8s_beep.o
+#        E:\1-source\A508\PRJ\Debug\Obj\stm8s_clk.o
+#        E:\1-source\A508\PRJ\Debug\Obj\stm8s_exti.o
+#        E:\1-source\A508\PRJ\Debug\Obj\stm8s_flash.o
+#        E:\1-source\A508\PRJ\Debug\Obj\stm8s_gpio.o
+#        E:\1-source\A508\PRJ\Debug\Obj\stm8s_i2c.o
+#        E:\1-source\A508\PRJ\Debug\Obj\stm8s_it.o
+#        E:\1-source\A508\PRJ\Debug\Obj\stm8s_itc.o
+#        E:\1-source\A508\PRJ\Debug\Obj\stm8s_iwdg.o
+#        E:\1-source\A508\PRJ\Debug\Obj\stm8s_rst.o
+#        E:\1-source\A508\PRJ\Debug\Obj\stm8s_spi.o
+#        E:\1-source\A508\PRJ\Debug\Obj\stm8s_tim1.o
+#        E:\1-source\A508\PRJ\Debug\Obj\stm8s_tim2.o
+#        E:\1-source\A508\PRJ\Debug\Obj\stm8s_tim3.o
+#        E:\1-source\A508\PRJ\Debug\Obj\stm8s_tim4.o
+#        E:\1-source\A508\PRJ\Debug\Obj\stm8s_uart1.o
+#        E:\1-source\A508\PRJ\Debug\Obj\stm8s_uart3.o
+#        E:\1-source\A508\PRJ\Debug\Obj\stm8s_wwdg.o
+#        E:\1-source\A508\PRJ\Debug\Obj\sysclock.o
+#        E:\1-source\A508\PRJ\Debug\Obj\System.o --redirect
+#        _Printf=_PrintfSmall --redirect _Scanf=_ScanfSmall -o
+#        E:\1-source\A508\PRJ\Debug\Exe\A508_DEMO1.out --map
+#        E:\1-source\A508\PRJ\Debug\List\A508_DEMO1.map --config "C:\Program
+#        Files\IAR Systems\Embedded Workbench
 #        7.3\stm8\config\lnkstm8s007c8.icf" --config_def _CSTACK_SIZE=0x100
 #        --config_def _HEAP_SIZE=0x100 --entry __iar_program_start --debug_lib
 #
@@ -263,7 +260,7 @@ Copy (__iar_copy_init2)
 
     Module                 ro code  ro data  rw data
     ------                 -------  -------  -------
-C:\Users\Administrator\Desktop\A-518P\STM8SDEMO4\PRJ\Debug\Obj: [1]
+E:\1-source\A508\PRJ\Debug\Obj: [1]
     ApiPocCmd.o                187       10        2
     Delay.o                    460                11
     DrvGD83.o                1 691       24      581
@@ -577,7 +574,7 @@ ucSwitch                0x00001e    0x2  Data  Gb  System.o [1]
 ucTxPocHeadInfo         0x000012    0x2  Data  Gb  DrvGD83.o [1]
 
 
-[1] = C:\Users\Administrator\Desktop\A-518P\STM8SDEMO4\PRJ\Debug\Obj
+[1] = E:\1-source\A508\PRJ\Debug\Obj
 [2] = command line
 [3] = dbgstm8smd.a
 [4] = dlstm8smn.a

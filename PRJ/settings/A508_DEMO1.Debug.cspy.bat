@@ -25,7 +25,7 @@ if not "%~1" == "" goto debugFile
 
 @echo on 
 
-"C:\Program Files\IAR Systems\Embedded Workbench 7.3\common\bin\cspybat" -f "C:\Users\Administrator\Desktop\A-518P\STM8SDEMO4\PRJ\settings\A508_DEMO1.Debug.general.xcl" --backend -f "C:\Users\Administrator\Desktop\A-518P\STM8SDEMO4\PRJ\settings\A508_DEMO1.Debug.driver.xcl" 
+"C:\Program Files\IAR Systems\Embedded Workbench 7.3\common\bin\cspybat" -f "E:\1-source\A508\PRJ\settings\A508_DEMO1.Debug.general.xcl" --backend -f "E:\1-source\A508\PRJ\settings\A508_DEMO1.Debug.driver.xcl" 
 
 @echo off 
 goto end 
@@ -34,7 +34,7 @@ goto end
 
 @echo on 
 
-"C:\Program Files\IAR Systems\Embedded Workbench 7.3\common\bin\cspybat" -f "C:\Users\Administrator\Desktop\A-518P\STM8SDEMO4\PRJ\settings\A508_DEMO1.Debug.general.xcl" "--debug_file=%~1" --backend -f "C:\Users\Administrator\Desktop\A-518P\STM8SDEMO4\PRJ\settings\A508_DEMO1.Debug.driver.xcl" 
+"C:\Program Files\IAR Systems\Embedded Workbench 7.3\common\bin\cspybat" -f "E:\1-source\A508\PRJ\settings\A508_DEMO1.Debug.general.xcl" "--debug_file=%~1" --backend -f "E:\1-source\A508\PRJ\settings\A508_DEMO1.Debug.driver.xcl" 
 
 @echo off 
 :end
