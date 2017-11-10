@@ -27,7 +27,7 @@ typedef	enum {
 /******************************************************************************
 ;--------3-UART1:GD83 hardware macro define
 ******************************************************************************/
-#define GPIO_C_Reset            GPIOB
+#define GPIO_C_Reset            GPIOB 
 #define GPIO_C_ONOFF            GPIOB 
 
 #define GPIO_PIN_C_Reset        GPIO_PIN_4
@@ -49,14 +49,17 @@ typedef	enum {
 ******************************************************************************/
 #define GPIO_Key_2              GPIOA
 #define GPIO_Key_3              GPIOB
+#define GPIO_Key_4              GPIOA
 #define GPIO_Key_PTT            GPIOE
 
 #define GPIO_PIN_Key_2          GPIO_PIN_6
 #define GPIO_PIN_Key_3          GPIO_PIN_7
+#define GPIO_PIN_Key_4          GPIO_PIN_3
 #define GPIO_PIN_Key_PTT        GPIO_PIN_5
 
 #define ReadInput_KEY_2         GPIO_ReadInputPin(GPIO_Key_2, GPIO_PIN_Key_2)
 #define ReadInput_KEY_3         GPIO_ReadInputPin(GPIO_Key_3, GPIO_PIN_Key_3)
+#define ReadInput_KEY_4         GPIO_ReadInputPin(GPIO_Key_4, GPIO_PIN_Key_4)
 #define ReadInput_KEY_PTT       GPIO_ReadInputPin(GPIO_Key_PTT, GPIO_PIN_Key_PTT)
 
 /******************************************************************************

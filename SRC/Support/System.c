@@ -44,31 +44,31 @@ void main_app(void)
     DEL_SetTimer(1,100);
   while(1)
   {
-    //1
+    DEL_Renew();
+    ListenState();//Ω”Ã˝¡¡¬Ãµ∆
     if(ReadInput_KEY_PTT==0)
     {
       Set_RedLed(LED_ON);
       Set_GreenLed(LED_ON);
-      
       r=ApiPocCmd_WritCommand(PocComm_StartPTT,ucStartPTT,strlen((char const *)ucStartPTT));
       while(ReadInput_KEY_PTT==0);
       r=ApiPocCmd_WritCommand(PocComm_EndPTT,ucEndPTT,strlen((char const *)ucEndPTT));
     }
     else
     {
-      if(ReadInput_KEY_2==0&&ReadInput_KEY_3==0)
+      if(ReadInput_KEY_4==0)
       {
         r=ApiPocCmd_WritCommand(PocComm_Key,ucSwitch,strlen((char const *)ucSwitch));
         Key_Flag=1;
       }
       else
       {
-      if(ReadInput_KEY_2==0&&ReadInput_KEY_3!=0)
+      if(ReadInput_KEY_2==0)
       {
         r=ApiPocCmd_WritCommand(PocComm_Key,ucKeyUp,strlen((char const *)ucKeyUp));
         Key_Flag=1;
       }
-      if(ReadInput_KEY_2!=0&&ReadInput_KEY_3==0)
+      if(ReadInput_KEY_3==0)
       {
         r=ApiPocCmd_WritCommand(PocComm_Key,ucKeyDown,strlen((char const *)ucKeyDown));
         Key_Flag=1;

@@ -192,6 +192,7 @@ static void DEL_1msProcess(void)
   {
  //   DelDrvObj.Msg.Bit.b1ms = DEL_IDLE;
     ApiAtCmd_10msRenew();
+    ApiPocCmd_10msRenew();	
   }
   return;
 }

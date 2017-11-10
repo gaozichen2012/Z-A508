@@ -23,5 +23,8 @@ typedef enum{
 
 //void ApiPocCmd_PowerOnInitial(void);
 bool ApiPocCmd_WritCommand(PocCommType id, u8 *buf, u16 len);
+void ApiPocCmd_10msRenew(void);
+void ListenState(void);
 
+void ApiGetPocBuf(void);
 #endif
