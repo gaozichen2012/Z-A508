@@ -7,6 +7,11 @@ typedef	enum {
   ON= 0x01
 }IO_ONOFF;
 
+typedef enum {							//I/O port voltage string code
+	LO	= 0x00,
+	HI	= 0x01
+}IO_HILO;
+
 /******************************************************************************
 ;--------1-LED hardware macro define
 ******************************************************************************/
@@ -93,12 +98,71 @@ LCD Backlight -PC4         -A0
 #define GPIO_LCD_CS             GPIOC
 #define GPIO_LCD_Backlight      GPIOC
 
-#define GPIO_PIN_LCD_DATA           GPIO_PIN_0
-#define GPIO_PIN_LCD_SYNC           GPIO_PIN_7
-#define GPIO_PIN_LCD_CLK            GPIO_PIN_6
-#define GPIO_PIN_LCD_RST            GPIO_PIN_2
-#define GPIO_PIN_LCD_CS             GPIO_PIN_3
-#define GPIO_PIN_LCD_Backlight      GPIO_PIN_4
+#define GPIO_PIN_LCD_DATA       GPIO_PIN_0
+#define GPIO_PIN_LCD_SYNC       GPIO_PIN_7
+#define GPIO_PIN_LCD_CLK        GPIO_PIN_6
+#define GPIO_PIN_LCD_RST        GPIO_PIN_2
+#define GPIO_PIN_LCD_CS         GPIO_PIN_3
+#define GPIO_PIN_LCD_Backlight  GPIO_PIN_4
+
+
+#define MCU_LCD_RS(a)           if(a)\
+                                GPIO_WriteHigh(GPIO_LCD_SYNC, GPIO_PIN_LCD_SYNC);\
+                                else\
+                                GPIO_WriteLow(GPIO_LCD_SYNC, GPIO_PIN_LCD_SYNC)
+#define MCU_LCD_SDI(a)          if(a)\
+                                GPIO_WriteHigh(GPIO_LCD_DATA, GPIO_PIN_LCD_DATA);\
+                                else\
+                                GPIO_WriteLow(GPIO_LCD_DATA, GPIO_PIN_LCD_DATA)										   
+#define MCU_LCD_SCK(a)          if(a)\
+                                GPIO_WriteHigh(GPIO_LCD_CLK, GPIO_PIN_LCD_CLK);\
+                                else\
+                                GPIO_WriteLow(GPIO_LCD_CLK, GPIO_PIN_LCD_CLK)	
+#define MCU_LCD_RESET(a)        if(a)\
+                                GPIO_WriteHigh(GPIO_LCD_RST, GPIO_PIN_LCD_RST);\
+                                else\
+                                GPIO_WriteLow(GPIO_LCD_RST, GPIO_PIN_LCD_RST)
+#define MCU_LCD_CS(a)           if(a)\
+                                GPIO_WriteHigh(GPIO_LCD_CS, GPIO_PIN_LCD_CS);\
+                                else\
+                                GPIO_WriteLow(GPIO_LCD_CS, GPIO_PIN_LCD_CS)
+#define MCU_LCD_BACKLIGTH(a)    if(a)\
+                                GPIO_WriteHigh(GPIO_LCD_Backlight, GPIO_PIN_LCD_Backlight);\
+                                else\
+                                GPIO_WriteLow(GPIO_LCD_Backlight, GPIO_PIN_LCD_Backlight)
+
+#define GPIO_GT20_CLK           GPIOD
+#define GPIO_GT20_CS            GPIOE
+#define GPIO_GT20_SI            GPIOE
+#define GPIO_GT20_SO            GPIOE
+
+#define GPIO_PIN_GT20_CLK       GPIO_PIN_0
+#define GPIO_PIN_GT20_CS        GPIO_PIN_0
+#define GPIO_PIN_GT20_SI        GPIO_PIN_1
+#define GPIO_PIN_GT20_SO        GPIO_PIN_2                          
+                                
+
+#define MCU_GT20_CS(a)	        if(a)\
+                                GPIO_WriteHigh(GPIO_GT20_CS, GPIO_PIN_GT20_CS);\
+                                else\
+                                GPIO_WriteLow(GPIO_GT20_CS, GPIO_PIN_GT20_CS)
+#define MCU_GT20_CLK(a)         if(a)\
+                                GPIO_WriteHigh(GPIO_GT20_CLK, GPIO_PIN_GT20_CLK);\
+                                else\
+                                GPIO_WriteLow(GPIO_GT20_CLK, GPIO_PIN_GT20_CLK)										   
+#define MCU_GT20_SO(a)          if(a)\
+                                GPIO_WriteHigh(GPIO_GT20_SO, GPIO_PIN_GT20_SO);\
+                                else\
+                                GPIO_WriteLow(GPIO_GT20_SO, GPIO_PIN_GT20_SO)	
+#define MCU_GT20_SI(a)          if(a)\
+                                GPIO_WriteHigh(GPIO_GT20_SI, GPIO_PIN_GT20_SI);\
+                                else\
+                                GPIO_WriteLow(GPIO_GT20_SI, GPIO_PIN_GT20_SI)
+
+#define MCU_GT20_SO_Read        GPIO_ReadInputPin(GPIO_GT20_SO, GPIO_PIN_GT20_SO)
+
+
+
 
 /******************************************************************************
 ;--------1-LED hardware macro define

@@ -28,6 +28,10 @@ void main_app(void)
   AF_Mute_Init();
   Noise_Mute_Init();
   MIC_GPIO_Init();
+  //显示屏
+  drv_gt20_pwr_on_init();
+  drv_htg_pwr_on_init();
+  
   Key_Init();
   Set_RedLed(LED_OFF);
   Set_GreenLed(LED_OFF);
@@ -41,8 +45,17 @@ void main_app(void)
     //DEL_SetTimer(1,100);
   while(1)
   {
+#if 1
+    api_lcd_pwr_on_hint("欧标666");
+#endif
+    
+    
+#if 0//按键控制灯亮灭   
     Keyboard_Test();
-   /* DEL_Renew();
+#endif
+    
+#if 0//对讲&换组
+    DEL_Renew();
     ListenState();//接听亮绿灯
     if(ReadInput_KEY_PTT==0)
     {
@@ -83,6 +96,7 @@ void main_app(void)
       }
       Set_RedLed(LED_OFF);
       Set_GreenLed(LED_OFF);
-    }*/
+    }
+#endif
   }
 }

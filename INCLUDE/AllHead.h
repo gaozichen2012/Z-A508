@@ -18,4 +18,9 @@
 //╪Эел
 #include "DrvKeyboard.h"
 #include "ApiKeyboard.h"
+
+//отй╬фа
+#include "ApiDisplay.h"
+#include "DrvHTG12832.h"
+#include "DrvGT20L16S1Y.h"
 #endif
