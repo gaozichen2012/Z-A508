@@ -49,7 +49,7 @@ void main_app(void)
     if(ReadInput_KEY_PTT==0)
     {
       Set_RedLed(LED_ON);
-      Set_GreenLed(LED_ON);
+      
       r=ApiPocCmd_WritCommand(PocComm_StartPTT,ucStartPTT,strlen((char const *)ucStartPTT));
       while(ReadInput_KEY_PTT==0);
       r=ApiPocCmd_WritCommand(PocComm_EndPTT,ucEndPTT,strlen((char const *)ucEndPTT));
@@ -76,18 +76,15 @@ void main_app(void)
       }
       if(Key_Flag==1)
       {
-        DEL_SetTimer(0,100);
+        DEL_SetTimer(0,200);
         while(1)
         {
           Key_Flag=0;
           if(DEL_GetTimer(0) == TRUE) {break;}
         }
       }
-      
       Set_RedLed(LED_OFF);
       Set_GreenLed(LED_OFF);
-
-      //while(ReadInput_KEY_PTT!=0);
     }
     
     

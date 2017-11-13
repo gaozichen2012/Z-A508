@@ -240,6 +240,7 @@ void ApiPocCmd_10msRenew(void)
       {
         PocCmdDrvobj.WorkState.UseState.Msg.Bits.bPlayState = 0x01;
       }
+      
       break;
     default:
       break;
@@ -264,5 +265,6 @@ void ListenState(void)
   if(PocCmdDrvobj.WorkState.UseState.Msg.Bits.bPlayState==1)
   {
     Set_GreenLed(LED_ON);
+
   }
 }
