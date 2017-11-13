@@ -45,22 +45,60 @@ typedef	enum {
 #define GPIO_PIN_Noise_Mute     GPIO_PIN_7
 
 /******************************************************************************
-;--------5-KEY hardware macro define
+;--------5-KEY & KEYBOARD hardware macro define
 ******************************************************************************/
+#define GPIO_Key_PTT            GPIOE
 #define GPIO_Key_2              GPIOA
 #define GPIO_Key_3              GPIOB
 #define GPIO_Key_4              GPIOA
-#define GPIO_Key_PTT            GPIOE
+#define GPIO_Key_5              GPIOC
+#define GPIO_Key_6              GPIOC
+#define GPIO_Key_7              GPIOC
+#define GPIO_Key_8              GPIOG
+#define GPIO_Key_9              GPIOG
+#define GPIO_Key_10             GPIOE
 
+#define GPIO_PIN_Key_PTT        GPIO_PIN_5
 #define GPIO_PIN_Key_2          GPIO_PIN_6
 #define GPIO_PIN_Key_3          GPIO_PIN_7
 #define GPIO_PIN_Key_4          GPIO_PIN_3
-#define GPIO_PIN_Key_PTT        GPIO_PIN_5
+#define GPIO_PIN_Key_5          GPIO_PIN_5
+#define GPIO_PIN_Key_6          GPIO_PIN_6
+#define GPIO_PIN_Key_7          GPIO_PIN_7
+#define GPIO_PIN_Key_8          GPIO_PIN_0
+#define GPIO_PIN_Key_9          GPIO_PIN_1
+#define GPIO_PIN_Key_10         GPIO_PIN_3
 
 #define ReadInput_KEY_2         GPIO_ReadInputPin(GPIO_Key_2, GPIO_PIN_Key_2)
 #define ReadInput_KEY_3         GPIO_ReadInputPin(GPIO_Key_3, GPIO_PIN_Key_3)
 #define ReadInput_KEY_4         GPIO_ReadInputPin(GPIO_Key_4, GPIO_PIN_Key_4)
 #define ReadInput_KEY_PTT       GPIO_ReadInputPin(GPIO_Key_PTT, GPIO_PIN_Key_PTT)
+
+/******************************************************************************
+;--------6-显示屏驱动-HTG12832 hardware macro define
+******************************************************************************/
+/*LCD硬件连接
+标号          -508引脚    -518T引脚         
+LCD DATA      -PB0         -PA6(SDI)
+LCD CLK       -PE6         -PA7(SCK)      
+LCD SYNC      -PE7         -PC7(RS)
+LCD RST       -PC2         -PB14
+LCD CS        -PC3         -PA8
+LCD Backlight -PC4         -A0
+*/
+#define GPIO_LCD_DATA           GPIOB
+#define GPIO_LCD_SYNC           GPIOE
+#define GPIO_LCD_CLK            GPIOE
+#define GPIO_LCD_RST            GPIOC
+#define GPIO_LCD_CS             GPIOC
+#define GPIO_LCD_Backlight      GPIOC
+
+#define GPIO_PIN_LCD_DATA           GPIO_PIN_0
+#define GPIO_PIN_LCD_SYNC           GPIO_PIN_7
+#define GPIO_PIN_LCD_CLK            GPIO_PIN_6
+#define GPIO_PIN_LCD_RST            GPIO_PIN_2
+#define GPIO_PIN_LCD_CS             GPIO_PIN_3
+#define GPIO_PIN_LCD_Backlight      GPIO_PIN_4
 
 /******************************************************************************
 ;--------1-LED hardware macro define
@@ -101,4 +139,9 @@ void AUDIO_IOAFPOW(IO_ONOFF OnOff);
 ;--------5-KEY hardware macro define
 ******************************************************************************/
 void Key_Init(void);
+
+/******************************************************************************
+;--------6-显示屏驱动-HTG12832 hardware macro define
+******************************************************************************/
+
 #endif

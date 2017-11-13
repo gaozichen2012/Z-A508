@@ -29,22 +29,20 @@ void main_app(void)
   Noise_Mute_Init();
   MIC_GPIO_Init();
   Key_Init();
-  Set_RedLed(LED_ON);
-  Set_GreenLed(LED_ON);
-  enableInterrupts();
+  Set_RedLed(LED_OFF);
+  Set_GreenLed(LED_OFF);
+  //enableInterrupts();
   
   GD83_ON();
   AUDIO_IOAFMUT(ON);
   AUDIO_IOAFPOW(ON);
   MIC_IOMUT(OFF); 
-  
-  //r=ApiPocCmd_WritCommand(PocComm_SetParam,ucSetParamConfig,strlen((char const *)ucSetParamConfig));
-  //Delay_ms(1000);
   r=ApiPocCmd_WritCommand(PocComm_OpenPOC,ucPocOpenConfig,strlen((char const *)ucPocOpenConfig));
-    DEL_SetTimer(1,100);
+    //DEL_SetTimer(1,100);
   while(1)
   {
-    DEL_Renew();
+    Keyboard_Test();
+   /* DEL_Renew();
     ListenState();//Ω”Ã˝¡¡¬Ãµ∆
     if(ReadInput_KEY_PTT==0)
     {
@@ -85,51 +83,6 @@ void main_app(void)
       }
       Set_RedLed(LED_OFF);
       Set_GreenLed(LED_OFF);
-    }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-   // Delay_Test();
-
-
-
-/*if(ReadInput_KEY_PTT==0)
-    {
-      Set_RedLed(LED_ON);
-      Set_GreenLed(LED_ON);
-      
-      ApiGetIccidBuf();
-  r=ApiPocCmd_WritCommand(PocComm_OpenPOC,ucPocOpenConfig,strlen((char const *)ucPocOpenConfig));
-      while(ReadInput_KEY_PTT==0);
-      ApiGetIccidBuf();
-  r=ApiPocCmd_WritCommand(PocComm_OpenPOC,ucPocOpenConfig,strlen((char const *)ucPocOpenConfig));
-    }
-    else
-    {
-      DEL_Renew();
-      Set_RedLed(LED_OFF);
-      Set_GreenLed(LED_OFF);
     }*/
-  
-
-    
-
-    
-   
-   /* //UART1_SendString("AT+ZTTS=1,\"c0680d4e30526153\"\r\n",sizeof("AT+ZTTS=1,\"c0680d4e30526153\"\r\n"));
-    Set_RedLed(LED_ON);
-    Set_GreenLed(LED_ON);
-    Delay_ms(2000);
-    Set_RedLed(LED_OFF);
-    Set_GreenLed(LED_OFF);
-    Delay_ms(2000);*/
   }
 }

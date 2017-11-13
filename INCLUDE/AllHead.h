@@ -1,6 +1,6 @@
 #ifndef __ALLHEAD_H
 #define __ALLHEAD_H
-//TomComputer
+//
 #include "stm8s.h"
 #include "System.h"
 #include "sysclock.h"
@@ -14,4 +14,8 @@
 #include <string.h>
 #include "ApiPocCmd.h"
 #include "ApiAtCmd.h"
+
+//¼üÅÌ
+#include "DrvKeyboard.h"
+#include "ApiKeyboard.h"
 #endif

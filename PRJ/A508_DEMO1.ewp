@@ -1611,6 +1611,9 @@
       <name>$PROJ_DIR$\..\INCLUDE\DrvGD83.h</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\INCLUDE\DrvKeyboard.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\INCLUDE\McuConfig.h</name>
     </file>
     <file>
@@ -1644,6 +1647,9 @@
       <name>Drv</name>
       <file>
         <name>$PROJ_DIR$\..\SRC\Drv\DrvGD83.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\SRC\Drv\DrvKeyboard.c</name>
       </file>
     </group>
     <group>
@@ -1761,6 +1767,9 @@
       <name>System</name>
       <file>
         <name>$PROJ_DIR$\..\SRC\Syetem\ApiAtCmd.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\SRC\Syetem\ApiKeyboard.c</name>
       </file>
       <file>
         <name>$PROJ_DIR$\..\SRC\Syetem\ApiPocCmd.c</name>
