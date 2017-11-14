@@ -7,7 +7,7 @@
 #include "McuConfig.h"
 #include "stm8s_it.h"
 #include "CommonLib.h"
-
+#include "Define.h"// 
 #include "Delay.h"
 //Í¨Ñ¶Ä£¿é
 #include "DrvGD83.h"

@@ -5,14 +5,14 @@ u8 *ucSetParamConfig    = "01000069703D302E302E302E303B69643D3139383030333037343
 u8 *ucStartPTT          = "0B0000";
 u8 *ucEndPTT            = "0C0000";
 u8 *ucSwitch            = "10000002";
-u8 *ucKeyUp                = "10000003";
-u8 *ucKeyDown              = "10000004";
+
 u8 *ucGroupListInfo     = "0D0000";
 
 void main_app(void)
 {
   bool r=FALSE;
-  u8 Key_Flag=0;
+u8 Key_Flag_0=0;
+u8 t=0;
   disableInterrupts();
   SystemClock_Init(HSE_Clock);
   ITC_SetSoftwarePriority(ITC_IRQ_UART1_RX,ITC_PRIORITYLEVEL_3);
@@ -35,26 +35,24 @@ void main_app(void)
   Key_Init();
   Set_RedLed(LED_OFF);
   Set_GreenLed(LED_OFF);
-  //enableInterrupts();
+  enableInterrupts();
   
   GD83_ON();
   AUDIO_IOAFMUT(ON);
   AUDIO_IOAFPOW(ON);
   MIC_IOMUT(OFF); 
   r=ApiPocCmd_WritCommand(PocComm_OpenPOC,ucPocOpenConfig,strlen((char const *)ucPocOpenConfig));
-    //DEL_SetTimer(1,100);
+  DEL_SetTimer(0,100);
+  DEL_SetTimer(1,100);
+  api_lcd_pwr_on_hint("    ABELL    ");
   while(1)
   {
-#if 1
-    api_lcd_pwr_on_hint("欧标666");
-#endif
-    
-    
-#if 0//按键控制灯亮灭   
+#if 1//按键控制灯亮灭   
     Keyboard_Test();
 #endif
+
     
-#if 0//对讲&换组
+#if 1//对讲&换组
     DEL_Renew();
     ListenState();//接听亮绿灯
     if(ReadInput_KEY_PTT==0)
@@ -62,41 +60,43 @@ void main_app(void)
       Set_RedLed(LED_ON);
       
       r=ApiPocCmd_WritCommand(PocComm_StartPTT,ucStartPTT,strlen((char const *)ucStartPTT));
+      AUDIO_IOAFPOW(OFF);
       while(ReadInput_KEY_PTT==0);
       r=ApiPocCmd_WritCommand(PocComm_EndPTT,ucEndPTT,strlen((char const *)ucEndPTT));
+      AUDIO_IOAFPOW(ON);
     }
     else
     {
       if(ReadInput_KEY_4==0)
       {
         r=ApiPocCmd_WritCommand(PocComm_Key,ucSwitch,strlen((char const *)ucSwitch));
-        Key_Flag=1;
+        Key_Flag_0=1;
       }
       else
       {
       if(ReadInput_KEY_2==0)
       {
-        r=ApiPocCmd_WritCommand(PocComm_Key,ucKeyUp,strlen((char const *)ucKeyUp));
-        Key_Flag=1;
+        api_lcd_pwr_on_hint("欧标按键:K2    ");
       }
       if(ReadInput_KEY_3==0)
       {
-        r=ApiPocCmd_WritCommand(PocComm_Key,ucKeyDown,strlen((char const *)ucKeyDown));
-        Key_Flag=1;
+        api_lcd_pwr_on_hint("欧标按键:K3    ");
       }
       }
-      if(Key_Flag==1)
+      if(Key_Flag_0==1)
       {
         DEL_SetTimer(0,200);
         while(1)
         {
-          Key_Flag=0;
+          Key_Flag_0=0;
           if(DEL_GetTimer(0) == TRUE) {break;}
         }
       }
+     
       Set_RedLed(LED_OFF);
       Set_GreenLed(LED_OFF);
     }
+
 #endif
   }
 }
