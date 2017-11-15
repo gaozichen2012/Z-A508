@@ -11,7 +11,23 @@ typedef enum {							//I/O port voltage string code
 	LO	= 0x00,
 	HI	= 0x01
 }IO_HILO;
+typedef union {								//
+	struct
+		{
+		u16 Low: 8;
+		u16 High: 8;
+		}Byte;
+	unsigned  int Word;
+}WordType;
 
+typedef enum {
+	KSTA_UP			= 0x00,
+	KSTA_DOWN		= 0x01,
+	KSTA_ERR		= 0x02,
+	KSTA_ENTERY		= 0x03,
+	KSTA_EXIT		= 0x04,
+	KSTA_NULL		= 0xFF
+}KEYSTA_TYPE;
 
 
 /******************************************************************************
@@ -164,7 +180,11 @@ LCD Backlight -PC4         -A0
 #define MCU_GT20_SO_Read        GPIO_ReadInputPin(GPIO_GT20_SO, GPIO_PIN_GT20_SO)
 
 
-
+/******************************************************************************
+;--------7-Beep hardware macro define
+******************************************************************************/
+#define GPIO_BEEP               GPIOC
+#define GPIO_PIN_BEEP           GPIO_PIN_1
 
 /******************************************************************************
 ;--------1-LED hardware macro define

@@ -28,6 +28,9 @@ u8 t=0;
   AF_Mute_Init();
   Noise_Mute_Init();
   MIC_GPIO_Init();
+  //BEEP
+  BEEP_PowerOnInitial();
+  TONE_PowerOnInitial();
   //ÏÔÊ¾ÆÁ
   drv_gt20_pwr_on_init();
   drv_htg_pwr_on_init();
@@ -41,10 +44,13 @@ u8 t=0;
   AUDIO_IOAFMUT(ON);
   AUDIO_IOAFPOW(ON);
   MIC_IOMUT(OFF); 
+  api_lcd_pwr_on_hint("    ABELL    ");
   r=ApiPocCmd_WritCommand(PocComm_OpenPOC,ucPocOpenConfig,strlen((char const *)ucPocOpenConfig));
+  BEEP_Time(100);
   DEL_SetTimer(0,100);
   DEL_SetTimer(1,100);
-  api_lcd_pwr_on_hint("    ABELL    ");
+  
+  
   while(1)
   {
 #if 1//°´¼ü¿ØÖÆµÆÁÁÃð   
