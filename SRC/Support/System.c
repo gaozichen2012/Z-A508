@@ -1,6 +1,6 @@
 #define SYSABLE
 #include "AllHead.h"
-u8 *ucPocOpenConfig     = "0000000101";
+u8 *ucPocOpenConfig     = "00000001010101";
 u8 *ucSetParamConfig    = "01000069703D302E302E302E303B69643D31393830303330373437343B7077643D3131313131313B00";
 u8 *ucStartPTT          = "0B0000";
 u8 *ucEndPTT            = "0C0000";
@@ -43,13 +43,19 @@ u8 t=0;
   GD83_ON();
   AUDIO_IOAFMUT(ON);
   AUDIO_IOAFPOW(ON);
+  GPIO_Init(GPIOB,GPIO_PIN_6,GPIO_MODE_OUT_PP_LOW_FAST);//LOC MIC MUTE
   MIC_IOMUT(OFF); 
   api_lcd_pwr_on_hint("    ABELL    ");
+
+  BEEP_Time(50);
+  
+/****打开POC应用**********/
+  DEL_SetTimer(0,1500);
+  while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
   r=ApiPocCmd_WritCommand(PocComm_OpenPOC,ucPocOpenConfig,strlen((char const *)ucPocOpenConfig));
-  BEEP_Time(100);
   DEL_SetTimer(0,100);
   DEL_SetTimer(1,100);
-  
+/*****************************/
   
   while(1)
   {
@@ -82,11 +88,35 @@ u8 t=0;
       {
       if(ReadInput_KEY_2==0)
       {
-        api_lcd_pwr_on_hint("欧标按键:K2    ");
+        api_lcd_pwr_on_hint("欧标按键:K2 退出单呼     ");
+        r=ApiPocCmd_WritCommand(PocComm_EndPTT,"0A0000ffffffff",strlen((char const *)"0A0000ffffffff"));
+        Key_Flag_0=1;
       }
       if(ReadInput_KEY_3==0)
       {
-        api_lcd_pwr_on_hint("欧标按键:K3    ");
+#if 1//1:一号机烧录  0:三号机烧录
+        api_lcd_pwr_on_hint("按键:K3 单呼       ");
+        r=ApiPocCmd_WritCommand(PocComm_EndPTT,"0E000000000001",strlen((char const *)"0E000000000001"));
+        Key_Flag_0=1;
+        DEL_SetTimer(1,100);
+        while(1)
+        {
+          if(DEL_GetTimer(1) == TRUE) {break;}
+        }
+        
+        r=ApiPocCmd_WritCommand(PocComm_EndPTT,"0A00000000006401",strlen((char const *)"0A00000000006401"));
+#else//
+        api_lcd_pwr_on_hint("按键:K3 单呼一号   ");
+        r=ApiPocCmd_WritCommand(PocComm_EndPTT,"0E000000000001",strlen((char const *)"0E000000000001"));
+        Key_Flag_0=1;
+        DEL_SetTimer(1,20);
+        while(1)
+        {
+          if(DEL_GetTimer(1) == TRUE) {break;}
+        }
+        
+        r=ApiPocCmd_WritCommand(PocComm_EndPTT,"0A00000000006401",strlen((char const *)"0A00000000006401"));
+#endif
       }
       }
       if(Key_Flag_0==1)
