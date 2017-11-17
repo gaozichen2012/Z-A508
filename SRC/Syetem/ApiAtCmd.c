@@ -1,5 +1,5 @@
 #include "AllHead.h"
-
+u8 SIMST_Flag=0;
 #define DrvMC8332_IccId_Len 30
 typedef struct{
 	struct{
@@ -39,12 +39,13 @@ static AtCmdDrv AtCmdDrvobj;
 
 const u8 *ucRxCheckCard = "GETICCID:";
 
+
 void ApiAtCmd_10msRenew(void)
 {
   u8 * pBuf, ucRet, Len, i;
   while((Len = DrvMC8332_AtNotify_Queue_front(&pBuf)) != 0)
   {
-    ucRet = memcmp(pBuf, ucRxCheckCard, 9);
+    ucRet = memcmp(pBuf, ucRxCheckCard, 9);//GETICCID
     if(ucRet == 0x00)
     {
       if(Len > 0x09)//È¥î^
@@ -57,6 +58,7 @@ void ApiAtCmd_10msRenew(void)
        }
        AtCmdDrvobj.NetState.IccId.Len = i;
     }
+
   }
 }
 

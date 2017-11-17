@@ -1,6 +1,62 @@
 #define SYSABLE
 #include "AllHead.h"
-u8 *ucPocOpenConfig     = "00000001010101";
+
+#define SYS_IDLE	0x00
+#define SYS_RUN		0x01
+
+typedef struct {	
+	struct{
+		union{
+			struct{
+				u8 WorkMode	: 2;
+				u8 UnlineArm	: 1;
+				u8				: 5;
+			}Bits;
+			u8 Byte;
+		}Cfg;
+		u8 UnlineArmCountdown;
+		u8 Res[3];
+	}Par;
+	union {
+		struct {
+			u16 bLoad		: 1;
+			u16 bRenew		: 1;
+			u16 bTxRxRun	: 1;
+			u16 bDebug		: 3;
+			u16 bRxNullCh	: 1;
+			u16 bTxNullCh	: 1;
+			u16 bTalk		: 1;
+			u16 bSq		: 1;
+			u16 bSqMome	: 1;
+			u16 bMoni		: 1;
+			u16 bMoniMome	: 1;
+			u16 bTot		: 1;
+			u16 bUnlineArm	: 1;
+			u16 			: 1;
+		}Bit;
+		u16 Byte;
+	}STA;
+	union {
+		struct {
+			u16 TxError		: 1;
+			u16 			: 15;
+		}Bit;
+		u16 Byte;
+	}Error;
+	u16 cChannel;
+	u8 KeyCode;
+	POW_MANTYPE   PowMan;
+	IO_ONOFF	  PowOnOff;
+	TASK_CODE 	  NewId;
+	TASK_CODE  	  OldId;
+	MSG_STATUS	  Msg;
+	SW_CODE 	  Sw;
+	u16 UnlineArmTimer;
+}TASK_DRV;
+
+static TASK_DRV	TaskDrvObj;
+
+u8 *ucPocOpenConfig     = "0000000101";
 u8 *ucSetParamConfig    = "01000069703D302E302E302E303B69643D31393830303330373437343B7077643D3131313131313B00";
 u8 *ucStartPTT          = "0B0000";
 u8 *ucEndPTT            = "0C0000";
@@ -48,7 +104,7 @@ u8 t=0;
   api_lcd_pwr_on_hint("    ABELL    ");
 
   BEEP_Time(50);
-  
+    
 /****打开POC应用**********/
   DEL_SetTimer(0,1500);
   while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
@@ -56,9 +112,20 @@ u8 t=0;
   DEL_SetTimer(0,100);
   DEL_SetTimer(1,100);
 /*****************************/
-  
+  TaskDrvObj.NewId=Task_Start;
   while(1)
   {
+    
+    switch(TaskDrvObj.NewId)
+    {
+    case Task_Start:
+      Task_RunStart();
+      break;
+    case TASK_WRITEFREQ:
+      TASK_WriteFreq();
+      break;
+      
+    }
 #if 1//按键控制灯亮灭   
     Keyboard_Test();
 #endif

@@ -29,6 +29,7 @@ typedef enum{
 
 const u8 *ucTxPocHeadInfo = "AT+POC=:";
 const u8 *ucRxPocHeadInfo = "+POC:";
+const u8 *ucCaretSIMST = "^SIMST:1";
 const u8 *ucRxOkHeadInfo = "OK";
 
 /******************************************************************************
@@ -59,7 +60,7 @@ typedef struct{							//define UART drive data type
         u16 bOkOrError          : 2;
         u16 bAtPoc              : 1;
         u16 bPlusPoc            : 1;
-        u16 bRecevTcp           : 1;
+        u16 bCaret              : 1;//^
         u16 bRecevUdp           : 1;
         u16 bTxOnOff            : 1;
         u16                     : 4;
@@ -72,6 +73,11 @@ typedef struct{							//define UART drive data type
     //u8 cTxBuf[150];
     //u8 cTxLen;
   }TxRxCmd;	//comand tx/rx
+   struct{
+   u8 cNotifyHead, cNotifyTail, cNotifyLen;
+   u8 Notify[DrvMC8332_UART_NoMAX][DrvMC8332At_UART_NoLEN];
+   u8 NotifyLen[DrvMC8332_UART_NoMAX];
+  }RxAtNotifyBuf;
   struct{
     u8 cNotifyHead, cNotifyTail, cNotifyLen;
     u8 Notify[DrvMC8332_UART_NoMAX][DrvMC8332At_UART_NoLEN];
@@ -93,6 +99,7 @@ typedef struct{							//define UART drive data type
 
 static DrvMC8332_UART_DRV       DrvGD83DrvObj;
 
+static void CaretNotify_Queue_Start(u8 *buf, u8 len);
 static void AtNotify_Queue_Start(u8 *buf, u8 len);
 static void PocNotify_Queue_Start(u8 *buf, u8 len);
 static void AtNotify_Queue(u8 buf);
@@ -259,6 +266,14 @@ void DrvMC8332_UART_Interrupt(void)
       return;
     }
     break;
+  case '^':
+    if(DrvMC8332DrvObj.TxRxCmd.Msg.Bits.bNewNot == OFF)
+    {
+      DrvMC8332DrvObj.TxRxCmd.Msg.Bits.bNewNot = ON;
+      DrvGD83DrvObj.TxRxCmd.Msg.Bits.bCaret = ON;//²åÈë·ûºÅ^
+      DrvMC8332DrvObj.TxRxCmd.cRxBuf[DrvMC8332DrvObj.TxRxCmd.cRxLen] = buf;
+      DrvMC8332DrvObj.TxRxCmd.cRxLen++;
+    }
   default:
     break;  
   }
@@ -327,6 +342,19 @@ void DrvMC8332_UART_Interrupt(void)
         }
       }
     }
+    
+#if 1//²åÈë·û^ÅÐ¶Ï Tom added in 2017.11.17
+    if(DrvMC8332DrvObj.TxRxCmd.Msg.Bits.bCaret == ON)
+    {
+      if(DrvMC8332DrvObj.TxRxCmd.cRxBuf[ucLen] == ucCaretSIMST[ucLen])
+      {
+        if(DrvMC8332DrvObj.TxRxCmd.cRxLen == 5)
+        {
+          
+        }
+      }
+    }
+#endif
   }
   else
   {
@@ -347,6 +375,20 @@ void DrvMC8332_UART_Interrupt(void)
       break;
     }
   }
+}
+
+static void CaretNotify_Queue_Start(u8 *buf, u8 len)
+{
+  u8 i;
+  if(DrvGD83DrvObj.RxAtNotifyBuf.cNotifyHead >= DrvMC8332_UART_NoMAX)
+  {
+    DrvGD83DrvObj.RxAtNotifyBuf.cNotifyHead = 0;
+  }
+  for(i = 0;i < len; i++)
+  {
+    DrvGD83DrvObj.RxAtNotifyBuf.Notify[DrvGD83DrvObj.RxAtNotifyBuf.cNotifyHead][i] = buf[i];
+  }
+  DrvGD83DrvObj.RxAtNotifyBuf.NotifyLen[DrvGD83DrvObj.RxAtNotifyBuf.cNotifyHead] = len;
 }
 
 static void AtNotify_Queue_Start(u8 *buf, u8 len)
