@@ -9,7 +9,7 @@
 const u8 *ucAtPocHead   = "AT+POC=";
 const u8 *ucTingEnd   = "0B0000";
 const u8 *ucTingStart   = "0B0001";
-const u8 *ucSIMST="^SIMST:1";
+
 typedef struct{
 	struct{
 		union{
@@ -244,12 +244,6 @@ void ApiPocCmd_10msRenew(void)
       break;
     default:
       break;
-    }
-    
-    ucRet = memcmp(pBuf, ucSIMST, 9);//^SIMST:1
-    if(ucRet == 0x00)
-    {
-      SIMST_Flag=1;
     }
   }
 }

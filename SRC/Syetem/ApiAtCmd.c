@@ -6,18 +6,18 @@ typedef struct{
 		union{
 			struct{
 				u16 bFunOff	: 1;
-				u16 bFun		: 1;
-				u16 bEsn		: 1;
-				u16 bCard		: 1;
-				u16 bRssi		: 1;
+				u16 bFun	: 1;
+				u16 bEsn	: 1;
+				u16 bCard	: 1;
+				u16 bRssi	: 1;
 				u16 bPppStep	: 2;
 				u16 bPppOk	: 1;
-				u16 bTcp		: 1;
+				u16 bTcp	: 1;
 				u16 bTcpOk	: 1;
-				u16 bUdp		: 1;
+				u16 bUdp	: 1;
 				u16 bUdpOk	: 1;
-				u16 bFirstPlay: 1;
-				u16				: 3;
+				u16 bFirstPlay  : 1;
+				u16		: 3;
 			}Bits;
 			u16 Byte;
 		}Msg;
@@ -38,7 +38,7 @@ typedef struct{
 static AtCmdDrv AtCmdDrvobj;
 
 const u8 *ucRxCheckCard = "GETICCID:";
-
+const u8 *ucSIMST="^SIMST:1";
 
 void ApiAtCmd_10msRenew(void)
 {
@@ -58,7 +58,11 @@ void ApiAtCmd_10msRenew(void)
        }
        AtCmdDrvobj.NetState.IccId.Len = i;
     }
-
+    ucRet = memcmp(pBuf, ucSIMST, 8);//GETICCID
+    if(ucRet == 0x00)
+    {
+      SIMST_Flag=1;
+    }
   }
 }
 

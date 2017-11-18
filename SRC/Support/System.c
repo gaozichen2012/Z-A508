@@ -104,10 +104,9 @@ u8 t=0;
   api_lcd_pwr_on_hint("    ABELL    ");
 
   BEEP_Time(50);
-    
 /****打开POC应用**********/
-  DEL_SetTimer(0,1500);
-  while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+  //DEL_SetTimer(0,1500);
+  //while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
   r=ApiPocCmd_WritCommand(PocComm_OpenPOC,ucPocOpenConfig,strlen((char const *)ucPocOpenConfig));
   DEL_SetTimer(0,100);
   DEL_SetTimer(1,100);

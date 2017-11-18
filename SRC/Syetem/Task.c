@@ -6,6 +6,7 @@ void Task_RunStart(void)
   if(SIMST_Flag==1)//收到模块开机指令:SIMST:1
   {
     BEEP_Time(50);
+    SIMST_Flag==0;
     //1.发送PPPCFG
    /* if()//如果收到^PPPCFG
     {
