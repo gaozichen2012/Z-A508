@@ -40,6 +40,19 @@ static AtCmdDrv AtCmdDrvobj;
 const u8 *ucRxCheckCard = "GETICCID:";
 const u8 *ucSIMST="^SIMST:1";
 
+void ApiCaretCmd_10msRenew(void)
+{
+  u8 * pBuf, ucRet, Len, i;
+  while((Len = DrvMC8332_CaretNotify_Queue_front(&pBuf)) != 0)
+  {
+    ucRet = memcmp(pBuf, ucSIMST, 8);//GETICCID
+    if(ucRet == 0x00)
+    {
+      SIMST_Flag=1;
+    }
+  }
+}
+
 void ApiAtCmd_10msRenew(void)
 {
   u8 * pBuf, ucRet, Len, i;
@@ -57,11 +70,6 @@ void ApiAtCmd_10msRenew(void)
          AtCmdDrvobj.NetState.IccId.Buf[i] = pBuf[i + 9];
        }
        AtCmdDrvobj.NetState.IccId.Len = i;
-    }
-    ucRet = memcmp(pBuf, ucSIMST, 8);//GETICCID
-    if(ucRet == 0x00)
-    {
-      SIMST_Flag=1;
     }
   }
 }

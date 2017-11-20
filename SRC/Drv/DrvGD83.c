@@ -7,6 +7,7 @@
 #define DrvCommHead_Len         15
 #define DrvMC8332_UART_NoMAX    3	//define UART Tx buffer length value
 #define DrvMC8332_UART_NoLEN    50	//define UART Rx buffer length value
+#define DrvMC8332Caret_UART_NoLEN  40	//define UART Rx buffer length value
 #define DrvMC8332At_UART_NoLEN  40	//define UART Rx buffer length value
 #define DrvMC8332Poc_UART_NoLEN 70	//define UART Rx buffer length value
 #define DrvMC8332_UART_IDLE     0x00	//define UART constant value flag
@@ -73,6 +74,13 @@ typedef struct{							//define UART drive data type
     //u8 cTxBuf[150];
     //u8 cTxLen;
   }TxRxCmd;	//comand tx/rx
+  
+  
+   struct{
+   u8 cNotifyHead, cNotifyTail, cNotifyLen;
+   u8 Notify[DrvMC8332_UART_NoMAX][DrvMC8332Caret_UART_NoLEN];
+   u8 NotifyLen[DrvMC8332_UART_NoMAX];
+  }RxCaretNotifyBuf;
    struct{
    u8 cNotifyHead, cNotifyTail, cNotifyLen;
    u8 Notify[DrvMC8332_UART_NoMAX][DrvMC8332At_UART_NoLEN];
@@ -100,7 +108,7 @@ static void PocNotify_Queue_Start(u8 *buf, u8 len);
 static void AtNotify_Queue(u8 buf);
 static void PocNotify_Queue(u8 buf);
 static void Notify_Queue_Stop(void);
-
+static void CaretNotify_Queue(u8 buf);
 
 void DrvMC8332_TxPort_SetValidable(IO_ONOFF onoff)
 {
@@ -220,6 +228,7 @@ void DrvMC8332_UART_Interrupt(void)
     DrvGD83DrvObj.RxGpsNotifyBuf.ucReceiveLen=0;
     DrvGD83DrvObj.TxRxCmd.Msg.Bits.bNewNot = OFF;
     DrvGD83DrvObj.TxRxCmd.cHeadFlag = Head_Null;
+    DrvGD83DrvObj.TxRxCmd.Msg.Bits.bAtPos = OFF;-------------------------------------------------------------------
     DrvGD83DrvObj.TxRxCmd.Msg.Bits.bAtPos = OFF;
     DrvGD83DrvObj.TxRxCmd.Msg.Bits.bPlusPos = OFF;
     //DrvMC8332DrvObj.TxRxCmd.Msg.Bits.bSemicolonPos = OFF;
@@ -303,14 +312,14 @@ void DrvMC8332_UART_Interrupt(void)
 #if 1//²åÈë·û^ÅÐ¶Ï Tom added in 2017.11.17
     if(DrvGD83DrvObj.TxRxCmd.Msg.Bits.bCaretPos == ON)//ÅÐ¶Ï^
     {
-       
+      
       //if(DrvGD83DrvObj.TxRxCmd.cRxBuf[ucLen] == ucCaretSIMST[ucLen])
       {
       //  if(DrvGD83DrvObj.TxRxCmd.cRxLen == 7)
         {
        //   SIMST_Flag=1;
           DrvGD83DrvObj.TxRxCmd.cHeadFlag = Head_Caret;		//at+ head
-          AtNotify_Queue_Start(DrvGD83DrvObj.TxRxCmd.cRxBuf, DrvGD83DrvObj.TxRxCmd.cRxLen);//-------------------------------------------------
+          CaretNotify_Queue_Start(DrvGD83DrvObj.TxRxCmd.cRxBuf, DrvGD83DrvObj.TxRxCmd.cRxLen);//-------------------------------------------------
         }
       }
     }
@@ -366,7 +375,7 @@ void DrvMC8332_UART_Interrupt(void)
       PocNotify_Queue(buf);
       break;
     case Head_Caret:
-      AtNotify_Queue(buf);
+      CaretNotify_Queue(buf);
       break;
     case Head_RecevUdp:
       break;
@@ -374,6 +383,20 @@ void DrvMC8332_UART_Interrupt(void)
       break;
     }
   }
+}
+
+static void CaretNotify_Queue_Start(u8 *buf, u8 len)
+{
+  u8 i;
+  if(DrvGD83DrvObj.RxCaretNotifyBuf.cNotifyHead >= DrvMC8332_UART_NoMAX)
+  {
+    DrvGD83DrvObj.RxCaretNotifyBuf.cNotifyHead = 0;
+  }
+  for(i = 0;i < len; i++)
+  {
+    DrvGD83DrvObj.RxCaretNotifyBuf.Notify[DrvGD83DrvObj.RxCaretNotifyBuf.cNotifyHead][i] = buf[i];
+  }
+  DrvGD83DrvObj.RxCaretNotifyBuf.NotifyLen[DrvGD83DrvObj.RxCaretNotifyBuf.cNotifyHead] = len;
 }
 
 static void AtNotify_Queue_Start(u8 *buf, u8 len)
@@ -419,6 +442,16 @@ static void Notify_Queue_Stop(void)
           DrvGD83DrvObj.RxAtNotifyBuf.cNotifyHead++;
         }
       }
+      if(DrvGD83DrvObj.TxRxCmd.Msg.Bits.bCaretPos == ON)
+      {
+        if(DrvGD83DrvObj.RxCaretNotifyBuf.cNotifyLen < DrvMC8332_UART_NoMAX)
+        {
+          CaretNotify_Queue_Start(DrvGD83DrvObj.TxRxCmd.cRxBuf, DrvGD83DrvObj.TxRxCmd.cRxLen);
+          DrvGD83DrvObj.RxCaretNotifyBuf.cNotifyLen++;
+          DrvGD83DrvObj.RxCaretNotifyBuf.cNotifyHead++;
+        }
+      }
+      
       if(DrvGD83DrvObj.TxRxCmd.Msg.Bits.bAtPos == ON)
       {
         if((DrvGD83DrvObj.RxAtNotifyBuf.cNotifyLen < DrvMC8332_UART_NoMAX))
@@ -453,11 +486,11 @@ static void Notify_Queue_Stop(void)
       }
       break;
     case Head_Caret:
-      if(DrvGD83DrvObj.RxAtNotifyBuf.cNotifyLen < DrvMC8332_UART_NoMAX
-         && DrvGD83DrvObj.RxAtNotifyBuf.NotifyLen[DrvGD83DrvObj.RxAtNotifyBuf.cNotifyHead] != 0x00)
+      if(DrvGD83DrvObj.RxCaretNotifyBuf.cNotifyLen < DrvMC8332_UART_NoMAX
+         && DrvGD83DrvObj.RxCaretNotifyBuf.NotifyLen[DrvGD83DrvObj.RxCaretNotifyBuf.cNotifyHead] != 0x00)
       {
-        DrvGD83DrvObj.RxAtNotifyBuf.cNotifyLen++;
-        DrvGD83DrvObj.RxAtNotifyBuf.cNotifyHead++;
+        DrvGD83DrvObj.RxCaretNotifyBuf.cNotifyLen++;
+        DrvGD83DrvObj.RxCaretNotifyBuf.cNotifyHead++;
       }
       break;
     case Head_RecevUdp:
@@ -472,6 +505,18 @@ static void Notify_Queue_Stop(void)
       break;
     }
   }
+}
+
+static void CaretNotify_Queue(u8 buf)
+{
+	u8 len;
+	
+	len = DrvGD83DrvObj.RxCaretNotifyBuf.NotifyLen[DrvGD83DrvObj.RxCaretNotifyBuf.cNotifyHead];
+	if(len < DrvMC8332At_UART_NoLEN)
+	{
+		DrvGD83DrvObj.RxCaretNotifyBuf.Notify[DrvGD83DrvObj.RxCaretNotifyBuf.cNotifyHead][len] = buf;
+		DrvGD83DrvObj.RxCaretNotifyBuf.NotifyLen[DrvGD83DrvObj.RxCaretNotifyBuf.cNotifyHead]++;
+	}
 }
 
 static void AtNotify_Queue(u8 buf)
@@ -495,6 +540,22 @@ static void PocNotify_Queue(u8 buf)
 		DrvGD83DrvObj.RxPocNotifyBuf.Notify[DrvGD83DrvObj.RxPocNotifyBuf.cNotifyHead][len] = buf;
 		DrvGD83DrvObj.RxPocNotifyBuf.NotifyLen[DrvGD83DrvObj.RxPocNotifyBuf.cNotifyHead]++;
 	}
+}
+
+u8 DrvMC8332_CaretNotify_Queue_front(u8 **pBuf)
+{
+  u8 r=0;
+  if(DrvGD83DrvObj.RxCaretNotifyBuf.cNotifyLen > 0)
+  {
+    *pBuf = DrvGD83DrvObj.RxCaretNotifyBuf.Notify[DrvGD83DrvObj.RxCaretNotifyBuf.cNotifyTail];
+    r=DrvGD83DrvObj.RxCaretNotifyBuf.NotifyLen[DrvGD83DrvObj.RxCaretNotifyBuf.cNotifyTail];
+    if(++DrvGD83DrvObj.RxCaretNotifyBuf.cNotifyTail >= DrvMC8332_UART_NoMAX)
+    {
+      DrvGD83DrvObj.RxCaretNotifyBuf.cNotifyTail = 0;
+    }
+    DrvGD83DrvObj.RxCaretNotifyBuf.cNotifyLen--;
+  }
+  return r;
 }
 
 u8 DrvMC8332_AtNotify_Queue_front(u8 **pBuf)

@@ -3,6 +3,7 @@
 
 #include "AllHead.h"
 
+extern void ApiCaretCmd_10msRenew(void);
 extern void ApiAtCmd_10msRenew(void);
 extern u8 ApiAtCmd_GetIccId(u8 **pBuf);
 extern void ApiGetIccidBuf(void);

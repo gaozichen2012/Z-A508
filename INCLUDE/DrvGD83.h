@@ -15,6 +15,7 @@ DrvGD83_API bool DrvMc8332_UART_TxTail(void);
 void DrvMC8332_UART_TxInterrupt(void);
 void DrvMC8332_UART_Interrupt(void);
 
+u8 DrvMC8332_CaretNotify_Queue_front(u8 **pBuf);
 u8 DrvMC8332_AtNotify_Queue_front(u8 **pBuf);
 u8 DrvMC8332_PocNotify_Queue_front(u8 **pBuf);
 #endif

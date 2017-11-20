@@ -191,8 +191,10 @@ static void DEL_1msProcess(void)
  // if (DelDrvObj.Msg.Bit.b1ms == DEL_RUN)
   {
  //   DelDrvObj.Msg.Bit.b1ms = DEL_IDLE;
+    ApiCaretCmd_10msRenew();
     ApiAtCmd_10msRenew();
-    ApiPocCmd_10msRenew();	
+    ApiPocCmd_10msRenew();
+
   }
   return;
 }
