@@ -56,8 +56,8 @@ typedef struct {
 
 static TASK_DRV	TaskDrvObj;
 
-u8 *ucPocOpenConfig     = "0000000101";
-u8 *ucSetParamConfig    = "01000069703D302E302E302E303B69643D31393830303330373437343B7077643D3131313131313B00";
+
+
 u8 *ucStartPTT          = "0B0000";
 u8 *ucEndPTT            = "0C0000";
 u8 *ucSwitch            = "10000002";
@@ -107,24 +107,30 @@ u8 t=0;
 /****打开POC应用**********/
   //DEL_SetTimer(0,1500);
   //while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
-  r=ApiPocCmd_WritCommand(PocComm_OpenPOC,ucPocOpenConfig,strlen((char const *)ucPocOpenConfig));
+
   DEL_SetTimer(0,100);
   DEL_SetTimer(1,100);
 /*****************************/
   TaskDrvObj.NewId=Task_Start;
   while(1)
   {
-    
+    DEL_Renew();
     switch(TaskDrvObj.NewId)
     {
     case Task_Start:
       Task_RunStart();
       break;
+    case Task_RunStep:
+      Task_RunStart();------------------------------------
+      break;
+      
+        
     case TASK_WRITEFREQ:
       TASK_WriteFreq();
       break;
       
     }
+/*
 #if 1//按键控制灯亮灭   
     Keyboard_Test();
 #endif
@@ -200,5 +206,6 @@ u8 t=0;
     }
 
 #endif
-  }
+  }*/
+}
 }

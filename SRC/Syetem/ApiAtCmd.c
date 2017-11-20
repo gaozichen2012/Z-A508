@@ -1,5 +1,5 @@
 #include "AllHead.h"
-u8 SIMST_Flag=0;
+
 #define DrvMC8332_IccId_Len 30
 typedef struct{
 	struct{
@@ -37,18 +37,49 @@ typedef struct{
 }AtCmdDrv;
 static AtCmdDrv AtCmdDrvobj;
 
+u8 BootProcess_SIMST_Flag=0;
+u8 BootProcess_PPPCFG_Flag=0;
+u8 BootProcess_OpenPoc_Flag=0;
+
 const u8 *ucRxCheckCard = "GETICCID:";
-const u8 *ucSIMST="^SIMST:1";
+const u8 *ucSIMST="^SIMST:";
+const u8 *ucCaretPPPCFG="^PPPCFG:";
+
+bool ApiAtCmd_WritCommand(AtCommType id, u8 *buf, u16 len)
+{
+  bool r = TRUE;
+  DrvMC8332_TxPort_SetValidable(ON);
+  switch(id)
+  {
+  case ATCOMM0_OSSYSHWID://1
+    DrvGD83_UART_TxCommand(buf, len);
+    break;
+  case ATCOMM1_PPPCFG://1
+    DrvGD83_UART_TxCommand(buf, len);
+    break;
+  default:
+    break;
+  }
+  r = DrvMc8332_UART_TxTail();
+  DrvMC8332_TxPort_SetValidable(OFF);
+  return r;
+}
+
 
 void ApiCaretCmd_10msRenew(void)
 {
   u8 * pBuf, ucRet, Len, i;
   while((Len = DrvMC8332_CaretNotify_Queue_front(&pBuf)) != 0)
   {
-    ucRet = memcmp(pBuf, ucSIMST, 8);//GETICCID
+    ucRet = memcmp(pBuf, ucSIMST, 7);//GETICCID
     if(ucRet == 0x00)
     {
-      SIMST_Flag=1;
+      BootProcess_SIMST_Flag=1;
+    }
+    ucRet = memcmp(pBuf, ucCaretPPPCFG, 8);//GETICCID
+    if(ucRet == 0x00)
+    {
+      BootProcess_PPPCFG_Flag=1;
     }
   }
 }

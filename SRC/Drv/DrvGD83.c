@@ -30,9 +30,8 @@ typedef enum{
 
 const u8 *ucTxPocHeadInfo = "AT+POC=:";
 const u8 *ucRxPocHeadInfo = "+POC:";
-const u8 *ucCaretSIMST = "^SIMST:";
 const u8 *ucRxOkHeadInfo = "OK";
-
+const u8 *ucCaretSIMST = "^SIMST:";
 /******************************************************************************
 ;--------UART hardware drive macro define process
 ******************************************************************************/
@@ -228,10 +227,9 @@ void DrvMC8332_UART_Interrupt(void)
     DrvGD83DrvObj.RxGpsNotifyBuf.ucReceiveLen=0;
     DrvGD83DrvObj.TxRxCmd.Msg.Bits.bNewNot = OFF;
     DrvGD83DrvObj.TxRxCmd.cHeadFlag = Head_Null;
-    DrvGD83DrvObj.TxRxCmd.Msg.Bits.bAtPos = OFF;-------------------------------------------------------------------
+    DrvGD83DrvObj.TxRxCmd.Msg.Bits.bCaretPos = OFF;
     DrvGD83DrvObj.TxRxCmd.Msg.Bits.bAtPos = OFF;
     DrvGD83DrvObj.TxRxCmd.Msg.Bits.bPlusPos = OFF;
-    //DrvMC8332DrvObj.TxRxCmd.Msg.Bits.bSemicolonPos = OFF;
     DrvGD83DrvObj.TxRxCmd.Msg.Bits.bOkOErrorPos = OFF;
     DrvGD83DrvObj.TxRxCmd.Msg.Bits.bPlusPoc = OFF;
     DrvGD83DrvObj.TxRxCmd.Msg.Bits.bCaretPos = OFF;
@@ -277,7 +275,9 @@ void DrvMC8332_UART_Interrupt(void)
       DrvGD83DrvObj.TxRxCmd.Msg.Bits.bCaretPos = ON;//²åÈë·ûºÅ^
       DrvGD83DrvObj.TxRxCmd.cRxBuf[DrvGD83DrvObj.TxRxCmd.cRxLen] = buf;
       DrvGD83DrvObj.TxRxCmd.cRxLen++;
+      return;
     }
+    break; 
   default:
     break;  
   }
@@ -285,7 +285,21 @@ void DrvMC8332_UART_Interrupt(void)
   {
     DrvGD83DrvObj.TxRxCmd.cRxBuf[DrvGD83DrvObj.TxRxCmd.cRxLen] = buf;
     DrvGD83DrvObj.TxRxCmd.cRxLen++;
-    ucLen = DrvGD83DrvObj.TxRxCmd.cRxLen-1;		
+    ucLen = DrvGD83DrvObj.TxRxCmd.cRxLen-1;
+#if 1//²åÈë·û^ÅÐ¶Ï Tom added in 2017.11.17
+    if(DrvGD83DrvObj.TxRxCmd.Msg.Bits.bCaretPos == ON)//ÅÐ¶Ï^
+    {
+      //if(DrvGD83DrvObj.TxRxCmd.cRxBuf[ucLen] == ucCaretSIMST[ucLen])
+      {
+       // if(DrvGD83DrvObj.TxRxCmd.cRxLen == 7)
+        {
+         //SIMST_Flag=1;
+          DrvGD83DrvObj.TxRxCmd.cHeadFlag = Head_Caret;		//at+ head
+          CaretNotify_Queue_Start(DrvGD83DrvObj.TxRxCmd.cRxBuf, DrvGD83DrvObj.TxRxCmd.cRxLen);//-------------------------------------------------
+        }
+      }
+    }
+#endif
     if(DrvGD83DrvObj.TxRxCmd.Msg.Bits.bPlusPos == ON)//ÓÐ"+"
     {
       if(DrvGD83DrvObj.TxRxCmd.Msg.Bits.bPlusPoc == OFF)//·Ç"+POC"
@@ -309,21 +323,6 @@ void DrvMC8332_UART_Interrupt(void)
         AtNotify_Queue_Start(DrvGD83DrvObj.TxRxCmd.cRxBuf+1, DrvGD83DrvObj.TxRxCmd.cRxLen-1);//-------------------------------------------------
       }
     }
-#if 1//²åÈë·û^ÅÐ¶Ï Tom added in 2017.11.17
-    if(DrvGD83DrvObj.TxRxCmd.Msg.Bits.bCaretPos == ON)//ÅÐ¶Ï^
-    {
-      
-      //if(DrvGD83DrvObj.TxRxCmd.cRxBuf[ucLen] == ucCaretSIMST[ucLen])
-      {
-      //  if(DrvGD83DrvObj.TxRxCmd.cRxLen == 7)
-        {
-       //   SIMST_Flag=1;
-          DrvGD83DrvObj.TxRxCmd.cHeadFlag = Head_Caret;		//at+ head
-          CaretNotify_Queue_Start(DrvGD83DrvObj.TxRxCmd.cRxBuf, DrvGD83DrvObj.TxRxCmd.cRxLen);//-------------------------------------------------
-        }
-      }
-    }
-#endif
     if(DrvGD83DrvObj.TxRxCmd.Msg.Bits.bAtPos == ON)//A
     {
       if(DrvGD83DrvObj.TxRxCmd.cRxBuf[ucLen] == ucTxPocHeadInfo[ucLen])//strlen(ucTxPocHeadInfo));//Èç¹ûÊÇAT+POC=

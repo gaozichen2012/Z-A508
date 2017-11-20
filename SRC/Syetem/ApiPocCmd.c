@@ -17,12 +17,13 @@ typedef struct{
 				u16 bUserInfo	: 3;
 				u16 bUserWrite	: 1;
 				u16 bPocReset	: 1;
-				u16 bPocOpen		: 1;
+				u16 bPocOpen	: 1;
 				u16 bModeChange	: 1;
-				u16	 bMode			: 3;
-				u16 bNetStat		: 2;
-				u16 bUnline		: 1;
-				u16					: 3;
+				u16	 bMode	: 3;
+				u16 bNetStat	: 2;
+				u16 bUnline	: 1;
+				u16       : 1;
+                                u16             : 2
 			}Bits;
 			u16 Byte;
 		}Msg;
@@ -54,8 +55,9 @@ typedef struct{
 					u16 bWorkGrpVolide	: 3;
 					u16 bEnterGroup		: 1;
 					u16 bPlayState		: 1;
-					u16 bCallFail		: 1;
-					u16						: 7;
+					u16 bCallFail	        : 1;
+                                        u16 bLogin              : 1;
+					u16			: 6;
 				}Bits;
 				u16 Byte;
 			}Msg;
@@ -242,10 +244,27 @@ void ApiPocCmd_10msRenew(void)
       }
       
       break;
+    case 0x82:
+      ucId = COML_AscToHex(pBuf+3, 0x01);
+      if(ucId == 0x02)
+      {
+        PocCmdDrvobj.WorkState.UseState.Msg.Bits.bLogin = 0x01;
+      }
+      else
+      {
+        PocCmdDrvobj.WorkState.UseState.Msg.Bits.bLogin = 0x00;
+      }
+      break;
+        
     default:
       break;
     }
   }
+}
+
+bool ApiAtCmd_GetLoginState(void)
+{
+	return PocCmdDrvobj.WorkState.UseState.Msg.Bits.bLogin;
 }
   
 void ApiGetPocBuf(void)

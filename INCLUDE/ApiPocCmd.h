@@ -20,10 +20,10 @@ typedef enum{
   PocComm_Key			= 0x10
 }PocCommType;
 
-extern u8 SIMST_Flag;
 //void ApiPocCmd_PowerOnInitial(void);
 bool ApiPocCmd_WritCommand(PocCommType id, u8 *buf, u16 len);
 void ApiPocCmd_10msRenew(void);
+bool ApiAtCmd_GetLoginState(void);
 void ListenState(void);
 
 void ApiGetPocBuf(void);
