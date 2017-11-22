@@ -41,6 +41,7 @@ void Keyboard_Test(void)
     if(GroupCallingNum==0)
     {
       GroupCallingNum=ApiAtCmd_GetGroupNum();
+      KeyDownCount=0;
     }
       VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetGroupName(GroupCallingNum),ApiAtCmd_GetGroupNameLen(GroupCallingNum));
     //r=ApiPocCmd_WritCommand(PocComm_Key,ucKeyDown,strlen((char const *)ucKeyDown));
@@ -77,6 +78,7 @@ void Keyboard_Test(void)
     if(GroupCallingNum>4)
     {
       GroupCallingNum=1;
+      KeyUpCount=0;
     }
       VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetGroupName(GroupCallingNum),ApiAtCmd_GetGroupNameLen(GroupCallingNum));
     //r=ApiPocCmd_WritCommand(PocComm_Key,ucKeyUp,strlen((char const *)ucKeyUp));
