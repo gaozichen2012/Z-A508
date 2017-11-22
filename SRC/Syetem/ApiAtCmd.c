@@ -1,5 +1,7 @@
 #include "AllHead.h"
 
+const u8 *ucPlayZtts = "AT+ZTTS=";
+
 #define DrvMC8332_IccId_Len 30
 typedef struct{
 	struct{
@@ -40,8 +42,10 @@ static AtCmdDrv AtCmdDrvobj;
 u8 BootProcess_SIMST_Flag=0;
 u8 BootProcess_PPPCFG_Flag=0;
 u8 BootProcess_OpenPoc_Flag=0;
+u8 VoiceEnd_Flag=0;
 
 const u8 *ucRxCheckCard = "GETICCID:";
+const u8 *ucRxZTTS0 = "ZTTS:0";
 const u8 *ucSIMST="^SIMST:";
 const u8 *ucCaretPPPCFG="^PPPCFG:";
 
@@ -55,6 +59,9 @@ bool ApiAtCmd_WritCommand(AtCommType id, u8 *buf, u16 len)
     DrvGD83_UART_TxCommand(buf, len);
     break;
   case ATCOMM1_PPPCFG://1
+    DrvGD83_UART_TxCommand(buf, len);
+    break;
+  case ATCOMM2_ZTTS_Abell://1
     DrvGD83_UART_TxCommand(buf, len);
     break;
   default:
@@ -102,8 +109,42 @@ void ApiAtCmd_10msRenew(void)
        }
        AtCmdDrvobj.NetState.IccId.Len = i;
     }
+    ucRet = memcmp(pBuf, ucRxZTTS0, 6);//GETICCID
+    if(ucRet == 0x00)
+    {
+      VoiceEnd_Flag=1;
+    }
+    else
+    {
+      VoiceEnd_Flag=0;
+    }
   }
 }
+
+bool ApiAtCmd_PlayVoice(AtVoiceType id, u8 *buf, u8 len)
+{
+  bool r = TRUE;
+  DrvMC8332_TxPort_SetValidable(ON);
+  DrvGD83_UART_TxCommand((u8*)ucPlayZtts, strlen((char const *)ucPlayZtts));
+  AtCmdDrvobj.NetState.Buf[0] = 0x31;	// 1
+  AtCmdDrvobj.NetState.Buf[1] = 0x2C;	// ,
+  AtCmdDrvobj.NetState.Buf[2] = 0x22;	// "
+  DrvGD83_UART_TxCommand(AtCmdDrvobj.NetState.Buf, 3);
+  switch(id)
+  {
+  case ATVOICE_FreePlay :
+    DrvGD83_UART_TxCommand(buf, len);
+    break;
+  default:
+    break;
+  }
+  AtCmdDrvobj.NetState.Buf[0] = 0x22;	// "
+  DrvGD83_UART_TxCommand(AtCmdDrvobj.NetState.Buf, 1);
+  r  = DrvMc8332_UART_TxTail();
+  DrvMC8332_TxPort_SetValidable(OFF);
+  return r;
+}
+
 
 u8 ApiAtCmd_GetIccId(u8 **pBuf)
 {

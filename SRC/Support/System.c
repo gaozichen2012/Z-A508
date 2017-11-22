@@ -103,13 +103,13 @@ u8 t=0;
   MIC_IOMUT(OFF); 
   api_lcd_pwr_on_hint("    ABELL    ");
 
-  BEEP_Time(50);
+  BEEP_Time(1);
 /****打开POC应用**********/
   //DEL_SetTimer(0,1500);
   //while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
 
-  DEL_SetTimer(0,100);
-  DEL_SetTimer(1,100);
+  //DEL_SetTimer(0,100);
+ // DEL_SetTimer(1,100);
 /*****************************/
   TaskDrvObj.NewId=Task_Start;
   while(1)
@@ -119,14 +119,20 @@ u8 t=0;
     {
     case Task_Start:
       Task_RunStart();
+      if(ApiAtCmd_GetLoginState()==TRUE)//登录成功
+      {
+        TaskDrvObj.NewId=Task_NormalOperation;
+      }
       break;
-    case Task_RunStep:
-      Task_RunStart();------------------------------------
+    case Task_NormalOperation:
+      Task_RunNormalOperation();
       break;
       
         
     case TASK_WRITEFREQ:
       TASK_WriteFreq();
+      break;
+    default:
       break;
       
     }

@@ -126,6 +126,7 @@ void BEEP_PowerOnInitial(void)
 		BeepDrvObj.BeepPar[i].OnFreq   	= 0x00;
 		BeepDrvObj.BeepPar[i].OffFreq  	= 0x00;
 	}
+        BEEP_SetOutput(BEEP_IDPowerOff,OFF,0x00,TRUE);
 	return;
 }
 

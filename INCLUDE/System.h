@@ -31,6 +31,10 @@ typedef enum {					//switch select string code
 	SW_EXIT 		= 0xFF
 }SW_CODE;
 
+
+
+
+
 SYSAPI	void main_app(void);
 
 #endif

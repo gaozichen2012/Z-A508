@@ -2,13 +2,18 @@
 #define __ALLHEAD_H
 //
 #include "stm8s.h"
-#include "System.h"
+
+
+
 #include "sysclock.h"
 #include "McuConfig.h"
 #include "stm8s_it.h"
 #include "CommonLib.h"
 #include "Define.h"// 
 #include "Delay.h"
+
+#include "Voice.h"
+
 //通讯模块
 #include "DrvGD83.h"
 #include <string.h>
@@ -28,7 +33,9 @@
 #include "Beep.h"
 #include "Tone.h"
 
+
 //任务
 #include "Task.h"
+#include "System.h"
 
 #endif

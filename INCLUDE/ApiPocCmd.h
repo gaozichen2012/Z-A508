@@ -25,6 +25,11 @@ bool ApiPocCmd_WritCommand(PocCommType id, u8 *buf, u16 len);
 void ApiPocCmd_10msRenew(void);
 bool ApiAtCmd_GetLoginState(void);
 void ListenState(void);
-
 void ApiGetPocBuf(void);
+u8 *ApiAtCmd_GetMainWorkName(void);
+u8 ApiAtCmd_GetMainWorkNameLen(void);
+u8 ApiAtCmd_GetGroupNum(void);
+u8 ApiAtCmd_GetMainGroupId(void);
+u8 *ApiAtCmd_GetGroupName(u8 n);
+u8 ApiAtCmd_GetGroupNameLen(u8 n);
 #endif

@@ -21,12 +21,13 @@ typedef enum {					//task id code process
 	TASK_UpdataCdma	= 0x0A,
 	TASK_HIBATT		= 0x0B,
 	Task_Start              =0x0C,//Tom added in 2017.11.17
-        Task_RunStep            =0x0D,
+        Task_NormalOperation    =0x0D,
 	TASK_RESET		= 0xFF
         
 }TASK_CODE;
 
 TASKAPI void Task_RunStart(void);
+void Task_RunNormalOperation(void);
 TASKAPI void TASK_WriteFreq(void);
-
+TASKAPI void Task_RunNormalOperation(void);
 #endif

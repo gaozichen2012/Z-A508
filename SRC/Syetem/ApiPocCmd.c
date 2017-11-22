@@ -23,7 +23,7 @@ typedef struct{
 				u16 bNetStat	: 2;
 				u16 bUnline	: 1;
 				u16       : 1;
-                                u16             : 2
+                                u16             : 2;
 			}Bits;
 			u16 Byte;
 		}Msg;
@@ -57,20 +57,29 @@ typedef struct{
 					u16 bPlayState		: 1;
 					u16 bCallFail	        : 1;
                                         u16 bLogin              : 1;
-					u16			: 6;
+					u16 		: 1;
+                                        u16 			: 5;
 				}Bits;
 				u16 Byte;
 			}Msg;
 			u8 Timer;
 			struct{
+                          
+				u8 PresentGroupId;
+                                u8 GroupNum;
 				u8 Index[8];
 				u8 Id[8];
 				u8 Name[APIPOC_UserName_Len];
 				u8 NameLen;
 			}MainWorkGroup;
-			
+#if 1//POC:80 added by Tom in 2017.11.21
 			struct{
-				//u8 Index[8];
+                                u8 Id[8];
+				u8 Name[APIPOC_UserName_Len];
+				u8 NameLen;
+			}Group[50];
+#endif
+			struct{
 				u8 Id[8];
 				u8 Name[APIPOC_UserName_Len];
 				u8 NameLen;
@@ -225,13 +234,46 @@ bool ApiPocCmd_WritCommand(PocCommType id, u8 *buf, u16 len)
 
 void ApiPocCmd_10msRenew(void)
 {
-  u8 ucId, i, Len;
+  u8 ucId,j,i, Len;
   u8 * pBuf, ucRet;
   while((Len = DrvMC8332_PocNotify_Queue_front(&pBuf)) != 0x00)
   {
     ucId = COML_AscToHex(pBuf, 0x02);
     switch(ucId)
     {
+    case 0x0d://群组个数
+      ucId = COML_AscToHex(pBuf+10, 0x02);
+      PocCmdDrvobj.WorkState.UseState.MainWorkGroup.GroupNum = ucId;
+      break;
+    case 0x80://获取工作组列表
+      ucId = COML_AscToHex(pBuf+10, 0x02);
+      if(Len >= 12)//如果群组id后面还有群组名
+      {
+        PocCmdDrvobj.WorkState.UseState.WorkGroup.NameLen = Len - 12;
+      }
+      else//无群组名
+      {
+        PocCmdDrvobj.WorkState.UseState.WorkGroup.NameLen = 0x00;
+      }
+      for(i = 0x00; i < PocCmdDrvobj.WorkState.UseState.WorkGroup.NameLen; i++)
+      {
+        PocCmdDrvobj.WorkState.UseState.WorkGroup.Name[i] = pBuf[i+12];//存入获取的群组名
+        PocCmdDrvobj.WorkState.UseState.Group[ucId].Name[i] = 
+          PocCmdDrvobj.WorkState.UseState.WorkGroup.Name[i];
+      }
+      PocCmdDrvobj.WorkState.UseState.Group[ucId].NameLen = PocCmdDrvobj.WorkState.UseState.WorkGroup.NameLen;
+      break;
+    case 0x82://判断是否登录成功
+      ucId = COML_AscToHex(pBuf+3, 0x01);
+      if(ucId == 0x02)
+      {
+        PocCmdDrvobj.WorkState.UseState.Msg.Bits.bLogin = 0x01;
+      }
+      else
+      {
+        PocCmdDrvobj.WorkState.UseState.Msg.Bits.bLogin = 0x00;
+      }
+      break;
     case 0x8B:
       ucId = COML_AscToHex(pBuf+4, 0x02);
       if(ucId == 0x00)
@@ -244,23 +286,79 @@ void ApiPocCmd_10msRenew(void)
       }
       
       break;
-    case 0x82:
-      ucId = COML_AscToHex(pBuf+3, 0x01);
-      if(ucId == 0x02)
+    case 0x86:
+      ucId = COML_AscToHex(pBuf+10, 0x02);
+      PocCmdDrvobj.WorkState.UseState.MainWorkGroup.PresentGroupId = ucId;
+      ucId = 0x00;
+      for(i = 0x00; i < 0x08; i++)
       {
-        PocCmdDrvobj.WorkState.UseState.Msg.Bits.bLogin = 0x01;
+        PocCmdDrvobj.WorkState.UseState.WorkGroup.Id[i] = pBuf[i+4];
+        PocCmdDrvobj.WorkState.UseState.MainWorkGroup.Id[i] = 
+            PocCmdDrvobj.WorkState.UseState.WorkGroup.Id[i];
+      if(PocCmdDrvobj.WorkState.UseState.WorkGroup.Id[i] != 'f') //=f为离开群组
+        ucId++;
       }
-      else
+      if(ucId==0x00)//如果为指令代表离开群组
       {
-        PocCmdDrvobj.WorkState.UseState.Msg.Bits.bLogin = 0x00;
-      }
-      break;
         
+      }
+      else//r如果为在群组内
+      {
+        
+      }
+      if(Len >= 12)//如果群组id后面还有群组名
+      {
+        PocCmdDrvobj.WorkState.UseState.WorkGroup.NameLen = Len - 12;
+        if(PocCmdDrvobj.WorkState.UseState.WorkGroup.NameLen > APIPOC_UserName_Len)
+        {
+          PocCmdDrvobj.WorkState.UseState.WorkGroup.NameLen = APIPOC_UserName_Len;
+        }
+      }
+      else//无群组名
+      {
+        PocCmdDrvobj.WorkState.UseState.WorkGroup.NameLen = 0x00;
+      }
+      for(i = 0x00; i < PocCmdDrvobj.WorkState.UseState.WorkGroup.NameLen; i++)
+      {
+        PocCmdDrvobj.WorkState.UseState.WorkGroup.Name[i] = pBuf[i+12];//存入获取的群组名
+        PocCmdDrvobj.WorkState.UseState.MainWorkGroup.Name[i] = 
+            PocCmdDrvobj.WorkState.UseState.WorkGroup.Name[i];
+      }
+      PocCmdDrvobj.WorkState.UseState.MainWorkGroup.NameLen = PocCmdDrvobj.WorkState.UseState.WorkGroup.NameLen;
     default:
       break;
     }
   }
 }
+
+u8 *ApiAtCmd_GetGroupName(u8 n)
+{
+  return PocCmdDrvobj.WorkState.UseState.Group[n].Name;
+}
+u8 ApiAtCmd_GetGroupNameLen(u8 n)
+{
+  return PocCmdDrvobj.WorkState.UseState.Group[n].NameLen;
+}
+
+u8 *ApiAtCmd_GetMainWorkName(void)
+{
+	return PocCmdDrvobj.WorkState.UseState.MainWorkGroup.Name;
+}
+u8 ApiAtCmd_GetMainWorkNameLen(void)
+{
+  return PocCmdDrvobj.WorkState.UseState.MainWorkGroup.NameLen;
+}
+
+u8 ApiAtCmd_GetGroupNum(void)
+{
+  return PocCmdDrvobj.WorkState.UseState.MainWorkGroup.GroupNum;
+}
+
+u8 ApiAtCmd_GetMainGroupId(void)
+{
+  return PocCmdDrvobj.WorkState.UseState.MainWorkGroup.PresentGroupId;
+}
+
 
 bool ApiAtCmd_GetLoginState(void)
 {
