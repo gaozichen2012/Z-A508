@@ -1,11 +1,16 @@
 #include "AllHead.h"
 u8 *ucKeyUp                = "10000003";
 u8 *ucKeyDown              = "10000004";
+u8 GroupCallingNum=1;
+u8 KeyDownCount=0;
+u8 KeyUpCount=0;
+
 u32 get_key_value(u8 scan_value);
 u8 Key_Flag_1=0;
 void Keyboard_Test(void)
 {
-  u8 r=0,GroupCallingNum=1;
+  u8 r=0;
+
   u8 scanvalue = 0;
   u32 ulAllKeyID = 0x00000000;
   scanvalue = drv_keypad_scan();
@@ -31,7 +36,8 @@ void Keyboard_Test(void)
     api_lcd_pwr_on_hint("欧标按键:9     ");
     break;
   case 0x00010000://dn
-    GroupCallingNum=GroupCallingNum-1;
+    KeyDownCount++;
+    GroupCallingNum=ApiAtCmd_GetMainGroupId()-KeyDownCount;
     if(GroupCallingNum==0)
     {
       GroupCallingNum=ApiAtCmd_GetGroupNum();
@@ -66,7 +72,8 @@ void Keyboard_Test(void)
     api_lcd_pwr_on_hint("欧标按键:#     ");
     break;  
   case 0x00000400://up
-    GroupCallingNum=GroupCallingNum+1;
+    KeyUpCount++;
+    GroupCallingNum=ApiAtCmd_GetMainGroupId()+KeyUpCount;
     if(GroupCallingNum>4)
     {
       GroupCallingNum=1;

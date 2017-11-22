@@ -354,7 +354,7 @@ u8 ApiAtCmd_GetGroupNum(void)//获取群组数
   return PocCmdDrvobj.WorkState.UseState.MainWorkGroup.GroupNum;
 }
 
-u8 ApiAtCmd_GetMainGroupId(void)
+u8 ApiAtCmd_GetMainGroupId(void)//获取当前群组id
 {
   return PocCmdDrvobj.WorkState.UseState.MainWorkGroup.PresentGroupId;
 }
