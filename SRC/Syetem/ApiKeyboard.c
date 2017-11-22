@@ -1,7 +1,7 @@
 #include "AllHead.h"
 u8 *ucKeyUp                = "10000003";
 u8 *ucKeyDown              = "10000004";
-u8 GroupCallingNum=1;
+s8 GroupCallingNum=1;
 u8 KeyDownCount=0;
 u8 KeyUpCount=0;
 
@@ -38,12 +38,13 @@ void Keyboard_Test(void)
   case 0x00010000://dn
     KeyDownCount++;
     GroupCallingNum=ApiAtCmd_GetMainGroupId()-KeyDownCount;
-    if(GroupCallingNum==0)
+    if(GroupCallingNum<=0)
     {
       GroupCallingNum=ApiAtCmd_GetGroupNum();
-      KeyDownCount=0;
+      KeyDownCount=ApiAtCmd_GetMainGroupId()-ApiAtCmd_GetGroupNum();
     }
       VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetGroupName(GroupCallingNum),ApiAtCmd_GetGroupNameLen(GroupCallingNum));
+    KeyDownUpChooseGroup_Flag=1;
     //r=ApiPocCmd_WritCommand(PocComm_Key,ucKeyDown,strlen((char const *)ucKeyDown));
     Key_Flag_1=1;
     api_lcd_pwr_on_hint("欧标按键:Down  ");
@@ -75,12 +76,13 @@ void Keyboard_Test(void)
   case 0x00000400://up
     KeyUpCount++;
     GroupCallingNum=ApiAtCmd_GetMainGroupId()+KeyUpCount;
-    if(GroupCallingNum>4)
+    if(GroupCallingNum>ApiAtCmd_GetGroupNum())
     {
       GroupCallingNum=1;
       KeyUpCount=0;
     }
       VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetGroupName(GroupCallingNum),ApiAtCmd_GetGroupNameLen(GroupCallingNum));
+    KeyDownUpChooseGroup_Flag=1;
     //r=ApiPocCmd_WritCommand(PocComm_Key,ucKeyUp,strlen((char const *)ucKeyUp));
     Key_Flag_1=1;
     api_lcd_pwr_on_hint("欧标按键:Up    ");

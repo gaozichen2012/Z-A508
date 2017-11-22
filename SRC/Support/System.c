@@ -67,7 +67,7 @@ u8 *ucGroupListInfo     = "0D0000";
 void main_app(void)
 {
   bool r=FALSE;
-u8 Key_Flag_0=0;
+
 u8 t=0;
   disableInterrupts();
   SystemClock_Init(HSE_Clock);

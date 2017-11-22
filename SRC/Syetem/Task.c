@@ -2,7 +2,7 @@
 #include "AllHead.h"
 
 #if 1 //test
-
+u8 Key_Flag_0=0;
 #endif
 
 
@@ -41,6 +41,25 @@ void Task_RunStart(void)
 
 void Task_RunNormalOperation(void)
 {
+  u8 v;
+  if(ReadInput_KEY_PTT==0)
+  {
+    if(KeyDownUpChooseGroup_Flag==1)
+    {
+      v=ApiPocCmd_WritCommand(PocComm_EnterGroup,ucPocOpenConfig,strlen((char const *)ucPocOpenConfig));
+      Key_Flag_0=1;
+    }
+        if(Key_Flag_0==1)
+      {
+        DEL_SetTimer(0,100);
+        while(1)
+        {
+          Key_Flag_0=0;
+          if(DEL_GetTimer(0) == TRUE) {break;}
+        }
+      }
+  }
+  
   if(ReadInput_KEY_3==0)//按某个按键，当前群组为
   {
     VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetMainWorkName(),ApiAtCmd_GetMainWorkNameLen());

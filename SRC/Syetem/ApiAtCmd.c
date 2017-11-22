@@ -43,6 +43,7 @@ u8 BootProcess_SIMST_Flag=0;
 u8 BootProcess_PPPCFG_Flag=0;
 u8 BootProcess_OpenPoc_Flag=0;
 u8 VoiceEnd_Flag=0;
+u8 KeyDownUpChooseGroup_Flag=0;
 
 const u8 *ucRxCheckCard = "GETICCID:";
 const u8 *ucRxZTTS0 = "ZTTS:0";

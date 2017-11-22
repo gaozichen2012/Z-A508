@@ -204,7 +204,11 @@ bool ApiPocCmd_WritCommand(PocCommType id, u8 *buf, u16 len)
   case PocComm_ModifyPwd:
     break;
   case PocComm_EnterGroup:
-    DrvGD83_UART_TxCommand(buf, len);
+    DrvGD83_UART_TxCommand("0900000000000", 13);
+    //PocCmdDrvobj.NetState.Buf[0] = (0x03&0xf0)>>4+0x30;	// 1
+    PocCmdDrvobj.NetState.Buf[0] = 0x30;	// 0x03+0x30
+    PocCmdDrvobj.NetState.Buf[1] = 0x30>>4+0x30;	// 0x03+0x30
+    DrvGD83_UART_TxCommand(PocCmdDrvobj.NetState.Buf, 2);
     break;
   case PocComm_Invite:
     DrvGD83_UART_TxCommand(buf, len);
