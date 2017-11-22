@@ -4,7 +4,7 @@
 #define DrvMC8332_UseId_Len			100			//define UART Tx buffer length value
 #define APIPOC_UserList_Len			16
 #define APIPOC_UserLoad_Len			8
-#define APIPOC_UserName_Len			20
+#define APIPOC_UserName_Len			30
 
 const u8 *ucAtPocHead   = "AT+POC=";
 const u8 *ucTingEnd   = "0B0000";
@@ -247,9 +247,9 @@ void ApiPocCmd_10msRenew(void)
       break;
     case 0x80://获取工作组列表
       ucId = COML_AscToHex(pBuf+10, 0x02);
-      if(Len >= 12)//如果群组id后面还有群组名
+      if(Len >= 24)//如果群组id后面还有群组名
       {
-        PocCmdDrvobj.WorkState.UseState.WorkGroup.NameLen = Len - 12;
+        PocCmdDrvobj.WorkState.UseState.WorkGroup.NameLen = Len - 24;
       }
       else//无群组名
       {
@@ -257,7 +257,7 @@ void ApiPocCmd_10msRenew(void)
       }
       for(i = 0x00; i < PocCmdDrvobj.WorkState.UseState.WorkGroup.NameLen; i++)
       {
-        PocCmdDrvobj.WorkState.UseState.WorkGroup.Name[i] = pBuf[i+12];//存入获取的群组名
+        PocCmdDrvobj.WorkState.UseState.WorkGroup.Name[i] = pBuf[i+24];//存入获取的群组名
         PocCmdDrvobj.WorkState.UseState.Group[ucId].Name[i] = 
           PocCmdDrvobj.WorkState.UseState.WorkGroup.Name[i];
       }
@@ -331,7 +331,7 @@ void ApiPocCmd_10msRenew(void)
   }
 }
 
-u8 *ApiAtCmd_GetGroupName(u8 n)
+u8 *ApiAtCmd_GetGroupName(u8 n)//获取所有群组名
 {
   return PocCmdDrvobj.WorkState.UseState.Group[n].Name;
 }
@@ -340,7 +340,7 @@ u8 ApiAtCmd_GetGroupNameLen(u8 n)
   return PocCmdDrvobj.WorkState.UseState.Group[n].NameLen;
 }
 
-u8 *ApiAtCmd_GetMainWorkName(void)
+u8 *ApiAtCmd_GetMainWorkName(void)//获取工作群组名
 {
 	return PocCmdDrvobj.WorkState.UseState.MainWorkGroup.Name;
 }
@@ -349,7 +349,7 @@ u8 ApiAtCmd_GetMainWorkNameLen(void)
   return PocCmdDrvobj.WorkState.UseState.MainWorkGroup.NameLen;
 }
 
-u8 ApiAtCmd_GetGroupNum(void)
+u8 ApiAtCmd_GetGroupNum(void)//获取群组数
 {
   return PocCmdDrvobj.WorkState.UseState.MainWorkGroup.GroupNum;
 }

@@ -5,7 +5,7 @@ u32 get_key_value(u8 scan_value);
 u8 Key_Flag_1=0;
 void Keyboard_Test(void)
 {
-  u8 r=0,GroupCallingNum;
+  u8 r=0,GroupCallingNum=1;
   u8 scanvalue = 0;
   u32 ulAllKeyID = 0x00000000;
   scanvalue = drv_keypad_scan();
@@ -31,9 +31,13 @@ void Keyboard_Test(void)
     api_lcd_pwr_on_hint("欧标按键:9     ");
     break;
   case 0x00010000://dn
-    GroupCallingNum=ApiAtCmd_GetMainGroupId()-1;
+    GroupCallingNum=GroupCallingNum-1;
+    if(GroupCallingNum==0)
+    {
+      GroupCallingNum=ApiAtCmd_GetGroupNum();
+    }
       VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetGroupName(GroupCallingNum),ApiAtCmd_GetGroupNameLen(GroupCallingNum));
-    r=ApiPocCmd_WritCommand(PocComm_Key,ucKeyDown,strlen((char const *)ucKeyDown));
+    //r=ApiPocCmd_WritCommand(PocComm_Key,ucKeyDown,strlen((char const *)ucKeyDown));
     Key_Flag_1=1;
     api_lcd_pwr_on_hint("欧标按键:Down  ");
     break;  
@@ -62,7 +66,13 @@ void Keyboard_Test(void)
     api_lcd_pwr_on_hint("欧标按键:#     ");
     break;  
   case 0x00000400://up
-    r=ApiPocCmd_WritCommand(PocComm_Key,ucKeyUp,strlen((char const *)ucKeyUp));
+    GroupCallingNum=GroupCallingNum+1;
+    if(GroupCallingNum>4)
+    {
+      GroupCallingNum=1;
+    }
+      VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetGroupName(GroupCallingNum),ApiAtCmd_GetGroupNameLen(GroupCallingNum));
+    //r=ApiPocCmd_WritCommand(PocComm_Key,ucKeyUp,strlen((char const *)ucKeyUp));
     Key_Flag_1=1;
     api_lcd_pwr_on_hint("欧标按键:Up    ");
     break;
