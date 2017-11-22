@@ -7,6 +7,7 @@
 #define APIPOC_UserName_Len			20
 
 const u8 *ucAtPocHead   = "AT+POC=";
+
 const u8 *ucTingEnd   = "0B0000";
 const u8 *ucTingStart   = "0B0001";
 
