@@ -46,13 +46,6 @@ u8 t=0;
   MIC_IOMUT(OFF); 
   api_lcd_pwr_on_hint("    ABELL    ");
   BEEP_Time(100);
-  DEL_SetTimer(0,500);
-  while(1)
-  {
-    if(DEL_GetTimer(0) == TRUE) {break;}
-  }
-  DrvGD83_UART_TxCommand((u8 *)ucAtOSSYSHWID,strlen((char const *)ucAtOSSYSHWID));
-  r = DrvMc8332_UART_TxTail();
   DEL_SetTimer(0,100);
   DEL_SetTimer(1,100);
   
