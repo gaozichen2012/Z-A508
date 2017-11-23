@@ -38,7 +38,7 @@ void Keyboard_Test(void)
     api_lcd_pwr_on_hint("欧标按键:9     ");
     break;
   case 0x00010000://dn
-    if(GroupOrPersonalCalling_Flag==1)//组呼
+    //if(GroupOrPersonalCalling_Flag==1)//组呼
     {
       KeyDownGroupCallingCount++;
       GroupCallingNum=ApiAtCmd_GetMainGroupId()-KeyDownGroupCallingCount;//获取按下按键播报相对应的群组ID
@@ -50,6 +50,7 @@ void Keyboard_Test(void)
       VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetGroupName(GroupCallingNum),ApiAtCmd_GetGroupNameLen(GroupCallingNum));
       KeyDownUpChooseGroup_Flag=1;
     }
+    /*
     if(GroupOrPersonalCalling_Flag==2)//个呼
     {
       KeyDownPersonalCallingCount++;
@@ -60,7 +61,7 @@ void Keyboard_Test(void)
         //KeyDownPersonalCallingCount=1-ApiAtCmd_GetUserNum();
       }
       VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(PersonalCallingNum),ApiAtCmd_GetUserNameLen(PersonalCallingNum));
-    }
+    }*/
 
     Key_Flag_1=1;
     api_lcd_pwr_on_hint("欧标按键:Down  ");
