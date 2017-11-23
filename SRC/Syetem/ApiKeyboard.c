@@ -2,7 +2,9 @@
 u8 *ucKeyUp                = "10000003";
 u8 *ucKeyDown              = "10000004";
 s8 GroupCallingNum=1;
-u8 KeyDownCount=0;
+s8 PersonalCallingNum=0;
+u8 KeyDownGroupCallingCount=0;
+u8 KeyDownPersonalCallingCount=0;
 u8 KeyUpCount=0;
 
 u32 get_key_value(u8 scan_value);
@@ -36,16 +38,30 @@ void Keyboard_Test(void)
     api_lcd_pwr_on_hint("欧标按键:9     ");
     break;
   case 0x00010000://dn
-    KeyDownCount++;
-    GroupCallingNum=ApiAtCmd_GetMainGroupId()-KeyDownCount;
-    if(GroupCallingNum<=0)
+    if(GroupOrPersonalCalling_Flag==1)//组呼
     {
-      GroupCallingNum=ApiAtCmd_GetGroupNum();
-      KeyDownCount=ApiAtCmd_GetMainGroupId()-ApiAtCmd_GetGroupNum();
-    }
+      KeyDownGroupCallingCount++;
+      GroupCallingNum=ApiAtCmd_GetMainGroupId()-KeyDownGroupCallingCount;//获取按下按键播报相对应的群组ID
+      if(GroupCallingNum<=0)//当按下键到最小群组
+      {
+        GroupCallingNum=ApiAtCmd_GetGroupNum();
+        KeyDownGroupCallingCount=ApiAtCmd_GetMainGroupId()-ApiAtCmd_GetGroupNum();
+      }
       VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetGroupName(GroupCallingNum),ApiAtCmd_GetGroupNameLen(GroupCallingNum));
-    KeyDownUpChooseGroup_Flag=1;
-    //r=ApiPocCmd_WritCommand(PocComm_Key,ucKeyDown,strlen((char const *)ucKeyDown));
+      KeyDownUpChooseGroup_Flag=1;
+    }
+    if(GroupOrPersonalCalling_Flag==2)//个呼
+    {
+      KeyDownPersonalCallingCount++;
+      PersonalCallingNum=-KeyDownPersonalCallingCount;//获取按下按键该播报对应的用户ID
+      if(PersonalCallingNum<0)//当按下键到最小用户名
+      {
+        PersonalCallingNum=ApiAtCmd_GetUserNum()-1;
+        //KeyDownPersonalCallingCount=1-ApiAtCmd_GetUserNum();
+      }
+      VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(PersonalCallingNum),ApiAtCmd_GetUserNameLen(PersonalCallingNum));
+    }
+
     Key_Flag_1=1;
     api_lcd_pwr_on_hint("欧标按键:Down  ");
     break;  

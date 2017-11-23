@@ -1,19 +1,21 @@
 #define TASKABLE
 #include "AllHead.h"
 
-#if 1 //test
+
 u8 Key_Flag_0=0;
-#endif
+u8 GroupOrPersonalCalling_Flag=0;
 
-u8 *ucStartPTT          = "0B0000";
-u8 *ucEndPTT            = "0C0000";
 
-u8 *ucOSSYSHWID         = "AT^OSSYSHWID=1";
-u8 *ucPPPCFG            = "AT^PPPCFG=echat,ctnet@mycdma.cn,vnet.mobi";
-u8 *ucZTTS_Abell        = "AT+ZTTS=1,\"276b07687F5EDF57F95BB28B3A67\"";
+u8 *ucStartPTT                  = "0B0000";
+u8 *ucEndPTT                    = "0C0000";
 
-u8 *ucSetParamConfig    = "01000069703D302E302E302E303B69643D31393830303330373437333B7077643D3131313131313B00";
-u8 *ucPocOpenConfig     = "0000000101";
+u8 *ucRequestUserListInfo       = "0E000000000001";
+u8 *ucOSSYSHWID                 = "AT^OSSYSHWID=1";
+u8 *ucPPPCFG                    = "AT^PPPCFG=echat,ctnet@mycdma.cn,vnet.mobi";
+u8 *ucZTTS_Abell                = "AT+ZTTS=1,\"276b07687F5EDF57F95BB28B3A67\"";
+
+u8 *ucSetParamConfig            = "01000069703D302E302E302E303B69643D31393830303330373437333B7077643D3131313131313B00";
+u8 *ucPocOpenConfig             = "0000000101";
 
 void Task_RunStart(void)
 {
@@ -79,10 +81,26 @@ void Task_RunNormalOperation(void)
     Set_RedLed(LED_OFF);
   }
   
-  if(ReadInput_KEY_3==0)//按某个按键，当前群组为
+  if(ReadInput_KEY_3==0)//组呼键
   {
+    GroupOrPersonalCalling_Flag=1;
+    VOICE_SetOutput(ATVOICE_FreePlay,"A47FC47E0990E962",16);//群组选择
+    DEL_SetTimer(0,100);
+    while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
     VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetMainWorkName(),ApiAtCmd_GetMainWorkNameLen());
   }
+ /* if(ReadInput_KEY_2==0)//个呼键
+  {
+    GroupOrPersonalCalling_Flag=2;
+    VOICE_SetOutput(ATVOICE_FreePlay,"2a4e7c542000106258540990e962",28);//个呼成员选择
+    DEL_SetTimer(0,200);
+    while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+    v=ApiPocCmd_WritCommand(PocComm_UserListInfo,ucRequestUserListInfo,strlen((char const *)ucRequestUserListInfo));
+    
+    v=ApiPocCmd_WritCommand(PocComm_Invite,ucRequestUserListInfo,strlen((char const *)ucRequestUserListInfo));
+      
+  }*/
+  
   Keyboard_Test();
 }
 

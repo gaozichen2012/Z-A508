@@ -72,12 +72,24 @@ typedef struct{
 				u8 Name[APIPOC_UserName_Len];
 				u8 NameLen;
 			}MainWorkGroup;
+                        struct{
+                                u8 PresentUserId;
+                                u8 UserNum;
+				u8 Id[8];
+				u8 Name[APIPOC_UserName_Len];
+				u8 NameLen;
+			}PttUserName;
 #if 1//POC:80 added by Tom in 2017.11.21
 			struct{
                                 u8 Id[8];
 				u8 Name[APIPOC_UserName_Len];
 				u8 NameLen;
-			}Group[50];
+			}Group[40];
+                        struct{
+                                u8 Id[8];
+				u8 Name[APIPOC_UserName_Len];
+				u8 NameLen;
+			}UserName[30];
 #endif
 			struct{
 				u8 Id[8];
@@ -91,11 +103,7 @@ typedef struct{
 				u8 NameLen;
 			}WorkUserName;
 
-			struct{
-				u8 Id[8];
-				u8 Name[APIPOC_UserName_Len];
-				u8 NameLen;
-			}PttUserName;
+
 
 		}UseState;
 		
@@ -210,7 +218,10 @@ bool ApiPocCmd_WritCommand(PocCommType id, u8 *buf, u16 len)
     DrvGD83_UART_TxCommand(PocCmdDrvobj.NetState.Buf, 2);
     break;
   case PocComm_Invite:
-    DrvGD83_UART_TxCommand(buf, len);
+    DrvGD83_UART_TxCommand("0A00000000", 10);
+    PocCmdDrvobj.NetState.Buf[0] = ((GroupCallingNum&0xf0)>>4)+0x30;	// 0x03+0x30
+    PocCmdDrvobj.NetState.Buf[1] = (GroupCallingNum&0x0f)+0x30;
+    DrvGD83_UART_TxCommand(PocCmdDrvobj.NetState.Buf, 2);
     break;
   case PocComm_StartPTT://3
     DrvGD83_UART_TxCommand(buf, len);
@@ -244,6 +255,10 @@ void ApiPocCmd_10msRenew(void)
     ucId = COML_AscToHex(pBuf, 0x02);
     switch(ucId)
     {
+    case 0x0E://群组个数
+      ucId = COML_AscToHex(pBuf+8, 0x04);
+      PocCmdDrvobj.WorkState.UseState.PttUserName.UserNum = ucId;
+      break;
     case 0x0d://群组个数
       ucId = COML_AscToHex(pBuf+10, 0x02);
       PocCmdDrvobj.WorkState.UseState.MainWorkGroup.GroupNum = ucId;
@@ -266,6 +281,24 @@ void ApiPocCmd_10msRenew(void)
       }
       PocCmdDrvobj.WorkState.UseState.Group[ucId].NameLen = PocCmdDrvobj.WorkState.UseState.WorkGroup.NameLen;
       break;
+    case 0x81://获取组内成员列表
+      ucId = COML_AscToHex(pBuf+10, 0x02);//
+      if(Len >= 20)//如果用户ID后面还有用户名
+      {
+        PocCmdDrvobj.WorkState.UseState.WorkUserName.NameLen = Len - 20;
+      }
+      else//无用户名
+      {
+        PocCmdDrvobj.WorkState.UseState.WorkUserName.NameLen = 0x00;
+      }
+      for(i = 0x00; i < PocCmdDrvobj.WorkState.UseState.WorkUserName.NameLen; i++)
+      {
+        PocCmdDrvobj.WorkState.UseState.WorkUserName.Name[i] = pBuf[i+20];//存入获取的群组名
+        PocCmdDrvobj.WorkState.UseState.UserName[ucId].Name[i] = 
+          PocCmdDrvobj.WorkState.UseState.WorkUserName.Name[i];
+      }
+      PocCmdDrvobj.WorkState.UseState.UserName[ucId].NameLen = PocCmdDrvobj.WorkState.UseState.WorkUserName.NameLen;
+      
     case 0x82://判断是否登录成功
       ucId = COML_AscToHex(pBuf+3, 0x01);
       if(ucId == 0x02)
@@ -343,25 +376,49 @@ u8 ApiAtCmd_GetGroupNameLen(u8 n)
   return PocCmdDrvobj.WorkState.UseState.Group[n].NameLen;
 }
 
+u8 *ApiAtCmd_GetUserName(u8 n)//获取所有在线用户名（个呼）
+{
+  return PocCmdDrvobj.WorkState.UseState.UserName[n].Name;
+}
+u8 ApiAtCmd_GetUserNameLen(u8 n)
+{
+  return PocCmdDrvobj.WorkState.UseState.UserName[n].NameLen;
+}
+
 u8 *ApiAtCmd_GetMainWorkName(void)//获取工作群组名
 {
-	return PocCmdDrvobj.WorkState.UseState.MainWorkGroup.Name;
+  return PocCmdDrvobj.WorkState.UseState.MainWorkGroup.Name;
 }
 u8 ApiAtCmd_GetMainWorkNameLen(void)
 {
   return PocCmdDrvobj.WorkState.UseState.MainWorkGroup.NameLen;
+}
+u8 *ApiAtCmd_GetMainUserName(void)//获取工作群组名（个呼）
+{
+  return PocCmdDrvobj.WorkState.UseState.PttUserName.Name;
+}
+u8 ApiAtCmd_GetMainUserNameLen(void)
+{
+  return PocCmdDrvobj.WorkState.UseState.PttUserName.NameLen;
 }
 
 u8 ApiAtCmd_GetGroupNum(void)//获取群组数
 {
   return PocCmdDrvobj.WorkState.UseState.MainWorkGroup.GroupNum;
 }
+u8 ApiAtCmd_GetUserNum(void)//获取在线成员数（个呼）
+{
+  return PocCmdDrvobj.WorkState.UseState.PttUserName.UserNum;
+}
 
 u8 ApiAtCmd_GetMainGroupId(void)//获取当前群组id
 {
   return PocCmdDrvobj.WorkState.UseState.MainWorkGroup.PresentGroupId;
 }
-
+u8 ApiAtCmd_GetMainUserId(void)//获取当前用户id（个呼）
+{
+  return PocCmdDrvobj.WorkState.UseState.PttUserName.PresentUserId;
+}
 
 bool ApiAtCmd_GetLoginState(void)
 {

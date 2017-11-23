@@ -32,4 +32,11 @@ u8 ApiAtCmd_GetGroupNum(void);
 u8 ApiAtCmd_GetMainGroupId(void);
 u8 *ApiAtCmd_GetGroupName(u8 n);
 u8 ApiAtCmd_GetGroupNameLen(u8 n);
+
+u8 *ApiAtCmd_GetUserName(u8 n);//获取所有在线用户名（个呼）
+u8 ApiAtCmd_GetUserNameLen(u8 n);
+u8 *ApiAtCmd_GetMainUserName(void);//获取工作群组名（个呼）
+u8 ApiAtCmd_GetMainUserNameLen(void);
+u8 ApiAtCmd_GetUserNum(void);//获取在线成员数（个呼）
+u8 ApiAtCmd_GetMainUserId(void);//获取当前用户id（个呼）
 #endif

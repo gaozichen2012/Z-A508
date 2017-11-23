@@ -26,6 +26,8 @@ typedef enum {					//task id code process
         
 }TASK_CODE;
 
+extern u8 GroupOrPersonalCalling_Flag;
+
 TASKAPI void Task_RunStart(void);
 void Task_RunNormalOperation(void);
 TASKAPI void TASK_WriteFreq(void);

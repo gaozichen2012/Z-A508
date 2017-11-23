@@ -112,6 +112,7 @@ u8 t=0;
 /*****************************/
     r=ApiAtCmd_WritCommand(ATCOMM3_GD83Reset,(u8 *)ucGD83Reset,strlen((char const *)ucGD83Reset));
   TaskDrvObj.NewId=Task_Start;
+  GroupOrPersonalCalling_Flag=1;//表示默认在组呼状态下
   while(1)
   {
     DEL_Renew();
