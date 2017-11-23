@@ -5,14 +5,27 @@
 u8 Key_Flag_0=0;
 #endif
 
+#if 0//2号
+u8 *ucSetParamConfig    = "01000069703D302E302E302E303B69643D31393830303330373437323B7077643D3131313131313B00";
+#endif
+#if 0//3号
+u8 *ucSetParamConfig    = "01000069703D302E302E302E303B69643D31393830303330373437333B7077643D3131313131313B00";
+#endif
+#if 0//4号
+u8 *ucSetParamConfig    = "01000069703D302E302E302E303B69643D31393830303330373437343B7077643D3131313131313B00";
+#endif
+#if 1//5号
+u8 *ucSetParamConfig    = "01000069703D302E302E302E303B69643D31393830303330373437353B7077643D3131313131313B00";
+#endif
+#if 0//6号
+u8 *ucSetParamConfig    = "01000069703D302E302E302E303B69643D31393830303330373437363B7077643D3131313131313B00";
+#endif
+
 u8 *ucStartPTT          = "0B0000";
 u8 *ucEndPTT            = "0C0000";
-
 u8 *ucOSSYSHWID         = "AT^OSSYSHWID=1";
 u8 *ucPPPCFG            = "AT^PPPCFG=echat,ctnet@mycdma.cn,vnet.mobi";
 u8 *ucZTTS_Abell        = "AT+ZTTS=1,\"276b07687F5EDF57F95BB28B3A67\"";
-
-u8 *ucSetParamConfig    = "01000069703D302E302E302E303B69643D31393830303330373437333B7077643D3131313131313B00";
 u8 *ucPocOpenConfig     = "0000000101";
 
 void Task_RunStart(void)
@@ -21,7 +34,7 @@ void Task_RunStart(void)
   if(BootProcess_SIMST_Flag==1)//收到模块开机指令:SIMST:1
   {
     BEEP_Time(50);
-
+    v=ApiAtCmd_WritCommand(ATCOMM0_OSSYSHWID,(u8 *)ucOSSYSHWID,strlen((char const *)ucOSSYSHWID));//
     v=ApiAtCmd_WritCommand(ATCOMM2_ZTTS_Abell,(u8 *)ucZTTS_Abell,strlen((char const *)ucZTTS_Abell));//播报游标广域对讲机
     
     DEL_SetTimer(0,250);
