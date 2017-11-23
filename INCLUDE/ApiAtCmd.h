@@ -7,6 +7,7 @@ typedef enum{
   ATCOMM0_OSSYSHWID             = 0x00,
   ATCOMM1_PPPCFG                = 0x01,
   ATCOMM2_ZTTS_Abell            = 0x02,
+  ATCOMM3_GD83Reset             = 0x03,
 }AtCommType;
 
 extern u8 BootProcess_SIMST_Flag;

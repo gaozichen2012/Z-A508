@@ -5,6 +5,8 @@
 u8 Key_Flag_0=0;
 #endif
 
+u8 *ucStartPTT          = "0B0000";
+u8 *ucEndPTT            = "0C0000";
 
 u8 *ucOSSYSHWID         = "AT^OSSYSHWID=1";
 u8 *ucPPPCFG            = "AT^PPPCFG=echat,ctnet@mycdma.cn,vnet.mobi";
@@ -19,7 +21,7 @@ void Task_RunStart(void)
   if(BootProcess_SIMST_Flag==1)//收到模块开机指令:SIMST:1
   {
     BEEP_Time(50);
-    v=ApiAtCmd_WritCommand(ATCOMM0_OSSYSHWID,(u8 *)ucOSSYSHWID,strlen((char const *)ucOSSYSHWID));
+
     v=ApiAtCmd_WritCommand(ATCOMM2_ZTTS_Abell,(u8 *)ucZTTS_Abell,strlen((char const *)ucZTTS_Abell));//播报游标广域对讲机
     
     DEL_SetTimer(0,250);
@@ -46,9 +48,22 @@ void Task_RunNormalOperation(void)
   {
     if(KeyDownUpChooseGroup_Flag==1)
     {
+      VOICE_SetOutput(ATVOICE_FreePlay,"f25d09902d4e",12);//播报已选中
+      DEL_SetTimer(0,100);
+      while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
       v=ApiPocCmd_WritCommand(PocComm_EnterGroup,ucPocOpenConfig,strlen((char const *)ucPocOpenConfig));
+
       Key_Flag_0=1;
+      KeyDownUpChooseGroup_Flag=0;
     }
+    else
+    {
+      Set_RedLed(LED_ON);
+      v=ApiPocCmd_WritCommand(PocComm_StartPTT,ucStartPTT,strlen((char const *)ucStartPTT));
+      while(ReadInput_KEY_PTT==0);
+      v=ApiPocCmd_WritCommand(PocComm_EndPTT,ucEndPTT,strlen((char const *)ucEndPTT));
+    }
+    
         if(Key_Flag_0==1)
       {
         DEL_SetTimer(0,100);
@@ -58,6 +73,10 @@ void Task_RunNormalOperation(void)
           if(DEL_GetTimer(0) == TRUE) {break;}
         }
       }
+  }
+  else
+  {
+    Set_RedLed(LED_OFF);
   }
   
   if(ReadInput_KEY_3==0)//按某个按键，当前群组为

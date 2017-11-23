@@ -58,11 +58,10 @@ static TASK_DRV	TaskDrvObj;
 
 
 
-u8 *ucStartPTT          = "0B0000";
-u8 *ucEndPTT            = "0C0000";
-u8 *ucSwitch            = "10000002";
 
+u8 *ucSwitch            = "10000002";
 u8 *ucGroupListInfo     = "0D0000";
+u8 *ucGD83Reset         = "at^reset";
 
 void main_app(void)
 {
@@ -111,6 +110,7 @@ u8 t=0;
   //DEL_SetTimer(0,100);
  // DEL_SetTimer(1,100);
 /*****************************/
+    r=ApiAtCmd_WritCommand(ATCOMM3_GD83Reset,(u8 *)ucGD83Reset,strlen((char const *)ucGD83Reset));
   TaskDrvObj.NewId=Task_Start;
   while(1)
   {

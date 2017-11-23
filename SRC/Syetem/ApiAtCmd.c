@@ -56,6 +56,9 @@ bool ApiAtCmd_WritCommand(AtCommType id, u8 *buf, u16 len)
   DrvMC8332_TxPort_SetValidable(ON);
   switch(id)
   {
+  case ATCOMM3_GD83Reset://1
+    DrvGD83_UART_TxCommand(buf, len);
+    break;
   case ATCOMM0_OSSYSHWID://1
     DrvGD83_UART_TxCommand(buf, len);
     break;
