@@ -21,15 +21,22 @@ typedef enum{
 }PocCommType;
 
 //void ApiPocCmd_PowerOnInitial(void);
-bool ApiPocCmd_WritCommand(PocCommType id, u8 *buf, u16 len);
-void ApiPocCmd_10msRenew(void);
-bool ApiAtCmd_GetLoginState(void);
-void ListenState(void);
-void ApiGetPocBuf(void);
-u8 *ApiAtCmd_GetMainWorkName(void);
-u8 ApiAtCmd_GetMainWorkNameLen(void);
-u8 ApiAtCmd_GetGroupNum(void);
-u8 ApiAtCmd_GetMainGroupId(void);
-u8 *ApiAtCmd_GetGroupName(u8 n);
-u8 ApiAtCmd_GetGroupNameLen(u8 n);
+extern bool ApiPocCmd_WritCommand(PocCommType id, u8 *buf, u16 len);
+extern void ApiPocCmd_10msRenew(void);
+extern bool ApiAtCmd_GetLoginState(void);
+extern void ListenState(void);
+extern void ApiGetPocBuf(void);
+extern u8 *ApiAtCmd_GetMainWorkName(void);
+extern u8 ApiAtCmd_GetMainWorkNameLen(void);
+extern u8 ApiAtCmd_GetGroupNum(void);
+extern u8 ApiAtCmd_GetMainGroupId(void);
+extern u8 *ApiAtCmd_GetGroupName(u8 n);
+extern u8 ApiAtCmd_GetGroupNameLen(u8 n);
+
+extern u8 *ApiAtCmd_GetUserName(u8 n);//获取所有在线用户名（个呼）
+extern u8 ApiAtCmd_GetUserNameLen(u8 n);
+extern u8 *ApiAtCmd_GetMainUserName(void);//获取当前用户名（个呼）
+extern u8 ApiAtCmd_GetMainUserNameLen(void);
+extern u8 ApiAtCmd_GetUserNum(void);//获取在线成员数（个呼）
+extern u8 ApiAtCmd_GetMainUserId(void);//获取当前用户id（个呼）
 #endif

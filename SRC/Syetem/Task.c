@@ -23,6 +23,7 @@ u8 *ucSetParamConfig    = "01000069703D302E302E302E303B69643D3139383030333037343
 
 u8 *ucStartPTT          = "0B0000";
 u8 *ucEndPTT            = "0C0000";
+u8 *ucRequestUserListInfo       = "0E000000000001";
 u8 *ucOSSYSHWID         = "AT^OSSYSHWID=1";
 u8 *ucPrefmode         = "AT^prefmode=4";
 u8 *ucPPPCFG            = "AT^PPPCFG=echat,ctnet@mycdma.cn,vnet.mobi";
@@ -97,9 +98,24 @@ void Task_RunNormalOperation(void)
     Set_RedLed(LED_OFF);
   }
   
-  if(ReadInput_KEY_3==0)//按某个按键，当前群组为
+  if(ReadInput_KEY_3==0)//组呼键
   {
+    VOICE_SetOutput(ATVOICE_FreePlay,"A47FC47E0990E962",16);//群组选择
+    DEL_SetTimer(0,100);
+    while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
     VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetMainWorkName(),ApiAtCmd_GetMainWorkNameLen());
+  }
+  
+  if(ReadInput_KEY_2==0)//个呼键
+  {
+    //VOICE_SetOutput(ATVOICE_FreePlay,"2a4e7c542000106258540990e962",28);//个呼成员选择
+    //DEL_SetTimer(0,200);
+    //while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+    v=ApiPocCmd_WritCommand(PocComm_UserListInfo,ucRequestUserListInfo,strlen((char const *)ucRequestUserListInfo));
+    DEL_SetTimer(0,50);
+    while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+    v=ApiPocCmd_WritCommand(PocComm_Invite,ucRequestUserListInfo,strlen((char const *)ucRequestUserListInfo));
+      
   }
   Keyboard_Test();
 }
