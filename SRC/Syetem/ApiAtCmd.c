@@ -68,6 +68,10 @@ bool ApiAtCmd_WritCommand(AtCommType id, u8 *buf, u16 len)
   case ATCOMM2_ZTTS_Abell://1
     DrvGD83_UART_TxCommand(buf, len);
     break;
+  case ATCOMM4_GD83Mode://1
+    DrvGD83_UART_TxCommand(buf, len);
+    break;
+    
   default:
     break;
   }
