@@ -3,6 +3,7 @@
 #include "DrvKeyboard.h"
 
 extern s8 GroupCallingNum;
-void Keyboard_Test(void);
+extern s8 PersonalCallingNum;
+extern void Keyboard_Test(void);
 
 #endif

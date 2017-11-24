@@ -3,6 +3,7 @@
 
 #if 1 //test
 u8 Key_Flag_0=0;
+u8 Key_PersonalCalling_Flag=0;
 #endif
 
 #if 0//2号
@@ -14,16 +15,17 @@ u8 *ucSetParamConfig    = "01000069703D302E302E302E303B69643D3139383030333037343
 #if 0//4号
 u8 *ucSetParamConfig    = "01000069703D302E302E302E303B69643D31393830303330373437343B7077643D3131313131313B00";
 #endif
-#if 1//5号
+#if 0//5号
 u8 *ucSetParamConfig    = "01000069703D302E302E302E303B69643D31393830303330373437353B7077643D3131313131313B00";
 #endif
-#if 0//6号
+#if 1//6号
 u8 *ucSetParamConfig    = "01000069703D302E302E302E303B69643D31393830303330373437363B7077643D3131313131313B00";
 #endif
 
 u8 *ucStartPTT          = "0B0000";
 u8 *ucEndPTT            = "0C0000";
 u8 *ucRequestUserListInfo       = "0E000000000001";
+u8 *ucCODECCTL         = "at^codecctl=ffff,ffff,0";//音量增益
 u8 *ucOSSYSHWID         = "AT^OSSYSHWID=1";
 u8 *ucPrefmode         = "AT^prefmode=4";
 u8 *ucPPPCFG            = "AT^PPPCFG=echat,ctnet@mycdma.cn,vnet.mobi";
@@ -36,6 +38,7 @@ void Task_RunStart(void)
   if(BootProcess_SIMST_Flag==1)//收到模块开机指令:SIMST:1
   {
     BEEP_Time(50);
+    v=ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)ucCODECCTL,strlen((char const *)ucCODECCTL));//
     v=ApiAtCmd_WritCommand(ATCOMM0_OSSYSHWID,(u8 *)ucOSSYSHWID,strlen((char const *)ucOSSYSHWID));//
     v=ApiAtCmd_WritCommand(ATCOMM4_GD83Mode,(u8 *)ucPrefmode,strlen((char const *)ucPrefmode));//1.发送PPPCFG
     v=ApiAtCmd_WritCommand(ATCOMM2_ZTTS_Abell,(u8 *)ucZTTS_Abell,strlen((char const *)ucZTTS_Abell));//播报游标广域对讲机
@@ -100,6 +103,7 @@ void Task_RunNormalOperation(void)
   
   if(ReadInput_KEY_3==0)//组呼键
   {
+    Key_PersonalCalling_Flag=0;
     VOICE_SetOutput(ATVOICE_FreePlay,"A47FC47E0990E962",16);//群组选择
     DEL_SetTimer(0,100);
     while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
@@ -108,13 +112,15 @@ void Task_RunNormalOperation(void)
   
   if(ReadInput_KEY_2==0)//个呼键
   {
+    Key_PersonalCalling_Flag=1;
     //VOICE_SetOutput(ATVOICE_FreePlay,"2a4e7c542000106258540990e962",28);//个呼成员选择
     //DEL_SetTimer(0,200);
     //while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
     v=ApiPocCmd_WritCommand(PocComm_UserListInfo,ucRequestUserListInfo,strlen((char const *)ucRequestUserListInfo));
-    DEL_SetTimer(0,50);
+    DEL_SetTimer(0,100);
     while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
-    v=ApiPocCmd_WritCommand(PocComm_Invite,ucRequestUserListInfo,strlen((char const *)ucRequestUserListInfo));
+   //v=ApiPocCmd_WritCommand(PocComm_Login,"0",0);
+    VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(0),ApiAtCmd_GetUserNameLen(0));
       
   }
   Keyboard_Test();

@@ -2,9 +2,10 @@
 u8 *ucKeyUp                = "10000003";
 u8 *ucKeyDown              = "10000004";
 s8 GroupCallingNum=1;
+s8 PersonalCallingNum=0;
 u8 KeyDownCount=0;
 u8 KeyUpCount=0;
-
+u8 KeyUpPersonalCallingCount=0;
 u32 get_key_value(u8 scan_value);
 u8 Key_Flag_1=0;
 void Keyboard_Test(void)
@@ -36,6 +37,11 @@ void Keyboard_Test(void)
     api_lcd_pwr_on_hint("欧标按键:9     ");
     break;
   case 0x00010000://dn
+    if(Key_PersonalCalling_Flag==1)//如果按下个呼键
+    {
+    
+    }
+    
     KeyDownCount++;
     GroupCallingNum=ApiAtCmd_GetMainGroupId()-KeyDownCount;
     if(GroupCallingNum<=0)
@@ -74,7 +80,19 @@ void Keyboard_Test(void)
     api_lcd_pwr_on_hint("欧标按键:#     ");
     break;  
   case 0x00000400://up
-    KeyUpCount++;
+    if(Key_PersonalCalling_Flag==1)//如果按下个呼键
+    {
+    KeyUpPersonalCallingCount++;
+    PersonalCallingNum=KeyUpPersonalCallingCount;//个呼计数从零开始
+    if(KeyUpPersonalCallingCount>ApiAtCmd_GetUserNum()-1)
+    {
+      KeyUpPersonalCallingCount=0;
+    }
+    VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(KeyUpPersonalCallingCount),ApiAtCmd_GetUserNameLen(KeyUpPersonalCallingCount));//播报按上键之后对应的用户名
+    }
+    else
+    {
+      KeyUpCount++;
     GroupCallingNum=ApiAtCmd_GetMainGroupId()+KeyUpCount;
     if(GroupCallingNum>ApiAtCmd_GetGroupNum())
     {
@@ -82,6 +100,8 @@ void Keyboard_Test(void)
       KeyUpCount=0;
     }
       VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetGroupName(GroupCallingNum),ApiAtCmd_GetGroupNameLen(GroupCallingNum));
+    }
+   
     KeyDownUpChooseGroup_Flag=1;
     //r=ApiPocCmd_WritCommand(PocComm_Key,ucKeyUp,strlen((char const *)ucKeyUp));
     Key_Flag_1=1;
