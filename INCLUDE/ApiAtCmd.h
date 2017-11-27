@@ -16,7 +16,7 @@ extern u8 BootProcess_SIMST_Flag;
 extern u8 BootProcess_PPPCFG_Flag;
 extern u8 BootProcess_OpenPoc_Flag;
 extern u8 VoiceEnd_Flag;
-extern u8 KeyDownUpChooseGroup_Flag;
+extern u8 KeyDownUpChoose_GroupOrUser_Flag;
 
 extern bool ApiAtCmd_WritCommand(AtCommType id, u8 *buf, u16 len);
 extern bool ApiAtCmd_PlayVoice(AtVoiceType id, u8 *buf, u8 len);

@@ -4,6 +4,8 @@
 
 extern s8 GroupCallingNum;
 extern s8 PersonalCallingNum;
+extern u8 KeyUpPersonalCallingCount;
+extern s8 KeyDownPersonalCallingCount;
 extern void Keyboard_Test(void);
 
 #endif

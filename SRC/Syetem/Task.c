@@ -4,6 +4,7 @@
 #if 1 //test
 u8 Key_Flag_0=0;
 u8 Key_PersonalCalling_Flag=0;
+u8 x=0;
 #endif
 
 #if 0//2号
@@ -68,33 +69,42 @@ void Task_RunNormalOperation(void)
   u8 v;
   if(ReadInput_KEY_PTT==0)
   {
-    if(KeyDownUpChooseGroup_Flag==1)
+    switch(KeyDownUpChoose_GroupOrUser_Flag)
     {
-      VOICE_SetOutput(ATVOICE_FreePlay,"f25d09902d4e",12);//播报已选中
-      DEL_SetTimer(0,100);
-      while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
-      v=ApiPocCmd_WritCommand(PocComm_EnterGroup,ucPocOpenConfig,strlen((char const *)ucPocOpenConfig));
-
-      Key_Flag_0=1;
-      KeyDownUpChooseGroup_Flag=0;
-    }
-    else
-    {
+    case 0://默认PTT状态
       Set_RedLed(LED_ON);
       v=ApiPocCmd_WritCommand(PocComm_StartPTT,ucStartPTT,strlen((char const *)ucStartPTT));
       while(ReadInput_KEY_PTT==0);
       v=ApiPocCmd_WritCommand(PocComm_EndPTT,ucEndPTT,strlen((char const *)ucEndPTT));
+      break;
+    case 1://=1，进入某群组
+      VOICE_SetOutput(ATVOICE_FreePlay,"f25d09902d4e",12);//播报已选中
+      DEL_SetTimer(0,100);
+      while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+      v=ApiPocCmd_WritCommand(PocComm_EnterGroup,ucPocOpenConfig,strlen((char const *)ucPocOpenConfig));
+      Key_Flag_0=1;
+      KeyDownUpChoose_GroupOrUser_Flag=0;
+      break;
+    case 2://=2,呼叫某用户
+      VOICE_SetOutput(ATVOICE_FreePlay,"f25d09902d4e",12);//播报已选中
+      DEL_SetTimer(0,100);
+      while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+      v=ApiPocCmd_WritCommand(PocComm_Invite,ucPocOpenConfig,strlen((char const *)ucPocOpenConfig));
+      Key_Flag_0=1;
+      KeyDownUpChoose_GroupOrUser_Flag=0;
+      break;
+    default:
+      break;
     }
-    
-        if(Key_Flag_0==1)
+    if(Key_Flag_0==1)
+    {
+      DEL_SetTimer(0,100);
+      while(1)
       {
-        DEL_SetTimer(0,100);
-        while(1)
-        {
-          Key_Flag_0=0;
-          if(DEL_GetTimer(0) == TRUE) {break;}
-        }
+        Key_Flag_0=0;
+        if(DEL_GetTimer(0) == TRUE) {break;}
       }
+    }
   }
   else
   {
@@ -112,15 +122,26 @@ void Task_RunNormalOperation(void)
   
   if(ReadInput_KEY_2==0)//个呼键
   {
+
+    x++;
     Key_PersonalCalling_Flag=1;
     //VOICE_SetOutput(ATVOICE_FreePlay,"2a4e7c542000106258540990e962",28);//个呼成员选择
     //DEL_SetTimer(0,200);
     //while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+    
     v=ApiPocCmd_WritCommand(PocComm_UserListInfo,ucRequestUserListInfo,strlen((char const *)ucRequestUserListInfo));
+    DEL_SetTimer(0,15);
+    while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+    if(x>=2)
+    {
+      x=0;
     DEL_SetTimer(0,100);
     while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
-   //v=ApiPocCmd_WritCommand(PocComm_Login,"0",0);
-    VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(0),ApiAtCmd_GetUserNameLen(0));
+      //v=ApiPocCmd_WritCommand(PocComm_Login,"0",0);
+      VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(0),ApiAtCmd_GetUserNameLen(0));
+    KeyDownUpChoose_GroupOrUser_Flag=2;
+    }
+
       
   }
   Keyboard_Test();

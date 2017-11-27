@@ -217,10 +217,10 @@ bool ApiPocCmd_WritCommand(PocCommType id, u8 *buf, u16 len)
     DrvGD83_UART_TxCommand(PocCmdDrvobj.NetState.Buf, 2);
     break;
   case PocComm_Invite:
-    DrvGD83_UART_TxCommand("0A000000000064", 14);
-    //PocCmdDrvobj.NetState.Buf2[0] = ((0x65&0xf0)>>4)+0x30;	// 0x03+0x30
-    //PocCmdDrvobj.NetState.Buf2[1] = (0x65&0x0f)+0x30;
-    //DrvGD83_UART_TxCommand(PocCmdDrvobj.NetState.Buf2, 2);
+    DrvGD83_UART_TxCommand("0A0000000000", 12);
+    PocCmdDrvobj.NetState.Buf2[0] = (((KeyUpPersonalCallingCount+0x64)&0xf0)>>4)+0x30;	// 0x03+0x30
+    PocCmdDrvobj.NetState.Buf2[1] = ((KeyUpPersonalCallingCount+0x64)&0x0f)+0x30;
+    DrvGD83_UART_TxCommand(PocCmdDrvobj.NetState.Buf2, 2);
     break;
   case PocComm_StartPTT://3
     DrvGD83_UART_TxCommand(buf, len);

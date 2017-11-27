@@ -6,6 +6,7 @@ s8 PersonalCallingNum=0;
 u8 KeyDownCount=0;
 u8 KeyUpCount=0;
 u8 KeyUpPersonalCallingCount=0;
+s8 KeyDownPersonalCallingCount=0;
 u32 get_key_value(u8 scan_value);
 u8 Key_Flag_1=0;
 void Keyboard_Test(void)
@@ -39,19 +40,28 @@ void Keyboard_Test(void)
   case 0x00010000://dn
     if(Key_PersonalCalling_Flag==1)//如果按下个呼键
     {
-    
+      KeyDownPersonalCallingCount++;
+      PersonalCallingNum=ApiAtCmd_GetUserNum()-KeyDownPersonalCallingCount;//个呼计数从零开始
+      if(PersonalCallingNum<0)
+      {
+        PersonalCallingNum=ApiAtCmd_GetUserNum()-1;
+        KeyDownPersonalCallingCount=1;
+      }
+      VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(PersonalCallingNum),ApiAtCmd_GetUserNameLen(PersonalCallingNum));//播报按上键之后对应的用户名
+      KeyDownUpChoose_GroupOrUser_Flag=2;
     }
-    
-    KeyDownCount++;
-    GroupCallingNum=ApiAtCmd_GetMainGroupId()-KeyDownCount;
-    if(GroupCallingNum<=0)
+    else
     {
-      GroupCallingNum=ApiAtCmd_GetGroupNum();
-      KeyDownCount=ApiAtCmd_GetMainGroupId()-ApiAtCmd_GetGroupNum();
-    }
+      KeyDownCount++;
+      GroupCallingNum=ApiAtCmd_GetMainGroupId()-KeyDownCount;
+      if(GroupCallingNum<=0)
+      {
+        GroupCallingNum=ApiAtCmd_GetGroupNum();
+        KeyDownCount=ApiAtCmd_GetMainGroupId()-ApiAtCmd_GetGroupNum();
+      }
       VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetGroupName(GroupCallingNum),ApiAtCmd_GetGroupNameLen(GroupCallingNum));
-    KeyDownUpChooseGroup_Flag=1;
-    //r=ApiPocCmd_WritCommand(PocComm_Key,ucKeyDown,strlen((char const *)ucKeyDown));
+      KeyDownUpChoose_GroupOrUser_Flag=1;
+    }
     Key_Flag_1=1;
     api_lcd_pwr_on_hint("欧标按键:Down  ");
     break;  
@@ -84,11 +94,13 @@ void Keyboard_Test(void)
     {
     KeyUpPersonalCallingCount++;
     PersonalCallingNum=KeyUpPersonalCallingCount;//个呼计数从零开始
-    if(KeyUpPersonalCallingCount>ApiAtCmd_GetUserNum()-1)
+    if(PersonalCallingNum>ApiAtCmd_GetUserNum()-1)
     {
       KeyUpPersonalCallingCount=0;
+      PersonalCallingNum=0;
     }
-    VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(KeyUpPersonalCallingCount),ApiAtCmd_GetUserNameLen(KeyUpPersonalCallingCount));//播报按上键之后对应的用户名
+    VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(PersonalCallingNum),ApiAtCmd_GetUserNameLen(PersonalCallingNum));//播报按上键之后对应的用户名
+    KeyDownUpChoose_GroupOrUser_Flag=2;
     }
     else
     {
@@ -100,10 +112,10 @@ void Keyboard_Test(void)
       KeyUpCount=0;
     }
       VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetGroupName(GroupCallingNum),ApiAtCmd_GetGroupNameLen(GroupCallingNum));
+    KeyDownUpChoose_GroupOrUser_Flag=1;
     }
    
-    KeyDownUpChooseGroup_Flag=1;
-    //r=ApiPocCmd_WritCommand(PocComm_Key,ucKeyUp,strlen((char const *)ucKeyUp));
+    
     Key_Flag_1=1;
     api_lcd_pwr_on_hint("欧标按键:Up    ");
     break;
