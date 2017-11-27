@@ -324,7 +324,14 @@ void ApiPocCmd_10msRenew(void)
       break;
     case 0x86:
       ucId = COML_AscToHex(pBuf+10, 0x02);
+      if(ucId==0xff)
+      { 
+       //  PocCmdDrvobj.WorkState.UseState.MainWorkGroup.PresentGroupId = ucId;
+      }
+      else
+      {
       PocCmdDrvobj.WorkState.UseState.MainWorkGroup.PresentGroupId = ucId;
+
       ucId = 0x00;
       for(i = 0x00; i < 0x08; i++)
       {
@@ -340,9 +347,7 @@ void ApiPocCmd_10msRenew(void)
       }
       else//r如果为在群组内
       {
-        
-      }
-      if(Len >= 12)//如果群组id后面还有群组名
+        if(Len >= 12)//如果群组id后面还有群组名
       {
         PocCmdDrvobj.WorkState.UseState.WorkGroup.NameLen = Len - 12;
         if(PocCmdDrvobj.WorkState.UseState.WorkGroup.NameLen > APIPOC_UserName_Len)
@@ -361,6 +366,9 @@ void ApiPocCmd_10msRenew(void)
             PocCmdDrvobj.WorkState.UseState.WorkGroup.Name[i];
       }
       PocCmdDrvobj.WorkState.UseState.MainWorkGroup.NameLen = PocCmdDrvobj.WorkState.UseState.WorkGroup.NameLen;
+      }
+      }
+     
     default:
       break;
     }
@@ -387,7 +395,7 @@ u8 ApiAtCmd_GetUserNameLen(u8 n)
 
 u8 *ApiAtCmd_GetMainWorkName(void)//获取工作群组名
 {
-	return PocCmdDrvobj.WorkState.UseState.MainWorkGroup.Name;
+  return PocCmdDrvobj.WorkState.UseState.MainWorkGroup.Name;
 }
 u8 ApiAtCmd_GetMainWorkNameLen(void)
 {

@@ -23,19 +23,23 @@ u8 *ucSetParamConfig    = "01000069703D302E302E302E303B69643D3139383030333037343
 u8 *ucSetParamConfig    = "01000069703D302E302E302E303B69643D31393830303330373437363B7077643D3131313131313B00";
 #endif
 
-u8 *ucStartPTT          = "0B0000";
-u8 *ucEndPTT            = "0C0000";
+u8 *ucStartPTT                  = "0B0000";
+u8 *ucEndPTT                    = "0C0000";
 u8 *ucRequestUserListInfo       = "0E000000000001";
-u8 *ucCODECCTL         = "at^codecctl=ffff,ffff,0";//音量增益
-u8 *ucOSSYSHWID         = "AT^OSSYSHWID=1";
-u8 *ucPrefmode         = "AT^prefmode=4";
-u8 *ucPPPCFG            = "AT^PPPCFG=echat,ctnet@mycdma.cn,vnet.mobi";
-u8 *ucZTTS_Abell        = "AT+ZTTS=1,\"276b07687F5EDF57F95BB28B3A67\"";
-u8 *ucPocOpenConfig     = "0000000101";
+u8 *ucCODECCTL                  = "at^codecctl=ffff,ffff,0";//音量增益
+u8 *ucOSSYSHWID                 = "AT^OSSYSHWID=1";
+u8 *ucPrefmode                  = "AT^prefmode=4";
+u8 *ucCSQ                       = "AT+CSQ?";
+u8 *ucPPPCFG                    = "AT^PPPCFG=echat,ctnet@mycdma.cn,vnet.mobi";
+u8 *ucZTTS_Abell                = "AT+ZTTS=1,\"276b07687F5EDF57F95BB28B3A67\"";
+u8 *ucPocOpenConfig             = "0000000101";
 
 void Task_RunStart(void)
 {
   u8 v;
+  
+
+  
   if(BootProcess_SIMST_Flag==1)//收到模块开机指令:SIMST:1
   {
     BEEP_Time(50);
@@ -49,19 +53,44 @@ void Task_RunStart(void)
     
     v=ApiAtCmd_WritCommand(ATCOMM1_PPPCFG,(u8 *)ucPPPCFG,strlen((char const *)ucPPPCFG));//1.发送PPPCFG
     BootProcess_SIMST_Flag=0;
-
+    VOICE_SetOutput(ATVOICE_FreePlay,"1c64227d517fdc7e",16);//播报搜索网络
+    v=ApiAtCmd_WritCommand(ATCOMM6_CSQ,(u8 *)ucCSQ,strlen((char const *)ucCSQ));//CSQ?
   }
-  if(BootProcess_PPPCFG_Flag==1)//如果收到^PPPCFG
+  else
   {
-    BootProcess_PPPCFG_Flag=0;
-    DEL_SetTimer(0,100);
-    while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
-    ApiPocCmd_WritCommand(PocComm_SetParam,ucSetParamConfig,strlen((char const *)ucSetParamConfig));//配置echat账号、IP
-    DEL_SetTimer(0,100);
-    while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
-    v=ApiPocCmd_WritCommand(PocComm_OpenPOC,ucPocOpenConfig,strlen((char const *)ucPocOpenConfig));
+    if(BootProcess_SIMST_Flag==2)
+    {
+      VOICE_SetOutput(ATVOICE_FreePlay,"c0680d4e30526153",16);//播报检不到卡
+      DEL_SetTimer(0,1000);
+      while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+    }
   }
-
+  if(CSQ_Flag==1)//CSQ?
+  {
+    if(BootProcess_PPPCFG_Flag==1)//如果收到^PPPCFG
+    {
+      BootProcess_PPPCFG_Flag=0;
+      DEL_SetTimer(0,100);
+      while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+      ApiPocCmd_WritCommand(PocComm_SetParam,ucSetParamConfig,strlen((char const *)ucSetParamConfig));//配置echat账号、IP
+      DEL_SetTimer(0,400);
+      while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+      VOICE_SetOutput(ATVOICE_FreePlay,"636b28577b764696",16);//播报正在登陆
+      DEL_SetTimer(0,100);
+      while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+      v=ApiPocCmd_WritCommand(PocComm_OpenPOC,ucPocOpenConfig,strlen((char const *)ucPocOpenConfig));
+    }
+  }
+  else
+  {
+    if(CSQ_Flag==2)
+    {
+      DEL_SetTimer(0,1000);
+      while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+      VOICE_SetOutput(ATVOICE_FreePlay,"1c64227d517fdc7e",16);//播报搜索网络
+      v=ApiAtCmd_WritCommand(ATCOMM6_CSQ,(u8 *)ucCSQ,strlen((char const *)ucCSQ));//CSQ?
+    }
+  }
 }
 
 void Task_RunNormalOperation(void)

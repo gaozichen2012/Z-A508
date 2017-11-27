@@ -43,12 +43,16 @@ u8 BootProcess_SIMST_Flag=0;
 u8 BootProcess_PPPCFG_Flag=0;
 u8 BootProcess_OpenPoc_Flag=0;
 u8 VoiceEnd_Flag=0;
+u8 CSQ_Flag=0;
 u8 KeyDownUpChoose_GroupOrUser_Flag=0;
 
 
 const u8 *ucRxCheckCard = "GETICCID:";
 const u8 *ucRxZTTS0 = "ZTTS:0";
-const u8 *ucSIMST="^SIMST:";
+const u8 *ucRxCSQ31 = "CSQ:31";
+const u8 *ucRxCSQ99 = "CSQ:99";
+const u8 *ucSIMST1="^SIMST:1";
+const u8 *ucSIMST255="^SIMST:255";
 const u8 *ucCaretPPPCFG="^PPPCFG:";
 
 bool ApiAtCmd_WritCommand(AtCommType id, u8 *buf, u16 len)
@@ -72,7 +76,9 @@ bool ApiAtCmd_WritCommand(AtCommType id, u8 *buf, u16 len)
   case ATCOMM4_GD83Mode://1
     DrvGD83_UART_TxCommand(buf, len);
     break;
-    
+  case ATCOMM6_CSQ://1
+    DrvGD83_UART_TxCommand(buf, len);
+    break;
   default:
     break;
   }
@@ -87,10 +93,15 @@ void ApiCaretCmd_10msRenew(void)
   u8 * pBuf, ucRet, Len, i;
   while((Len = DrvMC8332_CaretNotify_Queue_front(&pBuf)) != 0)
   {
-    ucRet = memcmp(pBuf, ucSIMST, 7);//GETICCID
+    ucRet = memcmp(pBuf, ucSIMST1, 8);//^SIMST:1
     if(ucRet == 0x00)
     {
       BootProcess_SIMST_Flag=1;
+    }
+    ucRet = memcmp(pBuf, ucSIMST255, 10);//^SIMST:255
+    if(ucRet == 0x00)
+    {
+      BootProcess_SIMST_Flag=2;
     }
     ucRet = memcmp(pBuf, ucCaretPPPCFG, 8);//GETICCID
     if(ucRet == 0x00)
@@ -126,6 +137,16 @@ void ApiAtCmd_10msRenew(void)
     else
     {
       VoiceEnd_Flag=0;
+    }
+    ucRet = memcmp(pBuf, ucRxCSQ31, 6);//CSQ:31
+    if(ucRet == 0x00)
+    {
+      CSQ_Flag=1;
+    }
+    ucRet = memcmp(pBuf, ucRxCSQ99, 6);//CSQ:31
+    if(ucRet == 0x00)
+    {
+      CSQ_Flag=2;
     }
   }
 }

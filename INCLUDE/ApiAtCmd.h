@@ -9,7 +9,8 @@ typedef enum{
   ATCOMM2_ZTTS_Abell            = 0x02,
   ATCOMM3_GD83Reset             = 0x03,
   ATCOMM4_GD83Mode              = 0x04,
-  ATCOMM5_CODECCTL              = 0x04,
+  ATCOMM5_CODECCTL              = 0x05,
+  ATCOMM6_CSQ                   = 0x06,
 }AtCommType;
 
 extern u8 BootProcess_SIMST_Flag;
@@ -17,7 +18,7 @@ extern u8 BootProcess_PPPCFG_Flag;
 extern u8 BootProcess_OpenPoc_Flag;
 extern u8 VoiceEnd_Flag;
 extern u8 KeyDownUpChoose_GroupOrUser_Flag;
-
+extern u8 CSQ_Flag;
 extern bool ApiAtCmd_WritCommand(AtCommType id, u8 *buf, u16 len);
 extern bool ApiAtCmd_PlayVoice(AtVoiceType id, u8 *buf, u8 len);
 extern void ApiCaretCmd_10msRenew(void);
