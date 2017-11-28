@@ -1964,10 +1964,22 @@
       <name>$PROJ_DIR$\..\INCLUDE\CommonLib.h</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\INCLUDE\Config.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\INCLUDE\DataStructAddr.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\INCLUDE\DataType.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\INCLUDE\Define.h</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\INCLUDE\Delay.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\INCLUDE\DrvEEPROM.h</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\INCLUDE\DrvFont.h</name>
@@ -1983,6 +1995,9 @@
     </file>
     <file>
       <name>$PROJ_DIR$\..\INCLUDE\DrvKeyboard.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\INCLUDE\KeyCmd.h</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\INCLUDE\McuConfig.h</name>
@@ -2025,6 +2040,9 @@
     <name>SRC</name>
     <group>
       <name>Drv</name>
+      <file>
+        <name>$PROJ_DIR$\..\SRC\Drv\DrvEEPROM.c</name>
+      </file>
       <file>
         <name>$PROJ_DIR$\..\SRC\Drv\DrvGD83.c</name>
       </file>
@@ -2152,7 +2170,13 @@
         <name>$PROJ_DIR$\..\SRC\Syetem\Beep.c</name>
       </file>
       <file>
+        <name>$PROJ_DIR$\..\SRC\Support\Config.c</name>
+      </file>
+      <file>
         <name>$PROJ_DIR$\..\SRC\Syetem\Delay.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\SRC\Syetem\KeyCmd.c</name>
       </file>
       <file>
         <name>$PROJ_DIR$\..\SRC\Syetem\Task.c</name>

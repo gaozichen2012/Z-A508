@@ -3,8 +3,6 @@
 //
 #include "stm8s.h"
 
-
-
 #include "sysclock.h"
 #include "McuConfig.h"
 #include "stm8s_it.h"
@@ -37,5 +35,12 @@
 //ศฮฮ๑
 #include "Task.h"
 #include "System.h"
+
+//ะดฦต
+#include "DataType.h"
+#include "KeyCmd.h"
+#include "Config.h"
+#include "DataStructAddr.h"
+#include "DrvEEPROM.h"
 
 #endif
