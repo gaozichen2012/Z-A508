@@ -76,7 +76,13 @@ bool ApiAtCmd_WritCommand(AtCommType id, u8 *buf, u16 len)
   case ATCOMM4_GD83Mode://1
     DrvGD83_UART_TxCommand(buf, len);
     break;
+  case ATCOMM5_CODECCTL://1
+    DrvGD83_UART_TxCommand(buf, len);
+    break;
   case ATCOMM6_CSQ://1
+    DrvGD83_UART_TxCommand(buf, len);
+    break;
+  case ATCOMM7_VGR://1
     DrvGD83_UART_TxCommand(buf, len);
     break;
   default:

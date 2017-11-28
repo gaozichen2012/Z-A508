@@ -11,6 +11,7 @@ typedef enum{
   ATCOMM4_GD83Mode              = 0x04,
   ATCOMM5_CODECCTL              = 0x05,
   ATCOMM6_CSQ                   = 0x06,
+  ATCOMM7_VGR                   = 0x07,
 }AtCommType;
 
 extern u8 BootProcess_SIMST_Flag;

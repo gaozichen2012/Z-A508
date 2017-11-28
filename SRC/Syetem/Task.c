@@ -10,7 +10,7 @@ u8 x=0;
 #if 0//2号
 u8 *ucSetParamConfig    = "01000069703D302E302E302E303B69643D31393830303330373437323B7077643D3131313131313B00";
 #endif
-#if 1//3号
+#if 0//3号
 u8 *ucSetParamConfig    = "01000069703D302E302E302E303B69643D31393830303330373437333B7077643D3131313131313B00";
 #endif
 #if 0//4号
@@ -31,7 +31,7 @@ u8 *ucSetParamConfig    = "01000069703d302e302e302e303b69643d3139383030333038363
 #if 0//9号
 u8 *ucSetParamConfig    = "01000069703d302e302e302e303b69643d31393830303330383636393b7077643d3131313131313b00";
 #endif
-#if 1//0号
+#if 0//0号
 u8 *ucSetParamConfig    = "01000069703d302e302e302e303b69643d31393830303330383637303b7077643d3131313131313b00";
 #endif
 #if 0//1号
@@ -40,6 +40,8 @@ u8 *ucSetParamConfig    = "01000069703d302e302e302e303b69643d3139383030333038363
 u8 *ucStartPTT                  = "0B0000";
 u8 *ucEndPTT                    = "0C0000";
 u8 *ucRequestUserListInfo       = "0E000000000001";
+u8 *ucCLVL                       = "AT+CLVL=7";//音量增益
+u8 *ucVGR                       = "AT+VGR=7";//音量增益
 u8 *ucCODECCTL                  = "at^codecctl=ffff,ffff,0";//音量增益
 u8 *ucOSSYSHWID                 = "AT^OSSYSHWID=1";
 u8 *ucPrefmode                  = "AT^prefmode=4";
@@ -57,9 +59,22 @@ void Task_RunStart(void)
   if(BootProcess_SIMST_Flag==1)//收到模块开机指令:SIMST:1
   {
     BEEP_Time(50);
+    
+    v=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)ucCLVL,strlen((char const *)ucCLVL));//
+    DEL_SetTimer(0,10);
+    while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+    v=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)ucVGR,strlen((char const *)ucVGR));//
+    DEL_SetTimer(0,10);
+    while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
     v=ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)ucCODECCTL,strlen((char const *)ucCODECCTL));//
+    DEL_SetTimer(0,10);
+    while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
     v=ApiAtCmd_WritCommand(ATCOMM0_OSSYSHWID,(u8 *)ucOSSYSHWID,strlen((char const *)ucOSSYSHWID));//
+    DEL_SetTimer(0,10);
+    while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
     v=ApiAtCmd_WritCommand(ATCOMM4_GD83Mode,(u8 *)ucPrefmode,strlen((char const *)ucPrefmode));//1.发送PPPCFG
+    DEL_SetTimer(0,10);
+    while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
     v=ApiAtCmd_WritCommand(ATCOMM2_ZTTS_Abell,(u8 *)ucZTTS_Abell,strlen((char const *)ucZTTS_Abell));//播报游标广域对讲机
     
     DEL_SetTimer(0,250);
