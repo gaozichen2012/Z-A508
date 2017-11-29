@@ -127,10 +127,19 @@ u8 t=0;
     case Task_NormalOperation:
       Task_RunNormalOperation();
       break;
-      
         
     case TASK_WRITEFREQ://дƵ
       TASK_WriteFreq();
+     /* u8 ReadBuffer2[20];
+        SystemClock_Init(HSE_Clock);
+        WriteEEPROMByte(0x4001, '9');
+        WriteEEPROMByte(0x4081, '8');
+        WriteEEPROMByte(0x4400, '7');
+        WriteEEPROMByte(0x47ff, '6');
+        ReadBuffer2[1]=FLASH_ReadByte(0x4001);
+        ReadBuffer2[2]=FLASH_ReadByte(0x4081);
+        ReadBuffer2[3]=FLASH_ReadByte(0x4400);
+        ReadBuffer2[4]=FLASH_ReadByte(0x47ff);*/
       break;
     default:
       break;

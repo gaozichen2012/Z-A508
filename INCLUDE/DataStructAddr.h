@@ -7,7 +7,7 @@
 #define USER_MAX_NUM    64
 
 /*  */
-#define  nAddrTemp      0x0000 /* start address */
+#define  nAddrTemp      0x4000 /* start address */
 #define  nLenTemp       16
 
 #define LCD_DISP_LEN_MAX        16
@@ -115,12 +115,12 @@
 #define nAddrGpsFun		nAddrKeyProg + nGrpKeyProg*nLenKeyProg
 
 
-#define nAddrAudioParam         0x0A62
+//#define nAddrAudioParam         0x0A62
 
-#define nAddrGpsInfoHead        0x1DF0
+//#define nAddrGpsInfoHead        0x1DF0
 #define nLenGpsInfoHead		16
 #define nGrpGpsInfoHead		1
-#define nAddrGpsInfo		0x1E00
+//#define nAddrGpsInfo		0x1E00
 #define nLenGpsInfo		32
 #define nGrpGpsInfo		16
 /* --------------------------------------------------------------------
@@ -128,7 +128,7 @@
   Example: extern u8 XxxXxx;
 ---------------------------------------------------------------------- */
 #define nLenGpsRam		1500
-#define nAddrGpsRam		0x3000
-#define nAddrSdRam		nAddrGpsRam + nLenGpsRam
+//#define nAddrGpsRam		0x3000
+//#define nAddrSdRam		nAddrGpsRam + nLenGpsRam
 
 #endif
