@@ -34,15 +34,15 @@ u8 *ucSetParamConfig    = "01000069703d302e302e302e303b69643d3139383030333038363
 #if 0//0号
 u8 *ucSetParamConfig    = "01000069703d302e302e302e303b69643d31393830303330383637303b7077643d3131313131313b00";
 #endif
-#if 0//1号
+#if 1//1号
 u8 *ucSetParamConfig    = "01000069703d302e302e302e303b69643d31393830303330383637313b7077643d3131313131313b00";
 #endif
 u8 *ucStartPTT                  = "0B0000";
 u8 *ucEndPTT                    = "0C0000";
 u8 *ucRequestUserListInfo       = "0E000000000001";
-u8 *ucCLVL                       = "AT+CLVL=7";//音量增益
-u8 *ucVGR                       = "AT+VGR=7";//音量增益
-u8 *ucCODECCTL                  = "at^codecctl=ffff,ffff,0";//音量增益
+u8 *ucCLVL                       = "AT+CLVL=3";//音量增益7
+u8 *ucVGR                       = "AT+VGR=3";//音量增益7
+u8 *ucCODECCTL                  = "at^codecctl=4000,3c00,0";//音量增益
 u8 *ucOSSYSHWID                 = "AT^OSSYSHWID=1";
 u8 *ucPrefmode                  = "AT^prefmode=4";
 u8 *ucCSQ                       = "AT+CSQ?";
