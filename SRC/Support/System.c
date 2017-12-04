@@ -100,7 +100,7 @@ u8 t=0;
   AUDIO_IOAFPOW(ON);
   GPIO_Init(GPIOB,GPIO_PIN_6,GPIO_MODE_OUT_PP_LOW_FAST);//LOC MIC MUTE
   MIC_IOMUT(OFF); 
-  api_lcd_pwr_on_hint("    ABELL    ");
+  api_lcd_pwr_on_hint("     ABELL    ");
 
   BEEP_Time(1);
 /****打开POC应用**********/
@@ -114,6 +114,8 @@ u8 t=0;
   TaskDrvObj.NewId=Task_Start;
   while(1)
   {
+    LED_Test();
+
     DEL_Renew();
     switch(TaskDrvObj.NewId)
     {

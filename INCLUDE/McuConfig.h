@@ -42,6 +42,9 @@ typedef enum {
 #define LED_ON  0
 #define LED_OFF 1
 
+#define GPIO_RSSI               GPIOB
+#define GPIO_PIN_RSSI           GPIO_PIN_1
+#define ReadInput_PIN_RSSI      GPIO_ReadInputPin(GPIO_RSSI, GPIO_PIN_RSSI)
 /******************************************************************************
 ;--------2-TIM3:DELAY hardware macro define
 ******************************************************************************/
@@ -185,6 +188,7 @@ LCD Backlight -PC4         -A0
 ******************************************************************************/
 #define GPIO_BEEP               GPIOC
 #define GPIO_PIN_BEEP           GPIO_PIN_1
+
 
 /******************************************************************************
 ;--------1-LED hardware macro define

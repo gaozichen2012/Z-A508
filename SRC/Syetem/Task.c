@@ -19,7 +19,7 @@ u8 *ucSetParamConfig    = "01000069703D302E302E302E303B69643D3139383030333037343
 #if 0//5号
 u8 *ucSetParamConfig    = "01000069703D302E302E302E303B69643D31393830303330373437353B7077643D3131313131313B00";
 #endif
-#if 0//6号
+#if 1//6号
 u8 *ucSetParamConfig    = "01000069703D302E302E302E303B69643D31393830303330373437363B7077643D3131313131313B00";
 #endif
 #if 0//7号
@@ -34,7 +34,7 @@ u8 *ucSetParamConfig    = "01000069703d302e302e302e303b69643d3139383030333038363
 #if 0//0号
 u8 *ucSetParamConfig    = "01000069703d302e302e302e303b69643d31393830303330383637303b7077643d3131313131313b00";
 #endif
-#if 1//1号
+#if 0//1号
 u8 *ucSetParamConfig    = "01000069703d302e302e302e303b69643d31393830303330383637313b7077643d3131313131313b00";
 #endif
 u8 *ucStartPTT                  = "0B0000";
@@ -55,7 +55,6 @@ void Task_RunStart(void)
   u8 v;
   
 
-  
   if(BootProcess_SIMST_Flag==1)//收到模块开机指令:SIMST:1
   {
     BEEP_Time(50);
@@ -76,6 +75,7 @@ void Task_RunStart(void)
     DEL_SetTimer(0,10);
     while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
     v=ApiAtCmd_WritCommand(ATCOMM2_ZTTS_Abell,(u8 *)ucZTTS_Abell,strlen((char const *)ucZTTS_Abell));//播报游标广域对讲机
+    api_lcd_pwr_on_hint(" 欧标广域对讲机 ");
     
     DEL_SetTimer(0,250);
     while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
@@ -83,6 +83,7 @@ void Task_RunStart(void)
     v=ApiAtCmd_WritCommand(ATCOMM1_PPPCFG,(u8 *)ucPPPCFG,strlen((char const *)ucPPPCFG));//1.发送PPPCFG
     BootProcess_SIMST_Flag=0;
     VOICE_SetOutput(ATVOICE_FreePlay,"1c64227d517fdc7e",16);//播报搜索网络
+    api_lcd_pwr_on_hint("   搜索网络...  ");
     v=ApiAtCmd_WritCommand(ATCOMM6_CSQ,(u8 *)ucCSQ,strlen((char const *)ucCSQ));//CSQ?
   }
   else
@@ -90,12 +91,14 @@ void Task_RunStart(void)
     if(BootProcess_SIMST_Flag==2)
     {
       VOICE_SetOutput(ATVOICE_FreePlay,"c0680d4e30526153",16);//播报检不到卡
+      api_lcd_pwr_on_hint("    检不到卡    ");
       DEL_SetTimer(0,1000);
       while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
     }
   }
   if(CSQ_Flag==1)//CSQ?
   {
+    api_lcd_pwr_on_hint("   正在登陆...    ");
     if(BootProcess_PPPCFG_Flag==1)//如果收到^PPPCFG
     {
       BootProcess_PPPCFG_Flag=0;
@@ -105,6 +108,7 @@ void Task_RunStart(void)
       DEL_SetTimer(0,400);
       while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
       VOICE_SetOutput(ATVOICE_FreePlay,"636b28577b764696",16);//播报正在登陆
+      api_lcd_pwr_on_hint("   正在登陆...    ");
       DEL_SetTimer(0,100);
       while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
       v=ApiPocCmd_WritCommand(PocComm_OpenPOC,ucPocOpenConfig,strlen((char const *)ucPocOpenConfig));
@@ -117,6 +121,7 @@ void Task_RunStart(void)
       DEL_SetTimer(0,1000);
       while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
       VOICE_SetOutput(ATVOICE_FreePlay,"1c64227d517fdc7e",16);//播报搜索网络
+      api_lcd_pwr_on_hint("   搜索网络...  ");
       v=ApiAtCmd_WritCommand(ATCOMM6_CSQ,(u8 *)ucCSQ,strlen((char const *)ucCSQ));//CSQ?
     }
   }
