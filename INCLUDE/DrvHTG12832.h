@@ -31,7 +31,7 @@ void LCD_Init(void);
 extern void drv_htg_reset(void);
 extern void drv_htg_soft_reset(void);
 extern void drv_htg_pwr_on_init(void);
-extern void drv_htg_clr_allscr(void);
+extern void drv_htg_clr_allscr(void);//«Â∆¡
 extern bool drv_htg_get_revflag(void);
 extern void drv_htg_write_data(u8 cData);
 extern void drv_htg_write_command(u8 cCmd);

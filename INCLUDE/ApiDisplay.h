@@ -16,6 +16,13 @@
 
 #define LCD_DISP_LEN_MAX 	16
 
+
+typedef struct
+{
+	u16 iAdr;
+	u8  xLen;
+	u8  yLen;
+}ICO_INF;
 typedef struct
 {
 	DISP_TYPE DispType;
@@ -23,7 +30,20 @@ typedef struct
 	u8 DispAddY;
 	u8 DispLenth;
 }DISP_CHAR;
+typedef struct
+{
+	u8 DispAddX;
+	u8 DispAddY;
+	u8 DispHigh;
+	u8 DispWidth;
+}DISP_ICO;
+
+#define LCD_ICO_BUF_LEN 32
+extern void api_disp_icoid_output(u8 IcoIdIndex, bool IcoDefault,bool on_off);
 extern void api_disp_all_screen_refresh(void);
-void api_disp_all_screen_refresh(void);
+extern void api_disp_all_screen_refresh(void);
 extern void api_lcd_pwr_on_hint(u8 *CharData);
+extern void api_lcd_pwr_on_hint2(u8 *CharData);
+extern void api_diap_ico_pos_get(DISP_ICO *pIcoInfo, u16 IcoID);
+extern void api_disp_ico_output(DISP_ICO IcoInfo, u8 *IcoData);
 #endif

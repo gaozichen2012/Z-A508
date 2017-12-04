@@ -37,44 +37,82 @@
 
 typedef enum
 {
-	DISP_IDCN816			= 0x00,			//base type display
-	DISP_IDCN1516			= 0x01,
-	DISP_IDASC57			= 0x02,
-	DISP_IDASC78			= 0x03,
-	DISP_IDASC816			= 0x04,
+	DISP_IDCN816		= 0x00,	//base type display
+	DISP_IDCN1516		= 0x01,
+	DISP_IDASC57		= 0x02,
+	DISP_IDASC78		= 0x03,
+	DISP_IDASC816		= 0x04,
 	DISP_IDASC816B		= 0x05,
-	DISP_IDASCARI			= 0x06,
-	DISP_IDASCTNR			= 0x07,
+	DISP_IDASCARI		= 0x06,
+	DISP_IDASCTNR		= 0x07,
 
-	DISP_IDCN816N			= 0x10,			//distance compress display
+	DISP_IDCN816N		= 0x10,	//distance compress display
 	DISP_IDCN1516N		= 0x11,
-	DISP_IDASC57N			= 0x12,
-	DISP_IDASC78N			= 0x13,
+	DISP_IDASC57N		= 0x12,
+	DISP_IDASC78N		= 0x13,
 	DISP_IDASC816N		= 0x14,
 	DISP_IDASC816BN		= 0x15,
 
-	DISP_IDCN816R			= 0x20,			//reversed display cn816
-	DISP_IDCN1516R		= 0x21,			//reversed display cn1516
-	DISP_IDASC57R			= 0x22,			//reversed display asc57
-	DISP_IDASC78R			= 0x23,			//reversed display asc78
-	DISP_IDASC816R		= 0x24,			//reversed display asc816
-	DISP_IDASC816BR		= 0x25,			//reversed display asc816b
+	DISP_IDCN816R		= 0x20,	//reversed display cn816
+	DISP_IDCN1516R		= 0x21,	//reversed display cn1516
+	DISP_IDASC57R		= 0x22,	//reversed display asc57
+	DISP_IDASC78R		= 0x23,	//reversed display asc78
+	DISP_IDASC816R		= 0x24,	//reversed display asc816
+	DISP_IDASC816BR		= 0x25,	//reversed display asc816b
 
-	DISP_IDCN816NR		= 0x30,			//distance compress and reversed display
+	DISP_IDCN816NR		= 0x30,	//distance compress and reversed display
 	DISP_IDCN1516NR		= 0x31,
 	DISP_IDASC57NR		= 0x32,
 	DISP_IDASC78NR		= 0x33,
 	DISP_IDASC816NR		= 0x34,
-	DISP_IDASC816BNR		= 0x35,
+	DISP_IDASC816BNR	= 0x35,
 
-	DISP_IDCNASC57		= 0x82,			//CN1516 & ASC57 commix display
-	DISP_IDCNASC78		= 0x83,			//CN1516 & ASC78
-	DISP_IDCNASC816		= 0x84,			//CN1516 & ASC816
-	DISP_IDCNASC816B		= 0x85,		//CN1516 & ASC816B
+	DISP_IDCNASC57		= 0x82, //CN1516 & ASC57 commix display//小号英文字体（中文无效）
+	DISP_IDCNASC78		= 0x83,	//CN1516 & ASC78 //小号英文字体加粗（中文无效）
+	DISP_IDCNASC816		= 0x84,	//CN1516 & ASC816//最大字体（中文有效）
+	DISP_IDCNASC816B	= 0x85,	//CN1516 & ASC816B//最大字体加粗（中文有效）
 	
-	DISP_ID12X12			= 0xA0			//12*12				
+	DISP_ID12X12		= 0xA0	//12*12				
 }DISP_TYPE;
+typedef enum
+{
+	eICO_IDBATT		= 0,
+	eICO_IDBATT1    = 1,
+	eICO_IDBATT2    = 2,
+	eICO_IDBATT3    = 3,
+	eICO_IDBATT4    = 4,
+	eICO_IDBATT5    = 5,
+	eICO_IDLOCKED   = 6,
+	eICO_IDMESSAGE  = 7,
+	eICO_IDRXFULL   = 8,
+	eICO_IDRXNULL   = 9,
+	eICO_IDSCAN     = 10,
+	eICO_IDSCANPA   = 11, //scan pause
+	eICO_IDSPEAKER  = 12, //speaker
+	eICO_IDTALKAR   = 13,
+	eICO_IDTX       = 14,
+	eICO_IDVOX      = 15,
+	eICO_IDEmergency= 16,
+	eICO_IDPOWERL   = 17,
+	eICO_IDPOWERM   = 18,
+	eICO_IDPOWERH   = 19,
+	eICO_IDTemper   = 20,
+	eICO_IDMONITER  = 21,
+	eICO_IDBANDWIDTHW = 22,
+	eICO_IDBANDWIDTHN = 23,
 
+	//zengdi
+	eICO_IDOffStart,
+	eICO_IDVOXOff,
+	eICO_IDSCANOff,
+	eICO_IDLOCKEDOff,
+	eICO_IDTALKAROff,
+	eICO_IDMESSAGEOff,
+	eICO_IDSPEAKEROff,
+	eICO_IDMONITEROff,	
+	eICO_IDEMERGENCYOff,
+	eICO_IDOffEnd,
+}DISP_ICOID;
 typedef enum
 {
 	egImage_NONE			= 0,

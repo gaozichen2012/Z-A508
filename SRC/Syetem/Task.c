@@ -57,34 +57,30 @@ void Task_RunStart(void)
 
   if(BootProcess_SIMST_Flag==1)//收到模块开机指令:SIMST:1
   {
+    api_disp_icoid_output( eICO_IDRXNULL, TRUE, TRUE);//GPRS无信号图标
+    api_disp_icoid_output( eICO_IDBATT3, TRUE, TRUE);//电池电量3级
     BEEP_Time(50);
     
     v=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)ucCLVL,strlen((char const *)ucCLVL));//
-    DEL_SetTimer(0,10);
-    while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+    Delay_100ms(1);//0.1s
     v=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)ucVGR,strlen((char const *)ucVGR));//
-    DEL_SetTimer(0,10);
-    while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+    Delay_100ms(1);//0.1s
     v=ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)ucCODECCTL,strlen((char const *)ucCODECCTL));//
-    DEL_SetTimer(0,10);
-    while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+    Delay_100ms(1);//0.1s
     v=ApiAtCmd_WritCommand(ATCOMM0_OSSYSHWID,(u8 *)ucOSSYSHWID,strlen((char const *)ucOSSYSHWID));//
-    DEL_SetTimer(0,10);
-    while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+    Delay_100ms(1);//0.1s
     v=ApiAtCmd_WritCommand(ATCOMM4_GD83Mode,(u8 *)ucPrefmode,strlen((char const *)ucPrefmode));//1.发送PPPCFG
-    DEL_SetTimer(0,10);
-    while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+    Delay_100ms(1);//0.1s
     v=ApiAtCmd_WritCommand(ATCOMM2_ZTTS_Abell,(u8 *)ucZTTS_Abell,strlen((char const *)ucZTTS_Abell));//播报游标广域对讲机
     api_lcd_pwr_on_hint(" 欧标广域对讲机 ");
-    
-    DEL_SetTimer(0,250);
-    while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
-    
+    Delay_100ms(25);//2.5s
     v=ApiAtCmd_WritCommand(ATCOMM1_PPPCFG,(u8 *)ucPPPCFG,strlen((char const *)ucPPPCFG));//1.发送PPPCFG
     BootProcess_SIMST_Flag=0;
     VOICE_SetOutput(ATVOICE_FreePlay,"1c64227d517fdc7e",16);//播报搜索网络
+    //Delay_100ms(10);//1s
     api_lcd_pwr_on_hint("   搜索网络...  ");
     v=ApiAtCmd_WritCommand(ATCOMM6_CSQ,(u8 *)ucCSQ,strlen((char const *)ucCSQ));//CSQ?
+    Delay_100ms(1);//0.1s
   }
   else
   {
@@ -92,25 +88,22 @@ void Task_RunStart(void)
     {
       VOICE_SetOutput(ATVOICE_FreePlay,"c0680d4e30526153",16);//播报检不到卡
       api_lcd_pwr_on_hint("    检不到卡    ");
-      DEL_SetTimer(0,1000);
-      while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+      Delay_100ms(100);//10s
     }
   }
   if(CSQ_Flag==1)//CSQ?
   {
+    api_disp_icoid_output( eICO_IDRXFULL, TRUE, TRUE);//GPRS三格信号图标
     api_lcd_pwr_on_hint("   正在登陆...    ");
     if(BootProcess_PPPCFG_Flag==1)//如果收到^PPPCFG
     {
       BootProcess_PPPCFG_Flag=0;
-      DEL_SetTimer(0,100);
-      while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+      Delay_100ms(10);//1s
       ApiPocCmd_WritCommand(PocComm_SetParam,ucSetParamConfig,strlen((char const *)ucSetParamConfig));//配置echat账号、IP
-      DEL_SetTimer(0,400);
-      while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+      Delay_100ms(40);//4s
       VOICE_SetOutput(ATVOICE_FreePlay,"636b28577b764696",16);//播报正在登陆
       api_lcd_pwr_on_hint("   正在登陆...    ");
-      DEL_SetTimer(0,100);
-      while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+    //  Delay_100ms(10);//1s
       v=ApiPocCmd_WritCommand(PocComm_OpenPOC,ucPocOpenConfig,strlen((char const *)ucPocOpenConfig));
     }
   }
@@ -118,8 +111,7 @@ void Task_RunStart(void)
   {
     if(CSQ_Flag==2)
     {
-      DEL_SetTimer(0,1000);
-      while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+      Delay_100ms(50);//5s
       VOICE_SetOutput(ATVOICE_FreePlay,"1c64227d517fdc7e",16);//播报搜索网络
       api_lcd_pwr_on_hint("   搜索网络...  ");
       v=ApiAtCmd_WritCommand(ATCOMM6_CSQ,(u8 *)ucCSQ,strlen((char const *)ucCSQ));//CSQ?
@@ -137,7 +129,14 @@ void Task_RunNormalOperation(void)
     case 0://默认PTT状态
       Set_RedLed(LED_ON);
       v=ApiPocCmd_WritCommand(PocComm_StartPTT,ucStartPTT,strlen((char const *)ucStartPTT));
-      while(ReadInput_KEY_PTT==0);
+      
+      while(ReadInput_KEY_PTT==0)
+      {
+        api_disp_icoid_output( eICO_IDTX, TRUE, TRUE);//发射信号图标
+        api_disp_all_screen_refresh();//刷新屏幕数据
+      }
+      api_disp_icoid_output( eICO_IDTX, TRUE, FALSE);//清除发射信号图标
+      api_disp_all_screen_refresh();//刷新屏幕数据
       v=ApiPocCmd_WritCommand(PocComm_EndPTT,ucEndPTT,strlen((char const *)ucEndPTT));
       break;
     case 1://=1，进入某群组
@@ -213,4 +212,17 @@ void Task_RunNormalOperation(void)
 void TASK_WriteFreq(void)
 {
 
+}
+void Delay_100ms(u8 T)
+{
+  u16 i;
+  u8 j,k,l;
+    for(j = 0; j < 83; j++)
+    for(l = 0; l < 10; l++)
+        for(k = 0; k < 100; k++)
+          for(i = 0; i < T; i++)
+      {
+        nop();
+      }
+  return;
 }

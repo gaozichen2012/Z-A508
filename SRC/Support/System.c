@@ -103,18 +103,32 @@ u8 t=0;
   api_lcd_pwr_on_hint("     ABELL    ");
 
   BEEP_Time(1);
-/****打开POC应用**********/
-  //DEL_SetTimer(0,1500);
-  //while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
-
-  //DEL_SetTimer(0,100);
- // DEL_SetTimer(1,100);
-/*****************************/
-    r=ApiAtCmd_WritCommand(ATCOMM3_GD83Reset,(u8 *)ucGD83Reset,strlen((char const *)ucGD83Reset));
+  r=ApiAtCmd_WritCommand(ATCOMM3_GD83Reset,(u8 *)ucGD83Reset,strlen((char const *)ucGD83Reset));
   TaskDrvObj.NewId=Task_Start;
   while(1)
   {
-    LED_Test();
+#if 0//调试显示屏界面
+    Delay_100ms(100);
+    Set_GreenLed(LED_ON);
+    Delay_100ms(1);
+    Set_GreenLed(LED_OFF);
+   /* if(ReadInput_KEY_PTT==0)
+    {
+      api_disp_icoid_output( eICO_IDRXFULL, TRUE, FALSE);
+      api_disp_all_screen_refresh();
+    }
+    else
+    {
+        api_disp_icoid_output( eICO_IDRXNULL, TRUE, TRUE);
+        api_disp_all_screen_refresh();
+    }
+    if(ReadInput_KEY_2==0)
+    {
+      drv_htg_clr_allscr();//清屏
+    }
+    else
+    {}*/
+#else
 
     DEL_Renew();
     switch(TaskDrvObj.NewId)
@@ -129,8 +143,6 @@ u8 t=0;
     case Task_NormalOperation:
       Task_RunNormalOperation();
       break;
-      
-        
     case TASK_WRITEFREQ:
       TASK_WriteFreq();
       break;
@@ -138,6 +150,8 @@ u8 t=0;
       break;
       
     }
+#endif   
+    
 /*
 #if 1//按键控制灯亮灭   
     Keyboard_Test();
@@ -216,4 +230,9 @@ u8 t=0;
 #endif
   }*/
 }
+}
+
+TASK_CODE GetTaskId(void)
+{
+  return TaskDrvObj.NewId;
 }

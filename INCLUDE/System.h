@@ -36,5 +36,5 @@ typedef enum {					//switch select string code
 
 
 SYSAPI	void main_app(void);
-
+SYSAPI TASK_CODE GetTaskId(void);
 #endif

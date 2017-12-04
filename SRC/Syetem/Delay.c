@@ -31,6 +31,7 @@ typedef struct {
 }DEL_DRV;
 
 static DEL_DRV	DelDrvObj;
+static void DEL_100msProcess(void);
 static void DEL_500msProcess(void);
 static void DEL_1msProcess(void);
 static void DEL_TimerRenew(void);
@@ -89,6 +90,7 @@ void DEL_Interrupt(void)
 void DEL_Renew(void) 
 {
   DEL_1msProcess();
+  DEL_100msProcess();
   DEL_500msProcess();
   return;
 }
@@ -184,6 +186,16 @@ static void DEL_TimerRenew(void)
     {
       DelDrvObj.iTimer1--;
     }
+  }
+  return;
+}
+
+static void DEL_100msProcess(void)
+{
+  if (DelDrvObj.Msg.Bit.b100ms == DEL_RUN)
+  {
+    DelDrvObj.Msg.Bit.b100ms = DEL_IDLE;
+    LED_IntOutputRenew();//LED output renew process
   }
   return;
 }
