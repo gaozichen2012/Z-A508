@@ -443,15 +443,7 @@ void ApiGetPocBuf(void)
 }
 
 
-void ListenState(void)
+u16 GetPlayState(void)
 {
-  if(PocCmdDrvobj.WorkState.UseState.Msg.Bits.bPlayState==0)
-  {
-    Set_GreenLed(LED_OFF);
-  }
-  if(PocCmdDrvobj.WorkState.UseState.Msg.Bits.bPlayState==1)
-  {
-    Set_GreenLed(LED_ON);
-
-  }
+  return PocCmdDrvobj.WorkState.UseState.Msg.Bits.bPlayState;
 }

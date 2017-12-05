@@ -41,6 +41,7 @@ static AtCmdDrv AtCmdDrvobj;
 
 u8 BootProcess_SIMST_Flag=0;
 u8 BootProcess_PPPCFG_Flag=0;
+u8 BootProcess_PPPCFG_Flag_Zanshi=1;//¡Ÿ ±¥˙ÃÊPPPCFGºÏ≤‚
 u8 BootProcess_OpenPoc_Flag=0;
 u8 VoiceEnd_Flag=0;
 u8 CSQ_Flag=0;

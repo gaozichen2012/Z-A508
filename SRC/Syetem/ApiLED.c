@@ -18,6 +18,12 @@ void LED_IntOutputRenew(void)
   }
   else
   {
+    if(GetPlayState()==1)
+    {
+      Set_GreenLed(LED_ON);
+    }
+    else
+    {
     LED_Conut++;
     if(LED_Conut==20)
     {
@@ -27,6 +33,7 @@ void LED_IntOutputRenew(void)
     {
       Set_GreenLed(LED_OFF);
       LED_Conut=0;
+    }
     }
   }
 }

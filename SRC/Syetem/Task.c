@@ -28,13 +28,13 @@ u8 *ucSetParamConfig    = "01000069703d302e302e302e303b69643d3139383030333038363
 #if 0//8号
 u8 *ucSetParamConfig    = "01000069703d302e302e302e303b69643d31393830303330383636383b7077643d3131313131313b00";
 #endif
-#if 0//9号
+#if 1//9号
 u8 *ucSetParamConfig    = "01000069703d302e302e302e303b69643d31393830303330383636393b7077643d3131313131313b00";
 #endif
 #if 0//0号
 u8 *ucSetParamConfig    = "01000069703d302e302e302e303b69643d31393830303330383637303b7077643d3131313131313b00";
 #endif
-#if 1//1号
+#if 0//1号
 u8 *ucSetParamConfig    = "01000069703d302e302e302e303b69643d31393830303330383637313b7077643d3131313131313b00";
 #endif
 u8 *ucStartPTT                  = "0B0000";
@@ -42,7 +42,7 @@ u8 *ucEndPTT                    = "0C0000";
 u8 *ucRequestUserListInfo       = "0E000000000001";
 u8 *ucCLVL                       = "AT+CLVL=3";//音量增益7
 u8 *ucVGR                       = "AT+VGR=3";//音量增益7
-u8 *ucCODECCTL                  = "at^codecctl=4000,3c00,0";//音量增益
+u8 *ucCODECCTL                  = "at^codecctl=4000,1e00,0";//音量增益 3c00
 u8 *ucOSSYSHWID                 = "AT^OSSYSHWID=1";
 u8 *ucPrefmode                  = "AT^prefmode=4";
 u8 *ucCSQ                       = "AT+CSQ?";
@@ -69,7 +69,7 @@ void Task_RunStart(void)
     Delay_100ms(1);//0.1s
     v=ApiAtCmd_WritCommand(ATCOMM0_OSSYSHWID,(u8 *)ucOSSYSHWID,strlen((char const *)ucOSSYSHWID));//
     Delay_100ms(1);//0.1s
-    v=ApiAtCmd_WritCommand(ATCOMM4_GD83Mode,(u8 *)ucPrefmode,strlen((char const *)ucPrefmode));//1.发送PPPCFG
+    v=ApiAtCmd_WritCommand(ATCOMM4_GD83Mode,(u8 *)ucPrefmode,strlen((char const *)ucPrefmode));//
     Delay_100ms(1);//0.1s
     v=ApiAtCmd_WritCommand(ATCOMM2_ZTTS_Abell,(u8 *)ucZTTS_Abell,strlen((char const *)ucZTTS_Abell));//播报游标广域对讲机
     api_lcd_pwr_on_hint(" 欧标广域对讲机 ");
@@ -77,10 +77,13 @@ void Task_RunStart(void)
     v=ApiAtCmd_WritCommand(ATCOMM1_PPPCFG,(u8 *)ucPPPCFG,strlen((char const *)ucPPPCFG));//1.发送PPPCFG
     BootProcess_SIMST_Flag=0;
     VOICE_SetOutput(ATVOICE_FreePlay,"1c64227d517fdc7e",16);//播报搜索网络
-    //Delay_100ms(10);//1s
+    //DEL_SetTimer(0,100);
+    //while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
     api_lcd_pwr_on_hint("   搜索网络...  ");
     v=ApiAtCmd_WritCommand(ATCOMM6_CSQ,(u8 *)ucCSQ,strlen((char const *)ucCSQ));//CSQ?
-    Delay_100ms(1);//0.1s
+    //Delay_100ms(100);//0.1s
+    //DEL_SetTimer(0,100);
+    //while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
   }
   else
   {
@@ -94,10 +97,10 @@ void Task_RunStart(void)
   if(CSQ_Flag==1)//CSQ?
   {
     api_disp_icoid_output( eICO_IDRXFULL, TRUE, TRUE);//GPRS三格信号图标
-    api_lcd_pwr_on_hint("   正在登陆...    ");
-    if(BootProcess_PPPCFG_Flag==1)//如果收到^PPPCFG
+    api_lcd_pwr_on_hint("   正在登陆..     ");
+    if(BootProcess_PPPCFG_Flag_Zanshi==1)//如果收到^PPPCFG//因为有时收不到该指令，临时屏蔽，后期加上
     {
-      BootProcess_PPPCFG_Flag=0;
+      
       Delay_100ms(10);//1s
       ApiPocCmd_WritCommand(PocComm_SetParam,ucSetParamConfig,strlen((char const *)ucSetParamConfig));//配置echat账号、IP
       Delay_100ms(40);//4s
@@ -105,6 +108,7 @@ void Task_RunStart(void)
       api_lcd_pwr_on_hint("   正在登陆...    ");
     //  Delay_100ms(10);//1s
       v=ApiPocCmd_WritCommand(PocComm_OpenPOC,ucPocOpenConfig,strlen((char const *)ucPocOpenConfig));
+      BootProcess_PPPCFG_Flag_Zanshi=0;
     }
   }
   else

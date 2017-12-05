@@ -24,7 +24,7 @@ typedef enum{
 extern bool ApiPocCmd_WritCommand(PocCommType id, u8 *buf, u16 len);
 extern void ApiPocCmd_10msRenew(void);
 extern bool ApiAtCmd_GetLoginState(void);
-extern void ListenState(void);
+extern u16 GetPlayState(void);
 extern void ApiGetPocBuf(void);
 extern u8 *ApiAtCmd_GetMainWorkName(void);
 extern u8 ApiAtCmd_GetMainWorkNameLen(void);

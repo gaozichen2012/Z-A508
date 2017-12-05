@@ -16,6 +16,7 @@ typedef enum{
 
 extern u8 BootProcess_SIMST_Flag;
 extern u8 BootProcess_PPPCFG_Flag;
+extern u8 BootProcess_PPPCFG_Flag_Zanshi;//¡Ÿ ±¥˙ÃÊPPPCFGºÏ≤‚
 extern u8 BootProcess_OpenPoc_Flag;
 extern u8 VoiceEnd_Flag;
 extern u8 KeyDownUpChoose_GroupOrUser_Flag;
