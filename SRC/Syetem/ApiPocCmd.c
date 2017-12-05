@@ -208,6 +208,8 @@ bool ApiPocCmd_WritCommand(PocCommType id, u8 *buf, u16 len)
     break;
   case PocComm_Logout:
   case PocComm_Cancel:
+    DrvGD83_UART_TxCommand(buf, len);
+    break;
   case PocComm_ModifyPwd:
     break;
   case PocComm_EnterGroup:

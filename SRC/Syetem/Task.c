@@ -22,7 +22,7 @@ u8 *ucSetParamConfig    = "01000069703D302E302E302E303B69643D3139383030333037343
 #if 0//6ºÅ
 u8 *ucSetParamConfig    = "01000069703D302E302E302E303B69643D31393830303330373437363B7077643D3131313131313B00";
 #endif
-#if 1//7ºÅ
+#if 0//7ºÅ
 u8 *ucSetParamConfig    = "01000069703d302e302e302e303b69643d31393830303330383636373b7077643d3131313131313b00";
 #endif
 #if 0//8ºÅ
@@ -34,7 +34,7 @@ u8 *ucSetParamConfig    = "01000069703d302e302e302e303b69643d3139383030333038363
 #if 0//0ºÅ
 u8 *ucSetParamConfig    = "01000069703d302e302e302e303b69643d31393830303330383637303b7077643d3131313131313b00";
 #endif
-#if 0//1ºÅ
+#if 1//1ºÅ
 u8 *ucSetParamConfig    = "01000069703d302e302e302e303b69643d31393830303330383637313b7077643d3131313131313b00";
 #endif
 u8 *ucStartPTT                  = "0B0000";
@@ -146,6 +146,8 @@ void Task_RunNormalOperation(void)
       v=ApiPocCmd_WritCommand(PocComm_EnterGroup,ucPocOpenConfig,strlen((char const *)ucPocOpenConfig));
       Key_Flag_0=1;
       KeyDownUpChoose_GroupOrUser_Flag=0;
+      KeyUpCount=0;
+      KeyDownCount=0;
       break;
     case 2://=2,ºô½ÐÄ³ÓÃ»§
       VOICE_SetOutput(ATVOICE_FreePlay,"f25d09902d4e",12);//²¥±¨ÒÑÑ¡ÖÐ

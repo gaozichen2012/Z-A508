@@ -1,10 +1,11 @@
 #include "AllHead.h"
 u8 *ucKeyUp                = "10000003";
 u8 *ucKeyDown              = "10000004";
+u8 *ucQuitPersonalCalling  = "0A0000ffffffff";
 s8 GroupCallingNum=1;
 s8 PersonalCallingNum=0;
 u8 KeyDownCount=0;
-u8 KeyUpCount=0;
+s8 KeyUpCount=0;
 u8 KeyUpPersonalCallingCount=0;
 s8 KeyDownPersonalCallingCount=0;
 u32 get_key_value(u8 scan_value);
@@ -109,7 +110,7 @@ void Keyboard_Test(void)
     if(GroupCallingNum>ApiAtCmd_GetGroupNum())
     {
       GroupCallingNum=1;
-      KeyUpCount=0;
+      KeyUpCount=1-ApiAtCmd_GetMainGroupId();
     }
       VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetGroupName(GroupCallingNum),ApiAtCmd_GetGroupNameLen(GroupCallingNum));
     KeyDownUpChoose_GroupOrUser_Flag=1;
@@ -121,6 +122,9 @@ void Keyboard_Test(void)
     break;
   case 0x00400000://cancel
     api_lcd_pwr_on_hint("欧标按键:Cancel");
+    r=ApiPocCmd_WritCommand(PocComm_Cancel,(u8 *)ucQuitPersonalCalling,strlen((char const *)ucQuitPersonalCalling));
+    Key_Flag_1=1;//按键延时标志位
+    Key_PersonalCalling_Flag=0;//进入组呼标志位
     break;  
   default:
     break;
