@@ -137,6 +137,7 @@ u8 t=0;
       Task_RunStart();
       if(ApiAtCmd_GetLoginState()==TRUE)//登录成功
       {
+        api_lcd_pwr_on_hint("当前群组：01  ");
         TaskDrvObj.NewId=Task_NormalOperation;
       }
       break;
