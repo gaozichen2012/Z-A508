@@ -220,7 +220,6 @@ static void DEL_1msProcess(void)
     ApiCaretCmd_10msRenew();
     ApiAtCmd_10msRenew();
     ApiPocCmd_10msRenew();
-
   }
   return;
 }

@@ -4,10 +4,8 @@ u8 *ucKeyDown              = "10000004";
 u8 *ucQuitPersonalCalling  = "0A0000ffffffff";
 s8 GroupCallingNum=1;
 s8 PersonalCallingNum=0;
-u8 KeyDownCount=0;
-s8 KeyUpCount=0;
-u8 KeyUpPersonalCallingCount=0;
-s8 KeyDownPersonalCallingCount=0;
+s8 KeyUpDownCount=0;//组呼上下键计数
+s8 KeyPersonalCallingCount=0;//个呼上下键计数
 u32 get_key_value(u8 scan_value);
 u8 Key_Flag_1=0;
 void Keyboard_Test(void)
@@ -41,25 +39,26 @@ void Keyboard_Test(void)
   case 0x00010000://dn
     if(Key_PersonalCalling_Flag==1)//如果按下个呼键
     {
-      KeyDownPersonalCallingCount++;
-      PersonalCallingNum=ApiAtCmd_GetUserNum()-KeyDownPersonalCallingCount;//个呼计数从零开始
+      KeyPersonalCallingCount--;
+      PersonalCallingNum=KeyPersonalCallingCount;//个呼计数从零开始
       if(PersonalCallingNum<0)
       {
         PersonalCallingNum=ApiAtCmd_GetUserNum()-1;
-        KeyDownPersonalCallingCount=1;
+        KeyPersonalCallingCount=ApiAtCmd_GetUserNum()-1;
       }
       VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(PersonalCallingNum),ApiAtCmd_GetUserNameLen(PersonalCallingNum));//播报按上键之后对应的用户名
-      api_lcd_pwr_on_hint("对象:01 个呼模式");
+      api_lcd_pwr_on_hint("对象:   个呼模式");
+      api_lcd_pwr_on_hint2(HexToChar_PersonalCallingNum());
       KeyDownUpChoose_GroupOrUser_Flag=2;
     }
     else
     {
-      KeyDownCount++;
-      GroupCallingNum=ApiAtCmd_GetMainGroupId()-KeyDownCount;
+      KeyUpDownCount--;
+      GroupCallingNum=ApiAtCmd_GetMainGroupId()+KeyUpDownCount;
       if(GroupCallingNum<=0)
       {
         GroupCallingNum=ApiAtCmd_GetGroupNum();
-        KeyDownCount=ApiAtCmd_GetMainGroupId()-ApiAtCmd_GetGroupNum();
+        KeyUpDownCount=ApiAtCmd_GetMainGroupId()-ApiAtCmd_GetGroupNum();
       }
       VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetGroupName(GroupCallingNum),ApiAtCmd_GetGroupNameLen(GroupCallingNum));
       api_lcd_pwr_on_hint("群组:   组呼模式");//显示汉字
@@ -96,25 +95,26 @@ void Keyboard_Test(void)
   case 0x00000400://up
     if(Key_PersonalCalling_Flag==1)//如果按下个呼键
     {
-    KeyUpPersonalCallingCount++;
-    PersonalCallingNum=KeyUpPersonalCallingCount;//个呼计数从零开始
+    KeyPersonalCallingCount++;
+    PersonalCallingNum=KeyPersonalCallingCount;//个呼计数从零开始
     if(PersonalCallingNum>ApiAtCmd_GetUserNum()-1)
     {
-      KeyUpPersonalCallingCount=0;
+      KeyPersonalCallingCount=0;
       PersonalCallingNum=0;
     }
     VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(PersonalCallingNum),ApiAtCmd_GetUserNameLen(PersonalCallingNum));//播报按上键之后对应的用户名
-    api_lcd_pwr_on_hint("对象:03 个呼模式");
+    api_lcd_pwr_on_hint("对象:   个呼模式");
+    api_lcd_pwr_on_hint2(HexToChar_PersonalCallingNum());
     KeyDownUpChoose_GroupOrUser_Flag=2;
     }
     else
     {
-      KeyUpCount++;
-    GroupCallingNum=ApiAtCmd_GetMainGroupId()+KeyUpCount;
+      KeyUpDownCount++;
+    GroupCallingNum=ApiAtCmd_GetMainGroupId()+KeyUpDownCount;
     if(GroupCallingNum>ApiAtCmd_GetGroupNum())
     {
       GroupCallingNum=1;
-      KeyUpCount=1-ApiAtCmd_GetMainGroupId();
+      KeyUpDownCount=1-ApiAtCmd_GetMainGroupId();
     }
     VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetGroupName(GroupCallingNum),ApiAtCmd_GetGroupNameLen(GroupCallingNum));
     api_lcd_pwr_on_hint("群组:   组呼模式");//显示汉字

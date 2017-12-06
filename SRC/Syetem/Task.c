@@ -31,7 +31,7 @@ u8 *ucSetParamConfig    = "01000069703d302e302e302e303b69643d3139383030333038363
 #if 0//9号
 u8 *ucSetParamConfig    = "01000069703d302e302e302e303b69643d31393830303330383636393b7077643d3131313131313b00";
 #endif
-#if 0//0号
+#if 0//0号//调度员
 u8 *ucSetParamConfig    = "01000069703d302e302e302e303b69643d31393830303330383637303b7077643d3131313131313b00";
 #endif
 #if 1//1号
@@ -152,8 +152,7 @@ void Task_RunNormalOperation(void)
       v=ApiPocCmd_WritCommand(PocComm_EnterGroup,ucPocOpenConfig,strlen((char const *)ucPocOpenConfig));
       Key_Flag_0=1;
       KeyDownUpChoose_GroupOrUser_Flag=0;
-      KeyUpCount=0;
-      KeyDownCount=0;
+      KeyUpDownCount=0;
       break;
     case 2://=2,呼叫某用户
       VOICE_SetOutput(ATVOICE_FreePlay,"f25d09902d4e",12);//播报已选中
@@ -162,6 +161,7 @@ void Task_RunNormalOperation(void)
       v=ApiPocCmd_WritCommand(PocComm_Invite,ucPocOpenConfig,strlen((char const *)ucPocOpenConfig));
       Key_Flag_0=1;
       KeyDownUpChoose_GroupOrUser_Flag=0;
+     // KeyPersonalCallingCount=0;
       break;
     default:
       break;
@@ -195,28 +195,26 @@ void Task_RunNormalOperation(void)
   
   if(ReadInput_KEY_2==0)//个呼键
   {
-    api_lcd_pwr_on_hint("对象:02 个呼模式");
+    api_lcd_pwr_on_hint("对象:   个呼模式");
+    api_lcd_pwr_on_hint2(HexToChar_MainUserId());
     
     x++;
     Key_PersonalCalling_Flag=1;
-    //VOICE_SetOutput(ATVOICE_FreePlay,"2a4e7c542000106258540990e962",28);//个呼成员选择
-    //DEL_SetTimer(0,200);
-    //while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+    VOICE_SetOutput(ATVOICE_FreePlay,"2a4e7c542000106258540990e962",28);//个呼成员选择
+    DEL_SetTimer(0,200);
+    while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
     
     v=ApiPocCmd_WritCommand(PocComm_UserListInfo,ucRequestUserListInfo,strlen((char const *)ucRequestUserListInfo));
-    DEL_SetTimer(0,15);
-    while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
-    if(x>=2)
-    {
-      x=0;
-    DEL_SetTimer(0,100);
-    while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
-      //v=ApiPocCmd_WritCommand(PocComm_Login,"0",0);
-      VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(0),ApiAtCmd_GetUserNameLen(0));
+    VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(0),ApiAtCmd_GetUserNameLen(0));
     KeyDownUpChoose_GroupOrUser_Flag=2;
-    }
   }
   Keyboard_Test();
+  if(POC_GetGroupInformationFlag==1)//收到86则显示群组信息，解决开机不按按键不显示群组信息
+  {
+    POC_GetGroupInformationFlag=0;
+    api_lcd_pwr_on_hint("群组:   组呼模式");//显示汉字
+    api_lcd_pwr_on_hint2(HexToChar_MainGroupId());//显示数据
+  }
 }
 
 void TASK_WriteFreq(void)
