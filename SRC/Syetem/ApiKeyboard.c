@@ -21,22 +21,22 @@ void Keyboard_Test(void)
   switch(ulAllKeyID)
   {
   case 0x00000002://1
-    api_lcd_pwr_on_hint("欧标按键:1     ");
+    //api_lcd_pwr_on_hint("欧标按键:1     ");
     break; 
   case 0x00000008://3
-    api_lcd_pwr_on_hint("欧标按键:3     ");
+    //api_lcd_pwr_on_hint("欧标按键:3     ");
     break;
   case 0x00000080://4
-    api_lcd_pwr_on_hint("欧标按键:4     ");
+    //api_lcd_pwr_on_hint("欧标按键:4     ");
     break;
   case 0x00000200://6
-    api_lcd_pwr_on_hint("欧标按键:6     ");
+    //api_lcd_pwr_on_hint("欧标按键:6     ");
     break;
   case 0x00002000://7
-    api_lcd_pwr_on_hint("欧标按键:7     ");
+    //api_lcd_pwr_on_hint("欧标按键:7     ");
     break;
   case 0x00008000://9
-    api_lcd_pwr_on_hint("欧标按键:9     ");
+    //api_lcd_pwr_on_hint("欧标按键:9     ");
     break;
   case 0x00010000://dn
     if(Key_PersonalCalling_Flag==1)//如果按下个呼键
@@ -49,6 +49,7 @@ void Keyboard_Test(void)
         KeyDownPersonalCallingCount=1;
       }
       VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(PersonalCallingNum),ApiAtCmd_GetUserNameLen(PersonalCallingNum));//播报按上键之后对应的用户名
+      api_lcd_pwr_on_hint("对象:01 个呼模式");
       KeyDownUpChoose_GroupOrUser_Flag=2;
     }
     else
@@ -61,34 +62,36 @@ void Keyboard_Test(void)
         KeyDownCount=ApiAtCmd_GetMainGroupId()-ApiAtCmd_GetGroupNum();
       }
       VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetGroupName(GroupCallingNum),ApiAtCmd_GetGroupNameLen(GroupCallingNum));
+      api_lcd_pwr_on_hint("群组:   组呼模式");//显示汉字
+      api_lcd_pwr_on_hint2(HexToChar_GroupCallingNum());//显示数据
       KeyDownUpChoose_GroupOrUser_Flag=1;
     }
     Key_Flag_1=1;
-    api_lcd_pwr_on_hint("欧标按键:Down  ");
+    //api_lcd_pwr_on_hint("欧标按键:Down  ");
     break;  
   case 0x00000010://ok
-    api_lcd_pwr_on_hint("欧标按键:OK    ");
+    //api_lcd_pwr_on_hint("欧标按键:OK     ");
     break;
   case 0x00800000://menu   
-    api_lcd_pwr_on_hint("欧标按键:Menu  ");
+    //api_lcd_pwr_on_hint("欧标按键:Menu   ");
     break;   
   case 0x00000004://2
-    api_lcd_pwr_on_hint("欧标按键:2     ");
+    //api_lcd_pwr_on_hint("欧标按键:2      ");
     break;  
   case 0x00080000://*
-    api_lcd_pwr_on_hint("欧标按键:*     ");
+    //api_lcd_pwr_on_hint("欧标按键:*      ");
     break;  
   case 0x00000100://5
-    api_lcd_pwr_on_hint("欧标按键:5     ");
+    //api_lcd_pwr_on_hint("欧标按键:5      ");
     break;  
   case 0x00100000://0
-    api_lcd_pwr_on_hint("欧标按键:0     ");
+    //api_lcd_pwr_on_hint("欧标按键:0      ");
     break;  
   case 0x00004000://8
-    api_lcd_pwr_on_hint("欧标按键:8     ");
+    //api_lcd_pwr_on_hint("欧标按键:8      ");
     break;  
   case 0x00200000://#
-    api_lcd_pwr_on_hint("欧标按键:#     ");
+    //api_lcd_pwr_on_hint("欧标按键:#      ");
     break;  
   case 0x00000400://up
     if(Key_PersonalCalling_Flag==1)//如果按下个呼键
@@ -101,6 +104,7 @@ void Keyboard_Test(void)
       PersonalCallingNum=0;
     }
     VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(PersonalCallingNum),ApiAtCmd_GetUserNameLen(PersonalCallingNum));//播报按上键之后对应的用户名
+    api_lcd_pwr_on_hint("对象:03 个呼模式");
     KeyDownUpChoose_GroupOrUser_Flag=2;
     }
     else
@@ -112,17 +116,21 @@ void Keyboard_Test(void)
       GroupCallingNum=1;
       KeyUpCount=1-ApiAtCmd_GetMainGroupId();
     }
-      VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetGroupName(GroupCallingNum),ApiAtCmd_GetGroupNameLen(GroupCallingNum));
+    VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetGroupName(GroupCallingNum),ApiAtCmd_GetGroupNameLen(GroupCallingNum));
+    api_lcd_pwr_on_hint("群组:   组呼模式");//显示汉字
+    api_lcd_pwr_on_hint2(HexToChar_GroupCallingNum());//显示数据
     KeyDownUpChoose_GroupOrUser_Flag=1;
     }
    
     
     Key_Flag_1=1;
-    api_lcd_pwr_on_hint("欧标按键:Up    ");
+    
     break;
   case 0x00400000://cancel
-    api_lcd_pwr_on_hint("欧标按键:Cancel");
+    api_lcd_pwr_on_hint("    退出单呼    ");
+    Delay_100ms(5);
     r=ApiPocCmd_WritCommand(PocComm_Cancel,(u8 *)ucQuitPersonalCalling,strlen((char const *)ucQuitPersonalCalling));
+    api_lcd_pwr_on_hint("群组:   组呼模式");
     Key_Flag_1=1;//按键延时标志位
     Key_PersonalCalling_Flag=0;//进入组呼标志位
     break;  

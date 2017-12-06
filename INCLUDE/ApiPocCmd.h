@@ -39,4 +39,7 @@ extern u8 *ApiAtCmd_GetMainUserName(void);//获取当前用户名（个呼）
 extern u8 ApiAtCmd_GetMainUserNameLen(void);
 extern u8 ApiAtCmd_GetUserNum(void);//获取在线成员数（个呼）
 extern u8 ApiAtCmd_GetMainUserId(void);//获取当前用户id（个呼）
+
+extern u8 *HexToChar_MainGroupId(void);//16进制转字符串 当前群组ID 显示屏数据使用
+extern u8 *HexToChar_GroupCallingNum(void);//16进制转字符串 按键播报当前群组ID 显示屏数据使用
 #endif

@@ -28,13 +28,13 @@ u8 *ucSetParamConfig    = "01000069703d302e302e302e303b69643d3139383030333038363
 #if 0//8号
 u8 *ucSetParamConfig    = "01000069703d302e302e302e303b69643d31393830303330383636383b7077643d3131313131313b00";
 #endif
-#if 1//9号
+#if 0//9号
 u8 *ucSetParamConfig    = "01000069703d302e302e302e303b69643d31393830303330383636393b7077643d3131313131313b00";
 #endif
 #if 0//0号
 u8 *ucSetParamConfig    = "01000069703d302e302e302e303b69643d31393830303330383637303b7077643d3131313131313b00";
 #endif
-#if 0//1号
+#if 1//1号
 u8 *ucSetParamConfig    = "01000069703d302e302e302e303b69643d31393830303330383637313b7077643d3131313131313b00";
 #endif
 u8 *ucStartPTT                  = "0B0000";
@@ -47,8 +47,10 @@ u8 *ucOSSYSHWID                 = "AT^OSSYSHWID=1";
 u8 *ucPrefmode                  = "AT^prefmode=4";
 u8 *ucCSQ                       = "AT+CSQ?";
 u8 *ucPPPCFG                    = "AT^PPPCFG=echat,ctnet@mycdma.cn,vnet.mobi";
-u8 *ucZTTS_Abell                = "AT+ZTTS=1,\"276b07687F5EDF57F95BB28B3A67\"";
+//u8 *ucZTTS_Abell                = "AT+ZTTS=1,\"276b07687F5EDF57F95BB28B3A67\"";欧标广域对讲机
+u8 *ucZTTS_Abell                = "AT+ZTTS=1,\"2d4e745113663d6d20007f5edf57f95bb28b\"";
 u8 *ucPocOpenConfig             = "0000000101";
+
 
 void Task_RunStart(void)
 {
@@ -72,7 +74,7 @@ void Task_RunStart(void)
     v=ApiAtCmd_WritCommand(ATCOMM4_GD83Mode,(u8 *)ucPrefmode,strlen((char const *)ucPrefmode));//
     Delay_100ms(1);//0.1s
     v=ApiAtCmd_WritCommand(ATCOMM2_ZTTS_Abell,(u8 *)ucZTTS_Abell,strlen((char const *)ucZTTS_Abell));//播报游标广域对讲机
-    api_lcd_pwr_on_hint(" 欧标广域对讲机 ");
+    api_lcd_pwr_on_hint("中兴易洽广域对讲");
     Delay_100ms(25);//2.5s
     v=ApiAtCmd_WritCommand(ATCOMM1_PPPCFG,(u8 *)ucPPPCFG,strlen((char const *)ucPPPCFG));//1.发送PPPCFG
     BootProcess_SIMST_Flag=0;
@@ -166,11 +168,11 @@ void Task_RunNormalOperation(void)
     }
     if(Key_Flag_0==1)
     {
-      DEL_SetTimer(0,100);
-      while(1)
+     // DEL_SetTimer(0,100);
+      //while(1)
       {
-        Key_Flag_0=0;
-        if(DEL_GetTimer(0) == TRUE) {break;}
+        //Key_Flag_0=0;
+        //if(DEL_GetTimer(0) == TRUE) {break;}
       }
     }
   }
@@ -181,6 +183,9 @@ void Task_RunNormalOperation(void)
   
   if(ReadInput_KEY_3==0)//组呼键
   {
+    api_lcd_pwr_on_hint("群组:   组呼模式");//显示汉字
+    api_lcd_pwr_on_hint2(HexToChar_MainGroupId());//显示数据
+    
     Key_PersonalCalling_Flag=0;
     VOICE_SetOutput(ATVOICE_FreePlay,"A47FC47E0990E962",16);//群组选择
     DEL_SetTimer(0,100);
@@ -190,7 +195,8 @@ void Task_RunNormalOperation(void)
   
   if(ReadInput_KEY_2==0)//个呼键
   {
-
+    api_lcd_pwr_on_hint("对象:02 个呼模式");
+    
     x++;
     Key_PersonalCalling_Flag=1;
     //VOICE_SetOutput(ATVOICE_FreePlay,"2a4e7c542000106258540990e962",28);//个呼成员选择
@@ -209,8 +215,6 @@ void Task_RunNormalOperation(void)
       VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(0),ApiAtCmd_GetUserNameLen(0));
     KeyDownUpChoose_GroupOrUser_Flag=2;
     }
-
-      
   }
   Keyboard_Test();
 }
@@ -232,3 +236,4 @@ void Delay_100ms(u8 T)
       }
   return;
 }
+

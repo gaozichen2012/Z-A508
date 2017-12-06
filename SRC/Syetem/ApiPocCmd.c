@@ -29,6 +29,8 @@ typedef struct{
 		}Msg;
 		u8 Buf[10];
                 u8 Buf2[10];
+                u8 Buf3[3];
+                u8 Buf4[3];
 		u8 Timer;
 		u8 Times;
 		u8 ResetTimes;
@@ -370,7 +372,8 @@ void ApiPocCmd_10msRenew(void)
       PocCmdDrvobj.WorkState.UseState.MainWorkGroup.NameLen = PocCmdDrvobj.WorkState.UseState.WorkGroup.NameLen;
       }
       }
-     
+      api_lcd_pwr_on_hint("群组:   组呼模式");//显示汉字
+      api_lcd_pwr_on_hint2(HexToChar_GroupCallingNum());//显示数据
     default:
       break;
     }
@@ -432,7 +435,7 @@ u8 ApiAtCmd_GetMainUserId(void)//获取当前用户id（个呼）
 
 bool ApiAtCmd_GetLoginState(void)
 {
-	return PocCmdDrvobj.WorkState.UseState.Msg.Bits.bLogin;
+  return PocCmdDrvobj.WorkState.UseState.Msg.Bits.bLogin;
 }
   
 void ApiGetPocBuf(void)
@@ -446,4 +449,23 @@ void ApiGetPocBuf(void)
 u16 GetPlayState(void)
 {
   return PocCmdDrvobj.WorkState.UseState.Msg.Bits.bPlayState;
+}
+
+u8 *HexToChar_MainGroupId(void)//16进制转字符串 当前群组ID 显示屏数据使用
+{
+  u8 i;
+  i=ApiAtCmd_GetMainGroupId();
+  PocCmdDrvobj.NetState.Buf2[0]=((i&0xf0)>>4)+0x30;
+  PocCmdDrvobj.NetState.Buf2[1]=(i&0x0f)+0x30;
+  PocCmdDrvobj.NetState.Buf2[2]='\0';
+  return PocCmdDrvobj.NetState.Buf2;
+}
+u8 *HexToChar_GroupCallingNum(void)//16进制转字符串 按键播报当前群组ID 显示屏数据使用
+{
+  u8 i;
+  i=GroupCallingNum;
+  PocCmdDrvobj.NetState.Buf3[0]=((i&0xf0)>>4)+0x30;
+  PocCmdDrvobj.NetState.Buf3[1]=(i&0x0f)+0x30;
+  PocCmdDrvobj.NetState.Buf3[2]='\0';
+  return PocCmdDrvobj.NetState.Buf3;
 }

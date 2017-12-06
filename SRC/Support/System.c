@@ -100,7 +100,7 @@ u8 t=0;
   AUDIO_IOAFPOW(ON);
   GPIO_Init(GPIOB,GPIO_PIN_6,GPIO_MODE_OUT_PP_LOW_FAST);//LOC MIC MUTE
   MIC_IOMUT(OFF); 
-  api_lcd_pwr_on_hint("     ABELL    ");
+  api_lcd_pwr_on_hint2("eChat");
 
   BEEP_Time(1);
   r=ApiAtCmd_WritCommand(ATCOMM3_GD83Reset,(u8 *)ucGD83Reset,strlen((char const *)ucGD83Reset));
@@ -137,7 +137,7 @@ u8 t=0;
       Task_RunStart();
       if(ApiAtCmd_GetLoginState()==TRUE)//登录成功
       {
-        api_lcd_pwr_on_hint("当前群组：01  ");
+        api_lcd_pwr_on_hint("正在获取群组信息");
         TaskDrvObj.NewId=Task_NormalOperation;
       }
       break;

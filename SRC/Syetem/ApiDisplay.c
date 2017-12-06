@@ -172,7 +172,7 @@ void api_lcd_pwr_on_hint2(u8 *CharData)
 	stCharInfo.DispType  = DISP_IDCNASC816B;
 	//stCharInfo.DispAddX  = 0;
 	stCharInfo.DispAddY  = 0x02;
-	stCharInfo.DispAddX  = 0;//一行16个英文字符
+	stCharInfo.DispAddX  = 5;//一行16个英文字符
         stCharInfo.DispLenth = LCD_DISP_LEN_MAX;
         
 	api_disp_char_output(stCharInfo,CharData);
