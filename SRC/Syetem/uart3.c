@@ -588,12 +588,13 @@ bool api_poc_command_set(u8 cId, u8 *pBuf)
         }
         memcpy(&UartDrvObj.TxRxBuf.cTxBuf[i], UartDrvObj.TxRxBuf.cRxBuf, len-i);
       }
-      //r = ApiPocCmd_user_info_set(UartDrvObj.TxRxBuf.cTxBuf, len);//cTxBuf为存放ip账号密码的信息//ApiPocCmd_user_info_set为数据存入EEPROM的驱动函数
+      r = ApiPocCmd_user_info_set(UartDrvObj.TxRxBuf.cTxBuf, len);//cTxBuf为存放ip账号密码的信息//ApiPocCmd_user_info_set为数据存入EEPROM的驱动函数
       r=TRUE;
       UART_RightAck(len-i);
     }
     //SYS_McuReset();
   PocCommandSet_Exit:
+
     break;
   default://error all D/A off
     break;

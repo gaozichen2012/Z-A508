@@ -56,7 +56,7 @@ void Task_RunStart(void)
 {
   u8 v;
   
-
+  UART3_ToMcuMain();
   if(BootProcess_SIMST_Flag==1)//收到模块开机指令:SIMST:1
   {
     api_disp_icoid_output( eICO_IDRXNULL, TRUE, TRUE);//GPRS无信号图标
@@ -128,6 +128,7 @@ void Task_RunStart(void)
 void Task_RunNormalOperation(void)
 {
   u8 v;
+  UART3_ToMcuMain();
   if(ReadInput_KEY_PTT==0)
   {
     switch(KeyDownUpChoose_GroupOrUser_Flag)

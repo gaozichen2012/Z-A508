@@ -6,10 +6,12 @@
 #define APIPOC_UserLoad_Len			8
 #define APIPOC_UserName_Len			30
 
+u8 ReadBuffer[100];//Test 存EEPROM读取的数据使用
+
 const u8 *ucAtPocHead   = "AT+POC=";
 const u8 *ucTingEnd   = "0B0000";
 const u8 *ucTingStart   = "0B0001";
-
+const u8 *ucSetIPAndID    = "010000";
 u8 POC_GetGroupInformationFlag=0;
 typedef struct{
 	struct{
@@ -205,8 +207,10 @@ bool ApiPocCmd_WritCommand(PocCommType id, u8 *buf, u16 len)
   case PocComm_OpenPOC://1
     DrvGD83_UART_TxCommand(buf, len);
     break;
-  case PocComm_SetParam://2
-    DrvGD83_UART_TxCommand(buf, len);
+  case PocComm_SetParam://设置账号密码
+    DrvGD83_UART_TxCommand((u8 *)ucSetIPAndID,strlen((char const *)ucSetIPAndID));
+    FILE_Read(0,100,ReadBuffer);
+    DrvGD83_UART_TxCommand(ReadBuffer, strlen((char const *)ReadBuffer));
     break;
   case PocComm_GetParam:
   case PocComm_Login:
@@ -273,7 +277,8 @@ u8 ApiPocCmd_user_info_set(u8 *pBuf, u8 len)//cTxBuf为存放ip账号密码的信息
 		PocCmdDrvobj.NetState.LoginInfo.Msg.bSet = ON;
 		//adr = CFG_GetCurAdr(ADR_IDLocalUserInfo);
 		//FILE_Write(adr.Adr,adr.Len,(u8*)(&PocCmdDrvobj.NetState.LoginInfo));
-		
+                FILE_Write(0,PocCmdDrvobj.NetState.LoginInfo.Msg.Len,(u8*)(&PocCmdDrvobj.NetState.LoginInfo));
+                
 		for(i = 0; i < len; i++)
 		{
 			PocCmdDrvobj.NetState.LoginInfo.Buf[i] = pBuf[i];
@@ -292,6 +297,7 @@ u8 ApiPocCmd_user_info_set(u8 *pBuf, u8 len)//cTxBuf为存放ip账号密码的信息
 	}
 	return r;
 }
+
 
 void ApiPocCmd_10msRenew(void)
 {

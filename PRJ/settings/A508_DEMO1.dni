@@ -9,7 +9,7 @@ TriggerName=main
 LimitSize=0
 ByteLimit=50
 [DebugChecksum]
-Checksum=1427022943
+Checksum=1635592968
 [CodeCoverage]
 Enabled=_ 0
 [CallStack]
@@ -55,6 +55,9 @@ Enabled=0
 ShowSource=1
 [Simulator]
 Freq=16000000
+[watch_formats]
+Fmt0={W}1:AdrSum	4	0
+Fmt1={W}1:sum	4	0
 [DataSample]
 LogEnabled=0
 GraphEnabled=0
@@ -67,8 +70,7 @@ Category=_ 0
 LoggingEnabled=_ 0
 LogFile=_ ""
 [Breakpoints]
-Bp0=_ "STD_CODE" "{$PROJ_DIR$\..\SRC\Support\System.c}.99.3" 1 0 0 0 "" 0 ""
-Count=1
+Count=0
 [Aliases]
 Count=0
 SuppressDialog=0

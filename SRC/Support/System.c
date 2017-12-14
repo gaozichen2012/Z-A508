@@ -60,13 +60,14 @@ u8 *ucSwitch            = "10000002";
 u8 *ucGroupListInfo     = "0D0000";
 u8 *ucGD83Reset         = "at^reset";
 
-u8 ReadBuffer[8];//Test 存EEPROM读取的数据使用
+
 
 void main_app(void)
 {
   bool r=FALSE;
 
 u8 t=0;
+
   disableInterrupts();
   SystemClock_Init(HSE_Clock);
   ITC_SetSoftwarePriority(ITC_IRQ_UART1_RX,ITC_PRIORITYLEVEL_3);
@@ -96,18 +97,17 @@ u8 t=0;
   Set_GreenLed(LED_OFF);
   enableInterrupts();
 #if 1//EEPROM TEST
-  ReadBuffer[1]=FLASH_ReadByte(0x4001);
+  
+  /*ReadBuffer[1]=FLASH_ReadByte(0x4001);
   ReadBuffer[2]=FLASH_ReadByte(0x4081);
   ReadBuffer[3]=FLASH_ReadByte(0x4400);
   ReadBuffer[4]=FLASH_ReadByte(0x47ff);
   WriteEEPROMByte(0x4001, '2');
   WriteEEPROMByte(0x4081, '5');
   WriteEEPROMByte(0x4400, '8');
-  WriteEEPROMByte(0x47ff, '0');
-  ReadBuffer[1]=FLASH_ReadByte(0x4001);
-  ReadBuffer[2]=FLASH_ReadByte(0x4081);
-  ReadBuffer[3]=FLASH_ReadByte(0x4400);
-  ReadBuffer[4]=FLASH_ReadByte(0x47ff);
+  WriteEEPROMByte(0x47ff, '0');*/
+  
+
 #endif //EEPROMTEST
 
   GD83_ON();
@@ -119,7 +119,7 @@ u8 t=0;
 
   BEEP_Time(1);
   r=ApiAtCmd_WritCommand(ATCOMM3_GD83Reset,(u8 *)ucGD83Reset,strlen((char const *)ucGD83Reset));
-  TaskDrvObj.NewId=TASK_WRITEFREQ;
+  TaskDrvObj.NewId=Task_Start;
   while(1)
   {
 #if 0//调试显示屏界面
@@ -246,6 +246,13 @@ u8 t=0;
 #endif
   }*/
 }
+}
+
+void SYS_McuReset(void)
+{
+	POW_SetPowSwitch(OFF);
+	DEL_Soft1ms(8000);
+
 }
 
 TASK_CODE GetTaskId(void)
