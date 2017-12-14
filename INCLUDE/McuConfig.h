@@ -29,6 +29,11 @@ typedef enum {
 	KSTA_NULL		= 0xFF
 }KEYSTA_TYPE;
 
+typedef struct {							//address group inforamtion 
+	u16  Adr;
+	u8 Len;
+	u8 Group;
+}ADRLEN_INF;
 
 /******************************************************************************
 ;--------1-LED hardware macro define

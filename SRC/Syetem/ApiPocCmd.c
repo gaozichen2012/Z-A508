@@ -252,6 +252,47 @@ bool ApiPocCmd_WritCommand(PocCommType id, u8 *buf, u16 len)
   return r;
 }
 
+//写频写入数据存入EEPROM
+u8 ApiPocCmd_user_info_set(u8 *pBuf, u8 len)//cTxBuf为存放ip账号密码的信息
+{
+	bool r;
+	u8 i, uRet = 0;
+	ADRLEN_INF	adr;
+
+	for(i = 0; i < len; i++)
+	{
+		if(pBuf[i] == ';')
+		{
+			uRet++;
+		}
+	}
+	if(uRet >= 2)
+	{
+		Dec2Hex(pBuf, len, PocCmdDrvobj.NetState.LoginInfo.Buf);//将收到的数转化为字符串//LoginInfo.Buf为存放
+		PocCmdDrvobj.NetState.LoginInfo.Msg.Len = len << 0x01;//为什么要len*2？
+		PocCmdDrvobj.NetState.LoginInfo.Msg.bSet = ON;
+		//adr = CFG_GetCurAdr(ADR_IDLocalUserInfo);
+		//FILE_Write(adr.Adr,adr.Len,(u8*)(&PocCmdDrvobj.NetState.LoginInfo));
+		
+		for(i = 0; i < len; i++)
+		{
+			PocCmdDrvobj.NetState.LoginInfo.Buf[i] = pBuf[i];
+		}
+		PocCmdDrvobj.NetState.LoginInfo.Msg.Len = len;
+		
+		//SYS_BufReset();
+		PocCmdDrvobj.WorkState.UseState.WorkUserName.NameLen = 0;
+		PocCmdDrvobj.NetState.Msg.Bits.bUserInfo = 3;
+		PocCmdDrvobj.NetState.Msg.Bits.bUserWrite = ON;
+		r = TRUE;
+	}
+	else
+	{
+		r = FALSE;
+	}
+	return r;
+}
+
 void ApiPocCmd_10msRenew(void)
 {
   u8 ucId,j,i, Len;

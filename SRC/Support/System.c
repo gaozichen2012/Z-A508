@@ -56,12 +56,11 @@ typedef struct {
 
 static TASK_DRV	TaskDrvObj;
 
-
-
-
 u8 *ucSwitch            = "10000002";
 u8 *ucGroupListInfo     = "0D0000";
 u8 *ucGD83Reset         = "at^reset";
+
+u8 ReadBuffer[8];//Test 存EEPROM读取的数据使用
 
 void main_app(void)
 {
@@ -96,7 +95,21 @@ u8 t=0;
   Set_RedLed(LED_OFF);
   Set_GreenLed(LED_OFF);
   enableInterrupts();
-  
+#if 1//EEPROM TEST
+  ReadBuffer[1]=FLASH_ReadByte(0x4001);
+  ReadBuffer[2]=FLASH_ReadByte(0x4081);
+  ReadBuffer[3]=FLASH_ReadByte(0x4400);
+  ReadBuffer[4]=FLASH_ReadByte(0x47ff);
+  WriteEEPROMByte(0x4001, '2');
+  WriteEEPROMByte(0x4081, '5');
+  WriteEEPROMByte(0x4400, '8');
+  WriteEEPROMByte(0x47ff, '0');
+  ReadBuffer[1]=FLASH_ReadByte(0x4001);
+  ReadBuffer[2]=FLASH_ReadByte(0x4081);
+  ReadBuffer[3]=FLASH_ReadByte(0x4400);
+  ReadBuffer[4]=FLASH_ReadByte(0x47ff);
+#endif //EEPROMTEST
+
   GD83_ON();
   AUDIO_IOAFMUT(ON);
   AUDIO_IOAFPOW(ON);

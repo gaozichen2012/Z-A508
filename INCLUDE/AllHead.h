@@ -43,4 +43,5 @@
 
 //дƵ
 #include "uart3.h"
+#include "Flash_eeprom.h"
 #endif
