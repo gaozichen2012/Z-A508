@@ -447,9 +447,7 @@ INTERRUPT_HANDLER(I2C_IRQHandler, 19)
   */
  INTERRUPT_HANDLER(UART3_RX_IRQHandler, 21)
  {
-    /* In order to detect unexpected events during development,
-       it is recommended to set a breakpoint on the following instruction.
-    */
+   UART3_Interrupt();
  }
 #endif /* (STM8S208) || (STM8S207) || (STM8AF52Ax) || (STM8AF62Ax) */
 

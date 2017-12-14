@@ -72,13 +72,15 @@ u8 t=0;
   SystemClock_Init(HSE_Clock);
   ITC_SetSoftwarePriority(ITC_IRQ_UART1_RX,ITC_PRIORITYLEVEL_3);
   ITC_SetSoftwarePriority(ITC_IRQ_UART1_TX,ITC_PRIORITYLEVEL_3);
-  ITC_SetSoftwarePriority(ITC_IRQ_TIM3_OVF,ITC_PRIORITYLEVEL_2);
+  ITC_SetSoftwarePriority(ITC_IRQ_UART3_RX,ITC_PRIORITYLEVEL_2);
+  ITC_SetSoftwarePriority(ITC_IRQ_TIM3_OVF,ITC_PRIORITYLEVEL_1);
   LED_Init();
   //定时初始化
   DEL_PowerOnInitial();
   //通讯模块初始化
   DrvGD83_Init();
-  Uart1_Init();
+  Uart1_Init();//模块通讯使用
+  Uart3_Init(); //串口写频使用
   //音频初始化
   AF_Mute_Init();
   Noise_Mute_Init();
@@ -104,7 +106,7 @@ u8 t=0;
 
   BEEP_Time(1);
   r=ApiAtCmd_WritCommand(ATCOMM3_GD83Reset,(u8 *)ucGD83Reset,strlen((char const *)ucGD83Reset));
-  TaskDrvObj.NewId=Task_Start;
+  TaskDrvObj.NewId=TASK_WRITEFREQ;
   while(1)
   {
 #if 0//调试显示屏界面

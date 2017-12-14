@@ -40,4 +40,7 @@
 
 //ָʾ��
 #include "ApiLED.h"
+
+//дƵ
+#include "uart3.h"
 #endif

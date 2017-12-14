@@ -121,10 +121,8 @@ void Keyboard_Test(void)
     api_lcd_pwr_on_hint2(HexToChar_GroupCallingNum());//显示数据
     KeyDownUpChoose_GroupOrUser_Flag=1;
     }
-   
-    
     Key_Flag_1=1;
-    
+   
     break;
   case 0x00400000://cancel
     api_lcd_pwr_on_hint("    退出单呼    ");
