@@ -39,7 +39,7 @@ u8 *ucSetParamConfig    = "01000069703d302e302e302e303b69643d3139383030333038363
 #endif
 u8 *ucStartPTT                  = "0B0000";
 u8 *ucEndPTT                    = "0C0000";
-u8 *ucRequestUserListInfo       = "0E000000000001";
+u8 *ucRequestUserListInfo       = "0E000000000064";
 u8 *ucCLVL                       = "AT+CLVL=3";//音量增益7
 u8 *ucVGR                       = "AT+VGR=3";//音量增益7
 u8 *ucCODECCTL                  = "at^codecctl=4000,1e00,0";//音量增益 3c00
