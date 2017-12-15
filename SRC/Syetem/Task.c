@@ -39,18 +39,19 @@ u8 *ucSetParamConfig    = "01000069703d302e302e302e303b69643d3139383030333038363
 #endif
 u8 *ucStartPTT                  = "0B0000";
 u8 *ucEndPTT                    = "0C0000";
-u8 *ucRequestUserListInfo       = "0E000000000064";
+//u8 *ucRequestUserListInfo       = "0E000000000064";
+u8 *ucRequestUserListInfo       = "0E000000000064";//双全工
 u8 *ucCLVL                       = "AT+CLVL=3";//音量增益7
 u8 *ucVGR                       = "AT+VGR=3";//音量增益7
-u8 *ucCODECCTL                  = "at^codecctl=4000,1e00,0";//音量增益 3c00
+u8 *ucCODECCTL                  = "at^codecctl=4000,3c00,0";//音量增益 3c00
 u8 *ucOSSYSHWID                 = "AT^OSSYSHWID=1";
 u8 *ucPrefmode                  = "AT^prefmode=4";
 u8 *ucCSQ                       = "AT+CSQ?";
 u8 *ucPPPCFG                    = "AT^PPPCFG=echat,ctnet@mycdma.cn,vnet.mobi";
 //u8 *ucZTTS_Abell                = "AT+ZTTS=1,\"276b07687F5EDF57F95BB28B3A67\"";欧标广域对讲机
 u8 *ucZTTS_Abell                = "AT+ZTTS=1,\"2d4e745113663d6d20007f5edf57f95bb28b\"";
-u8 *ucPocOpenConfig             = "0000000101";
-
+//u8 *ucPocOpenConfig             = "0000000101";
+u8 *ucPocOpenConfig             = "00000001010101";//双全工
 
 void Task_RunStart(void)
 {
