@@ -58,7 +58,7 @@ void Keyboard_Test(void)
       if(GroupCallingNum<=0)
       {
         GroupCallingNum=ApiAtCmd_GetGroupNum();
-        KeyUpDownCount=ApiAtCmd_GetMainGroupId()-ApiAtCmd_GetGroupNum();
+        KeyUpDownCount=ApiAtCmd_GetGroupNum()-ApiAtCmd_GetMainGroupId();//
       }
       VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetGroupName(GroupCallingNum),ApiAtCmd_GetGroupNameLen(GroupCallingNum));
       api_lcd_pwr_on_hint("群组:   组呼模式");//显示汉字
