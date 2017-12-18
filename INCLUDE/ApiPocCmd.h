@@ -27,6 +27,7 @@ extern u8 ApiPocCmd_user_info_set(u8 *pBuf, u8 len);
 extern void ApiPocCmd_10msRenew(void);
 extern bool ApiAtCmd_GetLoginState(void);
 extern u16 GetPlayState(void);
+extern u16 GetPersonalCallingMode(void);//获取是否为个呼模式
 extern void ApiGetPocBuf(void);
 extern u8 *ApiAtCmd_GetMainWorkName(void);
 extern u8 ApiAtCmd_GetMainWorkNameLen(void);

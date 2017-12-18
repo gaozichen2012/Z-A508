@@ -57,16 +57,17 @@ typedef struct{
 		struct{
 			union{
 				struct{
-					u16 bInitial			: 1;
-					u16 bPttState		: 1;			//0: ptt involide; 1 :ptt volide
-					u16 bPttUser			: 1;			//ptt operrtor 0: oneself; 1: other
-					u16 bWorkGrpVolide	: 3;
-					u16 bEnterGroup		: 1;
-					u16 bPlayState		: 1;
-					u16 bCallFail	        : 1;
-                                        u16 bLogin              : 1;
-					u16 		: 1;
-                                        u16 			: 5;
+					u16 bInitial		        : 1;
+					u16 bPttState		        : 1;			//0: ptt involide; 1 :ptt volide
+					u16 bPttUser		        : 1;			//ptt operrtor 0: oneself; 1: other
+					u16 bWorkGrpVolide	        : 3;
+					u16 bEnterGroup		        : 1;
+					u16 bPlayState		        : 1;
+					u16 bCallFail	                : 1;
+                                        u16 bLogin                      : 1;
+                                        u16 AlarmMode            	: 1;
+					u16 PersonalCallingMode 	: 1;
+                                        u16 			        : 4;
 				}Bits;
 				u16 Byte;
 			}Msg;
@@ -231,9 +232,7 @@ bool ApiPocCmd_WritCommand(PocCommType id, u8 *buf, u16 len)
     DrvGD83_UART_TxCommand("0A0000000000", 12);
     PocCmdDrvobj.NetState.Buf2[0] = (((PersonalCallingNum+0x64)&0xf0)>>4)+0x30;	// 0x03+0x30
     PocCmdDrvobj.NetState.Buf2[1] = ((PersonalCallingNum+0x64)&0x0f)+0x30;
-    PocCmdDrvobj.NetState.Buf2[2] = 0x30;	// 0x03+0x30
-    PocCmdDrvobj.NetState.Buf2[3] = 0x31;
-    DrvGD83_UART_TxCommand(PocCmdDrvobj.NetState.Buf2, 4);
+    DrvGD83_UART_TxCommand(PocCmdDrvobj.NetState.Buf2, 2);
     break;
   case PocComm_StartPTT://3
     DrvGD83_UART_TxCommand(buf, len);
@@ -425,6 +424,25 @@ void ApiPocCmd_10msRenew(void)
       }
       }
       POC_GetGroupInformationFlag=1;
+    case 0x91://通知进入某种模式（进入退出一键告警、单呼模式）
+      ucId = COML_AscToHex(pBuf+2, 0x02);
+      if(ucId == 0x00)
+      {
+        PocCmdDrvobj.WorkState.UseState.Msg.Bits.AlarmMode = 0x00;//退出一键告警
+      }
+      if(ucId == 0x01)
+      {
+        PocCmdDrvobj.WorkState.UseState.Msg.Bits.AlarmMode = 0x01;//进入一键告警
+      }
+      if(ucId == 0x02)
+      {
+        PocCmdDrvobj.WorkState.UseState.Msg.Bits.PersonalCallingMode = 0x01;//进入单呼
+      }
+      if(ucId == 0x03)
+      {
+        PocCmdDrvobj.WorkState.UseState.Msg.Bits.PersonalCallingMode = 0x00;//退出单呼  
+      }
+      break;
     default:
       break;
     }
@@ -500,6 +518,11 @@ void ApiGetPocBuf(void)
 u16 GetPlayState(void)
 {
   return PocCmdDrvobj.WorkState.UseState.Msg.Bits.bPlayState;
+}
+
+u16 GetPersonalCallingMode(void)
+{
+  return PocCmdDrvobj.WorkState.UseState.Msg.Bits.PersonalCallingMode;
 }
 
 u8 *HexToChar_MainGroupId(void)//16进制转字符串 当前群组ID 显示屏数据使用

@@ -39,19 +39,18 @@ u8 *ucSetParamConfig    = "01000069703d302e302e302e303b69643d3139383030333038363
 #endif
 u8 *ucStartPTT                  = "0B0000";
 u8 *ucEndPTT                    = "0C0000";
-//u8 *ucRequestUserListInfo       = "0E000000000064";
-u8 *ucRequestUserListInfo       = "0E000000000064";//双全工
+u8 *ucRequestUserListInfo       = "0E000000000064";
 u8 *ucCLVL                       = "AT+CLVL=3";//音量增益7
 u8 *ucVGR                       = "AT+VGR=3";//音量增益7
-u8 *ucCODECCTL                  = "at^codecctl=4000,3c00,0";//音量增益 3c00
+u8 *ucCODECCTL                  = "at^codecctl=4000,1c00,0";//音量增益 3c00
 u8 *ucOSSYSHWID                 = "AT^OSSYSHWID=1";
 u8 *ucPrefmode                  = "AT^prefmode=4";
 u8 *ucCSQ                       = "AT+CSQ?";
 u8 *ucPPPCFG                    = "AT^PPPCFG=echat,ctnet@mycdma.cn,vnet.mobi";
 //u8 *ucZTTS_Abell                = "AT+ZTTS=1,\"276b07687F5EDF57F95BB28B3A67\"";欧标广域对讲机
 u8 *ucZTTS_Abell                = "AT+ZTTS=1,\"2d4e745113663d6d20007f5edf57f95bb28b\"";
-//u8 *ucPocOpenConfig             = "0000000101";
-u8 *ucPocOpenConfig             = "00000001010101";//双全工
+u8 *ucPocOpenConfig             = "0000000101";
+//u8 *ucPocOpenConfig             = "00000001010101";//双全工
 
 void Task_RunStart(void)
 {
@@ -103,7 +102,6 @@ void Task_RunStart(void)
     api_lcd_pwr_on_hint("   正在登陆..     ");
     if(BootProcess_PPPCFG_Flag_Zanshi==1)//如果收到^PPPCFG//因为有时收不到该指令，临时屏蔽，后期加上
     {
-      
       Delay_100ms(10);//1s
       ApiPocCmd_WritCommand(PocComm_SetParam,ucSetParamConfig,strlen((char const *)ucSetParamConfig));//配置echat账号、IP
       Delay_100ms(40);//4s
@@ -185,26 +183,42 @@ void Task_RunNormalOperation(void)
   
   if(ReadInput_KEY_3==0)//组呼键
   {
-    api_lcd_pwr_on_hint("群组:   组呼模式");//显示汉字
-    api_lcd_pwr_on_hint2(HexToChar_MainGroupId());//显示数据
+    if(GetPersonalCallingMode()==1)//如果是单呼模式，则退出单呼
+    {
+      api_lcd_pwr_on_hint("    退出单呼    ");
+      Delay_100ms(5);
+      v=ApiPocCmd_WritCommand(PocComm_Cancel,(u8 *)ucQuitPersonalCalling,strlen((char const *)ucQuitPersonalCalling));
+      //api_lcd_pwr_on_hint("群组:   组呼模式");
+    }
+    else
+    {
+      api_lcd_pwr_on_hint("群组:   选择群组");//显示汉字
+      api_lcd_pwr_on_hint2(HexToChar_MainGroupId());//显示数据
     
-    Key_PersonalCalling_Flag=0;
-    VOICE_SetOutput(ATVOICE_FreePlay,"A47FC47E0990E962",16);//群组选择
-    DEL_SetTimer(0,100);
-    while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
-    VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetMainWorkName(),ApiAtCmd_GetMainWorkNameLen());
+      Key_PersonalCalling_Flag=0;
+      VOICE_SetOutput(ATVOICE_FreePlay,"A47FC47E0990E962",16);//群组选择
+      DEL_SetTimer(0,100);
+      while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+      VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetMainWorkName(),ApiAtCmd_GetMainWorkNameLen());
+    }
   }
   
   if(ReadInput_KEY_2==0)//个呼键
   {
-    api_lcd_pwr_on_hint("对象:   个呼模式");
+    api_lcd_pwr_on_hint("对象:   选择个呼");
     api_lcd_pwr_on_hint2(HexToChar_MainUserId());
     
     x++;
-    Key_PersonalCalling_Flag=1;
-    VOICE_SetOutput(ATVOICE_FreePlay,"2a4e7c542000106258540990e962",28);//个呼成员选择
+    
+    if(x>=2)
+    {
+      Key_PersonalCalling_Flag=1;
+      VOICE_SetOutput(ATVOICE_FreePlay,"2a4e7c542000106258540990e962",28);//个呼成员选择
     DEL_SetTimer(0,200);
     while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+    x=1;
+    }
+
     
     v=ApiPocCmd_WritCommand(PocComm_UserListInfo,ucRequestUserListInfo,strlen((char const *)ucRequestUserListInfo));
     VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(0),ApiAtCmd_GetUserNameLen(0));
@@ -213,9 +227,19 @@ void Task_RunNormalOperation(void)
   Keyboard_Test();
   if(POC_GetGroupInformationFlag==1)//收到86则显示群组信息，解决开机不按按键不显示群组信息
   {
-    POC_GetGroupInformationFlag=0;
-    api_lcd_pwr_on_hint("群组:   组呼模式");//显示汉字
-    api_lcd_pwr_on_hint2(HexToChar_MainGroupId());//显示数据
+    if(GetPersonalCallingMode()==1)//如果是个呼模式，则显示个呼模式，否则显示群组模式
+    {
+      POC_GetGroupInformationFlag=0;
+      api_lcd_pwr_on_hint("对象:   单呼模式");//显示汉字
+      api_lcd_pwr_on_hint2(HexToChar_MainGroupId());//显示数据    
+    }
+    else
+    {
+      POC_GetGroupInformationFlag=0;
+      api_lcd_pwr_on_hint("群组:   组呼模式");//显示汉字
+      api_lcd_pwr_on_hint2(HexToChar_MainGroupId());//显示数据
+    }
+
   }
 }
 
