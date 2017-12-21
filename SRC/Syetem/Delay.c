@@ -196,6 +196,16 @@ static void DEL_100msProcess(void)
   {
     DelDrvObj.Msg.Bit.b100ms = DEL_IDLE;
     LED_IntOutputRenew();//LED output renew process
+    if(DelDrvObj.Msg.Bit.b500Alternate == DEL_IDLE)
+    {
+      DelDrvObj.Msg.Bit.b500Alternate = DEL_RUN;
+      ApiAtCmd_100msRenew();
+    }
+    else
+    {
+      DelDrvObj.Msg.Bit.b500Alternate = DEL_IDLE;
+      //ApiPocCmd_1sRenew();
+    }
   }
   return;
 }

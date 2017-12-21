@@ -1,6 +1,35 @@
 #include "AllHead.h"
+u8 BootProcess_SIMST_Flag=0;
+u8 BootProcess_PPPCFG_Flag=0;
+u8 BootProcess_PPPCFG_Flag_Zanshi=1;//临时代替PPPCFG检测
+u8 BootProcess_OpenPoc_Flag=0;
+u8 VoiceEnd_Flag=0;
+u8 CSQ_Flag=0;
+u8 KeyDownUpChoose_GroupOrUser_Flag=0;
 
+
+const u8 *ucRxCheckCard = "GETICCID:";
+const u8 *ucRxZTTS0 = "ZTTS:0";
+const u8 *ucRxCSQ31 = "CSQ:31";
+const u8 *ucRxCSQ99 = "CSQ:99";
+const u8 *ucSIMST1="^SIMST:1";
+const u8 *ucSIMST255="^SIMST:255";
+const u8 *ucCaretPPPCFG="^PPPCFG:";
 const u8 *ucPlayZtts = "AT+ZTTS=";
+//New
+u8 *ucCheckTcp = "at^pocsockstat=";//检查TCP Ip是否连接正常
+u8 *ucSetIp = "at^pocsetuptcp=1,";//设置TCP Ip连接
+u8 *ucSendTcp = "at^pocsendtcp=1,0x";//在TCP协议发送数据
+u8 *ucRxCheckTcp = "^POCSOCKSTAT: 1";//TCP连接正常下发指令
+
+u8 *ucZpppOpen = "at^pocnetopen";//设置PPP连接
+u8 *ucCheckPPP = "AT^POCNETOPEN?";//检查PPP连接是否正常工作
+u8 *ucRxCheckPppOpen = "^POCNETOPEN:1";
+u8 *ucRxCheckPppClose = "^POCNETOPEN:0";
+
+u8 *ucCheckRssi = "AT+CSQ?";
+u8 *ucCheckCard = "AT^GETICCID";
+
 
 #define DrvMC8332_IccId_Len 30
 typedef struct{
@@ -38,23 +67,9 @@ typedef struct{
 	}NetState;
 }AtCmdDrv;
 static AtCmdDrv AtCmdDrvobj;
-
-u8 BootProcess_SIMST_Flag=0;
-u8 BootProcess_PPPCFG_Flag=0;
-u8 BootProcess_PPPCFG_Flag_Zanshi=1;//临时代替PPPCFG检测
-u8 BootProcess_OpenPoc_Flag=0;
-u8 VoiceEnd_Flag=0;
-u8 CSQ_Flag=0;
-u8 KeyDownUpChoose_GroupOrUser_Flag=0;
+static void AtCmd_NetParamCode(void);//获取TCP IP地址
 
 
-const u8 *ucRxCheckCard = "GETICCID:";
-const u8 *ucRxZTTS0 = "ZTTS:0";
-const u8 *ucRxCSQ31 = "CSQ:31";
-const u8 *ucRxCSQ99 = "CSQ:99";
-const u8 *ucSIMST1="^SIMST:1";
-const u8 *ucSIMST255="^SIMST:255";
-const u8 *ucCaretPPPCFG="^PPPCFG:";
 
 bool ApiAtCmd_WritCommand(AtCommType id, u8 *buf, u16 len)
 {
@@ -86,6 +101,33 @@ bool ApiAtCmd_WritCommand(AtCommType id, u8 *buf, u16 len)
   case ATCOMM7_VGR://1
     DrvGD83_UART_TxCommand(buf, len);
     break;
+  case ATCOMM8_CheckTcp	://2
+    DrvGD83_UART_TxCommand((u8*)ucCheckTcp, strlen((char const*)ucCheckTcp));
+    DrvGD83_UART_TxCommand(buf, len);
+    break; 
+  case ATCOMM9_SetIp	://1
+    DrvGD83_UART_TxCommand(ucSetIp, strlen((char const *)ucSetIp));
+    DrvGD83_UART_TxCommand(buf, len);
+    break;
+  case ATCOMM10_SendTcp	://1
+    if(len <= 1024 && len != 0x00)
+    {
+      DrvGD83_UART_TxCommand(ucSendTcp, strlen((char const *)ucSendTcp));
+      DrvGD83_UART_TxCommand(buf, len);
+    }
+    break; 
+  case ATCOMM11_ZpppOpen ://1
+    DrvGD83_UART_TxCommand(ucZpppOpen, strlen((char const *)ucZpppOpen));
+    break;
+  case ATCOMM12_CheckPPP ://2
+    DrvGD83_UART_TxCommand(ucCheckPPP, strlen((char const *)ucCheckPPP));
+    break;
+  case ATCOMM13_CheckRssi:
+    DrvGD83_UART_TxCommand(ucCheckRssi, strlen((char const *)ucCheckRssi));
+    break;
+  case ATCOMM14_CheckCard:
+    DrvGD83_UART_TxCommand(ucCheckCard, strlen((char const *)ucCheckCard));
+    break;
   default:
     break;
   }
@@ -94,7 +136,57 @@ bool ApiAtCmd_WritCommand(AtCommType id, u8 *buf, u16 len)
   return r;
 }
 
+void ApiAtCmd_100msRenew(void)
+{
+/*  if(AtCmdDrvobj.NetState.Msg.Bits.bRssi == OFF)//如果没有网络信号
+  {
+    if(AtCmdDrvobj.NetState.Msg.Bits.bCard == ON)//是否有卡
+    {
+    }
+    else
+    {
+    }
+  }
+  else//如果有网络信号*/
+  {
+    if(GetTaskId()==Task_NormalOperation)//登录成功进入群组状态
+    {
+    if(AtCmdDrvobj.NetState.Msg.Bits.bPppOk == OFF)//如果PPP未连接上
+    {
+      if(ApiAtCmd_WritCommand(ATCOMM11_ZpppOpen, (void*)0, 0) == TRUE)
+      {
+      if(ApiAtCmd_WritCommand(ATCOMM12_CheckPPP, (void*)0, 0) == TRUE)
+      {}
+      }
+    }
+    else//PPP连接上了
+    {
 
+        //if()//如果部标定位打开
+        {
+          if(AtCmdDrvobj.NetState.Msg.Bits.bTcpOk == OFF)//查询后返回的TCP状态
+          {
+            if(AtCmdDrvobj.NetState.Msg.Bits.bTcp == OFF)//如果TCP是关闭的
+            {
+              AtCmd_NetParamCode();//获取IP地址
+              if(ApiAtCmd_WritCommand(ATCOMM9_SetIp, (void*)AtCmdDrvobj.NetState.Buf, AtCmdDrvobj.NetState.Len) == TRUE)//设置IP
+              {
+                AtCmdDrvobj.NetState.Msg.Bits.bTcp = ON;
+              }
+            }
+            else//如果TCP是打开的，则检测TCP连接是否正常
+            {
+              AtCmdDrvobj.NetState.Buf[0] = 0x31;
+              if(ApiAtCmd_WritCommand(ATCOMM8_CheckTcp, (void*)AtCmdDrvobj.NetState.Buf, 1) == TRUE)
+              {}
+            }
+          }
+         
+        }
+      }
+    }
+  }
+}
 void ApiCaretCmd_10msRenew(void)
 {
   u8 * pBuf, ucRet, Len, i;
@@ -115,6 +207,47 @@ void ApiCaretCmd_10msRenew(void)
     {
       BootProcess_PPPCFG_Flag=1;
     }
+    if(AtCmdDrvobj.NetState.Msg.Bits.bPppOk == OFF)//如果PPP连接状态为未连接
+    {
+      ucRet = memcmp(pBuf, ucRxCheckPppOpen, 13);
+      if(ucRet == 0x00)
+      {
+        AtCmdDrvobj.NetState.Msg.Bits.bPppOk = ON;
+      }
+      else
+      {
+        ucRet = memcmp(pBuf, ucRxCheckPppClose, 13);//strlen(ucRxTcpDataHeadInfo));
+        if(ucRet == 0x00)
+        {
+          AtCmdDrvobj.NetState.Msg.Bits.bPppOk = OFF;
+        }
+      }
+    }
+    else//如果PPP连接状态为连接
+    {
+      ucRet = memcmp(pBuf, ucRxCheckPppClose, 13);//strlen(ucRxTcpDataHeadInfo));
+      if(ucRet == 0x00)
+      {
+        AtCmdDrvobj.NetState.Msg.Bits.bPppOk = OFF;//连接后断开
+      }
+      else//如果PPP连接状态正常
+      {
+        ucRet = memcmp(pBuf, ucRxCheckTcp, 13);//strlen(ucRxTcpDataHeadInfo));
+        if(ucRet == 0x00)
+        {
+          ucRet = memcmp(pBuf+10, ucRxCheckTcp+10, 2);//strlen(ucRxTcpDataHeadInfo));
+          if(ucRet == 0x00)
+          {
+            AtCmdDrvobj.NetState.Msg.Bits.bTcpOk = ON;
+          }
+          else
+          {
+            AtCmdDrvobj.NetState.Msg.Bits.bTcpOk = OFF;
+          }
+        }
+      }
+    }
+    
   }
 }
 
@@ -193,4 +326,27 @@ void ApiGetIccidBuf(void)
   DrvGD83_UART_TxCommand((u8 *)"AT+Printf=",strlen((char const *)"AT+Printf="));
   DrvGD83_UART_TxCommand((u8 *)AtCmdDrvobj.NetState.IccId.Buf,strlen((char const *)AtCmdDrvobj.NetState.IccId.Buf));
   DrvGD83_UART_TxCommand((u8 *)"\r\n",strlen((char const *)"\r\n"));                      
+}
+
+static void AtCmd_NetParamCode(void)//获取TCP IP地址
+{
+  AtCmdDrvobj.NetState.Buf[0]  = '1';
+  AtCmdDrvobj.NetState.Buf[1]  = '2';
+  AtCmdDrvobj.NetState.Buf[2]  = '3';
+  AtCmdDrvobj.NetState.Buf[3]  = '.';
+  AtCmdDrvobj.NetState.Buf[4]  = '5';
+  AtCmdDrvobj.NetState.Buf[5]  = '6';
+  AtCmdDrvobj.NetState.Buf[6]  = '.';
+  AtCmdDrvobj.NetState.Buf[7]  = '8';
+  AtCmdDrvobj.NetState.Buf[8]  = '0';
+  AtCmdDrvobj.NetState.Buf[9]  = '.';
+  AtCmdDrvobj.NetState.Buf[10] = '1';
+  AtCmdDrvobj.NetState.Buf[11] = '0';
+  AtCmdDrvobj.NetState.Buf[12] = '7';
+  AtCmdDrvobj.NetState.Buf[13] = ',';
+  AtCmdDrvobj.NetState.Buf[14] = '6';
+  AtCmdDrvobj.NetState.Buf[15] = '9';
+  AtCmdDrvobj.NetState.Buf[16] = '7';
+  AtCmdDrvobj.NetState.Buf[17] = '3';
+  AtCmdDrvobj.NetState.Len=18;
 }

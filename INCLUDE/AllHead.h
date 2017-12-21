@@ -44,4 +44,7 @@
 //Ð´Æµ
 #include "uart3.h"
 #include "Flash_eeprom.h"
+
+//²¿±ê
+#include "ApiGpsCmd.h"
 #endif
