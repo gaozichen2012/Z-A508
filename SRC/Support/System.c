@@ -122,17 +122,12 @@ u8 t=0;
   TaskDrvObj.NewId=Task_Start;
   
   
-#if 1//测试模块关机
-  Set_GreenLed(LED_OFF);
-  Set_RedLed(LED_OFF);
-  Delay_100ms(100);
-  GPIO_WriteHigh(GPIO_C_Reset,GPIO_PIN_C_Reset);
+#if 0//测试模块关机
   Set_GreenLed(LED_ON);
   Set_RedLed(LED_ON);
-  Delay_100ms(100);
+  Delay_100ms(20);
   Set_GreenLed(LED_OFF);
   Set_RedLed(LED_OFF);
-  
   
   GPIO_WriteHigh(GPIO_C_ONOFF,GPIO_PIN_C_ONOFF);
   Set_GreenLed(LED_ON);
@@ -143,9 +138,7 @@ u8 t=0;
   Delay_100ms(100);
   Set_RedLed(LED_OFF);
 
-  GPIO_WriteHigh(GPIO_C_Reset,GPIO_PIN_C_Reset);
-  Delay_100ms(10);
-  GPIO_WriteLow(GPIO_C_Reset,GPIO_PIN_C_Reset);
+  
   GPIO_WriteHigh(GPIO_C_ONOFF,GPIO_PIN_C_ONOFF);
   Set_GreenLed(LED_ON);
   Delay_100ms(50);
@@ -154,10 +147,7 @@ u8 t=0;
   Set_RedLed(LED_ON);
   Delay_100ms(100);
   Set_RedLed(LED_OFF);
-
-  GPIO_WriteHigh(GPIO_C_Reset,GPIO_PIN_C_Reset);
-  Delay_100ms(10);
-  GPIO_WriteLow(GPIO_C_Reset,GPIO_PIN_C_Reset);
+  
   GPIO_WriteHigh(GPIO_C_ONOFF,GPIO_PIN_C_ONOFF);
   Set_GreenLed(LED_ON);
   Delay_100ms(50);
@@ -166,6 +156,8 @@ u8 t=0;
   Set_RedLed(LED_ON);
   Delay_100ms(100);
   Set_RedLed(LED_OFF);
+  
+  
 #endif
 
   
@@ -177,10 +169,17 @@ u8 t=0;
   while(1)
   {
 #if 0//调试显示屏界面
-    Delay_100ms(100);
-    Set_GreenLed(LED_ON);
-    Delay_100ms(1);
-    Set_GreenLed(LED_OFF);
+        if(ReadInput_KEY_PTT==0)
+        {
+          Set_RedLed(LED_ON);
+          Set_GreenLed(LED_OFF);
+          GPIO_WriteHigh(GPIO_C_Reset,GPIO_PIN_C_Reset);
+          while(ReadInput_KEY_PTT==0);
+        }
+
+          Set_RedLed(LED_OFF);
+          Set_GreenLed(LED_ON);
+          GPIO_WriteLow(GPIO_C_Reset,GPIO_PIN_C_Reset);
    /* if(ReadInput_KEY_PTT==0)
     {
       api_disp_icoid_output( eICO_IDRXFULL, TRUE, FALSE);
