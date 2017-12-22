@@ -350,3 +350,13 @@ static void AtCmd_NetParamCode(void)//ªÒ»°TCP IPµÿ÷∑
   AtCmdDrvobj.NetState.Buf[17] = '3';
   AtCmdDrvobj.NetState.Len=18;
 }
+
+u8 ApiAtCmd_tcp_state(void)
+{
+	return AtCmdDrvobj.NetState.Msg.Bits.bTcpOk;
+}
+
+u8 ApiAtCmd_Ppp_state(void)
+{
+	return AtCmdDrvobj.NetState.Msg.Bits.bPppOk;
+}

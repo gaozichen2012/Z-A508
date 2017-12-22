@@ -19,19 +19,21 @@
 #define DrvGD83_UART_TXMAXDEL 0x0040	//define UART Tx MAX softwave delay length value
 
 typedef enum{
-  Head_At       = 0x01,
-  Head_AtPoc    = 0x02,
-  Head_Plus     = 0x03,
-  Head_PlusPoc  = 0x04,
-  Head_Caret	= 0x05,
-  Head_RecevUdp	= 0x06,
-  Head_Null     = 0x00
+  Head_At               = 0x01,
+  Head_AtPoc            = 0x02,
+  Head_Plus             = 0x03,
+  Head_PlusPoc          = 0x04,
+  Head_Caret	        = 0x05,
+  Head_RecevTcp	        = 0x06,
+  Head_CaretSIMST	= 0x07,
+  Head_Null             = 0x00
 }HEAD_Type;
 
 const u8 *ucTxPocHeadInfo = "AT+POC=:";
 const u8 *ucRxPocHeadInfo = "+POC:";
 const u8 *ucRxOkHeadInfo = "OK";
 const u8 *ucCaretSIMST = "^SIMST:";
+const u8 *ucRxTcpDataHeadInfo = "^RECV:";
 /******************************************************************************
 ;--------UART hardware drive macro define process
 ******************************************************************************/
@@ -61,7 +63,7 @@ typedef struct{							//define UART drive data type
         u16 bAtPoc              : 1;
         u16 bPlusPoc            : 1;
         u16 bCaretPos           : 1;//^
-        u16 bRecevUdp           : 1;
+        u16 bRecevTcp           : 1;
         u16 bTxOnOff            : 1;
         u16                     : 4;
       }Bits;
@@ -104,11 +106,33 @@ static DrvMC8332_UART_DRV       DrvGD83DrvObj;
 static void CaretNotify_Queue_Start(u8 *buf, u8 len);
 static void AtNotify_Queue_Start(u8 *buf, u8 len);
 static void PocNotify_Queue_Start(u8 *buf, u8 len);
+static void GpsNotify_Queue_Start(u8 *buf, u8 len);
 static void AtNotify_Queue(u8 buf);
 static void PocNotify_Queue(u8 buf);
 static void Notify_Queue_Stop(void);
 static void CaretNotify_Queue(u8 buf);
+static void GpsNotify_Queue(u8 buf);
 
+void DrvMC8332_Software_Initial(void)
+{
+  DrvGD83DrvObj.HardWare.Msg.Byte = 0x00;
+  DrvGD83DrvObj.HardWare.Delay = 0x00;
+  DrvGD83DrvObj.HardWare.UartDelay = 0x00;
+  DrvGD83DrvObj.TxRxCmd.Msg.Byte = 0x00;
+  DrvGD83DrvObj.TxRxCmd.cHeadFlag = Head_Null;
+  DrvGD83DrvObj.TxRxCmd.cRxLen = 0x00;
+  DrvGD83DrvObj.RxAtNotifyBuf.cNotifyHead = 0x00;
+  DrvGD83DrvObj.RxAtNotifyBuf.cNotifyTail = 0x00;
+  DrvGD83DrvObj.RxAtNotifyBuf.cNotifyLen = 0x00;
+	
+  DrvGD83DrvObj.RxPocNotifyBuf.cNotifyHead = 0x00;
+  DrvGD83DrvObj.RxPocNotifyBuf.cNotifyTail = 0x00;
+  DrvGD83DrvObj.RxPocNotifyBuf.cNotifyLen = 0x00;
+
+  DrvGD83DrvObj.RxGpsNotifyBuf.cNotifyHead = 0x00;
+  DrvGD83DrvObj.RxGpsNotifyBuf.cNotifyTail = 0x00;
+  DrvGD83DrvObj.RxGpsNotifyBuf.cNotifyLen = 0x00;
+}
 void DrvMC8332_TxPort_SetValidable(IO_ONOFF onoff)
 {
   DrvGD83DrvObj.TxRxCmd.Msg.Bits.bUartTxBusy = onoff;
@@ -222,6 +246,30 @@ void DrvMC8332_UART_Interrupt(void)
   {
   case 0x0D:
   case 0x0A:
+    switch(DrvGD83DrvObj.TxRxCmd.cHeadFlag)
+    {
+    case Head_RecevTcp://bubiao
+    //case Head_RecevUdp:
+      if(DrvGD83DrvObj.RxGpsNotifyBuf.ucStartStop == 0x02)
+      {
+        if(DrvGD83DrvObj.RxGpsNotifyBuf.ucReceiveLen != 0x00)
+        {
+          DrvGD83DrvObj.RxGpsNotifyBuf.ucReceiveLen--;
+          GpsNotify_Queue(buf);
+          return;
+        }
+        else
+        {
+        }
+      }
+      break;
+    case Head_At:
+    case Head_Plus:
+    case Head_AtPoc:
+    case Head_PlusPoc:
+    default:
+      break;
+    }
     Notify_Queue_Stop();
     DrvGD83DrvObj.RxGpsNotifyBuf.ucStartStop=0;
     DrvGD83DrvObj.RxGpsNotifyBuf.ucReceiveLen=0;
@@ -233,7 +281,7 @@ void DrvMC8332_UART_Interrupt(void)
     DrvGD83DrvObj.TxRxCmd.Msg.Bits.bOkOErrorPos = OFF;
     DrvGD83DrvObj.TxRxCmd.Msg.Bits.bPlusPoc = OFF;
     DrvGD83DrvObj.TxRxCmd.Msg.Bits.bCaretPos = OFF;
-    DrvGD83DrvObj.TxRxCmd.Msg.Bits.bRecevUdp = OFF;
+    DrvGD83DrvObj.TxRxCmd.Msg.Bits.bRecevTcp = OFF;
     DrvGD83DrvObj.TxRxCmd.cRxLen = 0;
     return;
     break;
@@ -289,14 +337,25 @@ void DrvMC8332_UART_Interrupt(void)
 #if 1//²åÈë·û^ÅÐ¶Ï Tom added in 2017.11.17
     if(DrvGD83DrvObj.TxRxCmd.Msg.Bits.bCaretPos == ON)//ÅÐ¶Ï^
     {
-      //if(DrvGD83DrvObj.TxRxCmd.cRxBuf[ucLen] == ucCaretSIMST[ucLen])
+      if(DrvGD83DrvObj.TxRxCmd.Msg.Bits.bRecevTcp == OFF)//ÅÐ¶ÏÊÇ·ñÊÇTCPµÄÖ¸Áî
       {
-       // if(DrvGD83DrvObj.TxRxCmd.cRxLen == 7)
+        if(DrvGD83DrvObj.TxRxCmd.cRxBuf[ucLen] == ucRxTcpDataHeadInfo[ucLen])//strlen(ucRxTcpDataHeadInfo));
         {
-         //SIMST_Flag=1;
-          DrvGD83DrvObj.TxRxCmd.cHeadFlag = Head_Caret;		//at+ head
-          CaretNotify_Queue_Start(DrvGD83DrvObj.TxRxCmd.cRxBuf, DrvGD83DrvObj.TxRxCmd.cRxLen);//-------------------------------------------------
+          if(DrvGD83DrvObj.TxRxCmd.cRxLen == 6)//strlen(ucRxTcpDataHeadInfo))	//rx tcp
+          {
+            DrvGD83DrvObj.TxRxCmd.cHeadFlag = Head_RecevTcp;
+            GpsNotify_Queue_Start(DrvGD83DrvObj.TxRxCmd.cRxBuf, 0);
+          }
         }
+        else
+        {
+          DrvGD83DrvObj.TxRxCmd.Msg.Bits.bRecevTcp = ON;
+        }  
+      }
+      if(DrvGD83DrvObj.TxRxCmd.Msg.Bits.bRecevTcp != OFF)
+      {
+        DrvGD83DrvObj.TxRxCmd.cHeadFlag = Head_Caret;	
+        CaretNotify_Queue_Start(DrvGD83DrvObj.TxRxCmd.cRxBuf, DrvGD83DrvObj.TxRxCmd.cRxLen);
       }
     }
 #endif
@@ -376,7 +435,8 @@ void DrvMC8332_UART_Interrupt(void)
     case Head_Caret:
       CaretNotify_Queue(buf);
       break;
-    case Head_RecevUdp:
+    case Head_RecevTcp:
+      GpsNotify_Queue(buf);
       break;
     default:
       break;
@@ -424,6 +484,49 @@ static void PocNotify_Queue_Start(u8 *buf, u8 len)
     DrvGD83DrvObj.RxPocNotifyBuf.Notify[DrvGD83DrvObj.RxPocNotifyBuf.cNotifyHead][i] = buf[i];
   }
   DrvGD83DrvObj.RxPocNotifyBuf.NotifyLen[DrvGD83DrvObj.RxPocNotifyBuf.cNotifyHead] = len;
+}
+
+static void GpsNotify_Queue_Start(u8 *buf, u8 len)
+{
+  u8 i;
+  if(DrvGD83DrvObj.RxGpsNotifyBuf.cNotifyHead >= DrvMC8332_UART_NoMAX)
+  {
+    DrvGD83DrvObj.RxGpsNotifyBuf.cNotifyHead = 0;
+  }
+  for(i = 0;i < len; i++)
+  {
+    DrvGD83DrvObj.RxGpsNotifyBuf.Notify[DrvGD83DrvObj.RxGpsNotifyBuf.cNotifyHead][i] = buf[i];
+    if(buf[i] == 0x2c)
+    {
+      switch(DrvGD83DrvObj.RxGpsNotifyBuf.ucStartStop)
+      {
+      case 0x00:
+        DrvGD83DrvObj.RxGpsNotifyBuf.ucStartStop++;
+        break;
+      case 0x01:
+        DrvGD83DrvObj.RxGpsNotifyBuf.ucStartStop = 2;
+        break;
+      case 0x02:
+        break;
+      default:
+        break;
+      }
+    }
+    else
+    {
+      switch(DrvGD83DrvObj.RxGpsNotifyBuf.ucStartStop)
+      {
+      case 0x01:
+        DrvGD83DrvObj.RxGpsNotifyBuf.ucReceiveLen = buf[i]-0x30;
+        break;
+      case 0x00:
+      case 0x02:
+      default:
+        break;
+      }
+    }
+  }
+  DrvGD83DrvObj.RxGpsNotifyBuf.NotifyLen[DrvGD83DrvObj.RxGpsNotifyBuf.cNotifyHead] = len;
 }
 
 static void Notify_Queue_Stop(void)
@@ -492,7 +595,7 @@ static void Notify_Queue_Stop(void)
         DrvGD83DrvObj.RxCaretNotifyBuf.cNotifyHead++;
       }
       break;
-    case Head_RecevUdp:
+    case Head_RecevTcp:
       if((DrvGD83DrvObj.RxGpsNotifyBuf.cNotifyLen < DrvMC8332_UART_NoMAX)
          && (DrvGD83DrvObj.RxGpsNotifyBuf.NotifyLen[DrvGD83DrvObj.RxGpsNotifyBuf.cNotifyHead] != 0x00))
       {
@@ -539,6 +642,45 @@ static void PocNotify_Queue(u8 buf)
 		DrvGD83DrvObj.RxPocNotifyBuf.Notify[DrvGD83DrvObj.RxPocNotifyBuf.cNotifyHead][len] = buf;
 		DrvGD83DrvObj.RxPocNotifyBuf.NotifyLen[DrvGD83DrvObj.RxPocNotifyBuf.cNotifyHead]++;
 	}
+}
+
+static void GpsNotify_Queue(u8 buf)
+{
+  u8 len;
+  len = DrvGD83DrvObj.RxGpsNotifyBuf.NotifyLen[DrvGD83DrvObj.RxGpsNotifyBuf.cNotifyHead];
+  if(len < DrvMC8332_UART_NoLEN)
+  {
+    DrvGD83DrvObj.RxGpsNotifyBuf.Notify[DrvGD83DrvObj.RxGpsNotifyBuf.cNotifyHead][len] = buf;
+    DrvGD83DrvObj.RxGpsNotifyBuf.NotifyLen[DrvGD83DrvObj.RxGpsNotifyBuf.cNotifyHead]++;
+    if(buf == 0x2c)
+    {
+      switch(DrvGD83DrvObj.RxGpsNotifyBuf.ucStartStop)
+      {
+      case 0x00:
+        DrvGD83DrvObj.RxGpsNotifyBuf.ucStartStop++;
+        break;
+      case 0x01:
+        DrvGD83DrvObj.RxGpsNotifyBuf.ucStartStop = 2;
+        break;
+      case 0x02:
+      default:
+        break;
+      }
+    }
+    else
+    {
+      switch(DrvGD83DrvObj.RxGpsNotifyBuf.ucStartStop)
+      {
+      case 0x01:
+        DrvGD83DrvObj.RxGpsNotifyBuf.ucReceiveLen = buf-0x30;
+        break;
+      case 0x00:
+      case 0x02:
+      default:
+        break;
+      }
+    }
+  }
 }
 
 u8 DrvMC8332_CaretNotify_Queue_front(u8 **pBuf)
@@ -588,4 +730,19 @@ u8 DrvMC8332_PocNotify_Queue_front(u8 **pBuf)
 		DrvGD83DrvObj.RxPocNotifyBuf.cNotifyLen--;
 	}
 	return r;
+}
+bool DrvMC8332_GpsNotify_Queue_front(u8 **pBuf)
+{
+  bool r=0;
+  if(DrvGD83DrvObj.RxGpsNotifyBuf.cNotifyLen > 0)
+  {
+    *pBuf = DrvGD83DrvObj.RxGpsNotifyBuf.Notify[DrvGD83DrvObj.RxGpsNotifyBuf.cNotifyTail];
+    r=DrvGD83DrvObj.RxGpsNotifyBuf.NotifyLen[DrvGD83DrvObj.RxGpsNotifyBuf.cNotifyTail];
+    if(++DrvGD83DrvObj.RxGpsNotifyBuf.cNotifyTail >= DrvMC8332_UART_NoMAX)
+    {
+      DrvGD83DrvObj.RxGpsNotifyBuf.cNotifyTail = 0;
+    }
+    DrvGD83DrvObj.RxGpsNotifyBuf.cNotifyLen--;
+  }
+  return r;
 }
