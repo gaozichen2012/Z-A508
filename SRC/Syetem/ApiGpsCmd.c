@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdio.h>
 
+u8 Test1=0;
 typedef enum{
 	GPSREV_Ack		= 0x8001,//平台通用应答
 	GPSREV_Puls		= 0x8002,//终端心跳
@@ -356,10 +357,10 @@ static void pack_data(u8 *pBuf, u16 ucLen);//消息包封装
 
 void ApiGpsCmd_PowerOnInitial(void)//bubiao
 {
-  u16 i;
-  u8 ucIndex0 = 0, ucIndex1 = 0;
-  {
-  GpsFunDrvObj->GpsPar.LoginInfo.Province.usData=0x0010;//省域ID
+//  u16 i;
+//  u8 ucIndex0 = 0, ucIndex1 = 0;
+
+  /*GpsFunDrvObj->GpsPar.LoginInfo.Province.usData=0x0010;//省域ID
   GpsFunDrvObj->GpsPar.LoginInfo.County.usData=0x0300;//市县域ID
   GpsFunDrvObj->GpsPar.LoginInfo.Manufacturer[4]=0x00;//制造商ID
   GpsFunDrvObj->GpsPar.LoginInfo.Manufacturer[3]=0x00;
@@ -388,25 +389,25 @@ void ApiGpsCmd_PowerOnInitial(void)//bubiao
   GpsFunDrvObj->GpsPar.LoginInfo.LicensePlate[3]='0';
   GpsFunDrvObj->GpsPar.LoginInfo.LicensePlate[4]='0';
   GpsFunDrvObj->GpsPar.LoginInfo.LicensePlate[5]='6';
-  GpsFunDrvObj->GpsPar.LoginInfo.LicensePlate[6]=0x00;
+  GpsFunDrvObj->GpsPar.LoginInfo.LicensePlate[6]=0x00;*/
 
-  GpsFunDrvObj->GpsPar.Acc.Cfg.Bits.Enable = 0x01;
+ /* GpsFunDrvObj->GpsPar.Acc.Cfg.Bits.Enable = 0x01;
   GpsFunDrvObj->GpsPar.Acc.Cfg.Bits.Polarity = 0x00;
   GpsFunDrvObj->GpsPar.Acc.OnReportTime = 10;
   GpsFunDrvObj->GpsPar.Acc.OffReportTime = 0x01;
-  GpsFunDrvObj->GpsPar.Acc.CountdownTimer = 0x01;
+  GpsFunDrvObj->GpsPar.Acc.CountdownTimer = 0x01;*/
 
 
-  }
-  GpsFunDrvObj->usReportTimer = 0;//报告时间设置为0
+
+  //GpsFunDrvObj->usReportTimer = 0;//报告时间设置为0
   //部标
-  GpsFunDrvObj->PositionSystem.GbSys.State.MediaId = 0x01;
-  GpsFunDrvObj->PositionSystem.GbSys.State.ulAckStep=0x00;
+  //GpsFunDrvObj->PositionSystem.GbSys.State.MediaId = 0x01;
+  //GpsFunDrvObj->PositionSystem.GbSys.State.ulAckStep=0x00;
   GpsFunDrvObj->PositionSystem.GbSys.State.ucStep=0x00;
-  GpsFunDrvObj->PositionSystem.GbSys.LoginInfo.ucParam.Msg.Bits.bLoginSuccess = OFF;
-  GpsFunDrvObj->PositionSystem.GbSys.MsgBody.Param.HeadInfo.stParam.MsgProperty.Bits.Encryption=0;
-  GpsFunDrvObj->PositionSystem.GbSys.MsgBody.Param.HeadInfo.stParam.MsgProperty.Bits.Subpackage=0;
-  ucIndex0 = strlen((char const *)GpsFunDrvObj->GpsPar.Gps.ID)-1;//设备ID
+  //GpsFunDrvObj->PositionSystem.GbSys.LoginInfo.ucParam.Msg.Bits.bLoginSuccess = OFF;
+  //GpsFunDrvObj->PositionSystem.GbSys.MsgBody.Param.HeadInfo.stParam.MsgProperty.Bits.Encryption=0;
+  //GpsFunDrvObj->PositionSystem.GbSys.MsgBody.Param.HeadInfo.stParam.MsgProperty.Bits.Subpackage=0;
+  /*ucIndex0 = strlen((char const *)GpsFunDrvObj->GpsPar.Gps.ID)-1;//设备ID
   if(ucIndex0 > 11)
   {
     ucIndex0 = 11;
@@ -442,7 +443,7 @@ void ApiGpsCmd_PowerOnInitial(void)//bubiao
     }
   }
   COML_StringReverse(0x06,GpsFunDrvObj->PositionSystem.GbSys.MsgBody.Param.HeadInfo.stParam.ucTerminalNo.ucData);
-
+*/
   GpsFunDrvObj->PositionSystem.GbSys.MsgBody.Param.HeadInfo.stParam.ucTerminalNo.ucData[0]=0x00;
   GpsFunDrvObj->PositionSystem.GbSys.MsgBody.Param.HeadInfo.stParam.ucTerminalNo.ucData[1]=0x98;
   GpsFunDrvObj->PositionSystem.GbSys.MsgBody.Param.HeadInfo.stParam.ucTerminalNo.ucData[2]=0x00;
@@ -450,10 +451,43 @@ void ApiGpsCmd_PowerOnInitial(void)//bubiao
   GpsFunDrvObj->PositionSystem.GbSys.MsgBody.Param.HeadInfo.stParam.ucTerminalNo.ucData[4]=0x53;
   GpsFunDrvObj->PositionSystem.GbSys.MsgBody.Param.HeadInfo.stParam.ucTerminalNo.ucData[5]=0x88;
 		
-  GpsFunDrvObj->PositionSystem.GbSys.MsgBody.Param.HeadInfo.stParam.SerialNo.usData=0x0000;
+ /* GpsFunDrvObj->PositionSystem.GbSys.MsgBody.Param.HeadInfo.stParam.SerialNo.usData=0x0000;
   memcpy((u8*)&(GpsFunDrvObj->PositionSystem.GbSys.MsgBody.Param.Message.LoginInfo),
-         (u8*)&(GpsFunDrvObj->GpsPar.LoginInfo), sizeof(GpsFunDrvObj->PositionSystem.GbSys.MsgBody.Param.Message.LoginInfo));
+         (u8*)&(GpsFunDrvObj->GpsPar.LoginInfo), sizeof(GpsFunDrvObj->PositionSystem.GbSys.MsgBody.Param.Message.LoginInfo));*/
 }
+
+/*void ApiGpsCmd_1sRenew(void)
+{
+  if (SYS_GetCurTaskBuf() == TASK_mPowerOff || SYS_GetCurTaskBuf() == TASK_IDLE)
+  {
+    if(GpsFunDrvObj->GpsPar.Gps.Cfg.Bits.WorkMode != 0x00 &&
+       GpsFunDrvObj->GpsPar.Acc.CountdownTimer != 0x00 &&
+         GpsFunDrvObj->Msg.Bits.bCountDown == OFF)
+    {
+      GpsFunDrvObj->CountdownTimer.Second++;
+      if(GpsFunDrvObj->CountdownTimer.Second >= 60)
+      {
+        GpsFunDrvObj->CountdownTimer.Second = 0x00;
+        GpsFunDrvObj->CountdownTimer.Minute++;
+        if(GpsFunDrvObj->CountdownTimer.Minute >= 60)
+        {
+          GpsFunDrvObj->CountdownTimer.Minute = 0x00;
+          GpsFunDrvObj->CountdownTimer.Hour++;
+          if(GpsFunDrvObj->CountdownTimer.Hour >= ((u16)GpsFunDrvObj->GpsPar.Acc.CountdownTimer*5))
+          {
+            GpsFunDrvObj->Msg.Bits.bCountDown = ON;
+          }
+        }
+      }
+    }
+  }
+  else
+  {
+    GpsFunDrvObj->Msg.Bits.bCountDown = OFF;
+    GpsFunDrvObj->CountdownTimer.Hour = 0x00;
+    GpsFunDrvObj->CountdownTimer.Minute = 0x00;
+  }
+}*/
 
 void ApiGpsCmd_100msRenew(void)//决定什么时候发送什么数据
 {
@@ -470,12 +504,12 @@ void ApiGpsCmd_100msRenew(void)//决定什么时候发送什么数据
   {
     if(GetTaskId()==Task_NormalOperation)
     {
-      if(++GpsFunDrvObj->CountdownTimer.uc100Ms == 10)//GPS定时1S
+      if(++Test1 == 10)//GPS定时1S
       {
-        GpsFunDrvObj->CountdownTimer.uc100Ms = 0x00;//1s进一次
+        Test1 = 0x00;//1s进一次
         if((GpsFunDrvObj->usPulseTimer) == 0x00)//当脉冲定时=0
         {
-          if(GpsFunDrvObj->PositionSystem.GbSys.State.Msg.Bits.bSpecificAck == 0x00
+          if(GpsFunDrvObj->PositionSystem.GbSys.State.Msg.Bits.bSpecificAck == 0x00//收到特殊指令标志位=0
              &&(GpsFunDrvObj->PositionSystem.GbSys.State.Msg.Bits.bGeneralAck == 0x00))//如果没有收到命令
           {
             GpsFunDrvObj->usPulseTimer = (GpsFunDrvObj->GpsPar.Gps.PulseTime * 10);//将脉冲定时设为一个值

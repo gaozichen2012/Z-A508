@@ -80,7 +80,7 @@ u8 t=0;
   //通讯模块初始化
   DrvGD83_Init();
   DrvMC8332_Software_Initial();
-  ApiGpsCmd_PowerOnInitial();
+  //
   Uart1_Init();//模块通讯使用
   Uart3_Init(); //串口写频使用
   //音频初始化
@@ -98,6 +98,7 @@ u8 t=0;
   Set_RedLed(LED_OFF);
   Set_GreenLed(LED_OFF);
   enableInterrupts();
+
 #if 1//EEPROM TEST
   
   /*ReadBuffer[1]=FLASH_ReadByte(0x4001);
@@ -117,12 +118,12 @@ u8 t=0;
   AUDIO_IOAFPOW(ON);
   GPIO_Init(GPIOB,GPIO_PIN_6,GPIO_MODE_OUT_PP_LOW_FAST);//LOC MIC MUTE
   MIC_IOMUT(OFF); 
-  //api_lcd_pwr_on_hint2("eChat");
+  api_lcd_pwr_on_hint2("eChat");
 
   BEEP_Time(1);
   r=ApiAtCmd_WritCommand(ATCOMM3_GD83Reset,(u8 *)ucGD83Reset,strlen((char const *)ucGD83Reset));
   TaskDrvObj.NewId=Task_Start;
-  
+   ApiGpsCmd_PowerOnInitial();
   
 #if 0//测试模块关机
   Set_GreenLed(LED_ON);

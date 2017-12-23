@@ -34,6 +34,7 @@ static DEL_DRV	DelDrvObj;
 static void DEL_100msProcess(void);
 static void DEL_500msProcess(void);
 static void DEL_1msProcess(void);
+static void DEL_10msProcess(void);
 static void DEL_TimerRenew(void);
 
 void DEL_PowerOnInitial(void)//原瑞撒單片機多長時間進一次中斷
@@ -90,6 +91,7 @@ void DEL_Interrupt(void)
 void DEL_Renew(void) 
 {
   DEL_1msProcess();
+  DEL_10msProcess();
   DEL_100msProcess();
   DEL_500msProcess();
   return;
@@ -231,6 +233,16 @@ static void DEL_1msProcess(void)
     ApiCaretCmd_10msRenew();
     ApiAtCmd_10msRenew();
     ApiPocCmd_10msRenew();
+  }
+  return;
+}
+
+static void DEL_10msProcess(void)
+{
+  if (DelDrvObj.Msg.Bit.b10ms == DEL_RUN) 
+  {
+    DelDrvObj.Msg.Bit.b10ms = DEL_IDLE;
+    ApGpsCmd_10msRenew();
   }
   return;
 }
