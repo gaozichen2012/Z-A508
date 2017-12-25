@@ -3,8 +3,6 @@
 //
 #include "stm8s.h"
 
-
-
 #include "sysclock.h"
 #include "McuConfig.h"
 #include "stm8s_it.h"
@@ -30,9 +28,9 @@
 #include "DrvGT20L16S1Y.h"
 
 //BEEP
-#include "Beep.h"
-#include "Tone.h"
 
+#include "Tone.h"
+#include "Beep.h"
 
 //хннЯ
 #include "Task.h"

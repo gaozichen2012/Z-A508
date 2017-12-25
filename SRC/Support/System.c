@@ -4,6 +4,8 @@
 #define SYS_IDLE	0x00
 #define SYS_RUN		0x01
 
+u32 T1[63];//MAX=6144
+
 typedef struct {	
 	struct{
 		union{
@@ -67,7 +69,7 @@ void main_app(void)
   bool r=FALSE;
 
 u8 t=0;
-
+  T1[63]=0;//Test
   disableInterrupts();
   SystemClock_Init(HSE_Clock);
   ITC_SetSoftwarePriority(ITC_IRQ_UART1_RX,ITC_PRIORITYLEVEL_3);
@@ -80,6 +82,7 @@ u8 t=0;
   //通讯模块初始化
   DrvGD83_Init();
   DrvMC8332_Software_Initial();
+  ApiGpsCmd_PowerOnInitial();
   //
   Uart1_Init();//模块通讯使用
   Uart3_Init(); //串口写频使用
@@ -123,7 +126,7 @@ u8 t=0;
   BEEP_Time(1);
   r=ApiAtCmd_WritCommand(ATCOMM3_GD83Reset,(u8 *)ucGD83Reset,strlen((char const *)ucGD83Reset));
   TaskDrvObj.NewId=Task_Start;
-   ApiGpsCmd_PowerOnInitial();
+   
   
 #if 0//测试模块关机
   Set_GreenLed(LED_ON);
