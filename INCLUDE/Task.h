@@ -25,7 +25,7 @@ typedef enum {					//task id code process
 	TASK_RESET		= 0xFF
         
 }TASK_CODE;
-
+TASKAPI bool NoUseNum;
 TASKAPI void Delay_100ms(u8 T);
 TASKAPI u8 Key_PersonalCalling_Flag;
 TASKAPI void Task_RunStart(void);

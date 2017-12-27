@@ -22,10 +22,10 @@ typedef enum
 typedef enum{
 	ATVOICE_FreePlay		= 0x0001,
 	ATVOICE_CardError		= 0x0002,
-	ATVOICE_SingalError	= 0x0004,
+	ATVOICE_SingalError	        = 0x0004,
 	ATVOICE_CheckNet		= 0x0008,
 	ATVOICE_Landing			= 0x0010,
-	ATVOICE_LandSuccess	= 0x0020,
+	ATVOICE_LandSuccess	        = 0x0020,
 	ATVOICE_LowAlarm		= 0x0040,
 	ATVOICE_LowPowOff		= 0x0080,
 	ATVOICE_Battery			= 0x0100,

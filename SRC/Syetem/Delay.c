@@ -250,7 +250,7 @@ static void DEL_10msProcess(void)
 //延时测试，需在初始化中加入DEL_SetTimer(1,100);
 void Delay_Test(void)
 {
-  bool x=FALSE;
+
     while(1)
     {
       Set_RedLed(LED_OFF);
@@ -258,7 +258,7 @@ void Delay_Test(void)
       if(DEL_GetTimer(1) == TRUE)
       {
         DEL_SetTimer(0,100);
-        x=ApiPocCmd_WritCommand(PocComm_OpenPOC,"666",strlen((char const *)"666"));
+        ApiPocCmd_WritCommand(PocComm_OpenPOC,"666",strlen((char const *)"666"));
         break;
       }
     }
@@ -269,7 +269,7 @@ void Delay_Test(void)
       if(DEL_GetTimer(0) == TRUE)
       {
         DEL_SetTimer(1,100);
-        x=ApiPocCmd_WritCommand(PocComm_OpenPOC,"666",strlen((char const *)"666"));
+        ApiPocCmd_WritCommand(PocComm_OpenPOC,"666",strlen((char const *)"666"));
         break;
       }
     }

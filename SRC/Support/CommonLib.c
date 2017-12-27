@@ -268,6 +268,19 @@ void COML_StringReverse(u8 Len, u8 *buf)
 		buf[j] = Temp;
 	}
 }
+void COML_StringReverse2(u8 Len, u8 *buf)
+{
+	u8 i, j, Temp;
+
+	j = 0;
+	for(i = 0x00; i < Len; i++)
+	{
+		j = i ;
+		Temp = buf[i];
+		buf[i] = 	buf[j];
+		buf[j] = Temp;
+	}
+}
 
 u8 Combine2Hex(const u8* pInHexBuf, u8 uclen, u8* pOutHexBuf)
 {

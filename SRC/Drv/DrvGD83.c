@@ -231,7 +231,7 @@ void DrvMC8332_UART_TxInterrupt(void)
 
 void DrvMC8332_UART_Interrupt(void)
 {
-  static u8 head, pbuf[50]; 
+  static u8 head; //, pbuf[50]
   u8 ucLen;
   u16 buf;
   DrvGD83DrvObj.HardWare.Msg.Bits.bUartValid = ON;
@@ -241,7 +241,7 @@ void DrvMC8332_UART_Interrupt(void)
   {
     head = 0x00;
   }
-  pbuf[head] = buf;
+  //pbuf[head] = buf;
   switch((u8)buf)
   {
   case 0x0D:
@@ -733,7 +733,7 @@ u8 DrvMC8332_PocNotify_Queue_front(u8 **pBuf)
 }
 bool DrvMC8332_GpsNotify_Queue_front(u8 **pBuf)
 {
-  bool r=0;
+  u8 r=0x00;
   if(DrvGD83DrvObj.RxGpsNotifyBuf.cNotifyLen > 0)
   {
     *pBuf = DrvGD83DrvObj.RxGpsNotifyBuf.Notify[DrvGD83DrvObj.RxGpsNotifyBuf.cNotifyTail];

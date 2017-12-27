@@ -22,7 +22,7 @@ typedef enum{
 
 extern u8 POC_GetGroupInformationFlag;
 //void ApiPocCmd_PowerOnInitial(void);
-extern bool ApiPocCmd_WritCommand(PocCommType id, u8 *buf, u16 len);
+extern void ApiPocCmd_WritCommand(PocCommType id, u8 *buf, u16 len);
 extern u8 ApiPocCmd_user_info_set(u8 *pBuf, u8 len);
 extern void ApiPocCmd_10msRenew(void);
 extern bool ApiAtCmd_GetLoginState(void);

@@ -29,7 +29,7 @@ COMLAPI u8 COML_HexToAsc(u32 Value, u8 *buf);
 COMLAPI u8 Combine2Hex(const u8* pInHexBuf, u8 uclen, u8* pOutHexBuf);
 COMLAPI void Dec2Hex(const u8* dec, u16 len, u8* hex);
 extern void COML_StringReverse(u8 Len, u8 *buf);
-
+extern void COML_StringReverse2(u8 Len, u8 *buf);
 #endif
 /******************************************************************************
 ;------------------end page

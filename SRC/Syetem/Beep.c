@@ -191,8 +191,7 @@ u8 BEEP_GetCommand(u8* pBuf)
 *******************************************************************************/
 bool BEEP_GetStatus(BEEP_TYPE Id)
 {
-	bool r;
-	r=0;
+	bool r=FALSE;
 	switch (Id)
 	{
 	case BEEP_IDPOWER:

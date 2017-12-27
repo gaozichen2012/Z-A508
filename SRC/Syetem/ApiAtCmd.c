@@ -189,7 +189,7 @@ void ApiAtCmd_100msRenew(void)
 }
 void ApiCaretCmd_10msRenew(void)
 {
-  u8 * pBuf, ucRet, Len, i;
+  u8 * pBuf, ucRet, Len;//, i
   while((Len = DrvMC8332_CaretNotify_Queue_front(&pBuf)) != 0)
   {
     ucRet = memcmp(pBuf, ucSIMST1, 8);//^SIMST:1

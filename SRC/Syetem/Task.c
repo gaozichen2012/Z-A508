@@ -1,42 +1,12 @@
 #define TASKABLE
 #include "AllHead.h"
-
+bool NoUseNum=FALSE;
 #if 1 //test
 u8 Key_Flag_0=0;
 u8 Key_PersonalCalling_Flag=0;
 u8 x=0;
 #endif
 
-#if 0//2号
-u8 *ucSetParamConfig    = "01000069703D302E302E302E303B69643D31393830303330373437323B7077643D3131313131313B00";
-#endif
-#if 0//3号
-u8 *ucSetParamConfig    = "01000069703D302E302E302E303B69643D31393830303330373437333B7077643D3131313131313B00";
-#endif
-#if 0//4号
-u8 *ucSetParamConfig    = "01000069703D302E302E302E303B69643D31393830303330373437343B7077643D3131313131313B00";
-#endif
-#if 1//5号
-u8 *ucSetParamConfig    = "01000069703D302E302E302E303B69643D31393830303330373437353B7077643D3131313131313B00";
-#endif
-#if 0//6号
-u8 *ucSetParamConfig    = "01000069703D302E302E302E303B69643D31393830303330373437363B7077643D3131313131313B00";
-#endif
-#if 0//7号
-u8 *ucSetParamConfig    = "01000069703d302e302e302e303b69643d31393830303330383636373b7077643d3131313131313b00";
-#endif
-#if 0//8号
-u8 *ucSetParamConfig    = "01000069703d302e302e302e303b69643d31393830303330383636383b7077643d3131313131313b00";
-#endif
-#if 0//9号
-u8 *ucSetParamConfig    = "01000069703d302e302e302e303b69643d31393830303330383636393b7077643d3131313131313b00";
-#endif
-#if 0//0号//调度员
-u8 *ucSetParamConfig    = "01000069703d302e302e302e303b69643d31393830303330383637303b7077643d3131313131313b00";
-#endif
-#if 0//1号
-u8 *ucSetParamConfig    = "01000069703d302e302e302e303b69643d31393830303330383637313b7077643d3131313131313b00";
-#endif
 u8 *ucStartPTT                  = "0B0000";
 u8 *ucEndPTT                    = "0C0000";
 u8 *ucRequestUserListInfo       = "0E000000000064";
@@ -54,7 +24,7 @@ u8 *ucPocOpenConfig             = "0000000101";
 
 void Task_RunStart(void)
 {
-  u8 v;
+  
 
   UART3_ToMcuMain();
   if(BootProcess_SIMST_Flag==1)//收到模块开机指令:SIMST:1
@@ -63,26 +33,26 @@ void Task_RunStart(void)
     api_disp_icoid_output( eICO_IDBATT3, TRUE, TRUE);//电池电量3级
     BEEP_Time(50);
     
-    v=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)ucCLVL,strlen((char const *)ucCLVL));//
+    NoUseNum=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)ucCLVL,strlen((char const *)ucCLVL));//
     Delay_100ms(1);//0.1s
-    v=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)ucVGR,strlen((char const *)ucVGR));//
+    NoUseNum=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)ucVGR,strlen((char const *)ucVGR));//
     Delay_100ms(1);//0.1s
-    v=ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)ucCODECCTL,strlen((char const *)ucCODECCTL));//
+    NoUseNum=ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)ucCODECCTL,strlen((char const *)ucCODECCTL));//
     Delay_100ms(1);//0.1s
-    v=ApiAtCmd_WritCommand(ATCOMM0_OSSYSHWID,(u8 *)ucOSSYSHWID,strlen((char const *)ucOSSYSHWID));//
+    NoUseNum=ApiAtCmd_WritCommand(ATCOMM0_OSSYSHWID,(u8 *)ucOSSYSHWID,strlen((char const *)ucOSSYSHWID));//
     Delay_100ms(1);//0.1s
-    v=ApiAtCmd_WritCommand(ATCOMM4_GD83Mode,(u8 *)ucPrefmode,strlen((char const *)ucPrefmode));//
+    NoUseNum=ApiAtCmd_WritCommand(ATCOMM4_GD83Mode,(u8 *)ucPrefmode,strlen((char const *)ucPrefmode));//
     Delay_100ms(1);//0.1s
-    v=ApiAtCmd_WritCommand(ATCOMM2_ZTTS_Abell,(u8 *)ucZTTS_Abell,strlen((char const *)ucZTTS_Abell));//播报游标广域对讲机
+    NoUseNum=ApiAtCmd_WritCommand(ATCOMM2_ZTTS_Abell,(u8 *)ucZTTS_Abell,strlen((char const *)ucZTTS_Abell));//播报游标广域对讲机
     api_lcd_pwr_on_hint("中兴易洽广域对讲");
     Delay_100ms(25);//2.5s
-    v=ApiAtCmd_WritCommand(ATCOMM1_PPPCFG,(u8 *)ucPPPCFG,strlen((char const *)ucPPPCFG));//1.发送PPPCFG
+    NoUseNum=ApiAtCmd_WritCommand(ATCOMM1_PPPCFG,(u8 *)ucPPPCFG,strlen((char const *)ucPPPCFG));//1.发送PPPCFG
     BootProcess_SIMST_Flag=0;
     VOICE_SetOutput(ATVOICE_FreePlay,"1c64227d517fdc7e",16);//播报搜索网络
     //DEL_SetTimer(0,100);
     //while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
     api_lcd_pwr_on_hint("   搜索网络...  ");
-    v=ApiAtCmd_WritCommand(ATCOMM6_CSQ,(u8 *)ucCSQ,strlen((char const *)ucCSQ));//CSQ?
+    NoUseNum=ApiAtCmd_WritCommand(ATCOMM6_CSQ,(u8 *)ucCSQ,strlen((char const *)ucCSQ));//CSQ?
     //Delay_100ms(100);//0.1s
     //DEL_SetTimer(0,100);
     //while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
@@ -103,12 +73,12 @@ void Task_RunStart(void)
     if(BootProcess_PPPCFG_Flag_Zanshi==1)//如果收到^PPPCFG//因为有时收不到该指令，临时屏蔽，后期加上
     {
       Delay_100ms(10);//1s
-      ApiPocCmd_WritCommand(PocComm_SetParam,ucSetParamConfig,strlen((char const *)ucSetParamConfig));//配置echat账号、IP
+      ApiPocCmd_WritCommand(PocComm_SetParam,ucPocOpenConfig,strlen((char const *)ucPocOpenConfig));//配置echat账号、IP
       Delay_100ms(40);//4s
       VOICE_SetOutput(ATVOICE_FreePlay,"636b28577b764696",16);//播报正在登陆
      api_lcd_pwr_on_hint("   正在登陆...    ");
     //  Delay_100ms(10);//1s
-      v=ApiPocCmd_WritCommand(PocComm_OpenPOC,ucPocOpenConfig,strlen((char const *)ucPocOpenConfig));
+      ApiPocCmd_WritCommand(PocComm_OpenPOC,ucPocOpenConfig,strlen((char const *)ucPocOpenConfig));
       BootProcess_PPPCFG_Flag_Zanshi=0;
     }
   }
@@ -119,14 +89,14 @@ void Task_RunStart(void)
       Delay_100ms(50);//5s
       VOICE_SetOutput(ATVOICE_FreePlay,"1c64227d517fdc7e",16);//播报搜索网络
       api_lcd_pwr_on_hint("   搜索网络...  ");
-      v=ApiAtCmd_WritCommand(ATCOMM6_CSQ,(u8 *)ucCSQ,strlen((char const *)ucCSQ));//CSQ?
+      NoUseNum=ApiAtCmd_WritCommand(ATCOMM6_CSQ,(u8 *)ucCSQ,strlen((char const *)ucCSQ));//CSQ?
     }
   }
 }
 
 void Task_RunNormalOperation(void)
 {
-  u8 v;
+
   UART3_ToMcuMain();
   if(ReadInput_KEY_PTT==0)
   {
@@ -134,7 +104,7 @@ void Task_RunNormalOperation(void)
     {
     case 0://默认PTT状态
       Set_RedLed(LED_ON);
-      v=ApiPocCmd_WritCommand(PocComm_StartPTT,ucStartPTT,strlen((char const *)ucStartPTT));
+      ApiPocCmd_WritCommand(PocComm_StartPTT,ucStartPTT,strlen((char const *)ucStartPTT));
       
       while(ReadInput_KEY_PTT==0)
       {
@@ -143,13 +113,13 @@ void Task_RunNormalOperation(void)
       }
       api_disp_icoid_output( eICO_IDTX, TRUE, FALSE);//清除发射信号图标
       api_disp_all_screen_refresh();//刷新屏幕数据
-      v=ApiPocCmd_WritCommand(PocComm_EndPTT,ucEndPTT,strlen((char const *)ucEndPTT));
+      ApiPocCmd_WritCommand(PocComm_EndPTT,ucEndPTT,strlen((char const *)ucEndPTT));
       break;
     case 1://=1，进入某群组
       VOICE_SetOutput(ATVOICE_FreePlay,"f25d09902d4e",12);//播报已选中
       DEL_SetTimer(0,100);
       while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
-      v=ApiPocCmd_WritCommand(PocComm_EnterGroup,ucPocOpenConfig,strlen((char const *)ucPocOpenConfig));
+      ApiPocCmd_WritCommand(PocComm_EnterGroup,ucPocOpenConfig,strlen((char const *)ucPocOpenConfig));
       Key_Flag_0=1;
       KeyDownUpChoose_GroupOrUser_Flag=0;
       KeyUpDownCount=0;
@@ -158,7 +128,7 @@ void Task_RunNormalOperation(void)
       VOICE_SetOutput(ATVOICE_FreePlay,"f25d09902d4e",12);//播报已选中
       DEL_SetTimer(0,100);
       while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
-      v=ApiPocCmd_WritCommand(PocComm_Invite,ucPocOpenConfig,strlen((char const *)ucPocOpenConfig));
+      ApiPocCmd_WritCommand(PocComm_Invite,ucPocOpenConfig,strlen((char const *)ucPocOpenConfig));
       Key_Flag_0=1;
       KeyDownUpChoose_GroupOrUser_Flag=0;
      // KeyPersonalCallingCount=0;
@@ -187,7 +157,7 @@ void Task_RunNormalOperation(void)
     {
       api_lcd_pwr_on_hint("    退出单呼    ");
       Delay_100ms(5);
-      v=ApiPocCmd_WritCommand(PocComm_Cancel,(u8 *)ucQuitPersonalCalling,strlen((char const *)ucQuitPersonalCalling));
+      ApiPocCmd_WritCommand(PocComm_Cancel,(u8 *)ucQuitPersonalCalling,strlen((char const *)ucQuitPersonalCalling));
       api_lcd_pwr_on_hint("群组:   组呼模式");
     }
     else
@@ -220,7 +190,7 @@ void Task_RunNormalOperation(void)
     }
 
     
-    v=ApiPocCmd_WritCommand(PocComm_UserListInfo,ucRequestUserListInfo,strlen((char const *)ucRequestUserListInfo));
+    ApiPocCmd_WritCommand(PocComm_UserListInfo,ucRequestUserListInfo,strlen((char const *)ucRequestUserListInfo));
     VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(0),ApiAtCmd_GetUserNameLen(0));
     KeyDownUpChoose_GroupOrUser_Flag=2;
   }

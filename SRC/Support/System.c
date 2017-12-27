@@ -4,7 +4,7 @@
 #define SYS_IDLE	0x00
 #define SYS_RUN		0x01
 
-u32 T1[63];//MAX=6144
+//u32 T1[63];//MAX=6144
 
 typedef struct {	
 	struct{
@@ -66,10 +66,7 @@ u8 *ucGD83Reset         = "at^reset";
 
 void main_app(void)
 {
-  bool r=FALSE;
-
-u8 t=0;
-  T1[63]=0;//Test
+  //T1[62]=0;//Test
   disableInterrupts();
   SystemClock_Init(HSE_Clock);
   ITC_SetSoftwarePriority(ITC_IRQ_UART1_RX,ITC_PRIORITYLEVEL_3);
@@ -82,6 +79,7 @@ u8 t=0;
   //通讯模块初始化
   DrvGD83_Init();
   DrvMC8332_Software_Initial();
+  
   ApiGpsCmd_PowerOnInitial();
   //
   Uart1_Init();//模块通讯使用
@@ -124,54 +122,9 @@ u8 t=0;
   api_lcd_pwr_on_hint2("eChat");
 
   BEEP_Time(1);
-  r=ApiAtCmd_WritCommand(ATCOMM3_GD83Reset,(u8 *)ucGD83Reset,strlen((char const *)ucGD83Reset));
+  NoUseNum=ApiAtCmd_WritCommand(ATCOMM3_GD83Reset,(u8 *)ucGD83Reset,strlen((char const *)ucGD83Reset));
   TaskDrvObj.NewId=Task_Start;
-   
-  
-#if 0//测试模块关机
-  Set_GreenLed(LED_ON);
-  Set_RedLed(LED_ON);
-  Delay_100ms(20);
-  Set_GreenLed(LED_OFF);
-  Set_RedLed(LED_OFF);
-  
-  GPIO_WriteHigh(GPIO_C_ONOFF,GPIO_PIN_C_ONOFF);
-  Set_GreenLed(LED_ON);
-  Delay_100ms(50);
-  GPIO_WriteLow(GPIO_C_ONOFF,GPIO_PIN_C_ONOFF);
-  Set_GreenLed(LED_OFF);
-  Set_RedLed(LED_ON);
-  Delay_100ms(100);
-  Set_RedLed(LED_OFF);
 
-  
-  GPIO_WriteHigh(GPIO_C_ONOFF,GPIO_PIN_C_ONOFF);
-  Set_GreenLed(LED_ON);
-  Delay_100ms(50);
-  GPIO_WriteLow(GPIO_C_ONOFF,GPIO_PIN_C_ONOFF);
-  Set_GreenLed(LED_OFF);
-  Set_RedLed(LED_ON);
-  Delay_100ms(100);
-  Set_RedLed(LED_OFF);
-  
-  GPIO_WriteHigh(GPIO_C_ONOFF,GPIO_PIN_C_ONOFF);
-  Set_GreenLed(LED_ON);
-  Delay_100ms(50);
-  GPIO_WriteLow(GPIO_C_ONOFF,GPIO_PIN_C_ONOFF);
-  Set_GreenLed(LED_OFF);
-  Set_RedLed(LED_ON);
-  Delay_100ms(100);
-  Set_RedLed(LED_OFF);
-  
-  
-#endif
-
-  
-  
-  
-  
-  
-  
   while(1)
   {
 #if 0//调试显示屏界面
@@ -309,7 +262,7 @@ u8 t=0;
 
 void SYS_McuReset(void)
 {
-	POW_SetPowSwitch(OFF);
+	//POW_SetPowSwitch(OFF);
 	DEL_Soft1ms(8000);
 
 }

@@ -26,7 +26,7 @@ typedef struct
 	}Msg;
 }DIS_DRV;
 
-static DIS_DRV DisDrvObj;
+//static DIS_DRV DisDrvObj;
 
 static void DISP_DataBuf(DISP_CHAR DisInfo, u8 *CharData);
 static void DISP_MulTypePro(DISP_CHAR CharInfo, u8 *CharData);
@@ -291,7 +291,7 @@ static void DISP_DataBuf(DISP_CHAR DisInfo, u8 *CharData)
 						iPt = iPt;
 					}
 					DisDataBuf[iPt] = *CharData;
-					DisDrvObj.Msg.Bit.bRefresh = DISP_RUN;
+					//DisDrvObj.Msg.Bit.bRefresh = DISP_RUN;
 					DisDataBit[iPt / 0x08] |= BitTab[iPt % 0x08];
 				}
 				CharData++;
@@ -370,7 +370,7 @@ void api_disp_ico_output(DISP_ICO IcoInfo, u8 *IcoData)
 			if (DisDataBuf[iPt] != (*ptr))
 			{
 				DisDataBuf[iPt] = *ptr;
-				DisDrvObj.Msg.Bit.bRefresh = DISP_RUN;
+				//DisDrvObj.Msg.Bit.bRefresh = DISP_RUN;
 				DisDataBit[iPt / 0x08] |= BitTab[iPt % 0x08];
 			}
 			ptr++;

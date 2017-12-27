@@ -10,7 +10,7 @@ u32 get_key_value(u8 scan_value);
 u8 Key_Flag_1=0;
 void Keyboard_Test(void)
 {
-  u8 r=0;
+  //u8 r=0;
 
   u8 scanvalue = 0;
   u32 ulAllKeyID = 0x00000000;
@@ -127,7 +127,7 @@ void Keyboard_Test(void)
   case 0x00400000://cancel
     api_lcd_pwr_on_hint("    退出单呼    ");
     Delay_100ms(5);
-    r=ApiPocCmd_WritCommand(PocComm_Cancel,(u8 *)ucQuitPersonalCalling,strlen((char const *)ucQuitPersonalCalling));
+    ApiPocCmd_WritCommand(PocComm_Cancel,(u8 *)ucQuitPersonalCalling,strlen((char const *)ucQuitPersonalCalling));
     api_lcd_pwr_on_hint("群组:   组呼模式");
     Key_Flag_1=1;//按键延时标志位
     Key_PersonalCalling_Flag=0;//进入组呼标志位

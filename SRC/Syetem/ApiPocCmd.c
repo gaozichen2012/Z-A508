@@ -1,12 +1,16 @@
 #include "ALLHead.h"
 
 #define DrvMC8332_GroupName_Len		16			//define UART Tx buffer length value
+#if 0//Test地址冲突，解决测试
 #define DrvMC8332_UseId_Len			100			//define UART Tx buffer length value
+#else
+#define DrvMC8332_UseId_Len			85			//define UART Tx buffer length value
+#endif
 #define APIPOC_UserList_Len			16
 #define APIPOC_UserLoad_Len			8
 #define APIPOC_UserName_Len			30
 
-u8 ReadBuffer[100];//Test 存EEPROM读取的数据使用
+u8 ReadBuffer[80];//Test 存EEPROM读取的数据使用
 
 const u8 *ucAtPocHead   = "AT+POC=";
 const u8 *ucTingEnd   = "0B0000";
@@ -119,7 +123,7 @@ typedef struct{
 					u8 InvEnable			: 1;
 					u8 InvPreEnable		: 1;
 					u8 	InvMode			: 3;
-					u8						: 3;
+					u8				: 3;
 				}Bits;
 				u8 Byte;
 			}Msg;
@@ -151,7 +155,7 @@ typedef struct{
 			struct{
 				u8	GroupList	: 1;
 				u8	UserList	: 1;
-				u8				: 6;
+				u8			: 6;
 			}Bits;
 			u8 Byte;
 		}Msg;
@@ -198,9 +202,8 @@ static PocCmdDrv PocCmdDrvobj;
   PocCmdDrvobj.CfgInfo.UseIndex = 0;
 }*/
 
-bool ApiPocCmd_WritCommand(PocCommType id, u8 *buf, u16 len)
+void ApiPocCmd_WritCommand(PocCommType id, u8 *buf, u16 len)
 {
-  bool r = TRUE;
   DrvMC8332_TxPort_SetValidable(ON);
   DrvGD83_UART_TxCommand((u8 *)ucAtPocHead,strlen((char const *)ucAtPocHead));
   switch(id)
@@ -210,7 +213,7 @@ bool ApiPocCmd_WritCommand(PocCommType id, u8 *buf, u16 len)
     break;
   case PocComm_SetParam://设置账号密码
     DrvGD83_UART_TxCommand((u8 *)ucSetIPAndID,strlen((char const *)ucSetIPAndID));
-    FILE_Read(0,100,ReadBuffer);
+    FILE_Read(0,80,ReadBuffer);
     DrvGD83_UART_TxCommand(ReadBuffer, strlen((char const *)ReadBuffer));
     break;
   case PocComm_GetParam:
@@ -252,9 +255,8 @@ bool ApiPocCmd_WritCommand(PocCommType id, u8 *buf, u16 len)
   default:
     break;
   }
-  r = DrvMc8332_UART_TxTail();
+  DrvMc8332_UART_TxTail();
   DrvMC8332_TxPort_SetValidable(ON);
-  return r;
 }
 
 //写频写入数据存入EEPROM
@@ -262,7 +264,7 @@ u8 ApiPocCmd_user_info_set(u8 *pBuf, u8 len)//cTxBuf为存放ip账号密码的信息
 {
 	bool r;
 	u8 i, uRet = 0;
-	ADRLEN_INF	adr;
+	//ADRLEN_INF	adr;
 
 	for(i = 0; i < len; i++)
 	{
@@ -302,7 +304,7 @@ u8 ApiPocCmd_user_info_set(u8 *pBuf, u8 len)//cTxBuf为存放ip账号密码的信息
 
 void ApiPocCmd_10msRenew(void)
 {
-  u8 ucId,j,i, Len;
+  u8 ucId,i, Len;
   u8 * pBuf, ucRet;
   while((Len = DrvMC8332_PocNotify_Queue_front(&pBuf)) != 0x00)
   {
@@ -504,7 +506,7 @@ u8 ApiAtCmd_GetMainUserId(void)//获取当前用户id（个呼）
 
 bool ApiAtCmd_GetLoginState(void)
 {
-  return PocCmdDrvobj.WorkState.UseState.Msg.Bits.bLogin;
+  return (bool)PocCmdDrvobj.WorkState.UseState.Msg.Bits.bLogin;
 }
   
 void ApiGetPocBuf(void)
