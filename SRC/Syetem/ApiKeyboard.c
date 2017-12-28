@@ -1,4 +1,7 @@
 #include "AllHead.h"
+u8 AkeyvolumeCount=7;
+u8 *ucVGR1                       = "AT+VGR=1";//音量增益1
+u8 *ucVGR7                       = "AT+VGR=7";//音量增益7
 u8 *ucKeyUp                = "10000003";
 u8 *ucKeyDown              = "10000004";
 u8 *ucQuitPersonalCalling  = "0A0000ffffffff";
@@ -72,7 +75,27 @@ void Keyboard_Test(void)
     //api_lcd_pwr_on_hint("欧标按键:OK     ");
     break;
   case 0x00800000://menu   
-    //api_lcd_pwr_on_hint("欧标按键:Menu   ");
+    if(AkeyvolumeCount==7)
+    {
+      
+      VOICE_SetOutput(ATVOICE_FreePlay,"2c54527b216a0f5f",16);//听筒模式
+      DEL_SetTimer(0,100);
+      while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+      NoUseNum=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)ucVGR1,strlen((char const *)ucVGR1));//
+      AkeyvolumeCount=1;
+    }
+    else
+    {
+      if(AkeyvolumeCount==1)
+      {
+        VOICE_SetOutput(ATVOICE_FreePlay,"4d51d063216a0f5f",16);//免提模式
+        DEL_SetTimer(0,100);
+        while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+        NoUseNum=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)ucVGR7,strlen((char const *)ucVGR7));//
+        AkeyvolumeCount=7;
+      }
+    }
+
     break;   
   case 0x00000004://2
     //api_lcd_pwr_on_hint("欧标按键:2      ");

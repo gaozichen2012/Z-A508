@@ -1,6 +1,8 @@
 #define TASKABLE
 #include "AllHead.h"
 bool NoUseNum=FALSE;
+u8 AlarmCount=4;//2G3G切换计数,默认为3G模式
+
 #if 1 //test
 u8 Key_Flag_0=0;
 u8 Key_PersonalCalling_Flag=0;
@@ -10,11 +12,13 @@ u8 x=0;
 u8 *ucStartPTT                  = "0B0000";
 u8 *ucEndPTT                    = "0C0000";
 u8 *ucRequestUserListInfo       = "0E000000000064";
-u8 *ucCLVL                       = "AT+CLVL=3";//音量增益7
-u8 *ucVGR                       = "AT+VGR=3";//音量增益7
-u8 *ucCODECCTL                  = "at^codecctl=4000,1c00,0";//音量增益 3c00
+u8 *ucCLVL                       = "AT+CLVL=7";//音量增益7
+u8 *ucVGR                       = "AT+VGR=7";//音量增益7
+u8 *ucCODECCTL                  = "at^codecctl=9000,1c00,0";//音量增益4000 3c00
 u8 *ucOSSYSHWID                 = "AT^OSSYSHWID=1";
-u8 *ucPrefmode                  = "AT^prefmode=4";
+u8 *ucPrefmode2                  = "AT^prefmode=2";//网络模式2G
+u8 *ucPrefmode4                  = "AT^prefmode=4";//网络模式3G
+u8 *ucPrefmode8                  = "AT^prefmode=8";//网络模式2/3G自动切换
 u8 *ucCSQ                       = "AT+CSQ?";
 u8 *ucPPPCFG                    = "AT^PPPCFG=echat,ctnet@mycdma.cn,vnet.mobi";
 //u8 *ucZTTS_Abell                = "AT+ZTTS=1,\"276b07687F5EDF57F95BB28B3A67\"";欧标广域对讲机
@@ -41,7 +45,7 @@ void Task_RunStart(void)
     Delay_100ms(1);//0.1s
     NoUseNum=ApiAtCmd_WritCommand(ATCOMM0_OSSYSHWID,(u8 *)ucOSSYSHWID,strlen((char const *)ucOSSYSHWID));//
     Delay_100ms(1);//0.1s
-    NoUseNum=ApiAtCmd_WritCommand(ATCOMM4_GD83Mode,(u8 *)ucPrefmode,strlen((char const *)ucPrefmode));//
+    NoUseNum=ApiAtCmd_WritCommand(ATCOMM4_GD83Mode,(u8 *)ucPrefmode4,strlen((char const *)ucPrefmode4));//
     Delay_100ms(1);//0.1s
     NoUseNum=ApiAtCmd_WritCommand(ATCOMM2_ZTTS_Abell,(u8 *)ucZTTS_Abell,strlen((char const *)ucZTTS_Abell));//播报游标广域对讲机
     api_lcd_pwr_on_hint("中兴易洽广域对讲");
@@ -194,6 +198,37 @@ void Task_RunNormalOperation(void)
     VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(0),ApiAtCmd_GetUserNameLen(0));
     KeyDownUpChoose_GroupOrUser_Flag=2;
   }
+  if(ReadInput_KEY_4==0)//报警键
+  {
+    switch(AlarmCount)
+    {
+    case 4://切换为2G模式
+      VOICE_SetOutput(ATVOICE_FreePlay,"517fdc7e075262633a4e32004700216a0f5f",36);//网络切换为2G模式
+      DEL_SetTimer(0,200);
+      while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+      NoUseNum=ApiAtCmd_WritCommand(ATCOMM4_GD83Mode,(u8 *)ucPrefmode2,strlen((char const *)ucPrefmode2));//
+      AlarmCount=8;
+      break;
+    /*case 2://切换为自动模式
+      VOICE_SetOutput(ATVOICE_FreePlay,"517fdc7e075262633a4eea81a852216a0f5f",36);//网络切换为自动模式
+      DEL_SetTimer(0,200);
+      while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+      NoUseNum=ApiAtCmd_WritCommand(ATCOMM4_GD83Mode,(u8 *)ucPrefmode8,strlen((char const *)ucPrefmode8));//
+      AlarmCount=8;
+      break;*/
+    case 8://切换为3G模式
+      VOICE_SetOutput(ATVOICE_FreePlay,"517fdc7e075262633a4e33004700216a0f5f",36);//网络切换为3G模式
+      DEL_SetTimer(0,200);
+      while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+      NoUseNum=ApiAtCmd_WritCommand(ATCOMM4_GD83Mode,(u8 *)ucPrefmode4,strlen((char const *)ucPrefmode4));//
+      AlarmCount=4;
+      break;
+    default:
+      break;
+    }
+  
+
+  }
   Keyboard_Test();
   if(POC_GetGroupInformationFlag==1)//收到86则显示群组信息，解决开机不按按键不显示群组信息
   {
@@ -211,6 +246,7 @@ void Task_RunNormalOperation(void)
     }
 
   }
+  
 }
 
 void TASK_WriteFreq(void)

@@ -18,7 +18,7 @@ typedef enum{
   ATCOMM11_ZpppOpen             = 0x0B,
   ATCOMM12_CheckPPP             = 0x0C,
   ATCOMM13_CheckRssi            = 0x0D,
-  ATCOMM14_CheckCard            = 0x0E,
+  ATCOMM14_CheckCard            = 0x0E
 }AtCommType;
 
 extern u8 BootProcess_SIMST_Flag;
