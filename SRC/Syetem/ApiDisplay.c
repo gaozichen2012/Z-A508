@@ -163,7 +163,7 @@ void api_lcd_pwr_on_hint(u8 *CharData)
         
 	api_disp_char_output(stCharInfo,CharData);
 
-	MCU_LCD_BACKLIGTH(ON);
+	//MCU_LCD_BACKLIGTH(OFF);
 	api_disp_all_screen_refresh();// 全屏统一刷新
 }
 void api_lcd_pwr_on_hint2(u8 *CharData)
@@ -177,7 +177,7 @@ void api_lcd_pwr_on_hint2(u8 *CharData)
         
 	api_disp_char_output(stCharInfo,CharData);
 
-	MCU_LCD_BACKLIGTH(ON);
+	//MCU_LCD_BACKLIGTH(OFF);
 	api_disp_all_screen_refresh();// 全屏统一刷新
 }
 /*******************************************************************************
@@ -341,7 +341,7 @@ void api_disp_icoid_output(u8 IcoIdIndex, bool IcoDefault,bool on_off)
 	}
 	
 	api_disp_ico_output(IcoInfo, &IcoDataBuf[0]);
-	
+	api_disp_all_screen_refresh();// 全屏统一刷新
 	return;
 }
 

@@ -11,7 +11,7 @@ typedef enum {					//task id code process
 	TASK_IDLE 		= 0x00,
 	TASK_ERROR		= 0x01,
 	TASK_COPY		= 0x02,
-	TASK_LOBATT 	= 0x03,
+	TASK_LOBATT 	        = 0x03,
 	TASK_ORDER 		= 0x04,
 	TASK_SCAN		= 0x05,
 	TASK_EMGE 		= 0x06,
@@ -32,4 +32,5 @@ TASKAPI void Task_RunStart(void);
 TASKAPI void Task_RunNormalOperation(void);
 TASKAPI void TASK_WriteFreq(void);
 TASKAPI void Task_RunNormalOperation(void);
+TASKAPI void TASK_RunLoBattery(void);
 #endif

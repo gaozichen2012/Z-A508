@@ -123,15 +123,17 @@ void main_app(void)
   AUDIO_IOAFPOW(ON);
   GPIO_Init(GPIOB,GPIO_PIN_6,GPIO_MODE_OUT_PP_LOW_FAST);//LOC MIC MUTE
   MIC_IOMUT(OFF); 
+  MCU_LCD_BACKLIGTH(ON);//打开背光灯
+  api_disp_icoid_output( eICO_IDBATT5, TRUE, TRUE);//显示电池满电图标
   api_lcd_pwr_on_hint2("eChat");
 
   BEEP_Time(1);
   NoUseNum=ApiAtCmd_WritCommand(ATCOMM3_GD83Reset,(u8 *)ucGD83Reset,strlen((char const *)ucGD83Reset));
-  TaskDrvObj.NewId=Task_Start;
+  TaskDrvObj.NewId=Task_Start;//Task_Start
 
   while(1)
   {
-#if 1//电池电压采集
+#if 0//电池电压采集测试
     
 Test2=OneChannelGetADValue(ADC2_CHANNEL_2,ADC2_SCHMITTTRIG_CHANNEL2);
 TestBuf[0]=(Test2/1000%10)+0x30;//千
@@ -147,7 +149,7 @@ TestBuf[3]=(Test2&0xf)+0x30;//百
 TestBuf[4]='\0';*/
 api_lcd_pwr_on_hint(TestBuf);//显示数据
 #else
-
+    LowVoltageDetection();
     DEL_Renew();
     switch(TaskDrvObj.NewId)
     {
@@ -164,6 +166,9 @@ api_lcd_pwr_on_hint(TestBuf);//显示数据
       break;
     case TASK_WRITEFREQ:
       TASK_WriteFreq();
+      break;
+    case TASK_LOBATT:		//task LO battery process
+      TASK_RunLoBattery();
       break;
     default:
       break;
@@ -261,4 +266,8 @@ void SYS_McuReset(void)
 TASK_CODE GetTaskId(void)
 {
   return TaskDrvObj.NewId;
+}
+void SetTaskId(TASK_CODE a)
+{
+  TaskDrvObj.NewId=a;
 }

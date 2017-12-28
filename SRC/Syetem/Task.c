@@ -34,7 +34,7 @@ void Task_RunStart(void)
   if(BootProcess_SIMST_Flag==1)//收到模块开机指令:SIMST:1
   {
     api_disp_icoid_output( eICO_IDRXNULL, TRUE, TRUE);//GPRS无信号图标
-    api_disp_icoid_output( eICO_IDBATT3, TRUE, TRUE);//电池电量3级
+    
     BEEP_Time(50);
     
     NoUseNum=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)ucCLVL,strlen((char const *)ucCLVL));//
@@ -252,6 +252,14 @@ void Task_RunNormalOperation(void)
 void TASK_WriteFreq(void)
 {
   UART3_ToMcuMain();
+}
+void TASK_RunLoBattery(void)
+{
+  api_lcd_pwr_on_hint(" 电量低  请充电  ");
+  VOICE_SetOutput(ATVOICE_FreePlay,"3575606c3575cf914e4f0cfff78b45513575",36);//群组选择
+  DEL_SetTimer(0,1000);
+  while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+  BEEP_Time(10);
 }
 void Delay_100ms(u8 T)
 {
