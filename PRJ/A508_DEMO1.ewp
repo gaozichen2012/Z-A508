@@ -1593,6 +1593,9 @@
   <group>
     <name>INCLUDE</name>
     <file>
+      <name>$PROJ_DIR$\..\INCLUDE\ADC.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\INCLUDE\AllHead.h</name>
     </file>
     <file>
@@ -1687,6 +1690,9 @@
     <name>SRC</name>
     <group>
       <name>Drv</name>
+      <file>
+        <name>$PROJ_DIR$\..\SRC\Drv\ADC.c</name>
+      </file>
       <file>
         <name>$PROJ_DIR$\..\SRC\Drv\DrvGD83.c</name>
       </file>

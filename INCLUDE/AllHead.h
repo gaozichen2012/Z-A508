@@ -31,10 +31,6 @@
 #include "Tone.h"
 #include "Beep.h"
 
-
-
-
-
 //任务
 #include "Task.h"
 #include "System.h"
@@ -48,4 +44,7 @@
 
 //部标
 #include "ApiGpsCmd.h"
+
+//电池电量检测
+#include "ADC.h"
 #endif

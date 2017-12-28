@@ -62,7 +62,10 @@ u8 *ucSwitch            = "10000002";
 u8 *ucGroupListInfo     = "0D0000";
 u8 *ucGD83Reset         = "at^reset";
 
-
+#if 1//电池电量测试
+u16 Test2=0;
+u8 TestBuf[5];
+#endif
 
 void main_app(void)
 {
@@ -96,6 +99,7 @@ void main_app(void)
   drv_htg_pwr_on_init();
   
   Key_Init();
+  ADC_Init();//电池电压采集
   Set_RedLed(LED_OFF);
   Set_GreenLed(LED_OFF);
   enableInterrupts();
@@ -127,34 +131,21 @@ void main_app(void)
 
   while(1)
   {
-#if 0//调试显示屏界面
-        if(ReadInput_KEY_PTT==0)
-        {
-          Set_RedLed(LED_ON);
-          Set_GreenLed(LED_OFF);
-          GPIO_WriteHigh(GPIO_C_Reset,GPIO_PIN_C_Reset);
-          while(ReadInput_KEY_PTT==0);
-        }
-
-          Set_RedLed(LED_OFF);
-          Set_GreenLed(LED_ON);
-          GPIO_WriteLow(GPIO_C_Reset,GPIO_PIN_C_Reset);
-   /* if(ReadInput_KEY_PTT==0)
-    {
-      api_disp_icoid_output( eICO_IDRXFULL, TRUE, FALSE);
-      api_disp_all_screen_refresh();
-    }
-    else
-    {
-        api_disp_icoid_output( eICO_IDRXNULL, TRUE, TRUE);
-        api_disp_all_screen_refresh();
-    }
-    if(ReadInput_KEY_2==0)
-    {
-      drv_htg_clr_allscr();//清屏
-    }
-    else
-    {}*/
+#if 1//电池电压采集
+    
+Test2=OneChannelGetADValue(ADC2_CHANNEL_2,ADC2_SCHMITTTRIG_CHANNEL2);
+TestBuf[0]=(Test2/1000%10)+0x30;//千
+TestBuf[1]=(Test2/100%10)+0x30;//百
+TestBuf[2]=(Test2/10%10)+0x30;//千
+TestBuf[3]=(Test2%10)+0x30;//个
+TestBuf[4]='\0';
+/*
+TestBuf[0]=((Test2&0xf000)>>12)+0x30;//千
+TestBuf[1]=((Test2&0xf00)>>8)+0x30;//百
+TestBuf[2]=((Test2&0xf0)>>4)+0x30;//千
+TestBuf[3]=(Test2&0xf)+0x30;//百
+TestBuf[4]='\0';*/
+api_lcd_pwr_on_hint(TestBuf);//显示数据
 #else
 
     DEL_Renew();
