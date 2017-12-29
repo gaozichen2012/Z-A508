@@ -73,6 +73,7 @@ void Task_RunStart(void)
   if(CSQ_Flag==1)//CSQ?
   {
     api_disp_icoid_output( eICO_IDRXFULL, TRUE, TRUE);//GPRS三格信号图标
+    api_disp_icoid_output( eICO_IDEmergency, TRUE, TRUE);//开机搜到信号，显示3G图标
     api_lcd_pwr_on_hint("   正在登陆..     ");
     if(BootProcess_PPPCFG_Flag_Zanshi==1)//如果收到^PPPCFG//因为有时收不到该指令，临时屏蔽，后期加上
     {
@@ -109,14 +110,11 @@ void Task_RunNormalOperation(void)
     case 0://默认PTT状态
       Set_RedLed(LED_ON);
       ApiPocCmd_WritCommand(PocComm_StartPTT,ucStartPTT,strlen((char const *)ucStartPTT));
-      
       while(ReadInput_KEY_PTT==0)
       {
         api_disp_icoid_output( eICO_IDTX, TRUE, TRUE);//发射信号图标
-        api_disp_all_screen_refresh();//刷新屏幕数据
       }
       api_disp_icoid_output( eICO_IDTX, TRUE, FALSE);//清除发射信号图标
-      api_disp_all_screen_refresh();//刷新屏幕数据
       ApiPocCmd_WritCommand(PocComm_EndPTT,ucEndPTT,strlen((char const *)ucEndPTT));
       break;
     case 1://=1，进入某群组
@@ -153,6 +151,7 @@ void Task_RunNormalOperation(void)
   else
   {
     Set_RedLed(LED_OFF);
+    api_disp_icoid_output( eICO_IDTALKAR, TRUE, TRUE);//默认状态显示未发射未接受的默认图标
   }
   
   if(ReadInput_KEY_3==0)//组呼键
@@ -204,6 +203,7 @@ void Task_RunNormalOperation(void)
     {
     case 4://切换为2G模式
       VOICE_SetOutput(ATVOICE_FreePlay,"517fdc7e075262633a4e32004700216a0f5f",36);//网络切换为2G模式
+      api_disp_icoid_output( eICO_IDPOWERL, TRUE, TRUE);//图标：2G
       DEL_SetTimer(0,200);
       while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
       NoUseNum=ApiAtCmd_WritCommand(ATCOMM4_GD83Mode,(u8 *)ucPrefmode2,strlen((char const *)ucPrefmode2));//
@@ -218,6 +218,7 @@ void Task_RunNormalOperation(void)
       break;*/
     case 8://切换为3G模式
       VOICE_SetOutput(ATVOICE_FreePlay,"517fdc7e075262633a4e33004700216a0f5f",36);//网络切换为3G模式
+      api_disp_icoid_output( eICO_IDEmergency, TRUE, TRUE);//图标：3G
       DEL_SetTimer(0,200);
       while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
       NoUseNum=ApiAtCmd_WritCommand(ATCOMM4_GD83Mode,(u8 *)ucPrefmode4,strlen((char const *)ucPrefmode4));//
@@ -237,12 +238,14 @@ void Task_RunNormalOperation(void)
       POC_GetGroupInformationFlag=0;
       api_lcd_pwr_on_hint("对象:   单呼模式");//显示汉字
       api_lcd_pwr_on_hint2(HexToChar_MainGroupId());//显示数据    
+      api_disp_icoid_output( eICO_IDPOWERH, TRUE, TRUE);//进入个呼显示个呼图标
     }
     else
     {
       POC_GetGroupInformationFlag=0;
       api_lcd_pwr_on_hint("群组:   组呼模式");//显示汉字
       api_lcd_pwr_on_hint2(HexToChar_MainGroupId());//显示数据
+      api_disp_icoid_output( eICO_IDPOWERM, TRUE, TRUE);//进入组呼显示组呼图标
     }
 
   }

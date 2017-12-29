@@ -135,12 +135,34 @@ void main_app(void)
   {
 #if 0//电池电压采集测试
     
-Test2=OneChannelGetADValue(ADC2_CHANNEL_2,ADC2_SCHMITTTRIG_CHANNEL2);
+    
+    /*case eICO_IDEmergency://图标：3G
+	case eICO_IDPOWERL://图标：2G
+		pIcoInfo->DispAddX = 0x02;
+		break;
+	case eICO_IDPOWERM://图标：组呼
+	case eICO_IDPOWERH://图标：个呼
+		pIcoInfo->DispAddX = 0x0c;//0x04
+		break;
+	case eICO_IDLOCKED://锁屏图标
+	case eICO_IDLOCKEDOff://无图标
+		pIcoInfo->DispAddX = 0x06;
+		break;
+	case eICO_IDTALKAR://无发射无接收状态
+        case eICO_IDTX://发射信号图标
+	case eICO_IDVOX://图标：接收，听状态
+          pIcoInfo->DispAddX = 0x08;*/
+ api_disp_icoid_output( eICO_IDPOWERL, TRUE, TRUE);//电池电量3级
+ api_disp_icoid_output( eICO_IDPOWERH, TRUE, TRUE);//电池电量3级
+ api_disp_icoid_output( eICO_IDLOCKEDOff, TRUE, TRUE);//电池电量3级
+ api_disp_icoid_output( eICO_IDTALKAR, TRUE, TRUE);//电池电量3级
+
+/*Test2=OneChannelGetADValue(ADC2_CHANNEL_2,ADC2_SCHMITTTRIG_CHANNEL2);
 TestBuf[0]=(Test2/1000%10)+0x30;//千
 TestBuf[1]=(Test2/100%10)+0x30;//百
 TestBuf[2]=(Test2/10%10)+0x30;//千
 TestBuf[3]=(Test2%10)+0x30;//个
-TestBuf[4]='\0';
+TestBuf[4]='\0';*/
 /*
 TestBuf[0]=((Test2&0xf000)>>12)+0x30;//千
 TestBuf[1]=((Test2&0xf00)>>8)+0x30;//百
