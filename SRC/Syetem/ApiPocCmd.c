@@ -17,6 +17,7 @@ const u8 *ucTingEnd   = "0B0000";
 const u8 *ucTingStart   = "0B0001";
 const u8 *ucSetIPAndID    = "010000";
 u8 POC_GetGroupInformationFlag=0;
+u8 POC_GetGroupInformationFlag2=0;//判断开机第一次进入群组后，进行图标显示标志位
 typedef struct{
 	struct{
 		union{
@@ -372,6 +373,7 @@ void ApiPocCmd_10msRenew(void)
       if(ucId == 0x00)
       {
         PocCmdDrvobj.WorkState.UseState.Msg.Bits.bPlayState = 0x00;
+        POC_GetGroupInformationFlag2=1;//图标显示使用,防止图标刷新函数对图标显示的影响
       }
       if(ucId == 0x01)
       {
@@ -425,7 +427,9 @@ void ApiPocCmd_10msRenew(void)
       PocCmdDrvobj.WorkState.UseState.MainWorkGroup.NameLen = PocCmdDrvobj.WorkState.UseState.WorkGroup.NameLen;
       }
       }
-      POC_GetGroupInformationFlag=1;
+      POC_GetGroupInformationFlag=1;//判断群组个呼使用的标志位
+      
+      
     case 0x91://通知进入某种模式（进入退出一键告警、单呼模式）
       ucId = COML_AscToHex(pBuf+2, 0x02);
       if(ucId == 0x00)

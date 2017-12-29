@@ -2,11 +2,10 @@
 #define  _API_GPS_Cmd_H
 #include "AllHead.h"
 
-#if 0//临时屏蔽，避免GPS指令对其他功能的影响
 extern void ApiGpsCmd_PowerOnInitial(void);
 extern void ApiGpsCmd_100msRenew(void);//决定什么时候发送什么数据;
 extern void ApGpsCmd_10msRenew(void);//获取收到的指令，并解析
-#endif
+
 //extern void ApiGpsCmd_PowerReset(void);
 //extern void ApiGpsCmd_1sRenew(void);
 //extern u8 * ApiGpsCmd_GetIP(void);

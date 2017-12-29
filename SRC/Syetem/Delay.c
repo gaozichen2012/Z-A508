@@ -198,9 +198,7 @@ static void DEL_100msProcess(void)
   {
     DelDrvObj.Msg.Bit.b100ms = DEL_IDLE;
     LED_IntOutputRenew();//LED output renew process
-#if 0//临时屏蔽，避免GPS指令对其他功能的影响
     ApiGpsCmd_100msRenew();
-#endif
     if(DelDrvObj.Msg.Bit.b500Alternate == DEL_IDLE)
     {
       DelDrvObj.Msg.Bit.b500Alternate = DEL_RUN;
@@ -245,9 +243,7 @@ static void DEL_10msProcess(void)
   if (DelDrvObj.Msg.Bit.b10ms == DEL_RUN) 
   {
     DelDrvObj.Msg.Bit.b10ms = DEL_IDLE;
-#if 0//临时屏蔽，避免GPS指令对其他功能的影响
     ApGpsCmd_10msRenew();
-#endif
   }
   return;
 }

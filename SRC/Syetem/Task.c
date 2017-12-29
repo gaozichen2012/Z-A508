@@ -113,8 +113,8 @@ void Task_RunNormalOperation(void)
       while(ReadInput_KEY_PTT==0)
       {
         api_disp_icoid_output( eICO_IDTX, TRUE, TRUE);//发射信号图标
+        api_disp_all_screen_refresh();// 全屏统一刷新
       }
-      api_disp_icoid_output( eICO_IDTX, TRUE, FALSE);//清除发射信号图标
       ApiPocCmd_WritCommand(PocComm_EndPTT,ucEndPTT,strlen((char const *)ucEndPTT));
       break;
     case 1://=1，进入某群组
@@ -204,6 +204,7 @@ void Task_RunNormalOperation(void)
     case 4://切换为2G模式
       VOICE_SetOutput(ATVOICE_FreePlay,"517fdc7e075262633a4e32004700216a0f5f",36);//网络切换为2G模式
       api_disp_icoid_output( eICO_IDPOWERL, TRUE, TRUE);//图标：2G
+      api_disp_all_screen_refresh();// 全屏统一刷新
       DEL_SetTimer(0,200);
       while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
       NoUseNum=ApiAtCmd_WritCommand(ATCOMM4_GD83Mode,(u8 *)ucPrefmode2,strlen((char const *)ucPrefmode2));//
@@ -219,6 +220,7 @@ void Task_RunNormalOperation(void)
     case 8://切换为3G模式
       VOICE_SetOutput(ATVOICE_FreePlay,"517fdc7e075262633a4e33004700216a0f5f",36);//网络切换为3G模式
       api_disp_icoid_output( eICO_IDEmergency, TRUE, TRUE);//图标：3G
+      api_disp_all_screen_refresh();// 全屏统一刷新
       DEL_SetTimer(0,200);
       while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
       NoUseNum=ApiAtCmd_WritCommand(ATCOMM4_GD83Mode,(u8 *)ucPrefmode4,strlen((char const *)ucPrefmode4));//
@@ -239,6 +241,7 @@ void Task_RunNormalOperation(void)
       api_lcd_pwr_on_hint("对象:   单呼模式");//显示汉字
       api_lcd_pwr_on_hint2(HexToChar_MainGroupId());//显示数据    
       api_disp_icoid_output( eICO_IDPOWERH, TRUE, TRUE);//进入个呼显示个呼图标
+      api_disp_all_screen_refresh();// 全屏统一刷新
     }
     else
     {
@@ -246,17 +249,24 @@ void Task_RunNormalOperation(void)
       api_lcd_pwr_on_hint("群组:   组呼模式");//显示汉字
       api_lcd_pwr_on_hint2(HexToChar_MainGroupId());//显示数据
       api_disp_icoid_output( eICO_IDPOWERM, TRUE, TRUE);//进入组呼显示组呼图标
+      api_disp_all_screen_refresh();// 全屏统一刷新
     }
 
   }
-  if(GetPlayState()==1)//判断发射接听状态，=1表示接听状态
+  if(POC_GetGroupInformationFlag2==1)//开机进入群组此标志位一直=1
+  {
+    if(GetPlayState()==1)//判断发射接听状态，=1表示接听状态
   {
     api_disp_icoid_output( eICO_IDVOX, TRUE, TRUE);//接收信号图标
+    api_disp_all_screen_refresh();// 全屏统一刷新
   }
   else
   {
     api_disp_icoid_output( eICO_IDTALKAR, TRUE, TRUE);//默认无发射无接收信号图标
+    api_disp_all_screen_refresh();// 全屏统一刷新
   }
+  }
+
   
 }
 

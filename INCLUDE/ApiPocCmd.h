@@ -21,6 +21,7 @@ typedef enum{
 }PocCommType;
 
 extern u8 POC_GetGroupInformationFlag;
+extern u8 POC_GetGroupInformationFlag2;
 //void ApiPocCmd_PowerOnInitial(void);
 extern void ApiPocCmd_WritCommand(PocCommType id, u8 *buf, u16 len);
 extern u8 ApiPocCmd_user_info_set(u8 *pBuf, u8 len);

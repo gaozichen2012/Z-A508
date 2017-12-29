@@ -62,7 +62,7 @@ u8 *ucSwitch            = "10000002";
 u8 *ucGroupListInfo     = "0D0000";
 u8 *ucGD83Reset         = "at^reset";
 
-#if 1//电池电量测试
+#if 0//电池电量测试
 u16 Test2=0;
 u8 TestBuf[5];
 #endif
@@ -82,9 +82,7 @@ void main_app(void)
   //通讯模块初始化
   DrvGD83_Init();
   DrvMC8332_Software_Initial();
-#if 0//临时屏蔽，避免GPS指令对其他功能的影响
  ApiGpsCmd_PowerOnInitial();
-#endif
   //
   Uart1_Init();//模块通讯使用
   Uart3_Init(); //串口写频使用
