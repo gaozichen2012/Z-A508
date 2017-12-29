@@ -4,7 +4,7 @@
 #if 0//Testµÿ÷∑≥ÂÕª£¨Ω‚æˆ≤‚ ‘
 #define DrvMC8332_UseId_Len			100			//define UART Tx buffer length value
 #else
-#define DrvMC8332_UseId_Len			85			//define UART Tx buffer length value
+#define DrvMC8332_UseId_Len			100			//define UART Tx buffer length value
 #endif
 #define APIPOC_UserList_Len			16
 #define APIPOC_UserLoad_Len			8

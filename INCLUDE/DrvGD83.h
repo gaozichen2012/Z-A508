@@ -19,5 +19,5 @@ DrvGD83_API void DrvMC8332_UART_Interrupt(void);
 DrvGD83_API u8 DrvMC8332_CaretNotify_Queue_front(u8 **pBuf);
 DrvGD83_API u8 DrvMC8332_AtNotify_Queue_front(u8 **pBuf);
 DrvGD83_API u8 DrvMC8332_PocNotify_Queue_front(u8 **pBuf);
-DrvGD83_API bool DrvMC8332_GpsNotify_Queue_front(u8 **pBuf);
+DrvGD83_API u8 DrvMC8332_GpsNotify_Queue_front(u8 **pBuf);
 #endif

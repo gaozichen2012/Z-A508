@@ -731,7 +731,7 @@ u8 DrvMC8332_PocNotify_Queue_front(u8 **pBuf)
 	}
 	return r;
 }
-bool DrvMC8332_GpsNotify_Queue_front(u8 **pBuf)
+u8 DrvMC8332_GpsNotify_Queue_front(u8 **pBuf)
 {
   u8 r=0x00;
   if(DrvGD83DrvObj.RxGpsNotifyBuf.cNotifyLen > 0)

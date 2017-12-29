@@ -82,8 +82,9 @@ void main_app(void)
   //通讯模块初始化
   DrvGD83_Init();
   DrvMC8332_Software_Initial();
-  
-  ApiGpsCmd_PowerOnInitial();
+#if 0//临时屏蔽，避免GPS指令对其他功能的影响
+ ApiGpsCmd_PowerOnInitial();
+#endif
   //
   Uart1_Init();//模块通讯使用
   Uart3_Init(); //串口写频使用

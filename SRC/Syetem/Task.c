@@ -151,7 +151,7 @@ void Task_RunNormalOperation(void)
   else
   {
     Set_RedLed(LED_OFF);
-    api_disp_icoid_output( eICO_IDTALKAR, TRUE, TRUE);//默认状态显示未发射未接受的默认图标
+
   }
   
   if(ReadInput_KEY_3==0)//组呼键
@@ -248,6 +248,14 @@ void Task_RunNormalOperation(void)
       api_disp_icoid_output( eICO_IDPOWERM, TRUE, TRUE);//进入组呼显示组呼图标
     }
 
+  }
+  if(GetPlayState()==1)//判断发射接听状态，=1表示接听状态
+  {
+    api_disp_icoid_output( eICO_IDVOX, TRUE, TRUE);//接收信号图标
+  }
+  else
+  {
+    api_disp_icoid_output( eICO_IDTALKAR, TRUE, TRUE);//默认无发射无接收信号图标
   }
   
 }
