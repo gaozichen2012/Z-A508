@@ -145,6 +145,7 @@ bool drv_gt20_data_output(DISP_TYPE cID, u16 iCode, u8 *cBuf)
 		DataAddr *= TimeVal[cID & GT20_BASET];
 		DataAddr += BaseAdd[cID & GT20_BASET];
 		GT20_GetDisData(TimeVal[cID & GT20_BASET], DataAddr, cBuf);
+                //r_dat_bat(DataAddr,TimeVal[cID & GT20_BASET],cBuf);
 	}
 	else
 	{
@@ -203,7 +204,7 @@ static void GT20_SendCommand(u32 Addr)
 ********************************************************************************/
 static void GT20_GetData(u8 iLen, u8 *cBuf)
 {
-	u8 i, j, cData;
+	/*u8 i, j, cData;
 	
 	for (i = 0; i < iLen; i++)
 	{
@@ -215,7 +216,7 @@ static void GT20_GetData(u8 iLen, u8 *cBuf)
 			if (MCU_GT20_SO_Read) cData++;
 		}
 		cBuf[i] = cData;
-	}
+	}*/
 	return;
 }
 
@@ -229,7 +230,7 @@ static void GT20_GetData(u8 iLen, u8 *cBuf)
 ********************************************************************************/
 static void GT20_SendByte(u8 iLen, u8 cBuf)
 {
-	if (iLen > 0x08) { iLen = 0x08; }
+	/*if (iLen > 0x08) { iLen = 0x08; }
 	for (; iLen > 0x00; iLen--)
 	{
 		MCU_GT20_CLK(LO);
@@ -238,7 +239,7 @@ static void GT20_SendByte(u8 iLen, u8 cBuf)
 		MCU_GT20_CLK(HI);
 		cBuf <<= 0x01;
 		GT20_DelTime(GT20_RWDEL);
-	}
+	}*/
 	return;
 }
 

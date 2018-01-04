@@ -11,6 +11,17 @@ s8 KeyUpDownCount=0;//组呼上下键计数
 s8 KeyPersonalCallingCount=0;//个呼上下键计数
 u32 get_key_value(u8 scan_value);
 u8 Key_Flag_1=0;
+u8 TestBuf1[6];//测试显示屏短号号码使用
+  u8 num1=0;//测试显示屏短号号码使用
+  u8 num2=0;//测试显示屏短号号码使用
+  u8 num3=0;//测试显示屏短号号码使用
+  u8 num4=0;//测试显示屏短号号码使用
+  u8 num5=0;//测试显示屏短号号码使用
+  u8 num6=0;//测试显示屏短号号码使用
+  u8 numCount=0;//测试显示屏短号号码使用
+bool PressButton;//测试短号功能使用
+bool KeyBoardState;//测试短号功能使用
+static void GeHuTest(u32 KeyID);
 void Keyboard_Test(void)
 {
   //u8 r=0;
@@ -22,22 +33,17 @@ void Keyboard_Test(void)
   switch(ulAllKeyID)
   {
   case 0x00000002://1
-    //api_lcd_pwr_on_hint("欧标按键:1     ");
+    
     break; 
   case 0x00000008://3
-    //api_lcd_pwr_on_hint("欧标按键:3     ");
     break;
   case 0x00000080://4
-    //api_lcd_pwr_on_hint("欧标按键:4     ");
     break;
   case 0x00000200://6
-    //api_lcd_pwr_on_hint("欧标按键:6     ");
     break;
   case 0x00002000://7
-    //api_lcd_pwr_on_hint("欧标按键:7     ");
-    break;
+     break;
   case 0x00008000://9
-    //api_lcd_pwr_on_hint("欧标按键:9     ");
     break;
   case 0x00010000://dn
     if(Key_PersonalCalling_Flag==1)//如果按下个呼键
@@ -98,22 +104,18 @@ void Keyboard_Test(void)
 
     break;   
   case 0x00000004://2
-    //api_lcd_pwr_on_hint("欧标按键:2      ");
     break;  
   case 0x00080000://*
-    //api_lcd_pwr_on_hint("欧标按键:*      ");
+    //api_lcd_pwr_on_hint3("个呼号码:       ");
     break;  
   case 0x00000100://5
-    //api_lcd_pwr_on_hint("欧标按键:5      ");
     break;  
   case 0x00100000://0
-    //api_lcd_pwr_on_hint("欧标按键:0      ");
     break;  
   case 0x00004000://8
-    //api_lcd_pwr_on_hint("欧标按键:8      ");
     break;  
   case 0x00200000://#
-    //api_lcd_pwr_on_hint("欧标按键:#      ");
+    api_lcd_pwr_on_hint3("组呼号码:       ");
     break;  
   case 0x00000400://up
     if(Key_PersonalCalling_Flag==1)//如果按下个呼键
@@ -156,17 +158,19 @@ void Keyboard_Test(void)
     Key_PersonalCalling_Flag=0;//进入组呼标志位
     break;  
   default:
+    
     break;
   }
-    if(Key_Flag_1==1)
-      {
-        DEL_SetTimer(1,100);
-        while(1)
-        {
-          Key_Flag_1=0;
-          if(DEL_GetTimer(1) == TRUE) {break;}
-        }
-      }
+  GeHuTest(ulAllKeyID);
+  if(Key_Flag_1==1)
+  {
+    DEL_SetTimer(1,100);
+    while(1)
+    {
+      Key_Flag_1=0;
+      if(DEL_GetTimer(1) == TRUE) {break;}
+    }
+  }
 }
 
 
@@ -231,4 +235,131 @@ u32 get_key_value(u8 scan_value)
     break;
   }
   return value;
+}
+
+void GeHuTest(u32 KeyID)
+{
+  
+   switch(KeyID)
+  {
+  case 0x00000002://1
+    num1=1;
+    PressButton=TRUE;
+    break; 
+  case 0x00000004://2
+    num1=2;
+    PressButton=TRUE;
+    break;  
+  case 0x00000008://3
+    num1=3;
+    PressButton=TRUE;
+    break;
+  case 0x00000080://4
+    num1=4;
+    PressButton=TRUE;
+    break;
+  case 0x00000100://5
+    num1=5;
+    PressButton=TRUE;
+    break;  
+  case 0x00000200://6
+    num1=6;
+    PressButton=TRUE;
+    break;
+  case 0x00002000://7
+    num1=7;
+    PressButton=TRUE;
+     break;
+  case 0x00004000://8
+    num1=8;
+    PressButton=TRUE;
+    break;  
+  case 0x00008000://9
+    num1=9;
+    PressButton=TRUE;
+    break;
+  case 0x00100000://0
+    num1=0;
+    PressButton=TRUE;
+    break;
+  case 0x00010000://dn
+    break;  
+  case 0x00000010://ok
+    break;
+  case 0x00800000://menu   
+    break;   
+  case 0x00080000://*
+    break;  
+  case 0x00200000://#
+    break;  
+  case 0x00000400://up
+    break;
+  case 0x00400000://cancel
+    numCount=0;
+    break;  
+  default:
+    if(PressButton==TRUE)
+    {
+      KeyBoardState=TRUE;
+      PressButton  =FALSE;
+    }
+    else
+    {
+      KeyBoardState=FALSE;
+    }
+    
+    break;
+  }
+if(KeyBoardState==TRUE)//识别按下按键到松开按键的过程
+{
+  numCount++;
+  num6=num5;
+  num5=num4;
+  num4=num3;
+  num3=num2;
+  num2=num1;
+    switch(numCount)
+    {
+    case 1:
+      TestBuf1[0]=num2+0x30;
+      TestBuf1[1]='\0';
+      break;
+    case 2:
+      TestBuf1[0]=num3+0x30;
+      TestBuf1[1]=num2+0x30;
+      TestBuf1[2]='\0';
+      break;
+    case 3:
+      TestBuf1[0]=num4+0x30;
+      TestBuf1[1]=num3+0x30;
+      TestBuf1[2]=num2+0x30;
+      TestBuf1[3]='\0';
+      break;
+    case 4:
+      TestBuf1[0]=num5+0x30;
+      TestBuf1[1]=num4+0x30;
+      TestBuf1[2]=num3+0x30;
+      TestBuf1[3]=num2+0x30;
+      TestBuf1[4]='\0';
+      break;
+    case 5:
+      TestBuf1[0]=num6+0x30;
+      TestBuf1[1]=num5+0x30;
+      TestBuf1[2]=num4+0x30;
+      TestBuf1[3]=num3+0x30;
+      TestBuf1[4]=num2+0x30;
+      TestBuf1[5]='\0';
+      break;
+    default:
+      break;
+    }
+    api_lcd_pwr_on_hint3("个呼短号");
+     api_lcd_pwr_on_hint("                ");
+     api_lcd_pwr_on_hint(TestBuf1);
+}
+else
+{
+  
+}
+
 }

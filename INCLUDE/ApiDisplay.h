@@ -44,6 +44,11 @@ extern void api_disp_all_screen_refresh(void);
 extern void api_disp_all_screen_refresh(void);
 extern void api_lcd_pwr_on_hint(u8 *CharData);
 extern void api_lcd_pwr_on_hint2(u8 *CharData);
+extern void api_lcd_pwr_on_hint3(u8 *CharData);
 extern void api_diap_ico_pos_get(DISP_ICO *pIcoInfo, u16 IcoID);
 extern void api_disp_ico_output(DISP_ICO IcoInfo, u8 *IcoData);
+
+//extern u8 r_dat_bat(u32 address,u8 byte_long,u8 *p_arr);
+//extern void SendByte(u32 cmd);
+//extern u8 ReadByte(void);
 #endif

@@ -48,4 +48,6 @@
 
 //µç³ØµçÁ¿¼ì²â
 #include "ADC.h"
+//×Ö¿âIC
+#include "GT20L16P1Y.h"
 #endif

@@ -248,6 +248,10 @@ void Task_RunNormalOperation(void)
       POC_GetGroupInformationFlag=0;
       api_lcd_pwr_on_hint("群组:   组呼模式");//显示汉字
       api_lcd_pwr_on_hint2(HexToChar_MainGroupId());//显示数据
+      api_lcd_pwr_on_hint3("         ");//清除退出键盘拨短号模式留下的”个呼号码“
+      api_disp_icoid_output( eICO_IDRXFULL, TRUE, TRUE);//GPRS三格信号图标
+      api_disp_icoid_output( eICO_IDEmergency, TRUE, TRUE);//显示3G图标
+      api_disp_icoid_output( eICO_IDTALKAR, TRUE, TRUE);//默认无发射无接收信号图标(无图标)
       api_disp_icoid_output( eICO_IDPOWERM, TRUE, TRUE);//进入组呼显示组呼图标
       api_disp_all_screen_refresh();// 全屏统一刷新
     }

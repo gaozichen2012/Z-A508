@@ -83,8 +83,8 @@ const u8 Ico_DataBuf[32][32]=
 {0x00,0xF8,0x08,0xF8,0x04,0x02,0xFE,0x00,0x10,0xE0,0x08,0xF0,0x04,0xF8,0x00,0x00,
 0x00,0x03,0x02,0x03,0x04,0x08,0x0F,0x00,0x01,0x00,0x02,0x01,0x04,0x03,0x00,0x00 },
  
-{0X00,0X00,0X00,0X00,0X00,0X00,0X10,0XB8,0X10,0X00,0X00,0X00,0X00,0X00,0X00,0X00,
-0X00,0X00,0X00,0X00,0X00,0X00,0X0C,0X0F,0X0C,0X00,0X00,0X00,0X00,0X00,0X00,0X00},//无发射无接收状态
+{0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,
+0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00},//无发射无接收状态（空图标）
  
 {0X00,0X7C,0X82,0X39,0X44,0X82,0X10,0XB8,0X10,0X82,0X44,0X39,0X82,0X7C,0X00,0X00,
 0X00,0X00,0X00,0X01,0X00,0X00,0X0C,0X0F,0X0C,0X00,0X00,0X01,0X00,0X00,0X00,0X00},//发射新
@@ -184,6 +184,20 @@ void api_lcd_pwr_on_hint2(u8 *CharData)
 	//MCU_LCD_BACKLIGTH(OFF);
 	api_disp_all_screen_refresh();// 全屏统一刷新
 }
+void api_lcd_pwr_on_hint3(u8 *CharData)
+{
+	DISP_CHAR stCharInfo;
+	stCharInfo.DispType  = DISP_IDCNASC816;
+	//stCharInfo.DispAddX  = 0;
+	stCharInfo.DispAddY  = 0x00;//左上角显示汉字
+	stCharInfo.DispAddX  = 0;//一行16个英文字符
+        stCharInfo.DispLenth = LCD_DISP_LEN_MAX;
+        
+	api_disp_char_output(stCharInfo,CharData);
+
+	//MCU_LCD_BACKLIGTH(OFF);
+	api_disp_all_screen_refresh();// 全屏统一刷新
+}
 /*******************************************************************************
 * Description	: 刷新屏幕数据显示
 * Input		: void
@@ -249,6 +263,8 @@ static void DISP_MulTypePro(DISP_CHAR CharInfo, u8 *CharData)
 			}
 #ifdef FONT_DRIVER_IC_EN			
 			drv_gt20_data_output(DisInfo.DispType, CharCode, CharBuf);
+                        //UNICODE_16_GetData(0xB0a1,(u8*)CharCode);//test
+                        //GB2312_16_GetData(0xb0,0xa1,CharBuf);
 #else
 			//api_SPI_Flash_Wake_up();
 			//drv_Font_GetData(DisInfo.DispType, CharCode, CharBuf);
@@ -413,7 +429,7 @@ void api_diap_ico_pos_get(DISP_ICO *pIcoInfo, u16 IcoID)
 	case eICO_IDLOCKEDOff://空电池图标
 		pIcoInfo->DispAddX = 0x06;
 		break;
-	case eICO_IDTALKAR://无发射无接收状态
+	case eICO_IDTALKAR://无发射无接收状态（无图标）
         case eICO_IDTX://发射信号图标
 	case eICO_IDVOX://图标：接收，听状态
           pIcoInfo->DispAddX = 0x08;
@@ -457,3 +473,59 @@ void api_diap_ico_pos_get(DISP_ICO *pIcoInfo, u16 IcoID)
 	pIcoInfo->DispWidth= 0x10;
 	pIcoInfo->DispHigh = 0x10;
 }
+
+//高通技术提供
+//附：从字库中读数据函数说明 u8 r_dat_bat(u32 address,u8 byte_long,u8 *p_arr)实现参考代码。
+/****************************************************
+u8 r_dat_bat(u32 address,u8 byte_long,u8 *p_arr)
+Address  ： 表示字符点阵在芯片中的字节地址。
+byte_long： 是读点阵数据字节数。
+*p_arr   ： 是保存读出的点阵数据的数组。
+*****************************************************/
+/*u8 r_dat_bat(u32 address,u8 byte_long,u8 *p_arr)
+{
+	unsigned int j=0;
+	MCU_GT20_CS(LO);
+	SendByte(address); //发送指令及地址
+	for(j=0;j<byte_long;j++)
+	{
+	 p_arr[j]=ReadByte();//读取数据到数组中
+	}
+	MCU_GT20_CS(HI);
+	return p_arr[0];	
+}
+
+void SendByte(u32 cmd)
+{
+	u8 i;
+	cmd=cmd|0x03000000;
+	for(i=0;i<32;i++)
+	{
+		MCU_GT20_CLK(LO);
+		if(cmd&0x80000000)
+			MCU_GT20_SI(LO);
+		else 
+			MCU_GT20_SI(HI);
+		MCU_GT20_CLK(HI); 
+		cmd=cmd<<1;
+	}					
+}
+
+u8 ReadByte(void)
+{
+	u8 i;
+	u8 dat=0;
+	MCU_GT20_CLK(HI); 
+	for(i=0;i<8;i++)
+	{
+		MCU_GT20_CLK(LO);
+		dat=dat<<1;
+		if(MCU_GT20_SO_Read)
+			dat=dat|0x01;
+		else 
+			dat&=0xfe;
+		MCU_GT20_CLK(HI); 		
+	}	
+	return dat;
+}*/
+
