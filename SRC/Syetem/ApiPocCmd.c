@@ -11,7 +11,7 @@
 #define APIPOC_UserName_Len			30
 
 u8 ReadBuffer[80];//Test 存EEPROM读取的数据使用
-
+u8 UnicodeForGbk_MainWorkNameBuf[15];
 const u8 *ucAtPocHead   = "AT+POC=";
 const u8 *ucTingEnd   = "0B0000";
 const u8 *ucTingStart   = "0B0001";
@@ -567,4 +567,35 @@ u8 *HexToChar_PersonalCallingNum(void)//16进制转字符串 按键播报当前用户ID 显示屏
   PocCmdDrvobj.NetState.Buf6[1]=(i&0x0f)+0x30;
   PocCmdDrvobj.NetState.Buf6[2]='\0';
   return PocCmdDrvobj.NetState.Buf6;
+}
+
+//显示屏显示当前群组名
+u8 *UnicodeForGbk_MainWorkName(void)
+{
+  u8 *Buf1;
+  u8 Buf2[30];
+
+  u8 Len,i;
+  Buf1=ApiAtCmd_GetMainWorkName();
+  Len=strlen((char const *)ApiAtCmd_GetMainWorkName());
+  while(1)
+  {
+    if(4*i<=Len)
+    {
+      Buf2[4*i+0]=Buf1[4*i+2];
+      Buf2[4*i+1]=Buf1[4*i+3];
+      Buf2[4*i+2]=Buf1[4*i+0];
+      Buf2[4*i+3]=Buf1[4*i+1];
+      UnicodeForGbk_MainWorkNameBuf[2*i+0]=COML_AscToHex(Buf2+(4*i), 0x02);
+      UnicodeForGbk_MainWorkNameBuf[2*i+1]=COML_AscToHex(Buf2+(4*i)+2, 0x02);
+      i++;
+    }
+    else
+    {
+      Buf2[Len]='\0';
+
+      return UnicodeForGbk_MainWorkNameBuf;
+    }
+      
+  }
 }

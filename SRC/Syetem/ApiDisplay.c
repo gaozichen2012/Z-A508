@@ -10,9 +10,10 @@ const u8 CHAR_HIGH[2][8]  = { 0x02, 0x02, 0x01, 0x01, 0x02, 0x02, 0x02, 0x02,
 const u8 CHAR_WIDTH[2][8] = { 0x08, 0x10, 0x08, 0x08, 0x08, 0x08, 0x10, 0x10,
 							  0x08, 0x10, 0x06, 0x08, 0x08, 0x08, 0x10, 0x10 };
 
+
 #define DISPRELAOD_TIMER_PERIOD ( 10*OS_TICKS_PER_10MS )  /* 定时周期，每100ms回调一次函数 */
 #define LCD_ALIAS_LEN_MAX 10
-
+u16 CharCode;
 typedef struct
 {
 	union
@@ -30,7 +31,7 @@ typedef struct
 
 static void DISP_DataBuf(DISP_CHAR DisInfo, u8 *CharData);
 static void DISP_MulTypePro(DISP_CHAR CharInfo, u8 *CharData);
-
+static void DISP_MulTypePro2(DISP_CHAR CharInfo, u8 *CharData);//UNICODE显示
 /* ------------------------------------------------------------------------------- */
 /* 因编写以上代码时,以下函数尚未定义，故临时定义（便于编译通过），后续请重新编写   */
 /* ------------------------------------------------------------------------------- */
@@ -155,7 +156,11 @@ void api_disp_char_output(DISP_CHAR CharInfo, u8 *CharData)
 	DISP_MulTypePro(CharInfo, CharData);
 	return;
 }
-
+void api_disp_char_output2(DISP_CHAR CharInfo, u8 *CharData)//UNICODE显示，群组信息显示屏显示使用
+{	
+	DISP_MulTypePro2(CharInfo, CharData);
+	return;
+}
 void api_lcd_pwr_on_hint(u8 *CharData)
 {
 	DISP_CHAR stCharInfo;
@@ -194,6 +199,20 @@ void api_lcd_pwr_on_hint3(u8 *CharData)
         stCharInfo.DispLenth = LCD_DISP_LEN_MAX;
         
 	api_disp_char_output(stCharInfo,CharData);
+
+	//MCU_LCD_BACKLIGTH(OFF);
+	api_disp_all_screen_refresh();// 全屏统一刷新
+}
+void api_lcd_pwr_on_hint4(u8 *CharData)//UNICODE显示
+{
+	DISP_CHAR stCharInfo;
+	stCharInfo.DispType  = DISP_IDCNASC816;
+	//stCharInfo.DispAddX  = 0;
+	stCharInfo.DispAddY  = 0x02;//左上角显示汉字
+	stCharInfo.DispAddX  = 0;//一行16个英文字符
+        stCharInfo.DispLenth = LCD_DISP_LEN_MAX;
+        
+	api_disp_char_output2(stCharInfo,CharData);//UNICODE显示，群组信息显示屏显示使用
 
 	//MCU_LCD_BACKLIGTH(OFF);
 	api_disp_all_screen_refresh();// 全屏统一刷新
@@ -237,11 +256,15 @@ void api_disp_all_screen_refresh(void)
 ********************************************************************************/
 static void DISP_MulTypePro(DISP_CHAR CharInfo, u8 *CharData)
 {
+
+  u8 CharCodeH;
+  u8 CharCodeL;
 	u16 CharCode;
 	DISP_CHAR DisInfo;
-	u8  iLen = 0, CharBuf[34];
-
+	u8  iLen = 0;//34
+        u8  CharBuf[34];
 	DisInfo = CharInfo;
+
 	if ((CharInfo.DispType & 0x80) != 0x00)
 	{
 		DisInfo.DispLenth = 0x00;
@@ -252,7 +275,7 @@ static void DISP_MulTypePro(DISP_CHAR CharInfo, u8 *CharData)
 			DisInfo.DispAddX = CharInfo.DispAddX + iLen;
 			DisInfo.DispType = (DISP_TYPE)(CharInfo.DispType & BASETYPE);
 			
-			if (*CharData >= 0x80)
+			if (*CharData >= 0x80)//为中文字符
 			{
 				iLen++;
 				CharData++;
@@ -260,24 +283,69 @@ static void DISP_MulTypePro(DISP_CHAR CharInfo, u8 *CharData)
 				CharCode |= (*CharData);
 				DisInfo.DispType = DISP_IDCN1516;
 				DisInfo.DispLenth++;//当显示中文，长度为16时的显示问题
+                        CharCodeH=(CharCode&0xff00)>>8;
+                        CharCodeL=CharCode&0x00ff;
 			}
-#ifdef FONT_DRIVER_IC_EN			
+                        //GB2312_16_GetData(0xa3,0x65+0x80,CharBuf);//CharData[0]
+                        //GB2312_16_GetData(0xa3,0x59+0x80,CharBuf);
 			drv_gt20_data_output(DisInfo.DispType, CharCode, CharBuf);
-                        //UNICODE_16_GetData(0xB0a1,(u8*)CharCode);//test
-                        //GB2312_16_GetData(0xb0,0xa1,CharBuf);
-#else
-			//api_SPI_Flash_Wake_up();
-			//drv_Font_GetData(DisInfo.DispType, CharCode, CharBuf);
-			//api_SPI_Flash_power_down();
-#endif
+                        
+                        
+                        //UNICODE_16_GetData(0xff42,CharBuf);
 			DISP_DataBuf(DisInfo, CharBuf);
 			CharData++;
 			iLen++;
 		}
 	}
+
 	return;
 }
+static void DISP_MulTypePro2(DISP_CHAR CharInfo, u8 *CharData)//UNICODE显示
+{
+  u8  CharBuf2[32];
+  u8 CharCodeH;
+  u8 CharCodeL;
+	
+	DISP_CHAR DisInfo;
+	u8  iLen = 0;//34
 
+	DisInfo = CharInfo;
+
+	if ((CharInfo.DispType & 0x80) != 0x00)
+	{
+		DisInfo.DispLenth = 0x00;
+		for (; *CharData != 0x00; DisInfo.DispLenth++)
+		{
+			if (DisInfo.DispLenth >= CharInfo.DispLenth) { return; }//（修改当显示长度为16时的显示问题）
+			CharCode = *CharData;
+			DisInfo.DispAddX = CharInfo.DispAddX + iLen;
+			DisInfo.DispType = (DISP_TYPE)(CharInfo.DispType & BASETYPE);
+			
+			if (*CharData >= 0x4E)//为中文字符//UNICODE范围：4E00-9FA5
+			{
+				iLen++;
+				CharData++;
+				CharCode <<= 0x08;
+				CharCode |= (*CharData);
+				DisInfo.DispType = DISP_IDCN1516;
+				DisInfo.DispLenth++;//当显示中文，长度为16时的显示问题
+                        CharCodeH=(CharCode&0xff00)>>8;
+                        CharCodeL=CharCode&0x00ff;
+			}
+                        //GB2312_16_GetData(0xa3,0x65+0x80,CharBuf);//CharData[0]
+                        //GB2312_16_GetData(0xa3,0x59+0x80,CharBuf);
+			//drv_gt20_data_output(DisInfo.DispType, CharCode, CharBuf);
+                        
+                        
+                        UNICODE_16_GetData(CharCode,CharBuf2);
+			DISP_DataBuf(DisInfo, CharBuf2);
+			CharData++;
+			iLen++;
+		}
+	}
+
+	return;
+}
 /*******************************************************************************
 * Description	: display data process
 * Input			: DisInfo : display char location and type information
@@ -293,14 +361,14 @@ static void DISP_DataBuf(DISP_CHAR DisInfo, u8 *CharData)
 
 	//bDisDataBufUsed = TRUE;
 	yPage = DisInfo.DispAddY;
-	nType = (DisInfo.DispType & NROWTYPE);
-	bType = (DisInfo.DispType & BASETYPE);
+	nType = (DisInfo.DispType & NROWTYPE);//汉字：0x01&0x10=0 字母：0x05&0x10=0
+	bType = (DisInfo.DispType & BASETYPE);//汉字：0x01&0x0f=1 字母：0x05&0x0f=5
 	// if (DISP_OverBound(DisInfo) != TRUE) return;
-	xCol  = (nType != 0x00) ? DisInfo.DispAddX : (DisInfo.DispAddX * 0x08);
-	for (High = 0; High < CHAR_HIGH[0][bType]; High++)
+	xCol  = (nType != 0x00) ? DisInfo.DispAddX : (DisInfo.DispAddX * 0x08);//一直取DisInfo.DispAddX * 0x08
+	for (High = 0; High < CHAR_HIGH[0][bType]; High++)//汉字：CHAR_HIGH=2 字母：CHAR_HIGH=2
 	{
-		iPt = xCol + yPage * 0x80;
-		for (Width = 0; Width < CHAR_WIDTH[0][bType]; Width++)
+		iPt = xCol + yPage * 0x80;//iPt为8*8像素
+		for (Width = 0; Width < CHAR_WIDTH[0][bType]; Width++)//汉字：CHAR_WIDTH=16 字母：CHAR_WIDTH=8
 		{
 			if (iPt < 512)//修改当显示长度为16时的显示问题
 			{
@@ -310,9 +378,8 @@ static void DISP_DataBuf(DISP_CHAR DisInfo, u8 *CharData)
 					{
 						iPt = iPt;
 					}
-					DisDataBuf[iPt] = *CharData;
-					//DisDrvObj.Msg.Bit.bRefresh = DISP_RUN;
-					DisDataBit[iPt / 0x08] |= BitTab[iPt % 0x08];
+					DisDataBuf[iPt] = *CharData;//[512]
+					DisDataBit[iPt / 0x08] |= BitTab[iPt % 0x08];//[64]
 				}
 				CharData++;
 				iPt++;
@@ -473,8 +540,6 @@ void api_diap_ico_pos_get(DISP_ICO *pIcoInfo, u16 IcoID)
 	pIcoInfo->DispWidth= 0x10;
 	pIcoInfo->DispHigh = 0x10;
 }
-
-//高通技术提供
 //附：从字库中读数据函数说明 u8 r_dat_bat(u32 address,u8 byte_long,u8 *p_arr)实现参考代码。
 /****************************************************
 u8 r_dat_bat(u32 address,u8 byte_long,u8 *p_arr)
@@ -482,7 +547,8 @@ Address  ： 表示字符点阵在芯片中的字节地址。
 byte_long： 是读点阵数据字节数。
 *p_arr   ： 是保存读出的点阵数据的数组。
 *****************************************************/
-/*u8 r_dat_bat(u32 address,u8 byte_long,u8 *p_arr)
+//u8 r_dat_bat(u32 address,u8 byte_long,u8 *p_arr)
+unsigned char r_dat_bat(unsigned long address,unsigned long byte_long,unsigned char *p_arr)
 {
 	unsigned int j=0;
 	MCU_GT20_CS(LO);
@@ -494,7 +560,6 @@ byte_long： 是读点阵数据字节数。
 	MCU_GT20_CS(HI);
 	return p_arr[0];	
 }
-
 void SendByte(u32 cmd)
 {
 	u8 i;
@@ -503,10 +568,10 @@ void SendByte(u32 cmd)
 	{
 		MCU_GT20_CLK(LO);
 		if(cmd&0x80000000)
-			MCU_GT20_SI(LO);
-		else 
 			MCU_GT20_SI(HI);
-		MCU_GT20_CLK(HI); 
+		else 
+			MCU_GT20_SI(LO);
+		MCU_GT20_CLK(HI);
 		cmd=cmd<<1;
 	}					
 }
@@ -515,17 +580,19 @@ u8 ReadByte(void)
 {
 	u8 i;
 	u8 dat=0;
-	MCU_GT20_CLK(HI); 
+	MCU_GT20_CLK(HI); 	
 	for(i=0;i<8;i++)
 	{
-		MCU_GT20_CLK(LO);
+		MCU_GT20_CLK(LO); 
 		dat=dat<<1;
 		if(MCU_GT20_SO_Read)
 			dat=dat|0x01;
 		else 
 			dat&=0xfe;
-		MCU_GT20_CLK(HI); 		
+		MCU_GT20_CLK(HI); 	
 	}	
 	return dat;
-}*/
+        
+        
 
+}

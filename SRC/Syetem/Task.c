@@ -49,6 +49,7 @@ void Task_RunStart(void)
     Delay_100ms(1);//0.1s
     NoUseNum=ApiAtCmd_WritCommand(ATCOMM2_ZTTS_Abell,(u8 *)ucZTTS_Abell,strlen((char const *)ucZTTS_Abell));//播报游标广域对讲机
     api_lcd_pwr_on_hint("中兴易洽广域对讲");
+      //api_lcd_pwr_on_hint("中1 b c 广域对讲");
     Delay_100ms(25);//2.5s
     NoUseNum=ApiAtCmd_WritCommand(ATCOMM1_PPPCFG,(u8 *)ucPPPCFG,strlen((char const *)ucPPPCFG));//1.发送PPPCFG
     BootProcess_SIMST_Flag=0;
@@ -246,8 +247,10 @@ void Task_RunNormalOperation(void)
     else
     {
       POC_GetGroupInformationFlag=0;
-      api_lcd_pwr_on_hint("群组:   组呼模式");//显示汉字
-      api_lcd_pwr_on_hint2(HexToChar_MainGroupId());//显示数据
+      //api_lcd_pwr_on_hint("群组:   组呼模式");//显示汉字
+      //api_lcd_pwr_on_hint2(HexToChar_MainGroupId());//显示数据
+      api_lcd_pwr_on_hint("                ");//清除退出键盘拨短号模式留下的”个呼号码“
+      api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());
       api_lcd_pwr_on_hint3("         ");//清除退出键盘拨短号模式留下的”个呼号码“
       api_disp_icoid_output( eICO_IDRXFULL, TRUE, TRUE);//GPRS三格信号图标
       api_disp_icoid_output( eICO_IDEmergency, TRUE, TRUE);//显示3G图标

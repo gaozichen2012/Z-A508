@@ -62,8 +62,8 @@ u8 *ucSwitch            = "10000002";
 u8 *ucGroupListInfo     = "0D0000";
 u8 *ucGD83Reset         = "at^reset";
 
-#if 0//电池电量测试
-u16 Test2=0;
+#if 1//电池电量测试
+//u16 Test2=0;
 u8 TestBuf[5];
 #endif
 
@@ -105,15 +105,11 @@ void main_app(void)
 
 #if 1//EEPROM TEST
   
-  /*ReadBuffer[1]=FLASH_ReadByte(0x4001);
-  ReadBuffer[2]=FLASH_ReadByte(0x4081);
-  ReadBuffer[3]=FLASH_ReadByte(0x4400);
-  ReadBuffer[4]=FLASH_ReadByte(0x47ff);
-  WriteEEPROMByte(0x4001, '2');
-  WriteEEPROMByte(0x4081, '5');
-  WriteEEPROMByte(0x4400, '8');
-  WriteEEPROMByte(0x47ff, '0');*/
-  
+  TestBuf[0]=0x6b;
+  TestBuf[1]=0x27;
+  TestBuf[2]=0x68;
+  TestBuf[3]=0x07;
+  TestBuf[4]='\0';
 
 #endif //EEPROMTEST
 
@@ -155,20 +151,8 @@ void main_app(void)
  api_disp_icoid_output( eICO_IDPOWERH, TRUE, TRUE);//电池电量3级
  api_disp_icoid_output( eICO_IDLOCKEDOff, TRUE, TRUE);//电池电量3级
  api_disp_icoid_output( eICO_IDTALKAR, TRUE, TRUE);//电池电量3级
+ api_lcd_pwr_on_hint4(Unicode2Gbk_MainWorkName());
 
-/*Test2=OneChannelGetADValue(ADC2_CHANNEL_2,ADC2_SCHMITTTRIG_CHANNEL2);
-TestBuf[0]=(Test2/1000%10)+0x30;//千
-TestBuf[1]=(Test2/100%10)+0x30;//百
-TestBuf[2]=(Test2/10%10)+0x30;//千
-TestBuf[3]=(Test2%10)+0x30;//个
-TestBuf[4]='\0';*/
-/*
-TestBuf[0]=((Test2&0xf000)>>12)+0x30;//千
-TestBuf[1]=((Test2&0xf00)>>8)+0x30;//百
-TestBuf[2]=((Test2&0xf0)>>4)+0x30;//千
-TestBuf[3]=(Test2&0xf)+0x30;//百
-TestBuf[4]='\0';*/
-api_lcd_pwr_on_hint(TestBuf);//显示数据
 #else
     LowVoltageDetection();
     DEL_Renew();
