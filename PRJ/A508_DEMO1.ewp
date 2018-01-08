@@ -22,7 +22,7 @@
         <option>
           <name>GenCodeModel</name>
           <version>0</version>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>GenDataModel</name>
@@ -61,7 +61,7 @@
         </option>
         <option>
           <name>GenRTConfigPath</name>
-          <state>$TOOLKIT_DIR$\LIB\dlstm8smn.h</state>
+          <state>$TOOLKIT_DIR$\LIB\dlstm8mmn.h</state>
         </option>
         <option>
           <name>GenLibInFormatter</name>
@@ -1650,6 +1650,9 @@
       <name>$PROJ_DIR$\..\INCLUDE\GT20L16P1Y.h</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\INCLUDE\GT20L16P1Y_D.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\INCLUDE\McuConfig.h</name>
     </file>
     <file>
@@ -1851,6 +1854,9 @@
       </file>
       <file>
         <name>$PROJ_DIR$\..\SRC\Syetem\Flash_eeprom.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\SRC\Syetem\GT20L16P1Y_D.c</name>
       </file>
       <file>
         <name>$PROJ_DIR$\..\SRC\Syetem\GT20L16P1Y_IAR_STM8.a</name>

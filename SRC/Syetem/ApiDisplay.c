@@ -268,6 +268,7 @@ static void DISP_MulTypePro(DISP_CHAR CharInfo, u8 *CharData)
 	if ((CharInfo.DispType & 0x80) != 0x00)
 	{
 		DisInfo.DispLenth = 0x00;
+                
 		for (; *CharData != 0x00; DisInfo.DispLenth++)
 		{
 			if (DisInfo.DispLenth >= CharInfo.DispLenth) { return; }//（修改当显示长度为16时的显示问题）
@@ -287,7 +288,7 @@ static void DISP_MulTypePro(DISP_CHAR CharInfo, u8 *CharData)
                         CharCodeL=CharCode&0x00ff;
 			}
                         //GB2312_16_GetData(0xa3,0x65+0x80,CharBuf);//CharData[0]
-                        //GB2312_16_GetData(0xa3,0x59+0x80,CharBuf);
+                        //GB2312_16_GetData(0xa3,0x42+0x80,CharBuf);
 			drv_gt20_data_output(DisInfo.DispType, CharCode, CharBuf);
                         
                         
@@ -358,7 +359,7 @@ static void DISP_DataBuf(DISP_CHAR DisInfo, u8 *CharData)
 {
 	u16 iPt;
 	u8  High, Width, xCol, yPage, nType, bType;
-
+        //DisInfo.DispType = DISP_IDCN1516;//添加后数字和字母可以显示一半
 	//bDisDataBufUsed = TRUE;
 	yPage = DisInfo.DispAddY;
 	nType = (DisInfo.DispType & NROWTYPE);//汉字：0x01&0x10=0 字母：0x05&0x10=0

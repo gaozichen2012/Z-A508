@@ -50,4 +50,5 @@
 #include "ADC.h"
 //×Ö¿âIC
 #include "GT20L16P1Y.h"
+#include "GT20L16P1Y_D.h"//×Ö¿â²¹¶¡
 #endif

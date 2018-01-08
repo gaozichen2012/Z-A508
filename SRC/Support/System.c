@@ -62,8 +62,8 @@ u8 *ucSwitch            = "10000002";
 u8 *ucGroupListInfo     = "0D0000";
 u8 *ucGD83Reset         = "at^reset";
 
-#if 1//电池电量测试
-//u16 Test2=0;
+#if 0//电池电量测试
+u8 Test3=0;
 u8 TestBuf[5];
 #endif
 
@@ -103,7 +103,7 @@ void main_app(void)
   Set_GreenLed(LED_OFF);
   enableInterrupts();
 
-#if 1//EEPROM TEST
+#if 0//EEPROM TEST
   
   TestBuf[0]=0x6b;
   TestBuf[1]=0x27;
@@ -120,7 +120,7 @@ void main_app(void)
   MIC_IOMUT(OFF); 
   MCU_LCD_BACKLIGTH(ON);//打开背光灯
   api_disp_icoid_output( eICO_IDBATT5, TRUE, TRUE);//显示电池满电图标
-  api_lcd_pwr_on_hint2("eChat");
+  api_lcd_pwr_on_hint2("高1234Chat");
 
   BEEP_Time(1);
   NoUseNum=ApiAtCmd_WritCommand(ATCOMM3_GD83Reset,(u8 *)ucGD83Reset,strlen((char const *)ucGD83Reset));
@@ -129,29 +129,8 @@ void main_app(void)
   while(1)
   {
 #if 0//电池电压采集测试
-    
-    
-    /*case eICO_IDEmergency://图标：3G
-	case eICO_IDPOWERL://图标：2G
-		pIcoInfo->DispAddX = 0x02;
-		break;
-	case eICO_IDPOWERM://图标：组呼
-	case eICO_IDPOWERH://图标：个呼
-		pIcoInfo->DispAddX = 0x0c;//0x04
-		break;
-	case eICO_IDLOCKED://锁屏图标
-	case eICO_IDLOCKEDOff://无图标
-		pIcoInfo->DispAddX = 0x06;
-		break;
-	case eICO_IDTALKAR://无发射无接收状态
-        case eICO_IDTX://发射信号图标
-	case eICO_IDVOX://图标：接收，听状态
-          pIcoInfo->DispAddX = 0x08;*/
- api_disp_icoid_output( eICO_IDPOWERL, TRUE, TRUE);//电池电量3级
- api_disp_icoid_output( eICO_IDPOWERH, TRUE, TRUE);//电池电量3级
- api_disp_icoid_output( eICO_IDLOCKEDOff, TRUE, TRUE);//电池电量3级
- api_disp_icoid_output( eICO_IDTALKAR, TRUE, TRUE);//电池电量3级
- api_lcd_pwr_on_hint4(Unicode2Gbk_MainWorkName());
+
+api_lcd_pwr_on_hint("欧");
 
 #else
     LowVoltageDetection();

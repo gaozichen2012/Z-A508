@@ -28,8 +28,8 @@
 #define GT20_DUMMY 0xff
 #define GT20_BASET 0x0f
 
-u8	TimeVal[8] = { 16, 32, 8, 8, 16, 16, 34, 34 };
-u32 BaseAdd[8] = { 0x3B7D0, 0x00000, 0x3BFC0, 0x066C0, 0x3B7C0, 0x3CF80, 0x3C2C0, 0x3D580 };//[7]=0x3D580
+//u8	TimeVal[8] = { 16, 32, 8, 8, 16, 16, 34, 34 };
+//u32 BaseAdd[8] = { 0x3B7D0, 0x00000, 0x3BFC0, 0x066C0, 0x3B7C0, 0x3CF80, 0x3C2C0, 0x3D580 };//[7]=0x3D580
 /*-----------------------------------------------------------------------------
  Variable Define (Variables definition used in this file internally)
 -----------------------------------------------------------------------------*/
@@ -37,11 +37,11 @@ u32 BaseAdd[8] = { 0x3B7D0, 0x00000, 0x3BFC0, 0x066C0, 0x3B7C0, 0x3CF80, 0x3C2C0
 /*-----------------------------------------------------------------------------
  Internal Function Prototype(declaration of functions used in this file internally)
 -----------------------------------------------------------------------------*/
-static void GT20_GetDisData(u8 iLenth, u32 Addr, u8 *cBuf);
-static void GT20_GetData(u8 iLenth, u8 *cBuf);
-static void GT20_SendByte(u8 iLenth, u8 cBuf);
-static void GT20_SendCommand(u32 Addr);
-static void GT20_DelTime(u8 DelTime);
+//static void GT20_GetDisData(u8 iLenth, u32 Addr, u8 *cBuf);
+//static void GT20_GetData(u8 iLenth, u8 *cBuf);
+//static void GT20_SendByte(u8 iLenth, u8 cBuf);
+//static void GT20_SendCommand(u32 Addr);
+//static void GT20_DelTime(u8 DelTime);
 static void mcu_gt20_initial(void);
 
 /*******************************************************************************
@@ -77,55 +77,23 @@ bool drv_gt20_data_output(DISP_TYPE cID, u16 iCode, u8 *cBuf)
 {
 	bool r = FALSE;
 	u8  i, AddrL, AddrH;
-	u32 DataAddr = 0x00000;
 	
 	AddrL = (iCode & 0xff);
 	AddrH = (iCode >> 0x08) & 0xff;
 	switch (cID & GT20_BASET)
 	{
 	case DISP_IDCN816:
-		if ((iCode >= 0xAAA1) && (iCode <= 0xAAFE))
-		{
-			r = TRUE;
-			DataAddr = iCode - 0xAAA1;
-		}
-		else
-		{
-			if ((iCode >= 0xABA1) && (iCode <= 0xABC0))
-			{
-				r = TRUE;
-				DataAddr = iCode - 0xABA1 + 95;
-			}
-		}
 		break;
-		
 	case DISP_IDCN1516://汉字进这里
-		if (AddrL < 0xA1) 
-                { 
-                  break; 
+                if(ValueSearch(0xc5b7)!=0xff)
+                {
+                  GetPointArrayData32(ValueSearch(0xc5b7),cBuf);
                 }
-		if (AddrH == 0xA9)
-		{
-			r = TRUE;
-			DataAddr = 121 + AddrL;
-		}
-		else
-		{
-			if ((AddrH >= 0xA1) && (AddrH <= 0xA3))
-			{
-				r = TRUE;
-				DataAddr = (AddrH - 0xA1) * 94 + (AddrL - 0xA1);
-			}
-			else
-			{
-				if ((AddrH >= 0xB0) && (AddrH <= 0xF7))
-				{
-					r = TRUE;
-					DataAddr = (AddrH - 0xB0) * 94 + AddrL + 685;//汉字到这里
-				}
-			}
-		}
-                GB2312_16_GetData(AddrH,AddrL,cBuf);//获取汉字点阵数据
+                else
+                {
+                  GB2312_16_GetData(AddrH,AddrL,cBuf);//获取汉字点阵数据
+                }
+                
 		break;
 		
 	case DISP_IDASC57:
@@ -134,12 +102,7 @@ bool drv_gt20_data_output(DISP_TYPE cID, u16 iCode, u8 *cBuf)
 	case DISP_IDASC816B://数字字母进这里0x05
 	case DISP_IDASCARI:
 	case DISP_IDASCTNR://数字字母进这里0x07
-		if ((iCode >= 0x20) && (iCode <= 0x7E))
-		{
-			r = TRUE;
-			DataAddr = iCode - 0x20;//空格为0x20
-		}
-                GB2312_16_GetData(0xA3,AddrL+0x80,cBuf);
+                WW_GetData(iCode,cBuf);
 		break;
 	default:
 		break;
@@ -147,10 +110,10 @@ bool drv_gt20_data_output(DISP_TYPE cID, u16 iCode, u8 *cBuf)
 	
 	if (r == TRUE)
 	{
-		DataAddr *= TimeVal[cID & GT20_BASET];//汉字：TimeVal[1]=34 字母：TimeVal[5]=16
+		/*DataAddr *= TimeVal[cID & GT20_BASET];//汉字：TimeVal[1]=34 字母：TimeVal[5]=16
 		DataAddr += BaseAdd[cID & GT20_BASET];//汉字：BaseAdd[1]=0x0  字母：BaseAdd[5]=0x3CF80
 		//GT20_GetDisData(TimeVal[cID & GT20_BASET], DataAddr, cBuf);//0x01&0x0f=0x01
-                
+                *///原字库函数屏蔽
 
 	}
 	else
@@ -169,14 +132,14 @@ bool drv_gt20_data_output(DISP_TYPE cID, u16 iCode, u8 *cBuf)
 * Return		: void
 * Others		: void
 ********************************************************************************/
-static void GT20_GetDisData(u8 iLenth, u32 Addr, u8 *cBuf)
+/*static void GT20_GetDisData(u8 iLenth, u32 Addr, u8 *cBuf)
 {
 	MCU_GT20_CS(LO);
 	GT20_SendCommand(Addr);
 	GT20_GetData(iLenth, cBuf);
 	MCU_GT20_CS(HI);
 	return;
-}
+}*/
 
 /*******************************************************************************
 * Description	: gt20 byte send process
@@ -185,7 +148,7 @@ static void GT20_GetDisData(u8 iLenth, u32 Addr, u8 *cBuf)
 * Return		: void
 * Others		: void
 ********************************************************************************/
-static void GT20_SendCommand(u32 Addr)
+/*static void GT20_SendCommand(u32 Addr)
 {
 	u8 i, j, cData;
 	
@@ -198,7 +161,7 @@ static void GT20_SendCommand(u32 Addr)
 	}
 	GT20_SendByte(0x08, GT20_DUMMY);
 	return;
-}
+}*/
 
 /*******************************************************************************
 * Description	: gt20 byte send process
@@ -208,7 +171,7 @@ static void GT20_SendCommand(u32 Addr)
 * Return		: void
 * Others		: void
 ********************************************************************************/
-static void GT20_GetData(u8 iLen, u8 *cBuf)//汉字：Len=32 英文：Len=16
+/*static void GT20_GetData(u8 iLen, u8 *cBuf)//汉字：Len=32 英文：Len=16/34?
 {
 	u8 i, j, cData;
 	
@@ -224,7 +187,7 @@ static void GT20_GetData(u8 iLen, u8 *cBuf)//汉字：Len=32 英文：Len=16
 		cBuf[i] = cData;
 	}
 	return;
-}
+}*/
 
 /*******************************************************************************
 * Description	: gt20 byte send process
@@ -234,7 +197,7 @@ static void GT20_GetData(u8 iLen, u8 *cBuf)//汉字：Len=32 英文：Len=16
 * Return		: void
 * Others		: void
 ********************************************************************************/
-static void GT20_SendByte(u8 iLen, u8 cBuf)
+/*static void GT20_SendByte(u8 iLen, u8 cBuf)
 {
 	if (iLen > 0x08) { iLen = 0x08; }
 	for (; iLen > 0x00; iLen--)
@@ -247,7 +210,7 @@ static void GT20_SendByte(u8 iLen, u8 cBuf)
 		GT20_DelTime(GT20_RWDEL);
 	}
 	return;
-}
+}*/
 
 /*******************************************************************************
 * Description	: gt20 delay process
@@ -256,13 +219,13 @@ static void GT20_SendByte(u8 iLen, u8 cBuf)
 * Return		: void
 * Others		: void
 ********************************************************************************/
-static void GT20_DelTime(u8 DelTime)
+/*static void GT20_DelTime(u8 DelTime)
 {
 	u8 i;
 	
 	for (i = 0; i < DelTime; i++) { nop(); }
 	return;
-}
+}*/
 
 /********************************************************************************
 ; ------------------------------- End of file ----------------------------------
