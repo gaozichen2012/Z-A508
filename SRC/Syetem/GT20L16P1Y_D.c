@@ -501,12 +501,14 @@ const unsigned int InputGBcode[216]={
 
 void GetPointArrayData32(unsigned char mid,unsigned char *CharData)
 {
-  unsigned int i,j,k;
+  unsigned int j,k;
+  unsigned int i;
   j=32*mid;
   k=32*(mid+1);
+  i=0;
   for(;j<k;j++)
   {
-    CharData[i]=VerifyData[j+i];
+    CharData[i]=VerifyData[j];
       i++;
   }
 }
