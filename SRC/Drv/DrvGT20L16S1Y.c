@@ -110,7 +110,7 @@ bool drv_gt20_data_output(DISP_TYPE cID, u16 iCode, u8 *cBuf)
          // GB2312_16_GetData(AddrH,AddrL,cBuf);//获取汉字点阵数据
                 if(ValueSearch(iCode)!=0xff)
                 {
-                  //GetPointArrayData32(ValueSearch(iCode),cBuf);
+                  GetPointArrayData32(ValueSearch(iCode),cBuf);
                 }
                 else
                 {
