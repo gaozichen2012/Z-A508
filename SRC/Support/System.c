@@ -120,7 +120,7 @@ void main_app(void)
   MIC_IOMUT(OFF); 
   MCU_LCD_BACKLIGTH(ON);//打开背光灯
   api_disp_icoid_output( eICO_IDBATT5, TRUE, TRUE);//显示电池满电图标
-  api_lcd_pwr_on_hint2("高1234Chat");
+  api_lcd_pwr_on_hint("欧标研发7");
 
   BEEP_Time(1);
   NoUseNum=ApiAtCmd_WritCommand(ATCOMM3_GD83Reset,(u8 *)ucGD83Reset,strlen((char const *)ucGD83Reset));

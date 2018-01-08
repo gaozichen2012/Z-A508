@@ -77,7 +77,7 @@ bool drv_gt20_data_output(DISP_TYPE cID, u16 iCode, u8 *cBuf)
 {
 	bool r = FALSE;
 	u8  i, AddrL, AddrH;
-	
+	u32 DataAddr = 0x00000;
 	AddrL = (iCode & 0xff);
 	AddrH = (iCode >> 0x08) & 0xff;
 	switch (cID & GT20_BASET)
@@ -85,14 +85,37 @@ bool drv_gt20_data_output(DISP_TYPE cID, u16 iCode, u8 *cBuf)
 	case DISP_IDCN816:
 		break;
 	case DISP_IDCN1516://汉字进这里
-                if(ValueSearch(0xc5b7)!=0xff)
+          if (AddrL < 0xA1) { break; }
+		if (AddrH == 0xA9)
+		{
+			r = TRUE;
+			DataAddr = 121 + AddrL;
+		}
+		else
+		{
+			if ((AddrH >= 0xA1) && (AddrH <= 0xA3))
+			{
+				r = TRUE;
+				DataAddr = (AddrH - 0xA1) * 94 + (AddrL - 0xA1);
+			}
+			else
+			{
+				if ((AddrH >= 0xB0) && (AddrH <= 0xF7))
+				{
+					r = TRUE;
+					DataAddr = (AddrH - 0xB0) * 94 + AddrL + 685;
+				}
+			}
+		}
+          GB2312_16_GetData(AddrH,AddrL,cBuf);//获取汉字点阵数据
+                /*if(ValueSearch(0xc5b7)!=0xff)
                 {
-                  GetPointArrayData32(ValueSearch(0xc5b7),cBuf);
+                  //GetPointArrayData32(ValueSearch(0xc5b7),cBuf);
                 }
                 else
                 {
                   GB2312_16_GetData(AddrH,AddrL,cBuf);//获取汉字点阵数据
-                }
+                }*/
                 
 		break;
 		
@@ -102,6 +125,93 @@ bool drv_gt20_data_output(DISP_TYPE cID, u16 iCode, u8 *cBuf)
 	case DISP_IDASC816B://数字字母进这里0x05
 	case DISP_IDASCARI:
 	case DISP_IDASCTNR://数字字母进这里0x07
+          		if ((iCode >= 0x20) && (iCode <= 0x7E))
+		{
+			r = TRUE;
+			DataAddr = iCode - 0x20;
+		}
+                WW_GetData(iCode,cBuf);
+		break;
+	default:
+		break;
+	}
+	
+	if (r == TRUE)
+	{
+		/*DataAddr *= TimeVal[cID & GT20_BASET];//汉字：TimeVal[1]=34 字母：TimeVal[5]=16
+		DataAddr += BaseAdd[cID & GT20_BASET];//汉字：BaseAdd[1]=0x0  字母：BaseAdd[5]=0x3CF80
+		//GT20_GetDisData(TimeVal[cID & GT20_BASET], DataAddr, cBuf);//0x01&0x0f=0x01
+                *///原字库函数屏蔽
+
+	}
+	else
+	{
+		for (i = 0; i < 34; i++) { cBuf[i] = 0x00; }
+	}
+	return r;
+}
+
+bool drv_gt20_data_output2(DISP_TYPE cID, u16 iCode, u8 *cBuf)//Unicode使用
+{
+	bool r = FALSE;
+	u8  i, AddrL, AddrH;
+	u32 DataAddr = 0x00000;
+	AddrL = (iCode & 0xff);
+	AddrH = (iCode >> 0x08) & 0xff;
+	switch (cID & GT20_BASET)
+	{
+	case DISP_IDCN816:
+		break;
+	case DISP_IDCN1516://汉字进这里
+          //if (AddrL < 0xA1) { break; }
+          
+		if (AddrH == 0xA9)
+		{
+			r = TRUE;
+			DataAddr = 121 + AddrL;
+		}
+		else
+		{
+			if ((AddrH >= 0xA1) && (AddrH <= 0xA3))
+			{
+				r = TRUE;
+				DataAddr = (AddrH - 0xA1) * 94 + (AddrL - 0xA1);
+			}
+			else
+			{
+				if ((AddrH >= 0xB0) && (AddrH <= 0xF7))
+				{
+					r = TRUE;
+					DataAddr = (AddrH - 0xB0) * 94 + AddrL + 685;
+				}
+			}
+		}
+                r = TRUE;
+                UNICODE_16_GetData(iCode,cBuf);
+                // GB2312_16_GetData(AddrH,AddrL,cBuf);//获取汉字点阵数据
+                /*if(ValueSearch(0xc5b7)!=0xff)
+                {
+                  //GetPointArrayData32(ValueSearch(0xc5b7),cBuf);
+                }
+                else
+                {
+                  GB2312_16_GetData(AddrH,AddrL,cBuf);//获取汉字点阵数据
+                }*/
+                
+		break;
+		
+	case DISP_IDASC57:
+	case DISP_IDASC78:
+	case DISP_IDASC816:
+	case DISP_IDASC816B://数字字母进这里0x05
+	case DISP_IDASCARI:
+	case DISP_IDASCTNR://数字字母进这里0x07
+          		if ((iCode >= 0x20) && (iCode <= 0x7E))
+		{
+			r = TRUE;
+			DataAddr = iCode - 0x20;
+		}
+                r = TRUE;
                 WW_GetData(iCode,cBuf);
 		break;
 	default:

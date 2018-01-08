@@ -269,6 +269,8 @@ static void DISP_MulTypePro(DISP_CHAR CharInfo, u8 *CharData)
 	{
 		DisInfo.DispLenth = 0x00;
                 
+                
+
 		for (; *CharData != 0x00; DisInfo.DispLenth++)
 		{
 			if (DisInfo.DispLenth >= CharInfo.DispLenth) { return; }//（修改当显示长度为16时的显示问题）
@@ -314,6 +316,8 @@ static void DISP_MulTypePro2(DISP_CHAR CharInfo, u8 *CharData)//UNICODE显示
 
 	if ((CharInfo.DispType & 0x80) != 0x00)
 	{
+          
+
 		DisInfo.DispLenth = 0x00;
 		for (; *CharData != 0x00; DisInfo.DispLenth++)
 		{
@@ -333,16 +337,26 @@ static void DISP_MulTypePro2(DISP_CHAR CharInfo, u8 *CharData)//UNICODE显示
                         CharCodeH=(CharCode&0xff00)>>8;
                         CharCodeL=CharCode&0x00ff;
 			}
-                        //GB2312_16_GetData(0xa3,0x65+0x80,CharBuf);//CharData[0]
-                        //GB2312_16_GetData(0xa3,0x59+0x80,CharBuf);
-			//drv_gt20_data_output(DisInfo.DispType, CharCode, CharBuf);
                         
                         
-                        UNICODE_16_GetData(CharCode,CharBuf2);
+                        drv_gt20_data_output2(DisInfo.DispType, CharCode, CharBuf2);
+                        //UNICODE_16_GetData(CharCode,CharBuf2);//等下将此函数换为drv_gt20_data_output(DisInfo.DispType, CharCode, CharBuf);
 			DISP_DataBuf(DisInfo, CharBuf2);
 			CharData++;
 			iLen++;
-		}
+                        
+                        if(*CharData==0x00)
+                        {
+                          if(*(CharData+1)==0x00)
+                          {
+                          }
+                          else
+                          {
+                            *CharData=*(CharData+1);
+                            *(CharData+1)=0;
+                          }
+                        }
+                }
 	}
 
 	return;
