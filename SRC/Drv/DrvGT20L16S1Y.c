@@ -187,16 +187,15 @@ bool drv_gt20_data_output2(DISP_TYPE cID, u16 iCode, u8 *cBuf)//Unicode使用
 			}
 		}
                 r = TRUE;
-                UNICODE_16_GetData(iCode,cBuf);
-                // GB2312_16_GetData(AddrH,AddrL,cBuf);//获取汉字点阵数据
-                /*if(ValueSearch(0xc5b7)!=0xff)
+                //UNICODE_16_GetData(iCode,cBuf);
+                if(UnicodeValueSearch(iCode)!=0xff)
                 {
-                  //GetPointArrayData32(ValueSearch(0xc5b7),cBuf);
+                  UnicodeGetPointArrayData32(UnicodeValueSearch(iCode),cBuf);
                 }
                 else
                 {
-                  GB2312_16_GetData(AddrH,AddrL,cBuf);//获取汉字点阵数据
-                }*/
+                  UNICODE_16_GetData(iCode,cBuf);//获取汉字点阵数据
+                }
                 
 		break;
 		
