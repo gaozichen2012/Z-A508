@@ -12,6 +12,7 @@
 
 u8 ReadBuffer[80];//Test 存EEPROM读取的数据使用
 u8 UnicodeForGbk_MainWorkNameBuf[15];
+u8 UnicodeForGbk_MainUserNameBuf[15];
 const u8 *ucAtPocHead   = "AT+POC=";
 const u8 *ucTingEnd   = "0B0000";
 const u8 *ucTingStart   = "0B0001";
@@ -72,7 +73,8 @@ typedef struct{
                                         u16 bLogin                      : 1;
                                         u16 AlarmMode            	: 1;
 					u16 PersonalCallingMode 	: 1;
-                                        u16 			        : 4;
+                                        u16 AnswerPersonalCallingMode 	: 1;
+                                        u16 			        : 3;
 				}Bits;
 				u16 Byte;
 			}Msg;
@@ -368,7 +370,7 @@ void ApiPocCmd_10msRenew(void)
         PocCmdDrvobj.WorkState.UseState.Msg.Bits.bLogin = 0x00;
       }
       break;
-    case 0x8B:
+    /*case 0x8B:
       ucId = COML_AscToHex(pBuf+4, 0x02);
       if(ucId == 0x00)
       {
@@ -380,8 +382,20 @@ void ApiPocCmd_10msRenew(void)
         PocCmdDrvobj.WorkState.UseState.Msg.Bits.bPlayState = 0x01;
       }
       
-      break;
+      break;*/
     case 0x86:
+      ucId = COML_AscToHex(pBuf+4, 0x02);
+      if(ucId==0x0a)//接入单呼
+      { 
+       PocCmdDrvobj.WorkState.UseState.Msg.Bits.AnswerPersonalCallingMode=1;
+      }
+      else
+      {
+        if(ucId==0xff&&PocCmdDrvobj.WorkState.UseState.Msg.Bits.AnswerPersonalCallingMode==1)//退出单呼
+        {
+          PocCmdDrvobj.WorkState.UseState.Msg.Bits.AnswerPersonalCallingMode=0;
+        }
+      }
       ucId = COML_AscToHex(pBuf+10, 0x02);
       if(ucId==0xff)
       { 
@@ -428,8 +442,7 @@ void ApiPocCmd_10msRenew(void)
       }
       }
       POC_GetGroupInformationFlag=1;//判断群组个呼使用的标志位
-      
-      
+      break;
     case 0x91://通知进入某种模式（进入退出一键告警、单呼模式）
       ucId = COML_AscToHex(pBuf+2, 0x02);
       if(ucId == 0x00)
@@ -531,6 +544,11 @@ u16 GetPersonalCallingMode(void)
   return PocCmdDrvobj.WorkState.UseState.Msg.Bits.PersonalCallingMode;
 }
 
+u16 GetAnswerPersonalCallingMode(void)
+{
+  return PocCmdDrvobj.WorkState.UseState.Msg.Bits.AnswerPersonalCallingMode;
+}
+
 u8 *HexToChar_MainGroupId(void)//16进制转字符串 当前群组ID 显示屏数据使用
 {
   u8 i;
@@ -599,3 +617,35 @@ u8 *UnicodeForGbk_MainWorkName(void)
       
   }
 }
+
+
+//显示屏显示当前用户昵称
+u8 *UnicodeForGbk_MainUserName(void)
+{
+  u8 *Buf1;
+  u8 Buf2[30];
+
+  u8 Len,i;
+  Buf1=ApiAtCmd_GetMainUserName();
+  Len=strlen((char const *)ApiAtCmd_GetMainUserName());
+  while(1)
+  {
+    if(4*i<=Len)
+    {
+      Buf2[4*i+0]=Buf1[4*i+2];
+      Buf2[4*i+1]=Buf1[4*i+3];
+      Buf2[4*i+2]=Buf1[4*i+0];
+      Buf2[4*i+3]=Buf1[4*i+1];
+      UnicodeForGbk_MainUserNameBuf[2*i+0]=COML_AscToHex(Buf2+(4*i), 0x02);
+      UnicodeForGbk_MainUserNameBuf[2*i+1]=COML_AscToHex(Buf2+(4*i)+2, 0x02);
+      i++;
+    }
+    else
+    {
+      Buf2[Len]='\0';
+
+      return UnicodeForGbk_MainUserNameBuf;
+    }
+  }
+}
+

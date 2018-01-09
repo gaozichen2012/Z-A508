@@ -209,7 +209,7 @@ void api_lcd_pwr_on_hint4(u8 *CharData)//UNICODE显示
 	stCharInfo.DispType  = DISP_IDCNASC816;
 	//stCharInfo.DispAddX  = 0;
 	stCharInfo.DispAddY  = 0x02;//左上角显示汉字
-	stCharInfo.DispAddX  = 0;//一行16个英文字符
+	stCharInfo.DispAddX  = 3;//一行16个英文字符
         stCharInfo.DispLenth = LCD_DISP_LEN_MAX;
         
 	api_disp_char_output2(stCharInfo,CharData);//UNICODE显示，群组信息显示屏显示使用
@@ -275,6 +275,7 @@ static void DISP_MulTypePro(DISP_CHAR CharInfo, u8 *CharData)
 		{
 			if (DisInfo.DispLenth >= CharInfo.DispLenth) { return; }//（修改当显示长度为16时的显示问题）
 			CharCode = *CharData;
+
 			DisInfo.DispAddX = CharInfo.DispAddX + iLen;
 			DisInfo.DispType = (DISP_TYPE)(CharInfo.DispType & BASETYPE);
 			
@@ -296,6 +297,7 @@ static void DISP_MulTypePro(DISP_CHAR CharInfo, u8 *CharData)
                         
                         //UNICODE_16_GetData(0xff42,CharBuf);
 			DISP_DataBuf(DisInfo, CharBuf);
+                        
 			CharData++;
 			iLen++;
 		}
@@ -306,60 +308,37 @@ static void DISP_MulTypePro(DISP_CHAR CharInfo, u8 *CharData)
 static void DISP_MulTypePro2(DISP_CHAR CharInfo, u8 *CharData)//UNICODE显示
 {
   u8  CharBuf2[32];
-  u8 CharCodeH;
-  u8 CharCodeL;
-	
-	DISP_CHAR DisInfo;
-	u8  iLen = 0;//34
-
-	DisInfo = CharInfo;
-
-	if ((CharInfo.DispType & 0x80) != 0x00)
-	{
-          
-
-		DisInfo.DispLenth = 0x00;
-		for (; *CharData != 0x00; DisInfo.DispLenth++)
-		{
-			if (DisInfo.DispLenth >= CharInfo.DispLenth) { return; }//（修改当显示长度为16时的显示问题）
-			CharCode = *CharData;
-			DisInfo.DispAddX = CharInfo.DispAddX + iLen;
-			DisInfo.DispType = (DISP_TYPE)(CharInfo.DispType & BASETYPE);
-			
-			if (*CharData >= 0x4E)//为中文字符//UNICODE范围：4E00-9FA5
-			{
-				iLen++;
-				CharData++;
-				CharCode <<= 0x08;
-				CharCode |= (*CharData);
-				DisInfo.DispType = DISP_IDCN1516;
-				DisInfo.DispLenth++;//当显示中文，长度为16时的显示问题
-                        CharCodeH=(CharCode&0xff00)>>8;
-                        CharCodeL=CharCode&0x00ff;
-			}
-                        
-                        
-                        drv_gt20_data_output2(DisInfo.DispType, CharCode, CharBuf2);
-                        //UNICODE_16_GetData(CharCode,CharBuf2);//等下将此函数换为drv_gt20_data_output(DisInfo.DispType, CharCode, CharBuf);
-			DISP_DataBuf(DisInfo, CharBuf2);
-			CharData++;
-			iLen++;
-                        
-                        if(*CharData==0x00)
-                        {
-                          if(*(CharData+1)==0x00)
-                          {
-                          }
-                          else
-                          {
-                            *CharData=*(CharData+1);
-                            *(CharData+1)=0;
-                          }
-                        }
-                }
-	}
-
-	return;
+  DISP_CHAR DisInfo;
+  u8  iLen = 0;//34
+  DisInfo = CharInfo;
+  if ((CharInfo.DispType & 0x80) != 0x00)
+  {
+    DisInfo.DispLenth = 0x00;
+    for (; (*CharData != 0x00)||(*(CharData+1) != 0x00); DisInfo.DispLenth++)//添加*(CharData+1)判断，导致0x00也会进入循环，故在循环内处理0x0000
+    {
+      if (DisInfo.DispLenth >= CharInfo.DispLenth) { return; }//（修改当显示长度为16时的显示问题）
+      CharCode = *CharData;
+      if(CharCode!=0x0000)//解决0x00显示屏占半个字符的问题
+      {
+        DisInfo.DispAddX = CharInfo.DispAddX + iLen;
+        DisInfo.DispType = (DISP_TYPE)(CharInfo.DispType & BASETYPE);
+        if (*CharData >= 0x4E)//为中文字符//UNICODE范围：4E00-9FA5
+        {
+          iLen++;
+          CharData++;
+          CharCode <<= 0x08;
+          CharCode |= (*CharData);
+          DisInfo.DispType = DISP_IDCN1516;
+          DisInfo.DispLenth++;//当显示中文，长度为16时的显示问题
+        }
+        drv_gt20_data_output2(DisInfo.DispType, CharCode, CharBuf2);
+        DISP_DataBuf(DisInfo, CharBuf2);
+        iLen++;
+      }
+      CharData++;
+    }
+  }
+  return;
 }
 /*******************************************************************************
 * Description	: display data process

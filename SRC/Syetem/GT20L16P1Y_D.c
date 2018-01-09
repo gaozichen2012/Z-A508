@@ -463,12 +463,6 @@ const unsigned char VerifyData[6912]={
 };
 
 
-
-
-
-
-
-
 const unsigned int InputGBcode[216]={
 0x5dcb,0xb0dc,0xb0ef,0xb1b4,0xb1d5,0xb1e0,0xb2c6,0xb2ce,
 0xb2d0,0xb2d7,0xb2e0,0xb2e2,0xb3c2,0xb3cf,0xb3ef,0xb4a2,
@@ -500,7 +494,7 @@ const unsigned int InputGBcode[216]={
 };
 
 void GetPointArrayData32(unsigned char mid,unsigned char *CharData)
-{
+{ 
   unsigned int j,k;
   unsigned int i;
   j=32*mid;

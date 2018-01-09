@@ -29,6 +29,7 @@ extern void ApiPocCmd_10msRenew(void);
 extern bool ApiAtCmd_GetLoginState(void);
 extern u16 GetPlayState(void);
 extern u16 GetPersonalCallingMode(void);//获取是否为个呼模式
+extern u16 GetAnswerPersonalCallingMode(void);//获取是否为个呼模式
 extern void ApiGetPocBuf(void);
 extern u8 *ApiAtCmd_GetMainWorkName(void);
 extern u8 ApiAtCmd_GetMainWorkNameLen(void);
@@ -50,4 +51,5 @@ extern u8 *HexToChar_MainUserId(void);//16进制转字符串 当前用户ID 显示屏数据使用
 extern u8 *HexToChar_PersonalCallingNum(void);//16进制转字符串 按键播报当前用户ID 显示屏数据使用
 
 extern u8 *UnicodeForGbk_MainWorkName(void);
+extern u8 *UnicodeForGbk_MainUserName(void);
 #endif

@@ -29,7 +29,6 @@ u8 *ucPocOpenConfig             = "0000000101";
 void Task_RunStart(void)
 {
   
-
   UART3_ToMcuMain();
   if(BootProcess_SIMST_Flag==1)//收到模块开机指令:SIMST:1
   {
@@ -102,8 +101,9 @@ void Task_RunStart(void)
 
 void Task_RunNormalOperation(void)
 {
-
+  Keyboard_Test();
   UART3_ToMcuMain();
+/***********PTT状态检测*************************************************************************************************************************/
   if(ReadInput_KEY_PTT==0)
   {
     switch(KeyDownUpChoose_GroupOrUser_Flag)
@@ -154,7 +154,7 @@ void Task_RunNormalOperation(void)
     Set_RedLed(LED_OFF);
 
   }
-  
+/*******组呼键状态检测***********************************************************************************************************************************/
   if(ReadInput_KEY_3==0)//组呼键
   {
     if(GetPersonalCallingMode()==1)//如果是单呼模式，则退出单呼
@@ -176,7 +176,7 @@ void Task_RunNormalOperation(void)
       VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetMainWorkName(),ApiAtCmd_GetMainWorkNameLen());
     }
   }
-  
+/*******个呼键状态检测***************************************************************************************************************************************/
   if(ReadInput_KEY_2==0)//个呼键
   {
     api_lcd_pwr_on_hint("对象:   选择个呼");
@@ -198,6 +198,7 @@ void Task_RunNormalOperation(void)
     VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(0),ApiAtCmd_GetUserNameLen(0));
     KeyDownUpChoose_GroupOrUser_Flag=2;
   }
+/*******报警键状态检测********************************************************************************************************************************************/
   if(ReadInput_KEY_4==0)//报警键
   {
     switch(AlarmCount)
@@ -230,27 +231,37 @@ void Task_RunNormalOperation(void)
     default:
       break;
     }
-  
-
   }
-  Keyboard_Test();
+  
+/***********收到86则显示群组信息，解决开机不按按键不显示群组信息*********************************************************************************************************************/
   if(POC_GetGroupInformationFlag==1)//收到86则显示群组信息，解决开机不按按键不显示群组信息
   {
-    if(GetPersonalCallingMode()==1)//如果是个呼模式，则显示个呼模式，否则显示群组模式
+    /*if(GetPersonalCallingMode()==1)//如果是个呼模式，则显示个呼模式，否则显示群组模式
     {
       POC_GetGroupInformationFlag=0;
-      api_lcd_pwr_on_hint("对象:   单呼模式");//显示汉字
-      api_lcd_pwr_on_hint2(HexToChar_MainGroupId());//显示数据    
+      //api_lcd_pwr_on_hint("对象:   单呼模式");//显示汉字
+      api_lcd_pwr_on_hint(HexToChar_PersonalCallingNum());//显示数据
+      api_lcd_pwr_on_hint4(UnicodeForGbk_MainUserName());//显示当前群组昵称
       api_disp_icoid_output( eICO_IDPOWERH, TRUE, TRUE);//进入个呼显示个呼图标
+      api_disp_all_screen_refresh();// 全屏统一刷新
+    }
+    else*/
+    if(GetAnswerPersonalCallingMode()==1)//如果是接入单呼
+    {
+      api_disp_icoid_output( eICO_IDPOWERH, TRUE, TRUE);//进入个呼显示个呼图标
+      api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
+      api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
+      api_disp_icoid_output( eICO_IDRXFULL, TRUE, TRUE);//GPRS三格信号图标
+      api_disp_icoid_output( eICO_IDEmergency, TRUE, TRUE);//显示3G图标
+      api_disp_icoid_output( eICO_IDTALKAR, TRUE, TRUE);//默认无发射无接收信号图标(无图标)
       api_disp_all_screen_refresh();// 全屏统一刷新
     }
     else
     {
       POC_GetGroupInformationFlag=0;
-      //api_lcd_pwr_on_hint("群组:   组呼模式");//显示汉字
-      //api_lcd_pwr_on_hint2(HexToChar_MainGroupId());//显示数据
       api_lcd_pwr_on_hint("                ");//清除退出键盘拨短号模式留下的”个呼号码“
-      api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());
+      api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
+      api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
       api_lcd_pwr_on_hint3("         ");//清除退出键盘拨短号模式留下的”个呼号码“
       api_disp_icoid_output( eICO_IDRXFULL, TRUE, TRUE);//GPRS三格信号图标
       api_disp_icoid_output( eICO_IDEmergency, TRUE, TRUE);//显示3G图标
@@ -260,6 +271,7 @@ void Task_RunNormalOperation(void)
     }
 
   }
+/*********判断发射接收图标状态****************************************************************************************************************************/
   if(POC_GetGroupInformationFlag2==1)//开机进入群组此标志位一直=1
   {
     if(GetPlayState()==1)//判断发射接听状态，=1表示接听状态
