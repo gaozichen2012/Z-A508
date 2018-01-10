@@ -151,9 +151,9 @@ void Keyboard_Test(void)
     break;
   case 0x00400000://cancel
     api_lcd_pwr_on_hint("    退出单呼    ");
-    Delay_100ms(5);
+    //Delay_100ms(5);
     ApiPocCmd_WritCommand(PocComm_Cancel,(u8 *)ucQuitPersonalCalling,strlen((char const *)ucQuitPersonalCalling));
-    api_lcd_pwr_on_hint("群组:   组呼模式");
+    //api_lcd_pwr_on_hint("群组:   组呼模式");
     Key_Flag_1=1;//按键延时标志位
     Key_PersonalCalling_Flag=0;//进入组呼标志位
     break;  

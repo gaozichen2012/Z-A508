@@ -9,7 +9,7 @@ TriggerName=main
 LimitSize=0
 ByteLimit=50
 [DebugChecksum]
-Checksum=-468550720
+Checksum=-79577938
 [CodeCoverage]
 Enabled=_ 0
 [CallStack]
@@ -64,7 +64,8 @@ Fmt4=u8[40]	4	0
 Fmt5=u8[512]	4	0
 Fmt6=u8[5]	4	0
 Fmt7=u8[64]	4	0
-Fmt8=u8[8]	4	0
+Fmt8=u8[84]	4	0
+Fmt9=u8[8]	4	0
 [watch_formats]
 Fmt0={W}1:AddrH	4	0
 Fmt1={W}1:AdrSum	4	0
@@ -89,23 +90,26 @@ Fmt19={W}1:CharData[8]	4	0
 Fmt20={W}1:CharData[9]	4	0
 Fmt21={W}1:DataAddr	4	0
 Fmt22={W}1:Len	3	0
-Fmt23={W}1:PocCmdDrvobj.WorkState.UseState.MainWorkGroup.NameLen	4	0
-Fmt24={W}1:cBuf	4	0
-Fmt25={W}1:cBuf[0]	4	0
-Fmt26={W}1:cBuf[10]	4	0
-Fmt27={W}1:cBuf[15]	4	0
-Fmt28={W}1:cBuf[16]	4	0
-Fmt29={W}1:cBuf[17]	4	0
-Fmt30={W}1:cBuf[18]	4	0
-Fmt31={W}1:cBuf[5]	4	0
-Fmt32={W}1:i	3	0
-Fmt33={W}1:iCode	4	0
-Fmt34={W}1:mid	3	0
-Fmt35={W}1:sum	4	0
-Fmt36={W}1:ucId	4	0
-Fmt37={W}1:value	4	0
-Fmt38={W}1:xCol	3	0
-Fmt39={W}1:yPage	3	0
+Fmt23={W}1:PocCmdDrvobj.WorkState.UseState.Group[1].NameLen	3	0
+Fmt24={W}1:PocCmdDrvobj.WorkState.UseState.MainWorkGroup.GroupNum	4	0
+Fmt25={W}1:PocCmdDrvobj.WorkState.UseState.MainWorkGroup.NameLen	4	0
+Fmt26={W}1:PocCmdDrvobj.WorkState.UseState.WorkGroup.NameLen	3	0
+Fmt27={W}1:cBuf	4	0
+Fmt28={W}1:cBuf[0]	4	0
+Fmt29={W}1:cBuf[10]	4	0
+Fmt30={W}1:cBuf[15]	4	0
+Fmt31={W}1:cBuf[16]	4	0
+Fmt32={W}1:cBuf[17]	4	0
+Fmt33={W}1:cBuf[18]	4	0
+Fmt34={W}1:cBuf[5]	4	0
+Fmt35={W}1:i	3	0
+Fmt36={W}1:iCode	4	0
+Fmt37={W}1:mid	3	0
+Fmt38={W}1:sum	4	0
+Fmt39={W}1:ucId	4	0
+Fmt40={W}1:value	4	0
+Fmt41={W}1:xCol	3	0
+Fmt42={W}1:yPage	3	0
 [DataSample]
 LogEnabled=0
 GraphEnabled=0
@@ -122,6 +126,6 @@ Count=0
 [Aliases]
 A0=_ "C:\Users\lei\Desktop\IAR\GT20L16P1Y.c" ""
 Count=1
-SuppressDialog=0
+SuppressDialog=1
 [DebuggerSettings]
 DisableInterruptsWhenStepping=0

@@ -34,6 +34,7 @@ void Set_RedLed(u8 state)
     break;
   case LED_OFF:
       GPIO_WriteLow(GPIO_LED_Red, GPIO_PIN_LED_Red);
+      break;
   }
 }
 

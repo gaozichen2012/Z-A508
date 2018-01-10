@@ -537,7 +537,7 @@ void GetPointArrayData32(unsigned char mid,unsigned char *CharData)
       i++;
   }
 }
-unsigned char ValueSearch(short value ) 
+unsigned char ValueSearch(short value ) //要显示的GBK数与InputGBcode对比，若有繁体字则从VerifyData中读取，否则从字库中读取
 {
   unsigned char low = 0;
   unsigned char high = 216 - 1;
@@ -572,12 +572,12 @@ void UnicodeGetPointArrayData32(unsigned char mid,unsigned char *CharData)
       i++;
   }
 }
-unsigned int UnicodeValueSearch(short value ) 
+unsigned int UnicodeValueSearch(short value ) //要显示的Unicode数与InputGBcode对比，若有繁体字则从VerifyData中读取，否则从字库中读取
 {
   unsigned int i;
   //if( value < 0x4e1d || value > 0x9f84 )//如果输入的值<InputUnicode中的最小值或>InputUnicode中的最大值，则退出
    // return (0xff);  // not found.
-  for(i=0;i<216;i++)
+  for(i=0;i<216;i++)//从InputUnicode第一个值开始对比直到最后一个
   {
     if(value==InputUnicode[i])
     {return i;}

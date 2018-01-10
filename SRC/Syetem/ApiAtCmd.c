@@ -52,7 +52,7 @@ typedef struct{
 			}Bits;
 			u16 Byte;
 		}Msg;
-		u8 ucCardPassword[50];
+		//u8 ucCardPassword[50];
 		struct{
 			u8 Buf[DrvMC8332_IccId_Len];
 			u8 Len;

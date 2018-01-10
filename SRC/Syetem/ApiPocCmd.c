@@ -1,11 +1,6 @@
 #include "ALLHead.h"
-
 #define DrvMC8332_GroupName_Len		16			//define UART Tx buffer length value
-#if 0//Test地址冲突，解决测试
 #define DrvMC8332_UseId_Len			100			//define UART Tx buffer length value
-#else
-#define DrvMC8332_UseId_Len			100			//define UART Tx buffer length value
-#endif
 #define APIPOC_UserList_Len			16
 #define APIPOC_UserLoad_Len			8
 #define APIPOC_UserName_Len			30
@@ -19,71 +14,64 @@ const u8 *ucTingStart   = "0B0001";
 const u8 *ucSetIPAndID    = "010000";
 u8 POC_GetGroupInformationFlag=0;
 u8 POC_GetGroupInformationFlag2=0;//判断开机第一次进入群组后，进行图标显示标志位
+
 typedef struct{
-	struct{
-		union{
-			struct{
-				u16 bUserInfo	: 3;
-				u16 bUserWrite	: 1;
-				u16 bPocReset	: 1;
-				u16 bPocOpen	: 1;
-				u16 bModeChange	: 1;
-				u16	 bMode	: 3;
-				u16 bNetStat	: 2;
-				u16 bUnline	: 1;
-				u16       : 1;
-                                u16             : 2;
-			}Bits;
-			u16 Byte;
-		}Msg;
-		u8 Buf[10];
-                u8 Buf2[10];
-                u8 Buf3[3];
-                u8 Buf4[3];
-                u8 Buf5[3];
-                u8 Buf6[3];
-		u8 Timer;
-		u8 Times;
-		u8 ResetTimes;
-		struct{
-			struct{
-				u8	bSet	: 1;
-				u8	Len	: 7;
-			}Msg;
-			u8 Buf[DrvMC8332_UseId_Len];
-		}LoginInfo;
-	}NetState;
-#if 1//added by Tom
+  struct{
+    union{
+      struct{
+        u16 bUserInfo	: 3;
+        u16 bUserWrite	: 1;
+        u16 bPocReset	: 1;
+        u16 bPocOpen	: 1;
+        u16 bModeChange	: 1;
+        u16	 bMode	: 3;
+        u16 bNetStat	: 2;
+        u16 bUnline	: 1;
+        u16             : 1;
+        u16             : 2;
+      }Bits;
+      u16 Byte;
+    }Msg;
+    u8 Buf[10];
+    u8 Buf2[10];
+    u8 Buf3[3];
+    u8 Buf4[3];
+    u8 Buf5[3];
+    u8 Buf6[3];
+    u8 Timer;
+    u8 Times;
+    u8 ResetTimes;
+    struct{
+      struct{
+        u8 bSet	: 1;
+        u8 Len	: 7;
+      }Msg;
+      u8 Buf[DrvMC8332_UseId_Len];
+    }LoginInfo;
+  }NetState;
+  struct{
+    struct{
+      union{
         struct{
-          u8 Buf[30];
-          u8 Len;
-        }PocDateTest;
-#endif
-	struct{
-		struct{
-			union{
-				struct{
-					u16 bInitial		        : 1;
-					u16 bPttState		        : 1;			//0: ptt involide; 1 :ptt volide
-					u16 bPttUser		        : 1;			//ptt operrtor 0: oneself; 1: other
-					u16 bWorkGrpVolide	        : 3;
-					u16 bEnterGroup		        : 1;
-					u16 bPlayState		        : 1;
-					u16 bCallFail	                : 1;
-                                        u16 bLogin                      : 1;
-                                        u16 AlarmMode            	: 1;
-					u16 PersonalCallingMode 	: 1;
-                                        u16 AnswerPersonalCallingMode 	: 1;
-                                        u16 			        : 3;
-				}Bits;
-				u16 Byte;
+          u16 bInitial		        : 1;
+          u16 bPttState		        : 1;			//0: ptt involide; 1 :ptt volide
+          u16 bPttUser		        : 1;			//ptt operrtor 0: oneself; 1: other
+          u16 bWorkGrpVolide	        : 3;
+          u16 bEnterGroup		: 1;
+          u16 bPlayState	        : 1;
+          u16 bCallFail	                : 1;
+          u16 bLogin                    : 1;
+          u16 AlarmMode            	: 1;
+          u16 PersonalCallingMode 	: 1;
+          u16 AnswerPersonalCallingMode : 1;
+          u16 			        : 3;
+        }Bits;u16 Byte;
 			}Msg;
 			u8 Timer;
 			struct{
                           
 				u8 PresentGroupId;
                                 u8 GroupNum;
-				u8 Index[8];
 				u8 Id[8];
 				u8 Name[APIPOC_UserName_Len];
 				u8 NameLen;
@@ -100,7 +88,7 @@ typedef struct{
                                 u8 Id[8];
 				u8 Name[APIPOC_UserName_Len];
 				u8 NameLen;
-			}Group[50];
+			}Group[50];//原50，内存测试改为10---------------------------------------test----------------------------------------------------------
                         struct{
                                 u8 Id[8];
 				u8 Name[APIPOC_UserName_Len];
@@ -119,69 +107,7 @@ typedef struct{
 				u8 NameLen;
 			}WorkUserName;
 		}UseState;
-		
-		struct{
-			union{
-				struct{
-					u8 InvEnable			: 1;
-					u8 InvPreEnable		: 1;
-					u8 	InvMode			: 3;
-					u8				: 3;
-				}Bits;
-				u8 Byte;
-			}Msg;
-			u8 InviteIndex;
-			struct{
-				u8 Id[8];
-				u8 Name[APIPOC_UserName_Len];
-				u8 Len;
-			}InviteGroupName;
-			struct{
-				u8 Buf[APIPOC_UserName_Len];
-				u8 Len;
-			}FailInfo;
-
-		}InviteInfo;
-		
-		struct{
-			struct{
-				u8 Id[8];
-				u8 Name[DrvMC8332_GroupName_Len];
-				u8 Len;
-			}MonitorGroupName;
-		}MonitorInfo;
-		u8 InvFirstPlay;
 	}WorkState;
-	
-	struct{
-		union{
-			struct{
-				u8	GroupList	: 1;
-				u8	UserList	: 1;
-				u8			: 6;
-			}Bits;
-			u8 Byte;
-		}Msg;
-		struct{
-			u8 Id[8];
-			u8 Name[DrvMC8332_GroupName_Len];
-			u8 Len;
-		}GroupInfo[1];
-		u8 GroupInfoLen;
-		
-		struct{
-			u8 Id[8];
-			u8 Name[APIPOC_UserName_Len];
-			u8 Len;
-		}UseInfo[APIPOC_UserList_Len];
-		struct{
-			u16 Start;
-			u16 Stop;
-			u16 Index;
-		}UseInfoLoadPoint;
-		u16 UseIndex;
-		u16 UseListLen;
-	}CfgInfo;
 }PocCmdDrv;
 
 static PocCmdDrv PocCmdDrvobj;
@@ -314,7 +240,16 @@ void ApiPocCmd_10msRenew(void)
     ucId = COML_AscToHex(pBuf, 0x02);
     switch(ucId)
     {
-      
+    /*case 0x0B://判断讲话状态
+      ucId = COML_AscToHex(pBuf+6, 0x02);
+      if(ucId==0x00)
+       PocCmdDrvobj.WorkState.UseState.Msg.Bits.bPttState=1;//讲话状态
+      break;
+    case 0x0C://判断讲话结束状态，释放话权
+      ucId = COML_AscToHex(pBuf+6, 0x02);
+      if(ucId==0x00)
+        PocCmdDrvobj.WorkState.UseState.Msg.Bits.bPttState=0;//讲话结束状态，有话权
+      break;*/
     case 0x0E://在线用户个数
       ucId = COML_AscToHex(pBuf+8, 0x04);
       PocCmdDrvobj.WorkState.UseState.PttUserName.UserNum = ucId;
@@ -370,7 +305,7 @@ void ApiPocCmd_10msRenew(void)
         PocCmdDrvobj.WorkState.UseState.Msg.Bits.bLogin = 0x00;
       }
       break;
-    /*case 0x8B:
+    case 0x8B:
       ucId = COML_AscToHex(pBuf+4, 0x02);
       if(ucId == 0x00)
       {
@@ -382,7 +317,7 @@ void ApiPocCmd_10msRenew(void)
         PocCmdDrvobj.WorkState.UseState.Msg.Bits.bPlayState = 0x01;
       }
       
-      break;*/
+      break;
     case 0x86:
       ucId = COML_AscToHex(pBuf+4, 0x02);
       if(ucId==0x0a)//接入单呼
@@ -391,7 +326,7 @@ void ApiPocCmd_10msRenew(void)
       }
       else
       {
-        if(ucId==0xff&&PocCmdDrvobj.WorkState.UseState.Msg.Bits.AnswerPersonalCallingMode==1)//退出单呼
+        if(ucId==0xff)//退出单呼
         {
           PocCmdDrvobj.WorkState.UseState.Msg.Bits.AnswerPersonalCallingMode=0;
         }
@@ -521,32 +456,36 @@ u8 ApiAtCmd_GetMainUserId(void)//获取当前用户id（个呼）
   return PocCmdDrvobj.WorkState.UseState.PttUserName.PresentUserId;
 }
 
+bool ApiPocCmd_GetPttState(void)//判断PPT状态，是否有话权
+{
+  return (bool)PocCmdDrvobj.WorkState.UseState.Msg.Bits.bPttState;
+}
 bool ApiAtCmd_GetLoginState(void)
 {
   return (bool)PocCmdDrvobj.WorkState.UseState.Msg.Bits.bLogin;
 }
-  
+/*
 void ApiGetPocBuf(void)
 {
   DrvGD83_UART_TxCommand((u8 *)"AT+Printf=",strlen((char const *)"AT+Printf="));
   DrvGD83_UART_TxCommand((u8 *)PocCmdDrvobj.PocDateTest.Buf,strlen((char const *)PocCmdDrvobj.PocDateTest.Buf));
   DrvGD83_UART_TxCommand((u8 *)"\r\n",strlen((char const *)"\r\n"));                      
 }
+*/
 
-
-u16 GetPlayState(void)
+bool GetPlayState(void)
 {
-  return PocCmdDrvobj.WorkState.UseState.Msg.Bits.bPlayState;
+  return (bool)PocCmdDrvobj.WorkState.UseState.Msg.Bits.bPlayState;
 }
 
-u16 GetPersonalCallingMode(void)
+bool GetPersonalCallingMode(void)
 {
-  return PocCmdDrvobj.WorkState.UseState.Msg.Bits.PersonalCallingMode;
+  return (bool)PocCmdDrvobj.WorkState.UseState.Msg.Bits.PersonalCallingMode;
 }
 
-u16 GetAnswerPersonalCallingMode(void)
+bool GetAnswerPersonalCallingMode(void)
 {
-  return PocCmdDrvobj.WorkState.UseState.Msg.Bits.AnswerPersonalCallingMode;
+  return (bool)PocCmdDrvobj.WorkState.UseState.Msg.Bits.AnswerPersonalCallingMode;
 }
 
 u8 *HexToChar_MainGroupId(void)//16进制转字符串 当前群组ID 显示屏数据使用
@@ -593,7 +532,8 @@ u8 *UnicodeForGbk_MainWorkName(void)
   u8 *Buf1;
   u8 Buf2[30];
 
-  u8 Len,i;
+  u8 Len=0;
+  u8 i=0;
   Buf1=ApiAtCmd_GetMainWorkName();
   Len=strlen((char const *)ApiAtCmd_GetMainWorkName());
   while(1)

@@ -170,10 +170,13 @@ void Task_RunNormalOperation(void)
       api_lcd_pwr_on_hint2(HexToChar_MainGroupId());//显示数据
     
       Key_PersonalCalling_Flag=0;
-      VOICE_SetOutput(ATVOICE_FreePlay,"A47FC47E0990E962",16);//群组选择
+      VOICE_SetOutput(ATVOICE_FreePlay,"535f4d52A47FC47E",16);//当前群组
       DEL_SetTimer(0,100);
       while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
-      VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetMainWorkName(),ApiAtCmd_GetMainWorkNameLen());
+      //VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetMainWorkName(),ApiAtCmd_GetMainWorkNameLen());
+      VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetMainWorkName(),strlen((char const *)ApiAtCmd_GetMainWorkName()));
+      // VOICE_SetOutput(ATVOICE_FreePlay,"13663d6d4b6dd58bc47e3100",strlen((char const *)"13663d6d4b6dd58bc47e3100"));
+      
     }
   }
 /*******个呼键状态检测***************************************************************************************************************************************/
@@ -267,7 +270,7 @@ void Task_RunNormalOperation(void)
       api_disp_icoid_output( eICO_IDEmergency, TRUE, TRUE);//显示3G图标
       api_disp_icoid_output( eICO_IDTALKAR, TRUE, TRUE);//默认无发射无接收信号图标(无图标)
       api_disp_icoid_output( eICO_IDPOWERM, TRUE, TRUE);//进入组呼显示组呼图标
-      api_disp_all_screen_refresh();// 全屏统一刷新
+      //api_disp_all_screen_refresh();// 全屏统一刷新//可能会对POC开机PoC指令识别有影响
     }
 
   }
@@ -277,12 +280,12 @@ void Task_RunNormalOperation(void)
     if(GetPlayState()==1)//判断发射接听状态，=1表示接听状态
   {
     api_disp_icoid_output( eICO_IDVOX, TRUE, TRUE);//接收信号图标
-    api_disp_all_screen_refresh();// 全屏统一刷新
+    //api_disp_all_screen_refresh();// 全屏统一刷新
   }
   else
   {
     api_disp_icoid_output( eICO_IDTALKAR, TRUE, TRUE);//默认无发射无接收信号图标
-    api_disp_all_screen_refresh();// 全屏统一刷新
+    //api_disp_all_screen_refresh();// 全屏统一刷新
   }
   }
 

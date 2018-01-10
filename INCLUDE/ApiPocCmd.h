@@ -26,10 +26,11 @@ extern u8 POC_GetGroupInformationFlag2;
 extern void ApiPocCmd_WritCommand(PocCommType id, u8 *buf, u16 len);
 extern u8 ApiPocCmd_user_info_set(u8 *pBuf, u8 len);
 extern void ApiPocCmd_10msRenew(void);
+extern bool ApiPocCmd_GetPttState(void);//判断PPT状态，是否有话权;
 extern bool ApiAtCmd_GetLoginState(void);
-extern u16 GetPlayState(void);
-extern u16 GetPersonalCallingMode(void);//获取是否为个呼模式
-extern u16 GetAnswerPersonalCallingMode(void);//获取是否为个呼模式
+extern bool GetPlayState(void);
+extern bool GetPersonalCallingMode(void);//获取是否为个呼模式
+extern bool GetAnswerPersonalCallingMode(void);//获取是否为个呼模式
 extern void ApiGetPocBuf(void);
 extern u8 *ApiAtCmd_GetMainWorkName(void);
 extern u8 ApiAtCmd_GetMainWorkNameLen(void);
