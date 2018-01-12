@@ -247,7 +247,6 @@ void ApiCaretCmd_10msRenew(void)
         }
       }
     }
-    
   }
 }
 

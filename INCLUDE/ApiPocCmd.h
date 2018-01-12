@@ -20,8 +20,21 @@ typedef enum{
   PocComm_Key			= 0x10
 }PocCommType;
 
-extern u8 POC_GetGroupInformationFlag;
-extern u8 POC_GetGroupInformationFlag2;
+
+extern u8 POC_EnterPersonalCalling_Flag;
+extern u8 POC_QuitPersonalCalling_Flag;
+
+extern u8 POC_AtEnterPersonalCalling_Flag;
+extern u8 POC_AtQuitPersonalCalling_Flag;
+
+extern u8 POC_EnterGroupCalling_Flag;
+extern u8 POC_QuitGroupCalling_Flag;
+
+extern u8 POC_ReceivedVoiceStart_Flag;
+extern u8 POC_ReceivedVoiceEnd_Flag;
+
+extern bool POC_Receive86_Flag;
+
 //void ApiPocCmd_PowerOnInitial(void);
 extern void ApiPocCmd_WritCommand(PocCommType id, u8 *buf, u16 len);
 extern u8 ApiPocCmd_user_info_set(u8 *pBuf, u8 len);
@@ -30,7 +43,6 @@ extern bool ApiPocCmd_GetPttState(void);//判断PPT状态，是否有话权;
 extern bool ApiAtCmd_GetLoginState(void);
 extern bool GetPlayState(void);
 extern bool GetPersonalCallingMode(void);//获取是否为个呼模式
-extern bool GetAnswerPersonalCallingMode(void);//获取是否为个呼模式
 extern void ApiGetPocBuf(void);
 extern u8 *ApiAtCmd_GetMainWorkName(void);
 extern u8 ApiAtCmd_GetMainWorkNameLen(void);

@@ -58,11 +58,11 @@ typedef struct {							//address group inforamtion
 /******************************************************************************
 ;--------3-UART1:GD83 hardware macro define
 ******************************************************************************/
-#define GPIO_C_Reset            GPIOB 
-#define GPIO_C_ONOFF            GPIOB 
+//#define GPIO_C_Reset            GPIOB 
+//#define GPIO_C_ONOFF            GPIOB 
 
-#define GPIO_PIN_C_Reset        GPIO_PIN_4
-#define GPIO_PIN_C_ONOFF        GPIO_PIN_3
+//#define GPIO_PIN_C_Reset        GPIO_PIN_4
+//#define GPIO_PIN_C_ONOFF        GPIO_PIN_3
 
 /******************************************************************************
 ;--------4-Audio&MIC hardware macro define
@@ -216,8 +216,8 @@ void Delay_ms(u16 nms);*/
 /******************************************************************************
 ;--------3-UART1:GD83 hardware macro define
 ******************************************************************************/
-void DrvGD83_Init(void);
-void GD83_ON(void);
+//void DrvGD83_Init(void);
+//void GD83_ON(void);
 
 void Uart1_Init(void);
 u8 UART1_ReceiveByte(void);

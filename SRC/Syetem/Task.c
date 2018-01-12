@@ -6,6 +6,7 @@ u8 AlarmCount=4;//2G3G切换计数,默认为3G模式
 #if 1 //test
 u8 Key_Flag_0=0;
 u8 Key_PersonalCalling_Flag=0;
+bool TASK_Ptt_StartPersonCalling_Flag=FALSE;
 u8 x=0;
 #endif
 
@@ -110,12 +111,15 @@ void Task_RunNormalOperation(void)
     {
     case 0://默认PTT状态
       Set_RedLed(LED_ON);
+      Set_GreenLed(LED_OFF);
       ApiPocCmd_WritCommand(PocComm_StartPTT,ucStartPTT,strlen((char const *)ucStartPTT));
       while(ReadInput_KEY_PTT==0)
       {
         api_disp_icoid_output( eICO_IDTX, TRUE, TRUE);//发射信号图标
         api_disp_all_screen_refresh();// 全屏统一刷新
       }
+      api_disp_icoid_output( eICO_IDTALKAR, TRUE, TRUE);//默认无发射无接收信号图标
+      api_disp_all_screen_refresh();// 全屏统一刷新
       ApiPocCmd_WritCommand(PocComm_EndPTT,ucEndPTT,strlen((char const *)ucEndPTT));
       break;
     case 1://=1，进入某群组
@@ -134,7 +138,7 @@ void Task_RunNormalOperation(void)
       ApiPocCmd_WritCommand(PocComm_Invite,ucPocOpenConfig,strlen((char const *)ucPocOpenConfig));
       Key_Flag_0=1;
       KeyDownUpChoose_GroupOrUser_Flag=0;
-     // KeyPersonalCallingCount=0;
+      TASK_Ptt_StartPersonCalling_Flag=TRUE;//判断主动单呼状态（0a）
       break;
     default:
       break;
@@ -166,8 +170,9 @@ void Task_RunNormalOperation(void)
     }
     else
     {
-      api_lcd_pwr_on_hint("群组:   选择群组");//显示汉字
-      api_lcd_pwr_on_hint2(HexToChar_MainGroupId());//显示数据
+      api_lcd_pwr_on_hint("                ");//显示当前群组昵称
+      api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
+      api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
     
       Key_PersonalCalling_Flag=0;
       VOICE_SetOutput(ATVOICE_FreePlay,"535f4d52A47FC47E",16);//当前群组
@@ -236,60 +241,118 @@ void Task_RunNormalOperation(void)
     }
   }
   
-/***********收到86则显示群组信息，解决开机不按按键不显示群组信息*********************************************************************************************************************/
-  if(POC_GetGroupInformationFlag==1)//收到86则显示群组信息，解决开机不按按键不显示群组信息
+/***********判断正常进组；正常退出组;被单呼模式；退出单呼模式；主动开始单呼；单呼；主动退出单呼*********************************************************************************************************************/
+  /*if(POC_AtEnterPersonalCalling_Flag==2)//主动开始单呼模式
   {
-    /*if(GetPersonalCallingMode()==1)//如果是个呼模式，则显示个呼模式，否则显示群组模式
-    {
-      POC_GetGroupInformationFlag=0;
-      //api_lcd_pwr_on_hint("对象:   单呼模式");//显示汉字
-      api_lcd_pwr_on_hint(HexToChar_PersonalCallingNum());//显示数据
-      api_lcd_pwr_on_hint4(UnicodeForGbk_MainUserName());//显示当前群组昵称
-      api_disp_icoid_output( eICO_IDPOWERH, TRUE, TRUE);//进入个呼显示个呼图标
-      api_disp_all_screen_refresh();// 全屏统一刷新
-    }
-    else*/
-    if(GetAnswerPersonalCallingMode()==1)//如果是接入单呼
-    {
-      api_disp_icoid_output( eICO_IDPOWERH, TRUE, TRUE);//进入个呼显示个呼图标
-      api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
+      api_lcd_pwr_on_hint(HexToChar_MainUserId());//显示当前群组ID
+      api_lcd_pwr_on_hint4("             ");//清屏
       api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
-      api_disp_icoid_output( eICO_IDRXFULL, TRUE, TRUE);//GPRS三格信号图标
-      api_disp_icoid_output( eICO_IDEmergency, TRUE, TRUE);//显示3G图标
-      api_disp_icoid_output( eICO_IDTALKAR, TRUE, TRUE);//默认无发射无接收信号图标(无图标)
+      api_disp_icoid_output( eICO_IDPOWERH, TRUE, TRUE);//显示个呼图标
       api_disp_all_screen_refresh();// 全屏统一刷新
-    }
-    else
-    {
-      POC_GetGroupInformationFlag=0;
-      api_lcd_pwr_on_hint("                ");//清除退出键盘拨短号模式留下的”个呼号码“
-      api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
-      api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
-      api_lcd_pwr_on_hint3("         ");//清除退出键盘拨短号模式留下的”个呼号码“
-      api_disp_icoid_output( eICO_IDRXFULL, TRUE, TRUE);//GPRS三格信号图标
-      api_disp_icoid_output( eICO_IDEmergency, TRUE, TRUE);//显示3G图标
-      api_disp_icoid_output( eICO_IDTALKAR, TRUE, TRUE);//默认无发射无接收信号图标(无图标)
-      api_disp_icoid_output( eICO_IDPOWERM, TRUE, TRUE);//进入组呼显示组呼图标
-      //api_disp_all_screen_refresh();// 全屏统一刷新//可能会对POC开机PoC指令识别有影响
-    }
-
-  }
-/*********判断发射接收图标状态****************************************************************************************************************************/
-  if(POC_GetGroupInformationFlag2==1)//开机进入群组此标志位一直=1
-  {
-    if(GetPlayState()==1)//判断发射接听状态，=1表示接听状态
-  {
-    api_disp_icoid_output( eICO_IDVOX, TRUE, TRUE);//接收信号图标
-    //api_disp_all_screen_refresh();// 全屏统一刷新
+      POC_AtEnterPersonalCalling_Flag=1;
   }
   else
   {
-    api_disp_icoid_output( eICO_IDTALKAR, TRUE, TRUE);//默认无发射无接收信号图标
-    //api_disp_all_screen_refresh();// 全屏统一刷新
-  }
-  }
+    if(POC_AtQuitPersonalCalling_Flag==2)
+    {
+      POC_AtQuitPersonalCalling_Flag=0;
+      //退出单呼无需处理，进入群组处理
+    }
+  }*/
 
-  
+
+
+  if(POC_EnterPersonalCalling_Flag==2)//如果是正在接入单呼-------------------------------
+    {
+      
+      api_lcd_pwr_on_hint(HexToChar_MainUserId());//显示当前群组ID
+      api_lcd_pwr_on_hint4("             ");//清屏
+      api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
+      api_disp_icoid_output( eICO_IDPOWERH, TRUE, TRUE);//显示个呼图标
+      api_disp_all_screen_refresh();// 全屏统一刷新
+      POC_EnterPersonalCalling_Flag=1;//在单呼模式
+    }
+    else//如果是正常进组；组内；正常退出组;单呼；退出单呼模式；
+    {
+      if(POC_EnterPersonalCalling_Flag==0)//如果是正常进组；组内；正常退出组
+      {
+        if(POC_EnterGroupCalling_Flag==2)//正在进入群组
+        {
+
+          if(POC_AtEnterPersonalCalling_Flag==2)//主动开始单呼模式
+          {
+          api_lcd_pwr_on_hint("                ");//清屏
+          api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
+          api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
+          api_disp_icoid_output( eICO_IDPOWERH, TRUE, TRUE);//显示个呼图标
+          api_disp_all_screen_refresh();// 全屏统一刷新//可能会对POC开机PoC指令识别有影响
+            POC_AtEnterPersonalCalling_Flag=1;
+          }
+          else
+          {
+            if(POC_AtEnterPersonalCalling_Flag==1)
+            {}
+            else
+            {
+              api_lcd_pwr_on_hint("                ");//清屏
+              api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
+              api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
+              api_disp_icoid_output( eICO_IDPOWERM, TRUE, TRUE);//显示组呼图标
+              api_disp_all_screen_refresh();// 全屏统一刷新//可能会对POC开机PoC指令识别有影响
+            }
+          }
+          POC_EnterGroupCalling_Flag=1;
+          
+        }
+        else if(POC_EnterGroupCalling_Flag==1)//组内
+        {
+        }
+        else//退出组别
+        {
+          if(POC_QuitGroupCalling_Flag==2)
+          {
+              api_lcd_pwr_on_hint("                ");//清屏
+              api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
+              api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
+              api_disp_icoid_output( eICO_IDPOWERM, TRUE, TRUE);//显示组呼图标
+              api_disp_all_screen_refresh();// 全屏统一刷新//可能会对POC开机PoC指令识别有影响
+              POC_QuitGroupCalling_Flag=0;
+          }
+
+        }
+      }
+      else//单呼模式；退出单呼模式；
+      {
+        if(POC_QuitPersonalCalling_Flag==2)//如果是退出单呼模式----------------------------
+        {
+          POC_QuitPersonalCalling_Flag=0;
+          //退出单呼无需处理，进入群组处理 
+        }
+        else//单呼模式
+        {
+
+        }
+      }
+    }
+
+/*********判断发射接收图标状态****************************************************************************************************************************/
+if(POC_ReceivedVoiceStart_Flag==2)//刚接收语音状态
+{
+  api_disp_icoid_output( eICO_IDVOX, TRUE, TRUE);//接收信号图标
+  api_disp_all_screen_refresh();// 全屏统一刷新
+  POC_ReceivedVoiceStart_Flag=1;//接收语音状态
+}
+else//0空闲状态；1接收状态
+{
+  if(POC_ReceivedVoiceEnd_Flag==2)//空闲状态
+  {
+    api_disp_icoid_output( eICO_IDTALKAR, TRUE, TRUE);//默认无发射无接收信号图标
+    api_disp_all_screen_refresh();// 全屏统一刷新
+    POC_ReceivedVoiceEnd_Flag=0;//默认无语音状态
+  }
+  else//空闲状态
+  {}
+}
 }
 
 void TASK_WriteFreq(void)

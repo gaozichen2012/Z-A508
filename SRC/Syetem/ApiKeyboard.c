@@ -115,7 +115,7 @@ void Keyboard_Test(void)
   case 0x00004000://8
     break;  
   case 0x00200000://#
-    api_lcd_pwr_on_hint3("组呼号码:       ");
+    //api_lcd_pwr_on_hint3("组呼号码:       ");
     break;  
   case 0x00000400://up
     if(Key_PersonalCalling_Flag==1)//如果按下个呼键
@@ -164,7 +164,7 @@ void Keyboard_Test(void)
   GeHuTest(ulAllKeyID);
   if(Key_Flag_1==1)
   {
-    DEL_SetTimer(1,100);
+    DEL_SetTimer(1,50);
     while(1)
     {
       Key_Flag_1=0;
@@ -353,9 +353,11 @@ if(KeyBoardState==TRUE)//识别按下按键到松开按键的过程
     default:
       break;
     }
+    /*短号呼叫有问题，暂时屏蔽
     api_lcd_pwr_on_hint3("个呼短号");
      api_lcd_pwr_on_hint("                ");
      api_lcd_pwr_on_hint(TestBuf1);
+    */
 }
 else
 {

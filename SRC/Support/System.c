@@ -76,11 +76,12 @@ void main_app(void)
   ITC_SetSoftwarePriority(ITC_IRQ_UART1_TX,ITC_PRIORITYLEVEL_3);
   ITC_SetSoftwarePriority(ITC_IRQ_UART3_RX,ITC_PRIORITYLEVEL_2);
   ITC_SetSoftwarePriority(ITC_IRQ_TIM3_OVF,ITC_PRIORITYLEVEL_1);
+
   LED_Init();
   //定时初始化
   DEL_PowerOnInitial();
   //通讯模块初始化
-  DrvGD83_Init();
+  //DrvGD83_Init();
   DrvMC8332_Software_Initial();
  ApiGpsCmd_PowerOnInitial();
   //
@@ -102,7 +103,10 @@ void main_app(void)
   Set_RedLed(LED_OFF);
   Set_GreenLed(LED_OFF);
   enableInterrupts();
-
+  GPIO_Init(GPIOB,GPIO_PIN_3,GPIO_MODE_OUT_PP_LOW_FAST);//NFC
+  GPIO_Init(GPIOB,GPIO_PIN_4,GPIO_MODE_OUT_PP_LOW_FAST);//北斗
+  GPIO_WriteLow(GPIOB,GPIO_PIN_3);//NFC
+  GPIO_WriteHigh(GPIOB,GPIO_PIN_4);//北斗
 #if 0//EEPROM TEST
   
   TestBuf[0]=0x6b;
@@ -113,7 +117,7 @@ void main_app(void)
 
 #endif //EEPROMTEST
 
-  GD83_ON();
+  //GD83_ON();
   AUDIO_IOAFMUT(ON);
   AUDIO_IOAFPOW(ON);
   GPIO_Init(GPIOB,GPIO_PIN_6,GPIO_MODE_OUT_PP_LOW_FAST);//LOC MIC MUTE

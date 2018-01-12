@@ -12,9 +12,15 @@ const u8 *ucAtPocHead   = "AT+POC=";
 const u8 *ucTingEnd   = "0B0000";
 const u8 *ucTingStart   = "0B0001";
 const u8 *ucSetIPAndID    = "010000";
-u8 POC_GetGroupInformationFlag=0;
-u8 POC_GetGroupInformationFlag2=0;//判断开机第一次进入群组后，进行图标显示标志位
-
+u8 POC_EnterPersonalCalling_Flag=0;
+u8 POC_QuitPersonalCalling_Flag=0;
+u8 POC_AtEnterPersonalCalling_Flag=0;
+u8 POC_AtQuitPersonalCalling_Flag=0;
+u8 POC_EnterGroupCalling_Flag=0;
+u8 POC_QuitGroupCalling_Flag=0;
+u8 POC_ReceivedVoiceStart_Flag=0;
+u8 POC_ReceivedVoiceEnd_Flag=0;
+bool POC_Receive86_Flag=FALSE;
 typedef struct{
   struct{
     union{
@@ -58,13 +64,11 @@ typedef struct{
           u16 bPttUser		        : 1;			//ptt operrtor 0: oneself; 1: other
           u16 bWorkGrpVolide	        : 3;
           u16 bEnterGroup		: 1;
-          u16 bPlayState	        : 1;
           u16 bCallFail	                : 1;
           u16 bLogin                    : 1;
           u16 AlarmMode            	: 1;
           u16 PersonalCallingMode 	: 1;
-          u16 AnswerPersonalCallingMode : 1;
-          u16 			        : 3;
+          u16 			        : 5;
         }Bits;u16 Byte;
 			}Msg;
 			u8 Timer;
@@ -240,16 +244,36 @@ void ApiPocCmd_10msRenew(void)
     ucId = COML_AscToHex(pBuf, 0x02);
     switch(ucId)
     {
-    /*case 0x0B://判断讲话状态
-      ucId = COML_AscToHex(pBuf+6, 0x02);
+    case 0x0A://判断讲话状态
+#if 1
+            ucId = COML_AscToHex(pBuf+2, 0x02);
       if(ucId==0x00)
-       PocCmdDrvobj.WorkState.UseState.Msg.Bits.bPttState=1;//讲话状态
+      {
+        if(TASK_Ptt_StartPersonCalling_Flag==TRUE)//如果按下PTT键单呼某用户
+        {
+          POC_AtEnterPersonalCalling_Flag=2;
+          POC_AtQuitPersonalCalling_Flag=1;
+          TASK_Ptt_StartPersonCalling_Flag=FALSE;
+        }
+      }
+#else
+            ucId = COML_AscToHex(pBuf+2, 0x02);
+      if(ucId==0x00)
+      {
+        if(TASK_Ptt_StartPersonCalling_Flag==TRUE)//如果按下PTT键单呼某用户
+        {
+          POC_AtEnterPersonalCalling_Flag=2;
+          POC_AtQuitPersonalCalling_Flag=1;
+          TASK_Ptt_StartPersonCalling_Flag=FALSE;
+        }
+        else//接收到结束单呼的指令
+        {
+          POC_AtEnterPersonalCalling_Flag=0;
+          POC_AtQuitPersonalCalling_Flag=2;
+        }
+      }
+#endif
       break;
-    case 0x0C://判断讲话结束状态，释放话权
-      ucId = COML_AscToHex(pBuf+6, 0x02);
-      if(ucId==0x00)
-        PocCmdDrvobj.WorkState.UseState.Msg.Bits.bPttState=0;//讲话结束状态，有话权
-      break;*/
     case 0x0E://在线用户个数
       ucId = COML_AscToHex(pBuf+8, 0x04);
       PocCmdDrvobj.WorkState.UseState.PttUserName.UserNum = ucId;
@@ -305,39 +329,53 @@ void ApiPocCmd_10msRenew(void)
         PocCmdDrvobj.WorkState.UseState.Msg.Bits.bLogin = 0x00;
       }
       break;
-    case 0x8B:
+    case 0x8B://为什么8B有的时候收不到，绿灯常亮
       ucId = COML_AscToHex(pBuf+4, 0x02);
       if(ucId == 0x00)
       {
-        PocCmdDrvobj.WorkState.UseState.Msg.Bits.bPlayState = 0x00;
-        POC_GetGroupInformationFlag2=1;//图标显示使用,防止图标刷新函数对图标显示的影响
+        POC_ReceivedVoiceEnd_Flag=2;//0:正常 1：收到语音 2：刚结束语音
+        POC_ReceivedVoiceStart_Flag=0;//0:正常 1：收到语音 2：刚开始语音
       }
       if(ucId == 0x01)
       {
-        PocCmdDrvobj.WorkState.UseState.Msg.Bits.bPlayState = 0x01;
+       if(POC_QuitGroupCalling_Flag==2)//如果是正在退组状态则不识别8b0001
+       {}
+       else
+        {
+          POC_ReceivedVoiceStart_Flag=2;//0:正常 1：收到语音 2：刚开始语音
+          POC_ReceivedVoiceEnd_Flag=1;//0:正常 1：收到语音 2：刚结束语音
+        }
       }
       
       break;
     case 0x86:
+      POC_Receive86_Flag=TRUE;
+/****************判断接入单呼**************************************************************/
       ucId = COML_AscToHex(pBuf+4, 0x02);
       if(ucId==0x0a)//接入单呼
       { 
-       PocCmdDrvobj.WorkState.UseState.Msg.Bits.AnswerPersonalCallingMode=1;
+        POC_EnterPersonalCalling_Flag=2;//用于判断进入单呼,0:正常 2：正在进入单呼 1：单呼状态
+        POC_QuitPersonalCalling_Flag=1;//用于判断退出单呼
       }
       else
       {
-        if(ucId==0xff)//退出单呼
+        if(ucId==0x00&&POC_QuitPersonalCalling_Flag==1)//收到则退出单呼（退出单呼、进组状态）
         {
-          PocCmdDrvobj.WorkState.UseState.Msg.Bits.AnswerPersonalCallingMode=0;
+          POC_EnterPersonalCalling_Flag=0;
+          POC_QuitPersonalCalling_Flag=2;
         }
       }
+/****************群组状态判断及群组信息获取**************************************************************/
       ucId = COML_AscToHex(pBuf+10, 0x02);
       if(ucId==0xff)
-      { 
-       //  PocCmdDrvobj.WorkState.UseState.MainWorkGroup.PresentGroupId = ucId;
-      }
-      else
       {
+        POC_EnterGroupCalling_Flag=0;//0默认 1在群组内 2正在进入
+        POC_QuitGroupCalling_Flag=2;//0默认 1在群组内 2正在退出
+      }
+      else//正在进入群组
+      {
+        POC_EnterGroupCalling_Flag=2;
+        POC_QuitGroupCalling_Flag=1;
       PocCmdDrvobj.WorkState.UseState.MainWorkGroup.PresentGroupId = ucId;
 
       ucId = 0x00;
@@ -376,7 +414,6 @@ void ApiPocCmd_10msRenew(void)
       PocCmdDrvobj.WorkState.UseState.MainWorkGroup.NameLen = PocCmdDrvobj.WorkState.UseState.WorkGroup.NameLen;
       }
       }
-      POC_GetGroupInformationFlag=1;//判断群组个呼使用的标志位
       break;
     case 0x91://通知进入某种模式（进入退出一键告警、单呼模式）
       ucId = COML_AscToHex(pBuf+2, 0x02);
@@ -473,19 +510,10 @@ void ApiGetPocBuf(void)
 }
 */
 
-bool GetPlayState(void)
-{
-  return (bool)PocCmdDrvobj.WorkState.UseState.Msg.Bits.bPlayState;
-}
 
 bool GetPersonalCallingMode(void)
 {
   return (bool)PocCmdDrvobj.WorkState.UseState.Msg.Bits.PersonalCallingMode;
-}
-
-bool GetAnswerPersonalCallingMode(void)
-{
-  return (bool)PocCmdDrvobj.WorkState.UseState.Msg.Bits.AnswerPersonalCallingMode;
 }
 
 u8 *HexToChar_MainGroupId(void)//16进制转字符串 当前群组ID 显示屏数据使用

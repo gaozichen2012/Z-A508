@@ -74,7 +74,7 @@ void Delay_ms(u16 nms)
 /******************************************************************************
 ;--------3-UART1:GD83 hardware macro define
 ******************************************************************************/
-void DrvGD83_Init(void)
+/*void DrvGD83_Init(void)
 {
     GPIO_Init(GPIO_C_Reset,GPIO_PIN_C_Reset,GPIO_MODE_OUT_PP_LOW_FAST);
     GPIO_Init(GPIO_C_ONOFF,GPIO_PIN_C_ONOFF,GPIO_MODE_OUT_PP_LOW_FAST);
@@ -86,7 +86,7 @@ void GD83_ON(void)
   GPIO_WriteHigh(GPIO_C_ONOFF,GPIO_PIN_C_ONOFF);
   //Delay_ms(1500);
   GPIO_WriteLow(GPIO_C_ONOFF,GPIO_PIN_C_ONOFF);
-}
+}*/
 
 void Uart1_Init(void)
 {
@@ -199,6 +199,5 @@ void Key_Init(void)
 }
 
 /******************************************************************************
-;--------6-显示屏驱动-HTG12832 hardware macro define
+;--------6-北斗及NFC hardware macro define
 ******************************************************************************/
-
