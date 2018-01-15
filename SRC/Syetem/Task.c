@@ -16,6 +16,7 @@ u8 *ucRequestUserListInfo       = "0E000000000064";
 u8 *ucCLVL                       = "AT+CLVL=7";//音量增益7
 u8 *ucVGR                       = "AT+VGR=7";//音量增益7
 u8 *ucCODECCTL                  = "at^codecctl=9000,1c00,0";//音量增益4000 3c00
+
 u8 *ucOSSYSHWID                 = "AT^OSSYSHWID=1";
 u8 *ucPrefmode2                  = "AT^prefmode=2";//网络模式2G
 u8 *ucPrefmode4                  = "AT^prefmode=4";//网络模式3G

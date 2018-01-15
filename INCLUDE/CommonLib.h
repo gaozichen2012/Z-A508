@@ -25,6 +25,7 @@ COMLAPI u8 COML_U8CharMaxMin(u8 Value,u8 Max,u8 Min);
 COMLAPI u32 COML_AscToDec(u8 *buf,u8 len);
 COMLAPI u8 COML_DecToAsc(u32 Value, u8 *buf);
 COMLAPI u32 COML_AscToHex(u8 *buf,u8 len);
+COMLAPI u8 COML_HexToAsc2(u32 Value, u8 *buf);//适配GPS部标格式修改
 COMLAPI u8 COML_HexToAsc(u32 Value, u8 *buf);
 COMLAPI u8 Combine2Hex(const u8* pInHexBuf, u8 uclen, u8* pOutHexBuf);
 COMLAPI void Dec2Hex(const u8* dec, u16 len, u8* hex);

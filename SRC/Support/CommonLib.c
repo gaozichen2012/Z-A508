@@ -235,6 +235,7 @@ u8 COML_HexToAsc(u32 Value, u8 *buf)
 	if(Value == 0x00)
 	{
 		buf[0] = 0x30;
+                
 	}
 	else
 	{
@@ -254,7 +255,27 @@ u8 COML_HexToAsc(u32 Value, u8 *buf)
 	}
 	return i;
 }
+u8 COML_HexToAsc2(u32 Value, u8 *buf)//适配GPS部标格式修改
+{
+	u8 i=0;
+        for(i = 0x00; i<2; i++)
+        {
+          buf[i] = 	Value % 16;
+          if(buf[i] <= 0x09)
+          {
+            buf[i] += 0x30;
+          }
+          else
+          {
+            buf[i] += 0x37;
+          }
+          Value /= 16;
+        }
 
+        
+	
+	return i;
+}
 void COML_StringReverse(u8 Len, u8 *buf)
 {
 	u8 i, j, Temp;

@@ -12,6 +12,7 @@ const u8 *ucRxCheckCard = "GETICCID:";
 const u8 *ucRxZTTS0 = "ZTTS:0";
 const u8 *ucRxCSQ31 = "CSQ:31";
 const u8 *ucRxCSQ99 = "CSQ:99";
+const u8 *ucGpsPosition = "LATLON:";
 const u8 *ucSIMST1="^SIMST:1";
 const u8 *ucSIMST255="^SIMST:255";
 const u8 *ucCaretPPPCFG="^PPPCFG:";
@@ -54,9 +55,28 @@ typedef struct{
 		}Msg;
 		//u8 ucCardPassword[50];
 		struct{
-			u8 Buf[DrvMC8332_IccId_Len];
-			u8 Len;
-		}IccId;
+                  u8 Buf[DrvMC8332_IccId_Len];
+                  u8 Len;
+                }IccId;
+                struct{
+                  u8 Buf[21];//存放AT收到的经纬度信息
+                  union{
+                    struct{
+                      u8	bEast	: 1;
+                      u8 	bNorth	: 1;
+                      u8	bValid	: 1;
+                      u8		: 5;
+                    }Bit;
+                    u8 Byte;
+                  }Msg;
+                  u16 Longitude_Degree;
+                  u8 Longitude_Minute;
+                  u32 Longitude_Second;
+                  u16 Latitude_Degree;
+                  u8 Latitude_Minute;
+                  u32 Latitude_Second;
+	}Position;
+                
 		u8 RssiValue;
 		u8 Buf[30];
 		u8 Len;
@@ -101,7 +121,7 @@ bool ApiAtCmd_WritCommand(AtCommType id, u8 *buf, u16 len)
   case ATCOMM7_VGR://1
     DrvGD83_UART_TxCommand(buf, len);
     break;
-  case ATCOMM8_CheckTcp	://2
+  case ATCOMM8_CheckTcp://2
     DrvGD83_UART_TxCommand((u8*)ucCheckTcp, strlen((char const*)ucCheckTcp));
     DrvGD83_UART_TxCommand(buf, len);
     break; 
@@ -287,6 +307,22 @@ void ApiAtCmd_10msRenew(void)
     {
       CSQ_Flag=2;
     }
+/***********GPS经纬度获取（部标使用）****************************************************************/
+    ucRet = memcmp(pBuf, ucGpsPosition, 7);//CSQ:31
+    if(ucRet == 0x00)
+    {
+      if(Len > 7)//去頭
+      {
+        Len -= 0x07;
+      }
+       for(i = 0x00; i < Len; i++)
+       {
+         AtCmdDrvobj.NetState.Position.Buf[i] = pBuf[i + 9];-----------------------------做AT口GPS数据获取
+       }
+       AtCmdDrvobj.NetState.IccId.Len = i;
+    }
+/**********************************************************************************************/
+    
   }
 }
 

@@ -354,11 +354,16 @@ typedef struct{
       _Gb_MsgBody MsgBody;//终端注册
       struct{
         u16 Len;
+        u16 TestLen;
         u8 ucData[GPS_GB_INFO_LEN];
+        u8 ucTestData[2*GPS_GB_INFO_LEN];//test
       }TempBuf;//打包好的数据包（即将发送）
     }GbSys;
   }PositionSystem;
 }GpsFunDrv;
+
+u16 TestLen11;
+u8 TestBuf11[5]={0x7e,0x01,0x00,0x00,0x23};
 static GpsFunDrv GpsFunDrvObj;
 //static GpsFunDrv stGpsFunDrvObj;
 
@@ -366,7 +371,7 @@ static void GpsCmd_GbAnalytical(u8 *pBuf, u8 len);//收到的数据进行分析
 static void GpsCmd_GbDataTransave(GpsCommType GpsComm);//定位信息转换，等会要用到，POC获取GPS信息转换后发送TCP
 static bool GpsCmd_GbWritCommand(GpsCommType id, u8 *buf, u8 len);
 static void pack_data(u8 *pBuf, u16 ucLen);//消息包封装
-
+static u8 COMLHexArray2String(u8 * buf1,u8 Len1,u8 * buf2);//16进制数组转字符串
 void ApiGpsCmd_PowerOnInitial(void)//bubiao
 {
   
@@ -829,8 +834,12 @@ static bool GpsCmd_GbWritCommand(GpsCommType id, u8 *buf, u8 len)
     COML_StringReverse(0x02,GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.HeadInfo.stParam.MsgProperty.ucData);//消息体属性
     COML_StringReverse(0x02,GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.HeadInfo.stParam.SerialNo.ucData);//流水号
     i = strlen((char const *)GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.Message.LoginInfo.LicensePlate);//车牌号的长度
-    pack_data(GpsFunDrvObj.PositionSystem.GbSys.MsgBody.ucData, 37+i);//计算消息头和消息体的总长度len=12+25+车牌号长度，并将数据按照部标要求打包
-    ApiAtCmd_WritCommand(ATCOMM10_SendTcp, GpsFunDrvObj.PositionSystem.GbSys.TempBuf.ucData,GpsFunDrvObj.PositionSystem.GbSys.TempBuf.Len);//临时缓冲区存放加密后的设备注册消息包
+    pack_data(GpsFunDrvObj.PositionSystem.GbSys.MsgBody.ucData, 37+i);//计算消息头和消息体的总长度len=12+25+车牌号长度，并将数据GpsFunDrvObj.PositionSystem.GbSys.MsgBody.ucData按照部标要求打包放入GpsFunDrvObj.PositionSystem.GbSys.TempBuf.ucData
+
+    GpsFunDrvObj.PositionSystem.GbSys.TempBuf.TestLen=COMLHexArray2String(GpsFunDrvObj.PositionSystem.GbSys.TempBuf.ucData,
+                                                                          GpsFunDrvObj.PositionSystem.GbSys.TempBuf.Len,
+                                                                          GpsFunDrvObj.PositionSystem.GbSys.TempBuf.ucTestData);
+    //ApiAtCmd_WritCommand(ATCOMM10_SendTcp, GpsFunDrvObj.PositionSystem.GbSys.TempBuf.ucTestData,GpsFunDrvObj.PositionSystem.GbSys.TempBuf.TestLen);//临时缓冲区存放加密后的设备注册消息包
     break;
   case GPSCOMM_Logout:
     if(GpsFunDrvObj.ucWorkState != id)
@@ -954,3 +963,16 @@ static void pack_data(u8 *pBuf, u16 ucLen)//消息包封装
 }
 
 
+u8 COMLHexArray2String(u8 * buf1,u8 Len1,u8 * buf2)//16进制数组转字符串
+{
+  u8 i,Len2;
+  for(i=0;i<Len1;i++)
+  {
+    COML_HexToAsc2(buf1[i],buf2+2*i);//在buf2中占两位
+    COML_StringReverse(2,buf2+2*i);
+    //可以转换了，不过还有问题，部分0未转换成0x30，而是0x00，（0x00为前面的0转化为00，后面的转化为30，找到原因）
+  }
+  buf2[2*Len1]='\0';
+  Len2=2*Len1+1;
+return Len2;
+}
