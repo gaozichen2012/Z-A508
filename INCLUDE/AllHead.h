@@ -51,4 +51,7 @@
 //×Ö¿âIC
 #include "GT20L16P1Y.h"
 #include "GT20L16P1Y_D.h"//×Ö¿â²¹¶¡
+
+//²Ëµ¥ÏÔÊ¾
+#include "ApiMenu.h"
 #endif

@@ -308,7 +308,7 @@ void ApiAtCmd_10msRenew(void)
       CSQ_Flag=2;
     }
 /***********GPS经纬度获取（部标使用）****************************************************************/
-    ucRet = memcmp(pBuf, ucGpsPosition, 7);//CSQ:31
+   /* ucRet = memcmp(pBuf, ucGpsPosition, 7);//CSQ:31
     if(ucRet == 0x00)
     {
       if(Len > 7)//去頭
@@ -317,10 +317,10 @@ void ApiAtCmd_10msRenew(void)
       }
        for(i = 0x00; i < Len; i++)
        {
-         AtCmdDrvobj.NetState.Position.Buf[i] = pBuf[i + 9];-----------------------------做AT口GPS数据获取
+         AtCmdDrvobj.NetState.Position.Buf[i] = pBuf[i + 9];//-----------------------------做AT口GPS数据获取
        }
        AtCmdDrvobj.NetState.IccId.Len = i;
-    }
+    }*/
 /**********************************************************************************************/
     
   }

@@ -11,6 +11,8 @@ s8 KeyUpDownCount=0;//组呼上下键计数
 s8 KeyPersonalCallingCount=0;//个呼上下键计数
 u32 get_key_value(u8 scan_value);
 u8 Key_Flag_1=0;
+u8 MenuMode_Flag=0;
+u8 MenuModeCount=1;
 u8 TestBuf1[6];//测试显示屏短号号码使用
   u8 num1=0;//测试显示屏短号号码使用
   u8 num2=0;//测试显示屏短号号码使用
@@ -46,6 +48,14 @@ void Keyboard_Test(void)
   case 0x00008000://9
     break;
   case 0x00010000://dn
+    if(MenuMode_Flag==1)
+    {
+      MenuModeCount=MenuModeCount-1;
+      if(MenuModeCount<=1) {MenuModeCount=1;}
+      MenuDisplay(MenuModeCount);
+    }
+    else
+    {
     if(Key_PersonalCalling_Flag==1)//如果按下个呼键
     {
       KeyPersonalCallingCount--;
@@ -74,11 +84,13 @@ void Keyboard_Test(void)
       api_lcd_pwr_on_hint2(HexToChar_GroupCallingNum());//显示数据
       KeyDownUpChoose_GroupOrUser_Flag=1;
     }
+    }
     Key_Flag_1=1;
     //api_lcd_pwr_on_hint("欧标按键:Down  ");
     break;  
   case 0x00000010://ok
-    //api_lcd_pwr_on_hint("欧标按键:OK     ");
+    MenuDisplay(Menu1);
+    MenuMode_Flag=1;
     break;
   case 0x00800000://menu   
     if(AkeyvolumeCount==7)
@@ -118,6 +130,14 @@ void Keyboard_Test(void)
     //api_lcd_pwr_on_hint3("组呼号码:       ");
     break;  
   case 0x00000400://up
+    if(MenuMode_Flag==1)
+    {
+      MenuModeCount=MenuModeCount+1;
+      if(MenuModeCount>=3) {MenuModeCount=3;}
+      MenuDisplay(MenuModeCount);
+    }
+    else
+    {
     if(Key_PersonalCalling_Flag==1)//如果按下个呼键
     {
     KeyPersonalCallingCount++;
@@ -146,16 +166,21 @@ void Keyboard_Test(void)
     api_lcd_pwr_on_hint2(HexToChar_GroupCallingNum());//显示数据
     KeyDownUpChoose_GroupOrUser_Flag=1;
     }
+    }
     Key_Flag_1=1;
    
     break;
   case 0x00400000://cancel
-    api_lcd_pwr_on_hint("    退出单呼    ");
-    //Delay_100ms(5);
+    if(MenuMode_Flag==1)
+    {
+      MenuDisplay(Menu0);
+      MenuMode_Flag=0;
+    }
+    api_lcd_pwr_on_hint("    组呼模式    ");
     ApiPocCmd_WritCommand(PocComm_Cancel,(u8 *)ucQuitPersonalCalling,strlen((char const *)ucQuitPersonalCalling));
-    //api_lcd_pwr_on_hint("群组:   组呼模式");
     Key_Flag_1=1;//按键延时标志位
     Key_PersonalCalling_Flag=0;//进入组呼标志位
+    
     break;  
   default:
     
