@@ -247,9 +247,9 @@ static void DEL_500msProcess(void)			//delay 500ms process server
         if(NumberKeyboardPressDown_flag==TRUE&&TimeCount>=TimeoutLimit)//超过10秒后再按按键提示“按OK键再按*键”
         {
           TimeCount2++;
-          api_lcd_pwr_on_hint("Enter OK,Enter *");//
+          api_lcd_pwr_on_hint("按OK键,再按*键  ");//
           //api_lcd_pwr_on_hint("OK键,再*键");//按OK键再按*键（不能出现按字）
-          if(TimeCount2==2)
+          if(TimeCount2>=3)//2s
           {
             TimeCount2=0;
             NumberKeyboardPressDown_flag=FALSE;
@@ -259,14 +259,13 @@ static void DEL_500msProcess(void)			//delay 500ms process server
         if(LockingState_EnterOK_Flag==TRUE)//锁定界面按下OK键
         {
           TimeCount3++;
-          if(TimeCount3>=3)
+          if(TimeCount3>=3)//2s
           {
             TimeCount3=0;
             LockingState_EnterOK_Flag=FALSE;
             MenuDisplay(Menu_Locking_NoOperation);
           }
         }
-
       }
       break;
     default:

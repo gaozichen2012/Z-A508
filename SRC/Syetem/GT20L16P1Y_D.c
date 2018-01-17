@@ -538,7 +538,8 @@ void GetPointArrayData32(unsigned char mid,unsigned char *CharData)
 unsigned char ValueSearch(short value ) //要显示的GBK数与InputGBcode对比，若有繁体字则从VerifyData中读取，否则从字库中读取
 {
   unsigned char low = 0;
-  unsigned char high = 216 - 1;
+  //unsigned char high = 216 - 1;
+  int high = 216 - 1;
   unsigned char mid;
   short midVal;
   if( value < (*InputGBcode ) || value > (*(InputGBcode+216-1)) )//如果输入的值<[1]或>[215]，则退出

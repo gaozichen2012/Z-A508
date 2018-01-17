@@ -90,7 +90,11 @@ void Keyboard_Test(void)
     }
     break;
   case 0x00010000://dn
-
+    NumberKeyboardPressDown_flag=TRUE;
+    if(LockingState_Flag==TRUE)
+    {}
+    else
+    {
     if(MenuMode_Flag==1)
     {
       MenuModeCount=MenuModeCount-1;
@@ -129,9 +133,11 @@ void Keyboard_Test(void)
     }
     }
     Key_Flag_1=1;
+    }
     //api_lcd_pwr_on_hint("欧标按键:Down  ");
     break;  
   case 0x00000010://ok
+    //NumberKeyboardPressDown_flag=TRUE;
     if(LockingState_Flag==TRUE)
     {
       MenuDisplay(Menu_UnlockStep1_Ok);
@@ -145,7 +151,12 @@ void Keyboard_Test(void)
     
 
     break;
-  case 0x00800000://menu   
+  case 0x00800000://menu
+    NumberKeyboardPressDown_flag=TRUE;
+    if(LockingState_Flag==TRUE)
+    {}
+    else
+    {
     if(AkeyvolumeCount==7)
     {
       
@@ -165,6 +176,7 @@ void Keyboard_Test(void)
         NoUseNum=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)ucVGR7,strlen((char const *)ucVGR7));//
         AkeyvolumeCount=7;
       }
+    }
     }
 
     break;   
@@ -227,6 +239,11 @@ void Keyboard_Test(void)
     }
     break;  
   case 0x00000400://up
+    NumberKeyboardPressDown_flag=TRUE;
+    if(LockingState_Flag==TRUE)
+    {}
+    else
+    {
     if(MenuMode_Flag==1)
     {
       MenuModeCount=MenuModeCount+1;
@@ -265,9 +282,15 @@ void Keyboard_Test(void)
     }
     }
     Key_Flag_1=1;
+    }
    
     break;
   case 0x00400000://cancel
+    NumberKeyboardPressDown_flag=TRUE;
+    if(LockingState_Flag==TRUE)
+    {}
+    else
+    {
     if(MenuMode_Flag==1)
     {
       MenuDisplay(Menu0);
@@ -277,7 +300,7 @@ void Keyboard_Test(void)
     ApiPocCmd_WritCommand(PocComm_Cancel,(u8 *)ucQuitPersonalCalling,strlen((char const *)ucQuitPersonalCalling));
     Key_Flag_1=1;//按键延时标志位
     Key_PersonalCalling_Flag=0;//进入组呼标志位
-    
+    }
     break;  
   default:
     
