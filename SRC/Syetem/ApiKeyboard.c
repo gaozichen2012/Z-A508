@@ -384,48 +384,98 @@ u32 get_key_value(u8 scan_value)
 
 void GeHuTest(u32 KeyID)
 {
-  
+#if 0
    switch(KeyID)
   {
-  case 0x00000002://1
-    num1=1;
-    PressButton=TRUE;
+  case 0x00000002://1√
+    TestNum1++;
+    if(TestNum1>=KeyCountNum)
+    {
+      TestNum1=0;
+      num1=1;
+      PressButton=TRUE;
+    }
     break; 
-  case 0x00000004://2
-    num1=2;
-    PressButton=TRUE;
+  case 0x00000004://2√
+    TestNum7++;
+    if(TestNum7>=KeyCountNum)
+    {
+      TestNum7=0;
+      num1=2;
+      PressButton=TRUE;
+    }
     break;  
-  case 0x00000008://3
-    num1=3;
-    PressButton=TRUE;
+  case 0x00000008://3√
+    TestNum2++;
+    if(TestNum2>=KeyCountNum)
+    {
+      TestNum2=0;
+      num1=3;
+      PressButton=TRUE;
+    }
     break;
-  case 0x00000080://4
-    num1=4;
-    PressButton=TRUE;
+  case 0x00000080://4√
+    TestNum3++;
+    if(TestNum3>=KeyCountNum)
+    {
+      TestNum3=0;
+      num1=4;
+      PressButton=TRUE;
+    }
     break;
-  case 0x00000100://5
-    num1=5;
-    PressButton=TRUE;
+  case 0x00000100://5√
+    TestNum9++;
+    if(TestNum9>=KeyCountNum)
+    {
+      TestNum9=0;
+      num1=5;
+      PressButton=TRUE;
+    }
     break;  
-  case 0x00000200://6
-    num1=6;
-    PressButton=TRUE;
+  case 0x00000200://6√
+    TestNum4++;
+    if(TestNum4>=KeyCountNum)
+    {
+      TestNum4=0;
+      num1=6;
+      PressButton=TRUE;
+    }
     break;
-  case 0x00002000://7
-    num1=7;
-    PressButton=TRUE;
+  case 0x00002000://7√
+    TestNum5++;
+    if(TestNum5>=KeyCountNum)
+    {
+      TestNum5=0;
+      num1=7;
+      PressButton=TRUE;
+    }
      break;
-  case 0x00004000://8
-    num1=8;
-    PressButton=TRUE;
+  case 0x00004000://8√
+    TestNum11++;
+    if(TestNum11>=KeyCountNum)
+    {
+      TestNum11=0;
+      num1=8;
+      PressButton=TRUE;
+    }
     break;  
-  case 0x00008000://9
-    num1=9;
-    PressButton=TRUE;
+  case 0x00008000://9√
+    TestNum6++;
+    if(TestNum6>=KeyCountNum)
+    {
+      TestNum6=0;
+      num1=9;
+      PressButton=TRUE;
+    }
     break;
   case 0x00100000://0
-    num1=0;
-    PressButton=TRUE;
+    TestNum10++;
+    if(TestNum10>=KeyCountNum)
+    {
+      TestNum10=0;
+      num1=0;
+      PressButton=TRUE;
+    }
     break;
   case 0x00010000://dn
     break;  
@@ -455,6 +505,7 @@ void GeHuTest(u32 KeyID)
     
     break;
   }
+  
 if(KeyBoardState==TRUE)//识别按下按键到松开按键的过程
 {
   numCount++;
@@ -498,15 +549,13 @@ if(KeyBoardState==TRUE)//识别按下按键到松开按键的过程
     default:
       break;
     }
-    /*短号呼叫有问题，暂时屏蔽
-    api_lcd_pwr_on_hint3("个呼短号");
+   //短号呼叫有问题，暂时屏蔽
+    api_lcd_pwr_on_hint3("个呼短号        ");
      api_lcd_pwr_on_hint("                ");
      api_lcd_pwr_on_hint(TestBuf1);
-    */
+
+    
 }
-else
-{
-  
-}
+  #endif
 
 }

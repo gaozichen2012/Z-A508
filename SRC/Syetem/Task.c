@@ -313,6 +313,9 @@ void Task_RunNormalOperation(void)
           if(POC_QuitGroupCalling_Flag==2)
           {
               api_lcd_pwr_on_hint("                ");//清屏
+              api_lcd_pwr_on_hint3("        ");//清屏，防止显示“个呼短号”
+              api_disp_icoid_output( eICO_IDRXFULL, TRUE, TRUE);//GPRS三格信号图标
+              api_disp_icoid_output( eICO_IDEmergency, TRUE, TRUE);//3G图标
               api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
               api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
               api_disp_icoid_output( eICO_IDPOWERM, TRUE, TRUE);//显示组呼图标
