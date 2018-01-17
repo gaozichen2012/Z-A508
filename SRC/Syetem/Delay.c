@@ -4,7 +4,9 @@
 #define DEL10MSLEN		0x0A
 #define DEL_IDLE		0x00
 #define DEL_RUN			0x01
-
+u8 DEL_500ms_Count=0;
+u8 TimeCount=0;
+u8 TimeCount2=0;
 typedef struct {
   union {
     struct {
@@ -215,13 +217,51 @@ static void DEL_100msProcess(void)
 
 static void DEL_500msProcess(void)			//delay 500ms process server
 {
-	if (DelDrvObj.Msg.Bit.b500ms == DEL_RUN) 
-	{
-		DelDrvObj.Msg.Bit.b500ms = DEL_IDLE;
-		VOICE_1sProcess();
-		//ORDER_500msRenew();
-	}
-	return;
+  if (DelDrvObj.Msg.Bit.b500ms == DEL_RUN) 
+  {
+    DelDrvObj.Msg.Bit.b500ms = DEL_IDLE;
+    VOICE_1sProcess();
+    DEL_500ms_Count++;
+    if(DEL_500ms_Count>1) DEL_500ms_Count=0;
+    switch(DEL_500ms_Count)
+    {
+    case 1://1s
+      if(GetTaskId()==Task_NormalOperation)
+      {
+        TimeCount++;
+        if(TimeCount>10) TimeCount=10;
+        if(NumberKeyboardPressDown_flag==TRUE&&TimeCount<10)//当数字数字键盘按下
+        {
+          TimeCount=0;//当有按键按下，计数器清零
+          NumberKeyboardPressDown_flag=FALSE;
+        }
+
+        if(NumberKeyboardPressDown_flag==TRUE&&TimeCount>=10)//超过0秒后再按按键提示“按OK键再按*键”
+        {
+          TimeCount2++;
+          api_lcd_pwr_on_hint("Enter OK,Enter *");//
+          //api_lcd_pwr_on_hint("OK键,再*键");//按OK键再按*键（不能出现按字）
+          if(TimeCount2==1)
+          {锁屏状态=1；}
+            准备添加解锁步骤
+          if(TimeCount2==2)
+          {
+            TimeCount2=0;
+            NumberKeyboardPressDown_flag=FALSE;
+            api_lcd_pwr_on_hint("                ");
+            api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
+            api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
+          }
+          
+        }
+
+      }
+      break;
+    default:
+      break;
+    }
+  }
+  return;
 }
 
 

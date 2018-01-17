@@ -10,23 +10,48 @@ void MenuDisplay(MenuDisplayType id)
     break;
   case Menu1:
     api_lcd_pwr_on_hint3("菜单            ");
-    api_lcd_pwr_on_hint5("1/3");
+    api_lcd_pwr_on_hint5("1/8");
      api_lcd_pwr_on_hint("背光灯时间      ");
     break;
   case Menu2:
     api_lcd_pwr_on_hint3("菜单            ");
-    api_lcd_pwr_on_hint5("2/3");
+    api_lcd_pwr_on_hint5("2/8");
      api_lcd_pwr_on_hint("键盘锁          ");
     break;
   case Menu3:
     api_lcd_pwr_on_hint3("菜单            ");
-    api_lcd_pwr_on_hint5("3/3");
+    api_lcd_pwr_on_hint5("3/8");
      api_lcd_pwr_on_hint("GPS信息         ");
-    break;
-  case Menu_Lock:
+     break;
+  case Menu4:
     api_lcd_pwr_on_hint3("菜单            ");
-    api_lcd_pwr_on_hint5("3/3");
-     api_lcd_pwr_on_hint("GPS信息         ");
+    api_lcd_pwr_on_hint5("4/8");
+     api_lcd_pwr_on_hint("北斗定位信息    ");
+     break;
+  case Menu5:
+    api_lcd_pwr_on_hint3("菜单            ");
+    api_lcd_pwr_on_hint5("5/8");
+     api_lcd_pwr_on_hint("本机信息        ");
+     break;
+  case Menu6:
+    api_lcd_pwr_on_hint3("菜单            ");
+    api_lcd_pwr_on_hint5("6/8");
+     api_lcd_pwr_on_hint("网络模式        ");
+     break;
+  case Menu7:
+    api_lcd_pwr_on_hint3("菜单            ");
+    api_lcd_pwr_on_hint5("7/8");
+     api_lcd_pwr_on_hint("语言设置        ");
+    break;
+  case Menu8:
+    api_lcd_pwr_on_hint3("菜单            ");
+    api_lcd_pwr_on_hint5("8/8");
+     api_lcd_pwr_on_hint("语音播报        ");
+    break;
+  case Menu_UnlockStep1_Ok:
+    api_disp_icoid_output( eICO_IDRXFULL, TRUE, TRUE);//GPRS三格信号图标
+    api_disp_icoid_output( eICO_IDEmergency, TRUE, TRUE);//3G图标
+     api_lcd_pwr_on_hint("Enter *         ");
     break;
   default:
     break;

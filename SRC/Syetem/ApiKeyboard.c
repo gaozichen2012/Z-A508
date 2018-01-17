@@ -1,4 +1,6 @@
 #include "AllHead.h"
+
+#define KeyCountNum 50//Êý×Ö¼üÅÌÏû¶¶-½â¾öÁËÉÏÏÂ¼üÎó¶ÁÊý×Ö¼üÎÊÌâ
 u8 AkeyvolumeCount=7;
 u8 *ucVGR1                       = "AT+VGR=1";//ÒôÁ¿ÔöÒæ1
 u8 *ucVGR7                       = "AT+VGR=7";//ÒôÁ¿ÔöÒæ7
@@ -13,6 +15,10 @@ u32 get_key_value(u8 scan_value);
 u8 Key_Flag_1=0;
 u8 MenuMode_Flag=0;
 u8 MenuModeCount=1;
+bool NumberKeyboardPressDown_flag=FALSE;
+
+u8 TestNum1,TestNum2,TestNum3,TestNum4,TestNum5,TestNum6;
+u8 TestNum7,TestNum8,TestNum9,TestNum10,TestNum11,TestNum12;
 u8 TestBuf1[6];//²âÊÔÏÔÊ¾ÆÁ¶ÌºÅºÅÂëÊ¹ÓÃ
   u8 num1=0;//²âÊÔÏÔÊ¾ÆÁ¶ÌºÅºÅÂëÊ¹ÓÃ
   u8 num2=0;//²âÊÔÏÔÊ¾ÆÁ¶ÌºÅºÅÂëÊ¹ÓÃ
@@ -26,32 +32,69 @@ bool KeyBoardState;//²âÊÔ¶ÌºÅ¹¦ÄÜÊ¹ÓÃ
 static void GeHuTest(u32 KeyID);
 void Keyboard_Test(void)
 {
-  //u8 r=0;
+  
 
   u8 scanvalue = 0;
   u32 ulAllKeyID = 0x00000000;
+
   scanvalue = drv_keypad_scan();
   ulAllKeyID = get_key_value(scanvalue);
   switch(ulAllKeyID)
   {
   case 0x00000002://1
-    
+    TestNum1++;
+    if(TestNum1>=KeyCountNum)
+    {
+      TestNum1=0;
+    NumberKeyboardPressDown_flag=TRUE;
+    }
     break; 
   case 0x00000008://3
+    TestNum2++;
+    if(TestNum2>=KeyCountNum)
+    {
+      TestNum2=0;
+    NumberKeyboardPressDown_flag=TRUE;
+    }
     break;
   case 0x00000080://4
+    TestNum3++;
+    if(TestNum3>=KeyCountNum)
+    {
+      TestNum3=0;
+    NumberKeyboardPressDown_flag=TRUE;
+    }
     break;
   case 0x00000200://6
+    TestNum4++;
+    if(TestNum4>=KeyCountNum)
+    {
+      TestNum4=0;
+    NumberKeyboardPressDown_flag=TRUE;
+    }
     break;
   case 0x00002000://7
+    TestNum5++;
+    if(TestNum5>=KeyCountNum)
+    {
+      TestNum5=0;
+    NumberKeyboardPressDown_flag=TRUE;
+    }
      break;
   case 0x00008000://9
+    TestNum6++;
+    if(TestNum6>=KeyCountNum)
+    {
+      TestNum6=0;
+    NumberKeyboardPressDown_flag=TRUE;
+    }
     break;
   case 0x00010000://dn
+
     if(MenuMode_Flag==1)
     {
       MenuModeCount=MenuModeCount-1;
-      if(MenuModeCount<=1) {MenuModeCount=1;}
+      if(MenuModeCount<1) {MenuModeCount=8;}
       MenuDisplay(MenuModeCount);
     }
     else
@@ -89,8 +132,17 @@ void Keyboard_Test(void)
     //api_lcd_pwr_on_hint("Å·±ê°´¼ü:Down  ");
     break;  
   case 0x00000010://ok
-    MenuDisplay(Menu1);
-    MenuMode_Flag=1;
+    if(ËøÆÁ×´Ì¬=1)
+    {
+      MenuDisplay(Menu_UnlockStep1_Ok);
+    }
+    else
+    {
+      MenuDisplay(Menu1);
+      MenuMode_Flag=1;
+    }
+    
+
     break;
   case 0x00800000://menu   
     if(AkeyvolumeCount==7)
@@ -116,24 +168,58 @@ void Keyboard_Test(void)
 
     break;   
   case 0x00000004://2
+    TestNum7++;
+    if(TestNum7>=KeyCountNum)
+    {
+      TestNum7=0;
+    NumberKeyboardPressDown_flag=TRUE;
+    }
     break;  
   case 0x00080000://*
-    //api_lcd_pwr_on_hint3("¸öºôºÅÂë:       ");
+    TestNum8++;
+    if(TestNum8>=KeyCountNum)
+    {
+      TestNum8=0;
+    NumberKeyboardPressDown_flag=TRUE;
+    }
     break;  
   case 0x00000100://5
+    TestNum9++;
+    if(TestNum9>=KeyCountNum)
+    {
+      TestNum9=0;
+    NumberKeyboardPressDown_flag=TRUE;
+    }
     break;  
   case 0x00100000://0
+    TestNum10++;
+    if(TestNum10>=KeyCountNum)
+    {
+      TestNum10=0;
+    NumberKeyboardPressDown_flag=TRUE;
+    }
     break;  
   case 0x00004000://8
+    TestNum11++;
+    if(TestNum11>=KeyCountNum)
+    {
+      TestNum11=0;
+    NumberKeyboardPressDown_flag=TRUE;
+    }
     break;  
   case 0x00200000://#
-    //api_lcd_pwr_on_hint3("×éºôºÅÂë:       ");
+    TestNum12++;
+    if(TestNum12>=KeyCountNum)
+    {
+      TestNum12=0;
+    NumberKeyboardPressDown_flag=TRUE;
+    }
     break;  
   case 0x00000400://up
     if(MenuMode_Flag==1)
     {
       MenuModeCount=MenuModeCount+1;
-      if(MenuModeCount>=3) {MenuModeCount=3;}
+      if(MenuModeCount>8) {MenuModeCount=1;}
       MenuDisplay(MenuModeCount);
     }
     else

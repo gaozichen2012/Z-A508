@@ -7,7 +7,11 @@ typedef enum{
   Menu2             = 0x02,
   Menu3             = 0x03,
   Menu4             = 0x04,
-  Menu_Lock         = 0x0F,
+  Menu5             = 0x05,
+  Menu6             = 0x06,
+  Menu7             = 0x07,
+  Menu8             = 0x08,
+  Menu_UnlockStep1_Ok         = 0x0F,
 }MenuDisplayType;
 
 extern void MenuDisplay(MenuDisplayType id);

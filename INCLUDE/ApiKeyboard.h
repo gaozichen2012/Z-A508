@@ -7,5 +7,5 @@ extern s8 PersonalCallingNum;
 extern s8 KeyPersonalCallingCount;
 extern s8 KeyUpDownCount;
 extern void Keyboard_Test(void);
-
+extern bool NumberKeyboardPressDown_flag;
 #endif
