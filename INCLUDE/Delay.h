@@ -15,8 +15,8 @@
 	#define DELAPI	extern
 #endif
 
-
-
+DELAPI bool LockingState_Flag;
+DELAPI u8 TimeCount;//³¬Ê±Ê±¼ä
 DELAPI void DEL_PowerOnInitial(void);
 DELAPI void DEL_Interrupt(void);
 DELAPI void DEL_Renew(void);
@@ -24,6 +24,8 @@ DELAPI void DEL_Soft1ms(u16 iLen);
 DELAPI bool DEL_SetTimer(u8 cId,u16 iLen);
 DELAPI bool DEL_GetTimer(u8 cId);
 DELAPI void Delay_Test(void);
+
+
 #endif
 /******************************************************************************
 ;------------end page

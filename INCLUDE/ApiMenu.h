@@ -11,6 +11,7 @@ typedef enum{
   Menu6             = 0x06,
   Menu7             = 0x07,
   Menu8             = 0x08,
+  Menu_Locking_NoOperation    =0x09,
   Menu_UnlockStep1_Ok         = 0x0F,
 }MenuDisplayType;
 

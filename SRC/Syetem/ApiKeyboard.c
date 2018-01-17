@@ -16,7 +16,7 @@ u8 Key_Flag_1=0;
 u8 MenuMode_Flag=0;
 u8 MenuModeCount=1;
 bool NumberKeyboardPressDown_flag=FALSE;
-
+bool LockingState_EnterOK_Flag=FALSE;
 u8 TestNum1,TestNum2,TestNum3,TestNum4,TestNum5,TestNum6;
 u8 TestNum7,TestNum8,TestNum9,TestNum10,TestNum11,TestNum12;
 u8 TestBuf1[6];//测试显示屏短号号码使用
@@ -132,9 +132,10 @@ void Keyboard_Test(void)
     //api_lcd_pwr_on_hint("欧标按键:Down  ");
     break;  
   case 0x00000010://ok
-    if(锁屏状态=1)
+    if(LockingState_Flag==TRUE)
     {
       MenuDisplay(Menu_UnlockStep1_Ok);
+      LockingState_EnterOK_Flag=TRUE;
     }
     else
     {
@@ -180,7 +181,17 @@ void Keyboard_Test(void)
     if(TestNum8>=KeyCountNum)
     {
       TestNum8=0;
-    NumberKeyboardPressDown_flag=TRUE;
+      if(LockingState_EnterOK_Flag==TRUE)//如果锁定状态下按了OK键然后按了#键
+      {
+        LockingState_EnterOK_Flag=FALSE;
+        LockingState_Flag=FALSE;
+        TimeCount=0;
+        MenuDisplay(Menu_Locking_NoOperation);
+      }
+      else
+      {
+        NumberKeyboardPressDown_flag=TRUE;
+      }
     }
     break;  
   case 0x00000100://5
@@ -212,7 +223,7 @@ void Keyboard_Test(void)
     if(TestNum12>=KeyCountNum)
     {
       TestNum12=0;
-    NumberKeyboardPressDown_flag=TRUE;
+      NumberKeyboardPressDown_flag=TRUE;
     }
     break;  
   case 0x00000400://up

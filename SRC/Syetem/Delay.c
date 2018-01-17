@@ -4,9 +4,13 @@
 #define DEL10MSLEN		0x0A
 #define DEL_IDLE		0x00
 #define DEL_RUN			0x01
+
+#define TimeoutLimit            10//键盘超时锁定时间10s
 u8 DEL_500ms_Count=0;
 u8 TimeCount=0;
 u8 TimeCount2=0;
+u8 TimeCount3=0;
+bool LockingState_Flag=FALSE;
 typedef struct {
   union {
     struct {
@@ -229,30 +233,38 @@ static void DEL_500msProcess(void)			//delay 500ms process server
       if(GetTaskId()==Task_NormalOperation)
       {
         TimeCount++;
-        if(TimeCount>10) TimeCount=10;
-        if(NumberKeyboardPressDown_flag==TRUE&&TimeCount<10)//当数字数字键盘按下
+        if(TimeCount>=TimeoutLimit) 
+        {
+          TimeCount=TimeoutLimit;
+          LockingState_Flag=TRUE;//超时锁定标志位
+        }
+        if(NumberKeyboardPressDown_flag==TRUE&&TimeCount<TimeoutLimit)//当数字数字键盘按下
         {
           TimeCount=0;//当有按键按下，计数器清零
           NumberKeyboardPressDown_flag=FALSE;
         }
 
-        if(NumberKeyboardPressDown_flag==TRUE&&TimeCount>=10)//超过0秒后再按按键提示“按OK键再按*键”
+        if(NumberKeyboardPressDown_flag==TRUE&&TimeCount>=TimeoutLimit)//超过10秒后再按按键提示“按OK键再按*键”
         {
           TimeCount2++;
           api_lcd_pwr_on_hint("Enter OK,Enter *");//
           //api_lcd_pwr_on_hint("OK键,再*键");//按OK键再按*键（不能出现按字）
-          if(TimeCount2==1)
-          {锁屏状态=1；}
-            准备添加解锁步骤
           if(TimeCount2==2)
           {
             TimeCount2=0;
             NumberKeyboardPressDown_flag=FALSE;
-            api_lcd_pwr_on_hint("                ");
-            api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
-            api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
+            MenuDisplay(Menu_Locking_NoOperation);
           }
-          
+        }
+        if(LockingState_EnterOK_Flag==TRUE)//锁定界面按下OK键
+        {
+          TimeCount3++;
+          if(TimeCount3>=3)
+          {
+            TimeCount3=0;
+            LockingState_EnterOK_Flag=FALSE;
+            MenuDisplay(Menu_Locking_NoOperation);
+          }
         }
 
       }

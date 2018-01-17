@@ -8,4 +8,5 @@ extern s8 KeyPersonalCallingCount;
 extern s8 KeyUpDownCount;
 extern void Keyboard_Test(void);
 extern bool NumberKeyboardPressDown_flag;
+extern bool LockingState_EnterOK_Flag;
 #endif
