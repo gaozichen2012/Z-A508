@@ -554,7 +554,11 @@ void ApiGpsCmd_100msRenew(void)//决定什么时候发送什么数据
                 case 0x00://ucStep=0表示设备登录
                   if(GpsFunDrvObj.PositionSystem.GbSys.LoginInfo.ucParam.Msg.Bits.bLoginSuccess==OFF)//
                   {
+#if 1//测试不注册鉴权，直接发送位置信息
+                    GpsCmd_GbWritCommand(GPSCOMM_Position, (void*)0, 0);
+#else
                     GpsCmd_GbWritCommand(GPSCOMM_Login, (void*)0, 0);
+#endif
                     GpsFunDrvObj.usReportTimer = 0x05;
                   }
                   else//若收到平台发送8100，表示终端登录成功，usReportTimer=0
@@ -586,7 +590,7 @@ void ApiGpsCmd_100msRenew(void)//决定什么时候发送什么数据
                     GpsFunDrvObj.CountdownTimer.LoadCount = 0x00;
                     GpsFunDrvObj.usReportTimer =(GpsFunDrvObj.GpsPar2.Acc.OnReportTime);
                   }
-                  GpsCmd_GbWritCommand(GPSCOMM_Position, (void*)0, 0);
+                  GpsCmd_GbWritCommand(GPSCOMM_Position, (void*)0, 0);//--------------------------------位置信息发送
                   break;
                 case 0x03://ucStep=3表示发送图片
                   GpsCmd_GbWritCommand(GPSCOMM_PhotoAck, (void*)0, 0);
@@ -679,7 +683,7 @@ static void GpsCmd_GbAnalytical(u8 *pBuf, u8 len)//收到的数据进行分析
     if(pBuf[15] == 0x00)
     {
       pBuf+=16;
-      Len-=0x03;
+      Len-=0x03;//若Len=0，减3后就会变成负数，则异常
       for(i = 0x00; i < Len; i++)
       {
         GpsFunDrvObj.PositionSystem.GbSys.LoginInfo.ucParam.AuthenticationId[i] = pBuf[i];
@@ -758,35 +762,47 @@ static void GpsCmd_GbDataTransave(GpsCommType GpsComm)//定位信息转换，等会要用到
   default:
     break;
   }
-  COML_StringReverse(0x02,GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.HeadInfo.stParam.ucMsgID.ucData);
+  //COML_StringReverse(0x02,GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.HeadInfo.stParam.ucMsgID.ucData);//原消息ID反序，屏蔽看是否正序
   pPositInfo->stParam.Warning.ucData = 0;
   pPositInfo->stParam.WorkStatus.ucData = 0;
   pPositInfo->stParam.WorkStatus.Bits.bAcc = GpsFunDrvObj.InfoRecord.Msg.bAcc;
+  GpsFunDrvObj.InfoRecord.Position.Msg.bGpsVolid=1;//手动赋值
   pPositInfo->stParam.WorkStatus.Bits.bGpsVolid = GpsFunDrvObj.InfoRecord.Position.Msg.bGpsVolid;
   pPositInfo->stParam.WorkStatus.Bits.bNorthOrSouth = GpsFunDrvObj.InfoRecord.Position.Msg.bNorthOrSouth;
   pPositInfo->stParam.WorkStatus.Bits.bEastOrWest = GpsFunDrvObj.InfoRecord.Position.Msg.bEastOrWest;
-  pPositInfo->stParam.ulLatitude = GpsFunDrvObj.InfoRecord.Position.ulLatitude;
-  pPositInfo->stParam.ulLongitude = GpsFunDrvObj.InfoRecord.Position.ulLongitude;
+  
+  GpsFunDrvObj.InfoRecord.Position.ulLatitude =Data_Longitude_Minute()*1000000+Data_Longitude_Second();
+  GpsFunDrvObj.InfoRecord.Position.ulLongitude=Data_Latitude_Minute()*1000000+Data_Latitude_Second();
+  //经纬度成功存组，准备与平台连接，收到一次数据发送一次数据
+  pPositInfo->stParam.ulLatitude = GpsFunDrvObj.InfoRecord.Position.ulLatitude;//经纬度在此存入（此时的GpsFunDrvObj.InfoRecord.Position.ulLatitude已经乘以1000000）
+  pPositInfo->stParam.ulLongitude = GpsFunDrvObj.InfoRecord.Position.ulLongitude;//经纬度在此存入
   pPositInfo->stParam.usAltitude = GpsFunDrvObj.InfoRecord.Position.usAltitude;
   pPositInfo->stParam.usSpeed = GpsFunDrvObj.InfoRecord.Position.usSpeed;
   pPositInfo->stParam.usDirection = GpsFunDrvObj.InfoRecord.Position.usDirection;
+  //日期手动赋值2018-1-18 17:28:20
+  GpsFunDrvObj.InfoRecord.Position.ucTime[0]=Data_Time0();
+  GpsFunDrvObj.InfoRecord.Position.ucTime[1]=Data_Time1();
+  GpsFunDrvObj.InfoRecord.Position.ucTime[2]=Data_Time2();
+  GpsFunDrvObj.InfoRecord.Position.ucDate[0]=Data_Date0();
+  GpsFunDrvObj.InfoRecord.Position.ucDate[1]=Data_Date1();
+  GpsFunDrvObj.InfoRecord.Position.ucDate[2]=Data_Date2();
   for(i = 0x00; i < 0x03; i++)
   {
     pPositInfo->stParam.Time.ucData[i] = GpsFunDrvObj.InfoRecord.Position.ucTime[i];
     pPositInfo->stParam.Date.ucData[i] = GpsFunDrvObj.InfoRecord.Position.ucDate[i];
   }
   COML_StringReverse(0x04, (u8 *)(&pPositInfo->stParam.Warning));
-  COML_StringReverse(0x04, (u8 *)(&pPositInfo->stParam.WorkStatus));
-  COML_StringReverse(0x04, (u8 *)(&pPositInfo->stParam.ulLatitude));
-  COML_StringReverse(0x04, (u8 *)(&pPositInfo->stParam.ulLongitude));
-  COML_StringReverse(0x02, (u8 *)(&pPositInfo->stParam.usAltitude));
-  COML_StringReverse(0x02, (u8 *)(&pPositInfo->stParam.usSpeed));
+  //COML_StringReverse(0x04, (u8 *)(&pPositInfo->stParam.WorkStatus));
+  //COML_StringReverse(0x04, (u8 *)(&pPositInfo->stParam.ulLatitude));
+  //COML_StringReverse(0x04, (u8 *)(&pPositInfo->stParam.ulLongitude));
+  //COML_StringReverse(0x02, (u8 *)(&pPositInfo->stParam.usAltitude));
+  //COML_StringReverse(0x02, (u8 *)(&pPositInfo->stParam.usSpeed));
   COML_StringReverse(0x02, (u8 *)(&pPositInfo->stParam.usDirection));
-  COML_StringReverse(0x03, (u8 *)(&pPositInfo->stParam.Date));
+  //COML_StringReverse(0x03, (u8 *)(&pPositInfo->stParam.Date));
   i = pPositInfo->stParam.Time.ucData[0];
   ucIndex = ((i >> 0x04) * 10);
   i &= 0x0F;
-  i = (i + ucIndex + 8) % 24;
+  i = (i + ucIndex + 0) % 24;//时区
   ucIndex = (i / 10) << 0x04;
   i %= 10; 
   pPositInfo->stParam.Time.ucData[0] = i | ucIndex; 
@@ -839,7 +855,7 @@ static bool GpsCmd_GbWritCommand(GpsCommType id, u8 *buf, u8 len)
     GpsFunDrvObj.PositionSystem.GbSys.TempBuf.TestLen=COMLHexArray2String(GpsFunDrvObj.PositionSystem.GbSys.TempBuf.ucData,
                                                                           GpsFunDrvObj.PositionSystem.GbSys.TempBuf.Len,
                                                                           GpsFunDrvObj.PositionSystem.GbSys.TempBuf.ucTestData);
-    //ApiAtCmd_WritCommand(ATCOMM10_SendTcp, GpsFunDrvObj.PositionSystem.GbSys.TempBuf.ucTestData,GpsFunDrvObj.PositionSystem.GbSys.TempBuf.TestLen);//临时缓冲区存放加密后的设备注册消息包
+    ApiAtCmd_WritCommand(ATCOMM10_SendTcp, GpsFunDrvObj.PositionSystem.GbSys.TempBuf.ucTestData,GpsFunDrvObj.PositionSystem.GbSys.TempBuf.TestLen);//临时缓冲区存放加密后的设备注册消息包
     break;
   case GPSCOMM_Logout:
     if(GpsFunDrvObj.ucWorkState != id)
@@ -870,10 +886,22 @@ static bool GpsCmd_GbWritCommand(GpsCommType id, u8 *buf, u8 len)
   case GPSCOMM_Position:
     GpsCmd_GbDataTransave(GPSCOMM_Position);
     GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.HeadInfo.stParam.MsgProperty.Bits.Len = GPS_GB_POSITION_LEN+6+4;
-    COML_StringReverse(0x02,GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.HeadInfo.stParam.MsgProperty.ucData);
+    //COML_StringReverse(0x02,GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.HeadInfo.stParam.MsgProperty.ucData);//原消息ID反序，屏蔽看是否正序
     pack_data(GpsFunDrvObj.PositionSystem.GbSys.MsgBody.ucData, GPS_GB_HEAD_LEN+GPS_GB_POSITION_LEN+6+4);
-    ApiAtCmd_WritCommand(ATCOMM10_SendTcp, GpsFunDrvObj.PositionSystem.GbSys.TempBuf.ucData,
-                         GpsFunDrvObj.PositionSystem.GbSys.TempBuf.Len);
+    GpsFunDrvObj.PositionSystem.GbSys.TempBuf.TestLen=COMLHexArray2String(GpsFunDrvObj.PositionSystem.GbSys.TempBuf.ucData,
+                                                                          GpsFunDrvObj.PositionSystem.GbSys.TempBuf.Len,
+                                                                          GpsFunDrvObj.PositionSystem.GbSys.TempBuf.ucTestData);
+    if(PositionInformationSendToATPORT_Flag==TRUE)
+    {
+      ApiAtCmd_WritCommand(ATCOMM10_SendTcp, GpsFunDrvObj.PositionSystem.GbSys.TempBuf.ucTestData,GpsFunDrvObj.PositionSystem.GbSys.TempBuf.TestLen);//临时缓冲区存放加密后的设备注册消息包
+      PositionInformationSendToATPORT_Flag=FALSE;
+    }
+    else
+    {
+      ApiAtCmd_WritCommand(ATCOMM10_SendTcp, GpsFunDrvObj.PositionSystem.GbSys.TempBuf.ucTestData,GpsFunDrvObj.PositionSystem.GbSys.TempBuf.TestLen);//临时缓冲区存放加密后的设备注册消息包
+    }
+    ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)"AT^CDMATIME",strlen((char const *)"AT^CDMATIME"));//发送获取CDMATIME获取时间
+    //ApiAtCmd_WritCommand(ATCOMM10_SendTcp, GpsFunDrvObj.PositionSystem.GbSys.TempBuf.ucData,GpsFunDrvObj.PositionSystem.GbSys.TempBuf.Len);
     break;
   case GPSCOMM_PositionAck:
     GpsCmd_GbDataTransave(GPSCOMM_PositionAck);

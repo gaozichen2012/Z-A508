@@ -13,6 +13,7 @@ const u8 *ucRxZTTS0 = "ZTTS:0";
 const u8 *ucRxCSQ31 = "CSQ:31";
 const u8 *ucRxCSQ99 = "CSQ:99";
 const u8 *ucGpsPosition = "LATLON:";
+const u8 *ucCDMATIME = "^CDMATIME:";
 const u8 *ucSIMST1="^SIMST:1";
 const u8 *ucSIMST255="^SIMST:255";
 const u8 *ucCaretPPPCFG="^PPPCFG:";
@@ -30,7 +31,7 @@ u8 *ucRxCheckPppClose = "^POCNETOPEN:0";
 
 u8 *ucCheckRssi = "AT+CSQ?";
 u8 *ucCheckCard = "AT^GETICCID";
-
+bool PositionInformationSendToATPORT_Flag=FALSE;
 
 #define DrvMC8332_IccId_Len 30
 typedef struct{
@@ -60,6 +61,7 @@ typedef struct{
                 }IccId;
                 struct{
                   u8 Buf[21];//存放AT收到的经纬度信息
+                  u8 BufLen;//接收经纬度信息的数据长度
                   union{
                     struct{
                       u8	bEast	: 1;
@@ -70,13 +72,16 @@ typedef struct{
                     u8 Byte;
                   }Msg;
                   u16 Longitude_Degree;
-                  u8 Longitude_Minute;
-                  u32 Longitude_Second;
+                  u8 Longitude_Minute;//小数点前的数
+                  u32 Longitude_Second;//小数点后的数
                   u16 Latitude_Degree;
                   u8 Latitude_Minute;
                   u32 Latitude_Second;
-	}Position;
-                
+                }Position;
+                u8 TimeBuf[20];//存放AT收到的时间信息
+                u8 TimeBufLen;//接收时间信息的数据长度
+                u8 ucDate[3];//年月日
+                u8 ucTime[3];//时分秒
 		u8 RssiValue;
 		u8 Buf[30];
 		u8 Len;
@@ -209,7 +214,7 @@ void ApiAtCmd_100msRenew(void)
 }
 void ApiCaretCmd_10msRenew(void)
 {
-  u8 * pBuf, ucRet, Len;//, i
+  u8 * pBuf, ucRet, Len,i;
   while((Len = DrvMC8332_CaretNotify_Queue_front(&pBuf)) != 0)
   {
     ucRet = memcmp(pBuf, ucSIMST1, 8);//^SIMST:1
@@ -267,6 +272,21 @@ void ApiCaretCmd_10msRenew(void)
         }
       }
     }
+/***********获取当前时间（部标使用）****************************************************************/
+    ucRet = memcmp(pBuf, ucCDMATIME, 10);
+    if(ucRet == 0x00)
+    {
+      if(Len > 10)//去頭
+      {
+        Len -= 10;
+      }
+       for(i = 0x00; i < Len; i++)
+       {
+         AtCmdDrvobj.NetState.TimeBuf[i] = pBuf[i + 10];//
+       }
+       AtCmdDrvobj.NetState.TimeBufLen = i;
+    } 
+/**********************************************************************************************/
   }
 }
 
@@ -308,23 +328,130 @@ void ApiAtCmd_10msRenew(void)
       CSQ_Flag=2;
     }
 /***********GPS经纬度获取（部标使用）****************************************************************/
-   /* ucRet = memcmp(pBuf, ucGpsPosition, 7);//CSQ:31
+    ucRet = memcmp(pBuf, ucGpsPosition, 7);//CSQ:31
     if(ucRet == 0x00)
     {
+      PositionInformationSendToATPORT_Flag=TRUE;
       if(Len > 7)//去頭
       {
         Len -= 0x07;
       }
        for(i = 0x00; i < Len; i++)
        {
-         AtCmdDrvobj.NetState.Position.Buf[i] = pBuf[i + 9];//-----------------------------做AT口GPS数据获取
+         AtCmdDrvobj.NetState.Position.Buf[i] = pBuf[i + 7];//-----------------------------做AT口GPS数据获取
        }
-       AtCmdDrvobj.NetState.IccId.Len = i;
-    }*/
+       AtCmdDrvobj.NetState.Position.BufLen = i;
+    }
 /**********************************************************************************************/
-    
   }
 }
+
+void ApiAtCmd_Get_location_Information(void)
+{
+  u8 *pBuf;
+  u8 i=0,cDot=0,cHead=0;
+  
+  u8 cCount=0;//Time
+  
+  
+/***************获取经纬度数据*********************************************************************************************************/
+  pBuf=AtCmdDrvobj.NetState.Position.Buf;
+  for(;i<AtCmdDrvobj.NetState.Position.BufLen;i++)
+  {
+    if(','==pBuf[i])
+    {
+      AtCmdDrvobj.NetState.Position.Longitude_Second = CHAR_TO_Digital(&pBuf[cHead], i-cHead);//经度小数位
+      cHead = i+1;
+    }
+    else
+    {
+      if('.' == pBuf[i])//2
+      {
+        switch(cDot)
+        {
+        case 0:
+          if((i - cHead) >= 2)//i-cHead=2
+          {
+            AtCmdDrvobj.NetState.Position.Longitude_Minute = CHAR_TO_Digital(&pBuf[cHead], i);//经度整数位
+            
+          }
+          break;
+        case 1:
+          if((i - cHead) >= 2)
+          {
+            AtCmdDrvobj.NetState.Position.Latitude_Minute = CHAR_TO_Digital(&pBuf[cHead], i-cHead);//纬度整数位
+            AtCmdDrvobj.NetState.Position.Latitude_Second = CHAR_TO_Digital(&pBuf[i+1],AtCmdDrvobj.NetState.Position.BufLen-i-1);//纬度整数
+          }
+          break;
+        default:
+          break;
+        }
+        cHead = i+1;
+        cDot++;
+      }
+    }
+  }
+/***********获取年月日时分秒信息*********************************************************************************************************************/
+//2018- 1 -18  1  9  :  4   5  :  1
+
+  pBuf=AtCmdDrvobj.NetState.TimeBuf;
+  for(;i<AtCmdDrvobj.NetState.TimeBufLen;i++)
+  {
+    if('-'==pBuf[i])
+    {
+      switch(cCount)
+      {
+      case 0:
+        AtCmdDrvobj.NetState.ucDate[0] = COML_AscToHex(&pBuf[cHead+2], i-2);//年
+        break;
+      case 1:
+        AtCmdDrvobj.NetState.ucDate[1] = COML_AscToHex(&pBuf[cHead], i-cHead);//月
+        break;
+      default:
+        break;
+        
+      }
+      cHead = i+1;
+      cCount++;
+    }
+    else 
+    {
+      if(':' == pBuf[i])//2
+      {
+        switch(cDot)
+        {
+        case 0:
+          if((i - cHead) >= 1)//i-cHead=2
+          {
+            AtCmdDrvobj.NetState.ucTime[0] = COML_AscToHex(&pBuf[cHead], i-cHead);//时
+          }
+          break;
+        case 1:
+          if((i - cHead) >= 1)
+          {
+            AtCmdDrvobj.NetState.ucTime[1] = COML_AscToHex(&pBuf[cHead], i-cHead);//分
+            AtCmdDrvobj.NetState.ucTime[2] = COML_AscToHex(&pBuf[i+1],AtCmdDrvobj.NetState.TimeBufLen-i-1);//秒
+          }
+          break;
+        default:
+          break;
+        }
+        cHead = i+1;
+        cDot++;
+      }
+      if(' '==pBuf[i])//识别空格
+      {
+        AtCmdDrvobj.NetState.ucDate[2] = COML_AscToHex(&pBuf[cHead], i-cHead);//日
+        cHead = i+1;
+      }
+    }
+  }
+/***********************************************************************************************************************************/
+}
+
+
+
+
 
 bool ApiAtCmd_PlayVoice(AtVoiceType id, u8 *buf, u8 len)
 {
@@ -394,4 +521,57 @@ u8 ApiAtCmd_tcp_state(void)
 u8 ApiAtCmd_Ppp_state(void)
 {
 	return AtCmdDrvobj.NetState.Msg.Bits.bPppOk;
+}
+u32  CHAR_TO_Digital(u8 * pBuf, u8 Len)
+{
+	u8 i;
+	u32 buf = 0;
+	for(i = 0; i < Len; i++)
+	{
+		buf *= 10;
+		buf += (pBuf[i] - 0x30);
+	}
+	return buf;
+}
+
+u8 Data_Longitude_Minute(void)//经度整数位
+{
+  return AtCmdDrvobj.NetState.Position.Longitude_Minute;
+}
+u32 Data_Longitude_Second(void)//经度小数位
+{
+  return AtCmdDrvobj.NetState.Position.Longitude_Second;
+}
+u8 Data_Latitude_Minute(void)//纬度整数位
+{
+  return AtCmdDrvobj.NetState.Position.Latitude_Minute;
+}
+u32 Data_Latitude_Second(void)//纬度小数位
+{
+  return AtCmdDrvobj.NetState.Position.Latitude_Second;
+}
+
+u8 Data_Time0(void)
+{
+  return AtCmdDrvobj.NetState.ucTime[0];
+}
+u8 Data_Time1(void)
+{
+  return AtCmdDrvobj.NetState.ucTime[1];
+}
+u8 Data_Time2(void)
+{
+  return AtCmdDrvobj.NetState.ucTime[2];
+}
+u8 Data_Date0(void)
+{
+  return AtCmdDrvobj.NetState.ucDate[0];
+}
+u8 Data_Date1(void)
+{
+  return AtCmdDrvobj.NetState.ucDate[1];
+}
+u8 Data_Date2(void)
+{
+  return AtCmdDrvobj.NetState.ucDate[2];
 }

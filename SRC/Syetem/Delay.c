@@ -5,7 +5,7 @@
 #define DEL_IDLE		0x00
 #define DEL_RUN			0x01
 
-#define TimeoutLimit            10//键盘超时锁定时间10s
+#define TimeoutLimit            30//键盘超时锁定时间10s
 u8 DEL_500ms_Count=0;
 u8 TimeCount=0;
 u8 TimeCount2=0;
@@ -205,6 +205,7 @@ static void DEL_100msProcess(void)
     DelDrvObj.Msg.Bit.b100ms = DEL_IDLE;
     LED_IntOutputRenew();//LED output renew process
     ApiGpsCmd_100msRenew();
+    ApiAtCmd_Get_location_Information();
     if(DelDrvObj.Msg.Bit.b500Alternate == DEL_IDLE)
     {
       DelDrvObj.Msg.Bit.b500Alternate = DEL_RUN;
@@ -249,7 +250,7 @@ static void DEL_500msProcess(void)			//delay 500ms process server
           TimeCount2++;
           api_lcd_pwr_on_hint("按OK键,再按*键  ");//
           //api_lcd_pwr_on_hint("OK键,再*键");//按OK键再按*键（不能出现按字）
-          if(TimeCount2>=3)//2s
+          if(TimeCount2>=2)//1s
           {
             TimeCount2=0;
             NumberKeyboardPressDown_flag=FALSE;
@@ -259,7 +260,7 @@ static void DEL_500msProcess(void)			//delay 500ms process server
         if(LockingState_EnterOK_Flag==TRUE)//锁定界面按下OK键
         {
           TimeCount3++;
-          if(TimeCount3>=3)//2s
+          if(TimeCount3>=4)//3s
           {
             TimeCount3=0;
             LockingState_EnterOK_Flag=FALSE;
