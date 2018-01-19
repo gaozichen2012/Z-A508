@@ -236,8 +236,13 @@ static void DEL_500msProcess(void)			//delay 500ms process server
         TimeCount++;
         if(TimeCount>=TimeoutLimit) 
         {
+          MCU_LCD_BACKLIGTH(OFF);//关闭背光灯
           TimeCount=TimeoutLimit;
           LockingState_Flag=TRUE;//超时锁定标志位
+        }
+        else
+        {
+          MCU_LCD_BACKLIGTH(ON);//打开背光灯
         }
         if(NumberKeyboardPressDown_flag==TRUE&&TimeCount<TimeoutLimit)//当数字数字键盘按下
         {
@@ -260,9 +265,11 @@ static void DEL_500msProcess(void)			//delay 500ms process server
         if(LockingState_EnterOK_Flag==TRUE)//锁定界面按下OK键
         {
           TimeCount3++;
+          MCU_LCD_BACKLIGTH(ON);//打开背光灯
           if(TimeCount3>=4)//3s
           {
             TimeCount3=0;
+            MCU_LCD_BACKLIGTH(OFF);//关闭背光灯
             LockingState_EnterOK_Flag=FALSE;
             MenuDisplay(Menu_Locking_NoOperation);
           }
