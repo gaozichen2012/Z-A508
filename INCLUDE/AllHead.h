@@ -42,7 +42,8 @@
 //写频
 #include "uart3.h"
 #include "Flash_eeprom.h"
-
+#include "Config.h"//部标强行添加
+#include "DataStructAddr.h"
 //部标
 #include "ApiGpsCmd.h"
 

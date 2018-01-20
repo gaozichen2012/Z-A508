@@ -146,7 +146,7 @@ void ApiPocCmd_WritCommand(PocCommType id, u8 *buf, u16 len)
     break;
   case PocComm_SetParam://…Ë÷√’À∫≈√‹¬Î
     DrvGD83_UART_TxCommand((u8 *)ucSetIPAndID,strlen((char const *)ucSetIPAndID));
-    FILE_Read(0,80,ReadBuffer);
+    FILE_Read(0,80,ReadBuffer);//80Œª
     DrvGD83_UART_TxCommand(ReadBuffer, strlen((char const *)ReadBuffer));
     break;
   case PocComm_GetParam:

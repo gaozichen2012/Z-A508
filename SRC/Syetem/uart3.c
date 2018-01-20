@@ -450,14 +450,14 @@ static bool UART_WriteCommand(void)
 			return FALSE;
 		}
 	}
-	//LED_SetOutput(LED_IDWRITE,ON,FALSE);			//write LED ON process
+
 	adr = UartDrvObj.TxRxBuf.cRxBuf[4];//0x02//cRxBuf[4]为地址高8位
 	adr <<= 8;
 	adr |= UartDrvObj.TxRxBuf.cRxBuf[5]; //0x30//35//3A//3F//44//4D//52//60//cRxBuf[5]为地址低8位
 	len = UartDrvObj.TxRxBuf.cRxBuf[6];//00//cRxBuf[6]为长度高8位
 	len <<= 8;
 	len |= UartDrvObj.TxRxBuf.cRxBuf[7];//0x05//05//05//05//09//05//0E//6D//cRxBuf[7]为长度低8位
-	UART_RightAck(len);
+	UART_RightAck(len);//收到数据MCU向串口发送回复的指令
 	while((len/8) != 0)//>8 or /8 process
 	{
 		if (UART_RxFrame(9) == FALSE)	//recv one frame data
@@ -468,16 +468,16 @@ static bool UART_WriteCommand(void)
 		{
 			goto UARTWriteCommand_Exit;
 		}
-		/*if (FILE_Write(adr,0x08,UartDrvObj.TxRxBuf.cRxBuf) == FALSE)
+		/*if ((adr,0x08,UartDrvObj.TxRxBuf.cRxBuf) == FALSE)
 		{
 			UART_ErrorAck(UART_READWRITE);
 			goto UARTWriteCommand_Exit;
 		}*/
 		adr += 8;
 		len -= 8;
-		UART_RightAck(len);							//right ack process
+		UART_RightAck(len);//right ack process
 	}
-	len %= 8;										//<8 process
+	len %= 8;//<8 process
 	if (len != 0)
 	{
 		if (UART_RxFrame(len) == FALSE)
@@ -491,11 +491,8 @@ static bool UART_WriteCommand(void)
 		}*/
 		UART_RightAck(0x00);
 	}
-	//SYS_SetRenewLoadMsg();							//renew eeprom load process
 UARTWriteCommand_Exit:
-	//LED_SetOutput(LED_IDWRITE,OFF,FALSE);			//write LED off process
-	//FILE_SetWirteProtect(ENABLE);					//write protect process
-	return TRUE;
+  return TRUE;
 }
 
 static bool UART_PocCommand(void)
