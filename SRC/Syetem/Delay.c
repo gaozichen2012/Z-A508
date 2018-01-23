@@ -5,12 +5,13 @@
 #define DEL_IDLE		0x00
 #define DEL_RUN			0x01
 
-#define TimeoutLimit            30//键盘超时锁定时间10s
+#define TimeoutLimit            240//键盘超时锁定时间10s
 u8 DEL_500ms_Count=0;
 u8 DEL_500ms_Count2=0;
 u8 TimeCount=0;
 u8 TimeCount2=0;
 u8 TimeCount3=0;
+u8 TimeCount_Light=0;
 bool LockingState_Flag=FALSE;
 typedef struct {
   union {
@@ -229,6 +230,22 @@ static void DEL_500msProcess(void)			//delay 500ms process server
     VOICE_1sProcess();
     DEL_500ms_Count++;
     DEL_500ms_Count2++;
+    TimeCount_Light++;
+    
+    if(TimeCount_Light>=20)//10s
+    {
+      MCU_LCD_BACKLIGTH(OFF);//关闭背光灯
+      TimeCount_Light=20;
+    }
+    else
+    {
+      MCU_LCD_BACKLIGTH(ON);//打开背光灯
+    }
+    if(NumberKeyboardPressDown_flag==TRUE)
+    {
+      TimeCount_Light=0;//背光灯计数器清零
+    }
+    
     if(DEL_500ms_Count2>=10)
     {
       ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)"AT^CDMATIME",strlen((char const *)"AT^CDMATIME"));//发送获取CDMATIME获取时间
@@ -244,17 +261,18 @@ static void DEL_500msProcess(void)			//delay 500ms process server
         TimeCount++;
         if(TimeCount>=TimeoutLimit) 
         {
-          MCU_LCD_BACKLIGTH(OFF);//关闭背光灯
+          //MCU_LCD_BACKLIGTH(OFF);//关闭背光灯
           TimeCount=TimeoutLimit;
           LockingState_Flag=TRUE;//超时锁定标志位
         }
         else
         {
-          MCU_LCD_BACKLIGTH(ON);//打开背光灯
+          //MCU_LCD_BACKLIGTH(ON);//打开背光灯
         }
         if(NumberKeyboardPressDown_flag==TRUE&&TimeCount<TimeoutLimit)//当数字数字键盘按下
         {
           TimeCount=0;//当有按键按下，计数器清零
+          
           NumberKeyboardPressDown_flag=FALSE;
         }
 

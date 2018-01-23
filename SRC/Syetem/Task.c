@@ -7,7 +7,7 @@ u8 AlarmCount=4;//2G3G切换计数,默认为3G模式
 u8 Key_Flag_0=0;
 u8 Key_PersonalCalling_Flag=0;
 bool TASK_Ptt_StartPersonCalling_Flag=FALSE;
-u8 x=0;
+u8 KeyCount_PersonalCalling=0;
 #endif
 
 u8 *ucStartPTT                  = "0B0000";
@@ -191,18 +191,16 @@ void Task_RunNormalOperation(void)
     api_lcd_pwr_on_hint("对象:   选择个呼");
     api_lcd_pwr_on_hint2(HexToChar_MainUserId());
     
-    x++;
+    KeyCount_PersonalCalling++;
     
-    if(x>=2)
+    if(KeyCount_PersonalCalling>=200)
     {
       Key_PersonalCalling_Flag=1;
       VOICE_SetOutput(ATVOICE_FreePlay,"2a4e7c542000106258540990e962",28);//个呼成员选择
-    DEL_SetTimer(0,200);
-    while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
-    x=1;
+      DEL_SetTimer(0,200);
+      while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+      KeyCount_PersonalCalling=1;
     }
-
-    
     ApiPocCmd_WritCommand(PocComm_UserListInfo,ucRequestUserListInfo,strlen((char const *)ucRequestUserListInfo));
     VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(0),ApiAtCmd_GetUserNameLen(0));
     KeyDownUpChoose_GroupOrUser_Flag=2;
