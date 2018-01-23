@@ -65,6 +65,7 @@ void WriteEEPROMByte(uint32_t Address, uint8_t Data)
   FLASH_Lock(FLASH_MEMTYPE_DATA);//上锁
 }
 
+
 bool FILE_Write(u16 iAdr,u16 iLen,u8 *pBuf)//如果pBuf是字符串,则最后一位为\0
 {
   u16 EEPROM_WriteCount;
@@ -76,6 +77,17 @@ bool FILE_Write(u16 iAdr,u16 iLen,u8 *pBuf)//如果pBuf是字符串,则最后一位为\0
   }
   return TRUE;
 }
+bool FILE_Write2(u16 iAdr,u16 iLen,u8 *pBuf)//如不确定修改是否会对账号读写有影响，直接新建一个函数
+{
+  u16 EEPROM_WriteCount;
+  u32 AdrSum=0x00;
+  for(EEPROM_WriteCount=0x01;EEPROM_WriteCount<iLen+1;EEPROM_WriteCount++)
+  {
+    AdrSum=0x4000+iAdr+EEPROM_WriteCount-1;
+    WriteEEPROMByte(AdrSum, pBuf[EEPROM_WriteCount-1]);
+  }
+  return TRUE;
+}
 bool FILE_Read(u16 iAdr,u16 iLen,u8 *pBuf)//如果pBuf是字符串,则最后一位为\0
 {
   u16 i;
@@ -83,6 +95,17 @@ bool FILE_Read(u16 iAdr,u16 iLen,u8 *pBuf)//如果pBuf是字符串,则最后一位为\0
   for(i=0x00;i<iLen;i++)
   {
     AdrSum=0x4000+iAdr+i;
+    pBuf[i]=FLASH_ReadByte(AdrSum);
+  }
+  return TRUE;
+}
+bool FILE_Read2(u16 iAdr,u16 iLen,u8 *pBuf)//如不确定修改是否会对账号读写有影响，直接新建一个函数
+{
+  u16 i;
+  u32 AdrSum=0x00;
+  for(i=0x00;i<iLen;i++)
+  {
+    AdrSum=iAdr+i;
     pBuf[i]=FLASH_ReadByte(AdrSum);
   }
   return TRUE;

@@ -492,7 +492,26 @@ void ApiGetIccidBuf(void)
 
 static void AtCmd_NetParamCode(void)//获取TCP IP地址
 {
-  AtCmdDrvobj.NetState.Buf[0]  = '1';
+  u8 i,TcpIpLen,TcpPortLen;
+  u8 *TcpIpBuf;
+  u8 *TcpPortBuf;
+  TcpIpLen=strlen((char const *)ApiGps_GetTcpIpAddress());
+  TcpPortLen=strlen((char const *)ApiGps_GetTcpPortAddress());
+  TcpIpBuf=ApiGps_GetTcpIpAddress();
+  TcpPortBuf=ApiGps_GetTcpPortAddress();
+  
+//  添加 TcpIpBuf[25];TcpPortBuf[25];里的值
+  for(i=0;i<TcpIpLen;i++)
+  {
+    AtCmdDrvobj.NetState.Buf[i]=TcpIpBuf[i];
+  }
+  AtCmdDrvobj.NetState.Buf[TcpIpLen]=',';
+  for(i=0;i<TcpPortLen;i++)
+  {
+    AtCmdDrvobj.NetState.Buf[TcpIpLen+1+i]=TcpPortBuf[i];
+  }
+  AtCmdDrvobj.NetState.Len=TcpIpLen+TcpPortLen+1;
+  /*AtCmdDrvobj.NetState.Buf[0]  = '1';
   AtCmdDrvobj.NetState.Buf[1]  = '2';
   AtCmdDrvobj.NetState.Buf[2]  = '3';
   AtCmdDrvobj.NetState.Buf[3]  = '.';
@@ -510,7 +529,8 @@ static void AtCmd_NetParamCode(void)//获取TCP IP地址
   AtCmdDrvobj.NetState.Buf[15] = '9';
   AtCmdDrvobj.NetState.Buf[16] = '7';
   AtCmdDrvobj.NetState.Buf[17] = '3';
-  AtCmdDrvobj.NetState.Len=18;
+  AtCmdDrvobj.NetState.Len=18;*/
+  
 }
 
 u8 ApiAtCmd_tcp_state(void)

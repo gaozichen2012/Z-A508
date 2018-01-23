@@ -42,6 +42,7 @@
 #define nAddrSysMode	 nAddrMaxGrpSum + nLenMaxGrpSum
 #define nAddrRadioInfo	 nAddrSysMode + nLenSysMode 
 #define nAddrPCRes1      nAddrRadioInfo + nLenRadioInfo
+/*以上定义地址 0x0000-0x0156*/
 
 #define nLenUserID       4
 #define nLenRadioMode    12
@@ -54,7 +55,7 @@
 #define nGrpRadioMode    1
 #define nGrpEepromVer	 1
 #define nGrpSoftPowerOn  1
-#define nGrpBatteryCfg  1
+#define nGrpBatteryCfg   1
 #define nGrpOtherRes1    1
 
 #define nAddrUserID      nAddrPCRes1 + nGrpPCRes1*nLenPCRes1
@@ -63,14 +64,14 @@
 #define nAddrSoftPowerOn nAddrEepromVer + nGrpEepromVer*nLenEepromVer
 #define nAddrBatteryCfg  nAddrSoftPowerOn + nGrpSoftPowerOn*nLenSoftPowerOn
 #define nAddrOtherRes1   nAddrBatteryCfg + nGrpBatteryCfg*nLenBatteryCfg
+/* 以上为0x0157-0x018F */
 
-/*  */
 #define nLenBatteryDbg  		1
 #define nLenOilLoDbg			2
 #define nLenOilHiDbg			2
 #define nLenDbgRes1			5
 
-#define nGrpBatteryDbg		1
+#define nGrpBatteryDbg		        1
 #define nGrpOilLoDbg			1
 #define nGrpOilHiDbg			1
 #define nGrpDbgRes1			1
@@ -79,18 +80,19 @@
 #define nAddrOilLoDbg			nAddrBatteryDbg+ nGrpBatteryDbg*nLenBatteryDbg
 #define nAddrOilHiDbg			nAddrOilLoDbg+ nGrpOilLoDbg*nLenOilLoDbg
 #define nAddrDbgRes1			nAddrOilHiDbg+ nGrpOilHiDbg*nLenOilHiDbg
+/* 以上为0x0190-0x0199 */
 
-/*  */
+
 #define nLenCardUserPassword	50
-#define nLenLocalUserInfo	100
-#define nLenWorkMode		5
-#define nLenWarningTone		5
-#define nLenSpeech		5
+#define nLenLocalUserInfo	100//0x022f
+#define nLenWorkMode		5//0x0234
+#define nLenWarningTone		5//0x0239
+#define nLenSpeech		5//0x0244
 #define nLenDisplay		5
 #define nLenPowerManage		9
 #define nLenTOT			5
-#define nLenKeyProg		14
-#define nLenGpsFun		109//部标
+#define nLenKeyProg		14//0x25f
+#define nLenGpsFun		109//部标0x260-0x2cc
 
 /* data group */
 #define nGrpLocalUserInfo	1
@@ -115,7 +117,7 @@
 #define nAddrTOT           	nAddrPowerManage + nGrpPowerManage*nLenPowerManage
 #define nAddrKeyProg       	nAddrTOT + nGrpTOT*nLenTOT
 #define nAddrGpsFun		nAddrKeyProg + nGrpKeyProg*nLenKeyProg
-
+/* 0x019A-0x2cc */
 
 #define nAddrAudioParam         0x0A62
 

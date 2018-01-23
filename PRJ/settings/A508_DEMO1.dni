@@ -9,7 +9,7 @@ TriggerName=main
 LimitSize=0
 ByteLimit=50
 [DebugChecksum]
-Checksum=1975902237
+Checksum=1616364028
 [CodeCoverage]
 Enabled=_ 0
 [CallStack]
@@ -55,18 +55,30 @@ Enabled=0
 ShowSource=1
 [Simulator]
 Freq=16000000
+[struct_types]
+Fmt0=ADRLEN_INF-Adr	4	0
+Fmt1=struct <Unnamed 29>-PulseTime	4	0
+Fmt2=struct <Unnamed 30>-Enable	4	0
+Fmt3=struct <Unnamed 30>-Protocal	4	0
+Fmt4=struct <Unnamed 30>-Servicer	4	0
+Fmt5=struct <Unnamed 30>-WorkMode	4	0
+Fmt6=union <Unnamed 60>-Byte	4	0
 [array_types]
-Fmt0=u8[15]	4	0
-Fmt1=u8[16]	4	0
-Fmt2=u8[32]	4	0
-Fmt3=u8[34]	4	0
-Fmt4=u8[3]	4	0
-Fmt5=u8[40]	4	0
-Fmt6=u8[512]	4	0
-Fmt7=u8[5]	4	0
-Fmt8=u8[64]	4	0
-Fmt9=u8[84]	4	0
-Fmt10=u8[8]	4	0
+Fmt0=u8[14]	4	0
+Fmt1=u8[15]	4	0
+Fmt2=u8[16]	4	0
+Fmt3=u8[200]	4	0
+Fmt4=u8[32]	4	0
+Fmt5=u8[34]	4	0
+Fmt6=u8[3]	4	0
+Fmt7=u8[40]	4	0
+Fmt8=u8[512]	4	0
+Fmt9=u8[5]	4	0
+Fmt10=u8[64]	4	0
+Fmt11=u8[6]	4	0
+Fmt12=u8[7]	4	0
+Fmt13=u8[84]	4	0
+Fmt14=u8[8]	4	0
 [watch_formats]
 Fmt0={W}1:AddrH	4	0
 Fmt1={W}1:AdrSum	4	0
@@ -102,45 +114,47 @@ Fmt30={W}1:PocCmdDrvobj.WorkState.UseState.Group[1].NameLen	3	0
 Fmt31={W}1:PocCmdDrvobj.WorkState.UseState.MainWorkGroup.GroupNum	4	0
 Fmt32={W}1:PocCmdDrvobj.WorkState.UseState.MainWorkGroup.NameLen	4	0
 Fmt33={W}1:PocCmdDrvobj.WorkState.UseState.WorkGroup.NameLen	3	0
-Fmt34={W}1:cBuf	4	0
-Fmt35={W}1:cBuf[0]	4	0
-Fmt36={W}1:cBuf[10]	4	0
-Fmt37={W}1:cBuf[15]	4	0
-Fmt38={W}1:cBuf[16]	4	0
-Fmt39={W}1:cBuf[17]	4	0
-Fmt40={W}1:cBuf[18]	4	0
-Fmt41={W}1:cBuf[5]	4	0
-Fmt42={W}1:high	4	0
-Fmt43={W}1:i	3	0
-Fmt44={W}1:iCode	4	0
-Fmt45={W}1:low	4	0
-Fmt46={W}1:mid	3	0
-Fmt47={W}1:midVal	4	0
-Fmt48={W}1:pBuf[0]	4	0
-Fmt49={W}1:pBuf[1]	4	0
-Fmt50={W}1:pBuf[2]	4	0
-Fmt51={W}1:pBuf[3]	4	0
-Fmt52={W}1:pBuf[4]	4	0
-Fmt53={W}1:pBuf[5]	4	0
-Fmt54={W}1:pBuf[6]	4	0
-Fmt55={W}1:pBuf[7]	4	0
-Fmt56={W}1:pBuf[8]	4	0
-Fmt57={W}1:sum	4	0
-Fmt58={W}1:ucId	4	0
-Fmt59={W}1:value	4	0
-Fmt60={W}1:xCol	3	0
-Fmt61={W}1:yPage	3	0
+Fmt34={W}1:adr	4	0
+Fmt35={W}1:cBuf	4	0
+Fmt36={W}1:cBuf[0]	4	0
+Fmt37={W}1:cBuf[10]	4	0
+Fmt38={W}1:cBuf[15]	4	0
+Fmt39={W}1:cBuf[16]	4	0
+Fmt40={W}1:cBuf[17]	4	0
+Fmt41={W}1:cBuf[18]	4	0
+Fmt42={W}1:cBuf[5]	4	0
+Fmt43={W}1:high	4	0
+Fmt44={W}1:i	3	0
+Fmt45={W}1:iCode	4	0
+Fmt46={W}1:low	4	0
+Fmt47={W}1:mid	3	0
+Fmt48={W}1:midVal	4	0
+Fmt49={W}1:pBuf[0]	4	0
+Fmt50={W}1:pBuf[1]	4	0
+Fmt51={W}1:pBuf[2]	4	0
+Fmt52={W}1:pBuf[3]	4	0
+Fmt53={W}1:pBuf[4]	4	0
+Fmt54={W}1:pBuf[5]	4	0
+Fmt55={W}1:pBuf[6]	4	0
+Fmt56={W}1:pBuf[7]	4	0
+Fmt57={W}1:pBuf[8]	4	0
+Fmt58={W}1:sum	4	0
+Fmt59={W}1:ucId	4	0
+Fmt60={W}1:ucIndex0	3	0
+Fmt61={W}1:value	4	0
+Fmt62={W}1:xCol	3	0
+Fmt63={W}1:yPage	3	0
 [DataSample]
 LogEnabled=0
 GraphEnabled=0
 ShowTimeLog=1
-[TermIOLog]
-LoggingEnabled=_ 0
-LogFile=_ ""
 [Log file]
 LoggingEnabled=_ 0
 LogFile=_ ""
 Category=_ 0
+[TermIOLog]
+LoggingEnabled=_ 0
+LogFile=_ ""
 [Breakpoints]
 Count=0
 [Aliases]

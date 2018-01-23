@@ -5,6 +5,9 @@
 extern void ApiGpsCmd_PowerOnInitial(void);
 extern void ApiGpsCmd_100msRenew(void);//决定什么时候发送什么数据;
 extern void ApGpsCmd_10msRenew(void);//获取收到的指令，并解析
+
+extern u8 *ApiGps_GetTcpIpAddress();
+extern u8 *ApiGps_GetTcpPortAddress();
 //extern void ApiGpsCmd_PowerReset(void);
 //extern void ApiGpsCmd_1sRenew(void);
 //extern u8 * ApiGpsCmd_GetIP(void);

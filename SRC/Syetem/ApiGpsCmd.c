@@ -2,8 +2,6 @@
 #include <string.h>
 #include <stdio.h>
 #include<stdlib.h>
-//测试RAM
-
 
 u8 Test1=0;
 typedef enum{
@@ -306,6 +304,7 @@ typedef struct{
   u8 ucCommand[3];
   u8 ucBlock;
   _GpsPar GpsPar2;
+  _GpsPar GpsPar;//存放送EEPROM中读取的数
   //_GpsPar2 GpsPar2;
   _InfoRecord InfoRecord;
   union{
@@ -374,10 +373,13 @@ static void pack_data(u8 *pBuf, u16 ucLen);//消息包封装
 static u8 COMLHexArray2String(u8 * buf1,u8 Len1,u8 * buf2);//16进制数组转字符串
 void ApiGpsCmd_PowerOnInitial(void)//bubiao
 {
+  u16 i;
+  u8 ucIndex0 = 0, ucIndex1 = 0;
+  ADRLEN_INF	adr;
   
-    //malloc(sizeof(GpsFunDrvObj));测试使用
-//  u16 i;
-//  u8 ucIndex0 = 0, ucIndex1 = 0;
+  adr = CFG_GetCurAdr(ADR_IDGpsFun);//部标注册信息获取
+  FILE_Read2(adr.Adr,adr.Len-16,(u8*)(&GpsFunDrvObj.GpsPar));
+  
 
     GpsFunDrvObj.GpsPar2.LoginInfo.Province.usData=0x002c;//省域ID
     GpsFunDrvObj.GpsPar2.LoginInfo.County.usData=0x0300;//市县域ID
@@ -430,13 +432,50 @@ void ApiGpsCmd_PowerOnInitial(void)//bubiao
     GpsFunDrvObj.PositionSystem.GbSys.LoginInfo.ucParam.Msg.Bits.bLoginSuccess = OFF;
     GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.HeadInfo.stParam.MsgProperty.Bits.Encryption=0;
     GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.HeadInfo.stParam.MsgProperty.Bits.Subpackage=0;
-
+#if 1//从EEPROM中读取设备ID
+    ucIndex0 = strlen((char const *)GpsFunDrvObj.GpsPar.Gps.ID)-1;//ucIndex0为设备ID长度-1
+    if(ucIndex0 > 11)
+    {
+      ucIndex0 = 11;
+    }
+    for(i = 0; i < 12; i++)
+    {
+      if(i < strlen((char const*)GpsFunDrvObj.GpsPar.Gps.ID))
+      {
+        if(i % 2 == 0x00)
+        {
+          GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.HeadInfo.stParam.ucTerminalNo.ucData[ucIndex1]
+            =GpsFunDrvObj.GpsPar.Gps.ID[ucIndex0] - 0x30;
+        }
+        else
+        {
+          GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.HeadInfo.stParam.ucTerminalNo.ucData[ucIndex1]
+            +=(GpsFunDrvObj.GpsPar.Gps.ID[ucIndex0] - 0x30) << 0x04;
+          ucIndex1++;
+        }
+        ucIndex0--;
+      }
+      else//
+      {
+        if(i % 2 == 0x00)
+        {
+          GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.HeadInfo.stParam.ucTerminalNo.ucData[ucIndex1]=0;
+        }
+        else
+        {
+          GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.HeadInfo.stParam.ucTerminalNo.ucData[ucIndex1]+=0;
+          ucIndex1++;
+        }
+      }
+    }
+#else
     GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.HeadInfo.stParam.ucTerminalNo.ucData[5]=0x00;
     GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.HeadInfo.stParam.ucTerminalNo.ucData[4]=0x98;
     GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.HeadInfo.stParam.ucTerminalNo.ucData[3]=0x00;
     GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.HeadInfo.stParam.ucTerminalNo.ucData[2]=0x30;
     GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.HeadInfo.stParam.ucTerminalNo.ucData[1]=0x53;
     GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.HeadInfo.stParam.ucTerminalNo.ucData[0]=0x88;
+#endif
     COML_StringReverse(0x06,GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.HeadInfo.stParam.ucTerminalNo.ucData);
     GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.HeadInfo.stParam.SerialNo.usData=0x0000;
     		memcpy((u8*)&(GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.Message.LoginInfo),
@@ -1003,4 +1042,13 @@ u8 COMLHexArray2String(u8 * buf1,u8 Len1,u8 * buf2)//16进制数组转字符串
   buf2[2*Len1]='\0';
   Len2=2*Len1+1;
 return Len2;
+}
+
+u8 *ApiGps_GetTcpIpAddress()
+{
+  return GpsFunDrvObj.GpsPar.Gps.NetParam.Param.IP;
+}
+u8 *ApiGps_GetTcpPortAddress()
+{
+  return GpsFunDrvObj.GpsPar.Gps.NetParam.Param.Port;
 }

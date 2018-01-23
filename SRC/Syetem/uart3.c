@@ -1,4 +1,4 @@
-#include "stm8s.h"
+#include "AllHead.h"
 #include "uart3.h"
 #include <string.h>
 
@@ -445,11 +445,11 @@ static bool UART_WriteCommand(void)
 
 	for(i = 0;i < 4;i++)							//write command scan process
 	{
-		if(WRITE_TABLE[i] != UartDrvObj.TxRxBuf.cRxBuf[i]) 
-		{
-			return FALSE;
-		}
-	}
+          if(WRITE_TABLE[i] != UartDrvObj.TxRxBuf.cRxBuf[i]) 
+          {
+            return FALSE;
+          }
+        }
 
 	adr = UartDrvObj.TxRxBuf.cRxBuf[4];//0x02//cRxBuf[4]为地址高8位
 	adr <<= 8;
@@ -468,11 +468,11 @@ static bool UART_WriteCommand(void)
 		{
 			goto UARTWriteCommand_Exit;
 		}
-		/*if ((adr,0x08,UartDrvObj.TxRxBuf.cRxBuf) == FALSE)
+		if (FILE_Write2(adr,0x08,UartDrvObj.TxRxBuf.cRxBuf) == FALSE)
 		{
 			UART_ErrorAck(UART_READWRITE);
 			goto UARTWriteCommand_Exit;
-		}*/
+		}
 		adr += 8;
 		len -= 8;
 		UART_RightAck(len);//right ack process
@@ -484,11 +484,11 @@ static bool UART_WriteCommand(void)
 		{
 			goto UARTWriteCommand_Exit;
 		}
-		/*if (FILE_Write(adr,len,UartDrvObj.TxRxBuf.cRxBuf) == FALSE) 
+		if (FILE_Write2(adr,len,UartDrvObj.TxRxBuf.cRxBuf) == FALSE) 
 		{
 			UART_ErrorAck(UART_READWRITE);
 			goto UARTWriteCommand_Exit;
-		}*/
+		}
 		UART_RightAck(0x00);
 	}
 UARTWriteCommand_Exit:

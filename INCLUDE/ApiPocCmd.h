@@ -37,7 +37,8 @@ extern bool POC_Receive86_Flag;
 
 //void ApiPocCmd_PowerOnInitial(void);
 extern void ApiPocCmd_WritCommand(PocCommType id, u8 *buf, u16 len);
-extern u8 ApiPocCmd_user_info_set(u8 *pBuf, u8 len);
+//extern bool ApiPocCmd_user_info_set(u8 *pBuf, u8 len);
+extern bool ApiPocCmd_user_info_set(u8 *pBuf, u8 len);//cTxBuf为存放ip账号密码的信息
 extern void ApiPocCmd_10msRenew(void);
 extern bool ApiPocCmd_GetPttState(void);//判断PPT状态，是否有话权;
 extern bool ApiAtCmd_GetLoginState(void);

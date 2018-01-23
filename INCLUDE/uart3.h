@@ -28,5 +28,6 @@ extern void UART3_ToMcuMain(void);
 extern void UART3_SendByte(u8 data);
 extern void UART3_SendString(u8* Data,u16 len);
 extern u8 UART3_ReceiveByte(void);
-
+extern bool FILE_Write(u16 iAdr,u16 iLen,u8 *pBuf);//如果pBuf是字符串,则最后一位为\0
+extern bool FILE_Read(u16 iAdr,u16 iLen,u8 *pBuf);
 #endif

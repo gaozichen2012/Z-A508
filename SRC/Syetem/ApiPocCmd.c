@@ -6,6 +6,7 @@
 #define APIPOC_UserName_Len			30
 
 u8 ReadBuffer[80];//Test 存EEPROM读取的数据使用
+u8 TestReadBuffer[300];//存EEPROM读取部标数据测试
 u8 UnicodeForGbk_MainWorkNameBuf[15];
 u8 UnicodeForGbk_MainUserNameBuf[15];
 const u8 *ucAtPocHead   = "AT+POC=";
@@ -147,6 +148,7 @@ void ApiPocCmd_WritCommand(PocCommType id, u8 *buf, u16 len)
   case PocComm_SetParam://设置账号密码
     DrvGD83_UART_TxCommand((u8 *)ucSetIPAndID,strlen((char const *)ucSetIPAndID));
     FILE_Read(0,80,ReadBuffer);//80位
+    FILE_Read(0x230,250,TestReadBuffer);//0x260-0x2cc
     DrvGD83_UART_TxCommand(ReadBuffer, strlen((char const *)ReadBuffer));
     break;
   case PocComm_GetParam:
@@ -193,7 +195,7 @@ void ApiPocCmd_WritCommand(PocCommType id, u8 *buf, u16 len)
 }
 
 //写频写入数据存入EEPROM
-u8 ApiPocCmd_user_info_set(u8 *pBuf, u8 len)//cTxBuf为存放ip账号密码的信息
+bool ApiPocCmd_user_info_set(u8 *pBuf, u8 len)//cTxBuf为存放ip账号密码的信息
 {
 	bool r;
 	u8 i, uRet = 0;
@@ -246,7 +248,7 @@ void ApiPocCmd_10msRenew(void)
     {
     case 0x0A://判断讲话状态
 #if 1
-            ucId = COML_AscToHex(pBuf+2, 0x02);
+      ucId = COML_AscToHex(pBuf+2, 0x02);
       if(ucId==0x00)
       {
         if(TASK_Ptt_StartPersonCalling_Flag==TRUE)//如果按下PTT键单呼某用户
@@ -257,7 +259,7 @@ void ApiPocCmd_10msRenew(void)
         }
       }
 #else
-            ucId = COML_AscToHex(pBuf+2, 0x02);
+      ucId = COML_AscToHex(pBuf+2, 0x02);
       if(ucId==0x00)
       {
         if(TASK_Ptt_StartPersonCalling_Flag==TRUE)//如果按下PTT键单呼某用户
