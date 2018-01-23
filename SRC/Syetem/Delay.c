@@ -7,6 +7,7 @@
 
 #define TimeoutLimit            30//键盘超时锁定时间10s
 u8 DEL_500ms_Count=0;
+u8 DEL_500ms_Count2=0;
 u8 TimeCount=0;
 u8 TimeCount2=0;
 u8 TimeCount3=0;
@@ -204,8 +205,8 @@ static void DEL_100msProcess(void)
   {
     DelDrvObj.Msg.Bit.b100ms = DEL_IDLE;
     LED_IntOutputRenew();//LED output renew process
-    ApiGpsCmd_100msRenew();
     ApiAtCmd_Get_location_Information();
+    ApiGpsCmd_100msRenew();
     if(DelDrvObj.Msg.Bit.b500Alternate == DEL_IDLE)
     {
       DelDrvObj.Msg.Bit.b500Alternate = DEL_RUN;
@@ -227,6 +228,13 @@ static void DEL_500msProcess(void)			//delay 500ms process server
     DelDrvObj.Msg.Bit.b500ms = DEL_IDLE;
     VOICE_1sProcess();
     DEL_500ms_Count++;
+    DEL_500ms_Count2++;
+    if(DEL_500ms_Count2>=10)
+    {
+      ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)"AT^CDMATIME",strlen((char const *)"AT^CDMATIME"));//发送获取CDMATIME获取时间
+      DEL_500ms_Count2=0;
+    }
+    
     if(DEL_500ms_Count>1) DEL_500ms_Count=0;
     switch(DEL_500ms_Count)
     {

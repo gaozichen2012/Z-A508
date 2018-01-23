@@ -29,6 +29,7 @@ extern u8 VoiceEnd_Flag;
 extern u8 KeyDownUpChoose_GroupOrUser_Flag;
 extern u8 CSQ_Flag;
 extern bool PositionInformationSendToATPORT_Flag;
+extern bool PositionInfoSendToATPORT_RedLed_Flag;
 extern bool ApiAtCmd_WritCommand(AtCommType id, u8 *buf, u16 len);
 extern bool ApiAtCmd_PlayVoice(AtVoiceType id, u8 *buf, u8 len);
 extern void ApiAtCmd_100msRenew(void);

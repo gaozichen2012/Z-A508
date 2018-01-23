@@ -6,7 +6,7 @@
 #define APIPOC_UserName_Len			30
 
 u8 ReadBuffer[80];//Test 存EEPROM读取的数据使用
-u8 TestReadBuffer[300];//存EEPROM读取部标数据测试
+//u8 TestReadBuffer[300];//存EEPROM读取部标数据测试
 u8 UnicodeForGbk_MainWorkNameBuf[15];
 u8 UnicodeForGbk_MainUserNameBuf[15];
 const u8 *ucAtPocHead   = "AT+POC=";
@@ -148,7 +148,7 @@ void ApiPocCmd_WritCommand(PocCommType id, u8 *buf, u16 len)
   case PocComm_SetParam://设置账号密码
     DrvGD83_UART_TxCommand((u8 *)ucSetIPAndID,strlen((char const *)ucSetIPAndID));
     FILE_Read(0,80,ReadBuffer);//80位
-    FILE_Read(0x230,250,TestReadBuffer);//0x260-0x2cc
+//    FILE_Read(0x230,250,TestReadBuffer);//0x260-0x2cc
     DrvGD83_UART_TxCommand(ReadBuffer, strlen((char const *)ReadBuffer));
     break;
   case PocComm_GetParam:

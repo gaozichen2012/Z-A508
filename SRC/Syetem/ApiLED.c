@@ -24,16 +24,25 @@ void LED_IntOutputRenew(void)
     }
     else
     {
-    LED_Conut++;
-    if(LED_Conut==20)
-    {
-      Set_GreenLed(LED_ON);
-    }
-    if(LED_Conut==23)
-    {
-      Set_GreenLed(LED_OFF);
-      LED_Conut=0;
-    }
+      LED_Conut++;
+      if(LED_Conut>=29)
+      {
+        if(PositionInfoSendToATPORT_RedLed_Flag==TRUE)
+        {
+          Set_RedLed(LED_ON);
+        }
+        else
+        {
+          Set_GreenLed(LED_ON);
+        }
+      }
+      if(LED_Conut>=30)
+      {
+        PositionInfoSendToATPORT_RedLed_Flag=FALSE;
+        Set_GreenLed(LED_OFF);
+        Set_RedLed(LED_OFF);
+        LED_Conut=0;
+      }
     }
   }
 }

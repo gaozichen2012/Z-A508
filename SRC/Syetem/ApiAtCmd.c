@@ -32,7 +32,7 @@ u8 *ucRxCheckPppClose = "^POCNETOPEN:0";
 u8 *ucCheckRssi = "AT+CSQ?";
 u8 *ucCheckCard = "AT^GETICCID";
 bool PositionInformationSendToATPORT_Flag=FALSE;
-
+bool PositionInfoSendToATPORT_RedLed_Flag=FALSE;
 #define DrvMC8332_IccId_Len 30
 typedef struct{
 	struct{
@@ -331,6 +331,7 @@ void ApiAtCmd_10msRenew(void)
     ucRet = memcmp(pBuf, ucGpsPosition, 7);//CSQ:31
     if(ucRet == 0x00)
     {
+      PositionInfoSendToATPORT_RedLed_Flag=TRUE;
       PositionInformationSendToATPORT_Flag=TRUE;
       if(Len > 7)//去頭
       {
@@ -349,14 +350,14 @@ void ApiAtCmd_10msRenew(void)
 void ApiAtCmd_Get_location_Information(void)
 {
   u8 *pBuf;
-  u8 i=0,cDot=0,cHead=0;
+  u8 i=0,cDot=0,cDot2=0,cHead=0,cHead2=0;
   
   u8 cCount=0;//Time
   
   
 /***************获取经纬度数据*********************************************************************************************************/
   pBuf=AtCmdDrvobj.NetState.Position.Buf;
-  for(;i<AtCmdDrvobj.NetState.Position.BufLen;i++)
+  for(i=0;i<AtCmdDrvobj.NetState.Position.BufLen;i++)
   {
     if(','==pBuf[i])
     {
@@ -395,54 +396,54 @@ void ApiAtCmd_Get_location_Information(void)
 //2018- 1 -18  1  9  :  4   5  :  1
 
   pBuf=AtCmdDrvobj.NetState.TimeBuf;
-  for(;i<AtCmdDrvobj.NetState.TimeBufLen;i++)
+  for(i=0;i<AtCmdDrvobj.NetState.TimeBufLen;i++)
   {
     if('-'==pBuf[i])
     {
       switch(cCount)
       {
       case 0:
-        AtCmdDrvobj.NetState.ucDate[0] = COML_AscToHex(&pBuf[cHead+2], i-2);//年
+        AtCmdDrvobj.NetState.ucDate[0] = COML_AscToHex(&pBuf[cHead2+2], i-2);//年
         break;
       case 1:
-        AtCmdDrvobj.NetState.ucDate[1] = COML_AscToHex(&pBuf[cHead], i-cHead);//月
+        AtCmdDrvobj.NetState.ucDate[1] = COML_AscToHex(&pBuf[cHead2], i-cHead2);//月
         break;
       default:
         break;
         
       }
-      cHead = i+1;
+      cHead2 = i+1;
       cCount++;
     }
     else 
     {
       if(':' == pBuf[i])//2
       {
-        switch(cDot)
+        switch(cDot2)
         {
         case 0:
-          if((i - cHead) >= 1)//i-cHead=2
+          if((i - cHead2) >= 1)//i-cHead=2
           {
-            AtCmdDrvobj.NetState.ucTime[0] = COML_AscToHex(&pBuf[cHead], i-cHead);//时
+            AtCmdDrvobj.NetState.ucTime[0] = COML_AscToHex(&pBuf[cHead2], i-cHead2);//时
           }
           break;
         case 1:
-          if((i - cHead) >= 1)
+          if((i - cHead2) >= 1)
           {
-            AtCmdDrvobj.NetState.ucTime[1] = COML_AscToHex(&pBuf[cHead], i-cHead);//分
+            AtCmdDrvobj.NetState.ucTime[1] = COML_AscToHex(&pBuf[cHead2], i-cHead2);//分
             AtCmdDrvobj.NetState.ucTime[2] = COML_AscToHex(&pBuf[i+1],AtCmdDrvobj.NetState.TimeBufLen-i-1);//秒
           }
           break;
         default:
           break;
         }
-        cHead = i+1;
-        cDot++;
+        cHead2 = i+1;
+        cDot2++;
       }
       if(' '==pBuf[i])//识别空格
       {
-        AtCmdDrvobj.NetState.ucDate[2] = COML_AscToHex(&pBuf[cHead], i-cHead);//日
-        cHead = i+1;
+        AtCmdDrvobj.NetState.ucDate[2] = COML_AscToHex(&pBuf[cHead2], i-cHead2);//日
+        cHead2 = i+1;
       }
     }
   }

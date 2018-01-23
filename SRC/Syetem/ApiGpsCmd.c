@@ -603,7 +603,7 @@ void ApiGpsCmd_100msRenew(void)//决定什么时候发送什么数据
                     else
                     {
                       GpsCmd_GbWritCommand(GPSCOMM_Puls, (void*)0, 0);//设置终端心跳
-                     // ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)"AT^CDMATIME",strlen((char const *)"AT^CDMATIME"));//发送获取CDMATIME获取时间
+                     //ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)"AT^CDMATIME",strlen((char const *)"AT^CDMATIME"));//发送获取CDMATIME获取时间
                     }
 #else
                     GpsCmd_GbWritCommand(GPSCOMM_Login, (void*)0, 0);
@@ -949,7 +949,7 @@ static bool GpsCmd_GbWritCommand(GpsCommType id, u8 *buf, u8 len)
 
     ApiAtCmd_WritCommand(ATCOMM10_SendTcp, GpsFunDrvObj.PositionSystem.GbSys.TempBuf.ucTestData,GpsFunDrvObj.PositionSystem.GbSys.TempBuf.TestLen);//临时缓冲区存放加密后的设备注册消息包
 
-    ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)"AT^CDMATIME",strlen((char const *)"AT^CDMATIME"));//发送获取CDMATIME获取时间
+    //ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)"AT^CDMATIME",strlen((char const *)"AT^CDMATIME"));//发送获取CDMATIME获取时间
     break;
   case GPSCOMM_PositionAck:
     GpsCmd_GbDataTransave(GPSCOMM_PositionAck);
