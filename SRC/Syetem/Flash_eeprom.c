@@ -70,7 +70,7 @@ bool FILE_Write(u16 iAdr,u16 iLen,u8 *pBuf)//如果pBuf是字符串,则最后一位为\0
 {
   u16 EEPROM_WriteCount;
   u32 AdrSum=0x00;
-  for(EEPROM_WriteCount=0x01;EEPROM_WriteCount<iLen;EEPROM_WriteCount++)
+  for(EEPROM_WriteCount=0x01;EEPROM_WriteCount<iLen+1;EEPROM_WriteCount++)
   {
     AdrSum=0x4000+iAdr+EEPROM_WriteCount-1;
     WriteEEPROMByte(AdrSum, pBuf[EEPROM_WriteCount]);

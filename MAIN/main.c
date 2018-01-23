@@ -3,6 +3,7 @@
 void main(void)
 {
   main_app();
+  
 }
 #ifdef USE_FULL_ASSERT
 
