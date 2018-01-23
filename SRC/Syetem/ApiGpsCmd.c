@@ -594,7 +594,17 @@ void ApiGpsCmd_100msRenew(void)//决定什么时候发送什么数据
                   if(GpsFunDrvObj.PositionSystem.GbSys.LoginInfo.ucParam.Msg.Bits.bLoginSuccess==OFF)//
                   {
 #if 1//测试不注册鉴权，直接发送位置信息
-                    GpsCmd_GbWritCommand(GPSCOMM_Position, (void*)0, 0);
+                    if(PositionInformationSendToATPORT_Flag==TRUE)
+                    {
+                      GpsCmd_GbWritCommand(GPSCOMM_Position, (void*)0, 0);
+                      //ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)"AT^CDMATIME",strlen((char const *)"AT^CDMATIME"));//发送获取CDMATIME获取时间
+                      PositionInformationSendToATPORT_Flag=FALSE;
+                    }
+                    else
+                    {
+                      GpsCmd_GbWritCommand(GPSCOMM_Puls, (void*)0, 0);//设置终端心跳
+                     // ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)"AT^CDMATIME",strlen((char const *)"AT^CDMATIME"));//发送获取CDMATIME获取时间
+                    }
 #else
                     GpsCmd_GbWritCommand(GPSCOMM_Login, (void*)0, 0);
 #endif
@@ -812,6 +822,7 @@ static void GpsCmd_GbDataTransave(GpsCommType GpsComm)//定位信息转换，等会要用到
   
   GpsFunDrvObj.InfoRecord.Position.ulLatitude =Data_Longitude_Minute()*1000000+Data_Longitude_Second();
   GpsFunDrvObj.InfoRecord.Position.ulLongitude=Data_Latitude_Minute()*1000000+Data_Latitude_Second();
+  GpsFunDrvObj.InfoRecord.Position.usSpeed=1;
   //经纬度成功存组，准备与平台连接，收到一次数据发送一次数据
   pPositInfo->stParam.ulLatitude = GpsFunDrvObj.InfoRecord.Position.ulLatitude;//经纬度在此存入（此时的GpsFunDrvObj.InfoRecord.Position.ulLatitude已经乘以1000000）
   pPositInfo->stParam.ulLongitude = GpsFunDrvObj.InfoRecord.Position.ulLongitude;//经纬度在此存入
@@ -869,12 +880,17 @@ static bool GpsCmd_GbWritCommand(GpsCommType id, u8 *buf, u8 len)
     enableInterrupts();
     break;
   case GPSCOMM_Puls:
-    GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.HeadInfo.stParam.ucMsgID.usData = 0x0002;
-    COML_StringReverse(0x02,GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.HeadInfo.stParam.ucMsgID.ucData);
+     GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.HeadInfo.stParam.ucMsgID.usData = 0x0002;
+    //COML_StringReverse(0x02,GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.HeadInfo.stParam.ucMsgID.ucData);
     GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.HeadInfo.stParam.MsgProperty.Bits.Len = 0x0000;
-    COML_StringReverse(0x02,GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.HeadInfo.stParam.MsgProperty.ucData);
+    //COML_StringReverse(0x02,GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.HeadInfo.stParam.MsgProperty.ucData);
     pack_data(GpsFunDrvObj.PositionSystem.GbSys.MsgBody.ucData, GPS_GB_HEAD_LEN);
-    ApiAtCmd_WritCommand(ATCOMM10_SendTcp, GpsFunDrvObj.PositionSystem.GbSys.TempBuf.ucData,GpsFunDrvObj.PositionSystem.GbSys.TempBuf.Len);
+    GpsFunDrvObj.PositionSystem.GbSys.TempBuf.TestLen=COMLHexArray2String(GpsFunDrvObj.PositionSystem.GbSys.TempBuf.ucData,
+                                                                          GpsFunDrvObj.PositionSystem.GbSys.TempBuf.Len,
+                                                                          GpsFunDrvObj.PositionSystem.GbSys.TempBuf.ucTestData);
+    ApiAtCmd_WritCommand(ATCOMM10_SendTcp, GpsFunDrvObj.PositionSystem.GbSys.TempBuf.ucTestData,GpsFunDrvObj.PositionSystem.GbSys.TempBuf.TestLen);//临时缓冲区存放加密后的设备注册消息包
+    
+    //ApiAtCmd_WritCommand(ATCOMM10_SendTcp, GpsFunDrvObj.PositionSystem.GbSys.TempBuf.ucData,GpsFunDrvObj.PositionSystem.GbSys.TempBuf.Len);
     break;
   case GPSCOMM_Login:
     GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.HeadInfo.stParam.MsgProperty.Bits.Encryption=0;
@@ -930,17 +946,10 @@ static bool GpsCmd_GbWritCommand(GpsCommType id, u8 *buf, u8 len)
     GpsFunDrvObj.PositionSystem.GbSys.TempBuf.TestLen=COMLHexArray2String(GpsFunDrvObj.PositionSystem.GbSys.TempBuf.ucData,
                                                                           GpsFunDrvObj.PositionSystem.GbSys.TempBuf.Len,
                                                                           GpsFunDrvObj.PositionSystem.GbSys.TempBuf.ucTestData);
-    if(PositionInformationSendToATPORT_Flag==TRUE)
-    {
-      ApiAtCmd_WritCommand(ATCOMM10_SendTcp, GpsFunDrvObj.PositionSystem.GbSys.TempBuf.ucTestData,GpsFunDrvObj.PositionSystem.GbSys.TempBuf.TestLen);//临时缓冲区存放加密后的设备注册消息包
-      PositionInformationSendToATPORT_Flag=FALSE;
-    }
-    else
-    {
-      ApiAtCmd_WritCommand(ATCOMM10_SendTcp, GpsFunDrvObj.PositionSystem.GbSys.TempBuf.ucTestData,GpsFunDrvObj.PositionSystem.GbSys.TempBuf.TestLen);//临时缓冲区存放加密后的设备注册消息包
-    }
+
+    ApiAtCmd_WritCommand(ATCOMM10_SendTcp, GpsFunDrvObj.PositionSystem.GbSys.TempBuf.ucTestData,GpsFunDrvObj.PositionSystem.GbSys.TempBuf.TestLen);//临时缓冲区存放加密后的设备注册消息包
+
     ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)"AT^CDMATIME",strlen((char const *)"AT^CDMATIME"));//发送获取CDMATIME获取时间
-    //ApiAtCmd_WritCommand(ATCOMM10_SendTcp, GpsFunDrvObj.PositionSystem.GbSys.TempBuf.ucData,GpsFunDrvObj.PositionSystem.GbSys.TempBuf.Len);
     break;
   case GPSCOMM_PositionAck:
     GpsCmd_GbDataTransave(GPSCOMM_PositionAck);
