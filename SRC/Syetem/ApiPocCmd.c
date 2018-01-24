@@ -368,6 +368,82 @@ void ApiPocCmd_10msRenew(void)
         }
       }
 /****************群组状态判断及群组信息获取**************************************************************/
+#if 1//将群组名与单呼名分开
+      ucId = COML_AscToHex(pBuf+10, 0x02);
+      if(ucId==0xff)
+      {
+        POC_EnterGroupCalling_Flag=0;//0默认 1在群组内 2正在进入
+        POC_QuitGroupCalling_Flag=2;//0默认 1在群组内 2正在退出
+#if 1//被呼主动结束单呼不显示群组名BUG
+        POC_EnterPersonalCalling_Flag=0;
+        POC_QuitPersonalCalling_Flag=2;
+#endif
+      }
+      else//正在进入群组或单呼
+      {
+        if(PocCmdDrvobj.WorkState.UseState.Msg.Bits.PersonalCallingMode == 0x01)//如果是进入单呼模式则86存入单呼名
+        {
+          POC_EnterGroupCalling_Flag=2;
+          POC_QuitGroupCalling_Flag=1;
+
+            if(Len >= 12)//如果群组id后面还有群组名
+            {
+              PocCmdDrvobj.WorkState.UseState.PttUserName.NameLen = Len - 12;
+              if(PocCmdDrvobj.WorkState.UseState.PttUserName.NameLen > APIPOC_UserName_Len)
+              {
+                PocCmdDrvobj.WorkState.UseState.PttUserName.NameLen = APIPOC_UserName_Len;
+              }
+            }
+            else//无群组名
+            {
+              PocCmdDrvobj.WorkState.UseState.PttUserName.NameLen = 0x00;
+            }
+            for(i = 0x00; i < PocCmdDrvobj.WorkState.UseState.PttUserName.NameLen; i++)
+            {
+              PocCmdDrvobj.WorkState.UseState.PttUserName.Name[i] = pBuf[i+12];//存入获取的群组名
+            }          
+        }
+        else//进组存组名
+        {
+          POC_EnterGroupCalling_Flag=2;
+          POC_QuitGroupCalling_Flag=1;
+          PocCmdDrvobj.WorkState.UseState.MainWorkGroup.PresentGroupId = ucId;
+          ucId = 0x00;
+          for(i = 0x00; i < 0x08; i++)
+          {
+            PocCmdDrvobj.WorkState.UseState.WorkGroup.Id[i] = pBuf[i+4];
+            PocCmdDrvobj.WorkState.UseState.MainWorkGroup.Id[i] = PocCmdDrvobj.WorkState.UseState.WorkGroup.Id[i];
+            if(PocCmdDrvobj.WorkState.UseState.WorkGroup.Id[i] != 'f') //=f为离开群组
+              ucId++;
+          }
+          if(ucId==0x00)//如果为指令代表离开群组
+          {}
+          else//r如果为在群组内
+          {
+            if(Len >= 12)//如果群组id后面还有群组名
+            {
+              PocCmdDrvobj.WorkState.UseState.WorkGroup.NameLen = Len - 12;
+              if(PocCmdDrvobj.WorkState.UseState.WorkGroup.NameLen > APIPOC_UserName_Len)
+              {
+                PocCmdDrvobj.WorkState.UseState.WorkGroup.NameLen = APIPOC_UserName_Len;
+              }
+            }
+            else//无群组名
+            {
+              PocCmdDrvobj.WorkState.UseState.WorkGroup.NameLen = 0x00;
+            }
+            for(i = 0x00; i < PocCmdDrvobj.WorkState.UseState.WorkGroup.NameLen; i++)
+            {
+              PocCmdDrvobj.WorkState.UseState.WorkGroup.Name[i] = pBuf[i+12];//存入获取的群组名
+              PocCmdDrvobj.WorkState.UseState.MainWorkGroup.Name[i] = PocCmdDrvobj.WorkState.UseState.WorkGroup.Name[i];
+            }
+            PocCmdDrvobj.WorkState.UseState.MainWorkGroup.NameLen = PocCmdDrvobj.WorkState.UseState.WorkGroup.NameLen;
+          }
+        }
+      }
+        
+        
+#else
       ucId = COML_AscToHex(pBuf+10, 0x02);
       if(ucId==0xff)
       {
@@ -416,6 +492,7 @@ void ApiPocCmd_10msRenew(void)
       PocCmdDrvobj.WorkState.UseState.MainWorkGroup.NameLen = PocCmdDrvobj.WorkState.UseState.WorkGroup.NameLen;
       }
       }
+#endif
       break;
     case 0x91://通知进入某种模式（进入退出一键告警、单呼模式）
       ucId = COML_AscToHex(pBuf+2, 0x02);
@@ -595,7 +672,7 @@ u8 *UnicodeForGbk_MainUserName(void)
   u8 *Buf1;
   u8 Buf2[30];
 
-  u8 Len,i;
+  u8 Len=0,i=0;
   Buf1=ApiAtCmd_GetMainUserName();
   Len=strlen((char const *)ApiAtCmd_GetMainUserName());
   while(1)

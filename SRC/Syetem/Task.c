@@ -193,7 +193,7 @@ void Task_RunNormalOperation(void)
     
     KeyCount_PersonalCalling++;
     
-    if(KeyCount_PersonalCalling>=200)
+    if(KeyCount_PersonalCalling>=2)
     {
       Key_PersonalCalling_Flag=1;
       VOICE_SetOutput(ATVOICE_FreePlay,"2a4e7c542000106258540990e962",28);//个呼成员选择
@@ -241,36 +241,16 @@ void Task_RunNormalOperation(void)
   }
   
 /***********判断正常进组；正常退出组;被单呼模式；退出单呼模式；主动开始单呼；单呼；主动退出单呼*********************************************************************************************************************/
-  /*if(POC_AtEnterPersonalCalling_Flag==2)//主动开始单呼模式
-  {
-      api_lcd_pwr_on_hint(HexToChar_MainUserId());//显示当前群组ID
-      api_lcd_pwr_on_hint4("             ");//清屏
-      api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
-      api_disp_icoid_output( eICO_IDPOWERH, TRUE, TRUE);//显示个呼图标
-      api_disp_all_screen_refresh();// 全屏统一刷新
-      POC_AtEnterPersonalCalling_Flag=1;
-  }
-  else
-  {
-    if(POC_AtQuitPersonalCalling_Flag==2)
-    {
-      POC_AtQuitPersonalCalling_Flag=0;
-      //退出单呼无需处理，进入群组处理
-    }
-  }*/
-
-
-
-  if(POC_EnterPersonalCalling_Flag==2)//如果是正在接入单呼-------------------------------
-    {
+if(POC_EnterPersonalCalling_Flag==2)//如果是被单呼
+{
       
       api_lcd_pwr_on_hint(HexToChar_MainUserId());//显示当前群组ID
       api_lcd_pwr_on_hint4("             ");//清屏
-      api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
+      api_lcd_pwr_on_hint4(UnicodeForGbk_MainUserName());//显示当前用户昵称
       api_disp_icoid_output( eICO_IDPOWERH, TRUE, TRUE);//显示个呼图标
       api_disp_all_screen_refresh();// 全屏统一刷新
       POC_EnterPersonalCalling_Flag=1;//在单呼模式
-    }
+}
     else//如果是正常进组；组内；正常退出组;单呼；退出单呼模式；
     {
       if(POC_EnterPersonalCalling_Flag==0)//如果是正常进组；组内；正常退出组
@@ -278,11 +258,11 @@ void Task_RunNormalOperation(void)
         if(POC_EnterGroupCalling_Flag==2)//正在进入群组
         {
 
-          if(POC_AtEnterPersonalCalling_Flag==2)//主动开始单呼模式
+          if(POC_AtEnterPersonalCalling_Flag==2)//主动开始单呼模式(实际为单呼结束)
           {
           api_lcd_pwr_on_hint("                ");//清屏
-          api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
-          api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
+          api_lcd_pwr_on_hint(HexToChar_MainUserId());//显示当前用户ID
+          api_lcd_pwr_on_hint4(UnicodeForGbk_MainUserName());//显示当前用户昵称
           api_disp_icoid_output( eICO_IDPOWERH, TRUE, TRUE);//显示个呼图标
           api_disp_all_screen_refresh();// 全屏统一刷新//可能会对POC开机PoC指令识别有影响
             POC_AtEnterPersonalCalling_Flag=1;
@@ -290,7 +270,8 @@ void Task_RunNormalOperation(void)
           else
           {
             if(POC_AtEnterPersonalCalling_Flag==1)
-            {}
+            {
+            }
             else
             {
               api_lcd_pwr_on_hint("                ");//清屏
