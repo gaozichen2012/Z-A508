@@ -26,6 +26,7 @@ typedef enum {					//task id code process
         
 }TASK_CODE;
 TASKAPI bool NoUseNum;
+TASKAPI u8 NetworkType_2Gor3G_Flag;
 TASKAPI bool TASK_Ptt_StartPersonCalling_Flag;
 TASKAPI void Delay_100ms(u8 T);
 TASKAPI u8 Key_PersonalCalling_Flag;

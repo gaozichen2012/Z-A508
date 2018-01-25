@@ -441,8 +441,7 @@ void ApiPocCmd_10msRenew(void)
           }
         }
       }
-        
-        
+
 #else
       ucId = COML_AscToHex(pBuf+10, 0x02);
       if(ucId==0xff)

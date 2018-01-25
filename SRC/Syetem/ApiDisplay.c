@@ -270,46 +270,37 @@ void api_disp_all_screen_refresh(void)
 ********************************************************************************/
 static void DISP_MulTypePro(DISP_CHAR CharInfo, u8 *CharData)
 {
-
   u8 CharCodeH;
   u8 CharCodeL;
-	u16 CharCode;
-	DISP_CHAR DisInfo;
-	u8  iLen = 0;//34
-        u8  CharBuf[34];
-	DisInfo = CharInfo;
-
-	if ((CharInfo.DispType & 0x80) != 0x00)
-	{
-		DisInfo.DispLenth = 0x00;
-                
-                
-
-		for (; *CharData != 0x00; DisInfo.DispLenth++)
-		{
-			if (DisInfo.DispLenth >= CharInfo.DispLenth) { return; }//（修改当显示长度为16时的显示问题）
-			CharCode = *CharData;
-
-			DisInfo.DispAddX = CharInfo.DispAddX + iLen;
-			DisInfo.DispType = (DISP_TYPE)(CharInfo.DispType & BASETYPE);
-			
-			if (*CharData >= 0x80)//为中文字符
-			{
-				iLen++;
-				CharData++;
-				CharCode <<= 0x08;
-				CharCode |= (*CharData);
-				DisInfo.DispType = DISP_IDCN1516;
-				DisInfo.DispLenth++;//当显示中文，长度为16时的显示问题
-                        CharCodeH=(CharCode&0xff00)>>8;
-                        CharCodeL=CharCode&0x00ff;
-			}
-                        //GB2312_16_GetData(0xa3,0x65+0x80,CharBuf);//CharData[0]
-                        //GB2312_16_GetData(0xa3,0x42+0x80,CharBuf);
-			drv_gt20_data_output(DisInfo.DispType, CharCode, CharBuf);
-                        
-                        
-                        //UNICODE_16_GetData(0xff42,CharBuf);
+  u16 CharCode;
+  DISP_CHAR DisInfo;
+  u8  iLen = 0;//34
+  u8  CharBuf[34];
+  DisInfo = CharInfo;
+  if ((CharInfo.DispType & 0x80) != 0x00)
+  {
+    DisInfo.DispLenth = 0x00;
+    for (; *CharData != 0x00; DisInfo.DispLenth++)
+    {
+      if (DisInfo.DispLenth >= CharInfo.DispLenth) { return; }//（修改当显示长度为16时的显示问题）
+      CharCode = *CharData;
+      DisInfo.DispAddX = CharInfo.DispAddX + iLen;
+      DisInfo.DispType = (DISP_TYPE)(CharInfo.DispType & BASETYPE);
+      if (*CharData >= 0x80)//为中文字符
+      {
+        iLen++;
+        CharData++;
+        CharCode <<= 0x08;
+        CharCode |= (*CharData);
+        DisInfo.DispType = DISP_IDCN1516;
+        DisInfo.DispLenth++;//当显示中文，长度为16时的显示问题
+        CharCodeH=(CharCode&0xff00)>>8;
+        CharCodeL=CharCode&0x00ff;
+      }
+      //GB2312_16_GetData(0xa3,0x65+0x80,CharBuf);//CharData[0]
+      //GB2312_16_GetData(0xa3,0x42+0x80,CharBuf);
+      drv_gt20_data_output(DisInfo.DispType, CharCode, CharBuf);
+      //UNICODE_16_GetData(0xff42,CharBuf);
 			DISP_DataBuf(DisInfo, CharBuf);
                         
 			CharData++;

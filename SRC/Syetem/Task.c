@@ -2,7 +2,7 @@
 #include "AllHead.h"
 bool NoUseNum=FALSE;
 u8 AlarmCount=4;//2G3G切换计数,默认为3G模式
-
+u8 NetworkType_2Gor3G_Flag=3;
 #if 1 //test
 u8 Key_Flag_0=0;
 u8 Key_PersonalCalling_Flag=0;
@@ -211,6 +211,7 @@ void Task_RunNormalOperation(void)
     switch(AlarmCount)
     {
     case 4://切换为2G模式
+      NetworkType_2Gor3G_Flag=2;
       VOICE_SetOutput(ATVOICE_FreePlay,"517fdc7e075262633a4e32004700216a0f5f",36);//网络切换为2G模式
       api_disp_icoid_output( eICO_IDPOWERL, TRUE, TRUE);//图标：2G
       api_disp_all_screen_refresh();// 全屏统一刷新
@@ -227,6 +228,7 @@ void Task_RunNormalOperation(void)
       AlarmCount=8;
       break;*/
     case 8://切换为3G模式
+      NetworkType_2Gor3G_Flag=3;
       VOICE_SetOutput(ATVOICE_FreePlay,"517fdc7e075262633a4e33004700216a0f5f",36);//网络切换为3G模式
       api_disp_icoid_output( eICO_IDEmergency, TRUE, TRUE);//图标：3G
       api_disp_all_screen_refresh();// 全屏统一刷新
@@ -293,7 +295,11 @@ if(POC_EnterPersonalCalling_Flag==2)//如果是被单呼
               api_lcd_pwr_on_hint("                ");//清屏
               api_lcd_pwr_on_hint3("        ");//清屏，防止显示“个呼短号”
               api_disp_icoid_output( eICO_IDRXFULL, TRUE, TRUE);//GPRS三格信号图标
-              api_disp_icoid_output( eICO_IDEmergency, TRUE, TRUE);//3G图标
+              if(NetworkType_2Gor3G_Flag==3)
+                api_disp_icoid_output( eICO_IDEmergency, TRUE, TRUE);//3G图标
+              else
+                api_disp_icoid_output( eICO_IDPOWERL, TRUE, TRUE);//图标：2G
+
               api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
               api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
               api_disp_icoid_output( eICO_IDPOWERM, TRUE, TRUE);//显示组呼图标
