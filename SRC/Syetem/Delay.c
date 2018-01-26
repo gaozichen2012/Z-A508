@@ -312,9 +312,9 @@ static void DEL_500msProcess(void)			//delay 500ms process server
 
 static void DEL_1msProcess(void)
 {
-  if (DelDrvObj.Msg.Bit.b1ms == DEL_RUN)
+  //if (DelDrvObj.Msg.Bit.b1ms == DEL_RUN)
   {
-    DelDrvObj.Msg.Bit.b1ms = DEL_IDLE;
+    //DelDrvObj.Msg.Bit.b1ms = DEL_IDLE;
     //ApiPocCmd_83_1msRenew();
     ApiPocCmd_10msRenew();
     ApiCaretCmd_10msRenew();

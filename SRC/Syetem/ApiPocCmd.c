@@ -538,7 +538,9 @@ void ApiPocCmd_10msRenew(void)
       }
       if(ucId == 0x03)
       {
-        PocCmdDrvobj.WorkState.UseState.Msg.Bits.PersonalCallingMode = 0x00;//退出单呼  
+        PocCmdDrvobj.WorkState.UseState.Msg.Bits.PersonalCallingMode = 0x00;//退出单呼 
+        AUDIO_IOAFPOW(ON);//打开功放，解决'组呼模式'播报问题
+
       }
       break;
     default:

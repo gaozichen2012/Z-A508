@@ -297,6 +297,7 @@ void Keyboard_Test(void)
         MenuMode_Flag=0;
       }
       api_lcd_pwr_on_hint("    组呼模式    ");
+      
         ApiPocCmd_WritCommand(PocComm_Cancel,(u8 *)ucQuitPersonalCalling,strlen((char const *)ucQuitPersonalCalling));
         Key_Flag_1=1;//按键延时标志位
         Key_PersonalCalling_Flag=0;//进入组呼标志位

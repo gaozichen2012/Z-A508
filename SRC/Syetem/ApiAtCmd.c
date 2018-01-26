@@ -3,13 +3,14 @@ u8 BootProcess_SIMST_Flag=0;
 u8 BootProcess_PPPCFG_Flag=0;
 u8 BootProcess_PPPCFG_Flag_Zanshi=1;//临时代替PPPCFG检测
 u8 BootProcess_OpenPoc_Flag=0;
-u8 VoiceEnd_Flag=0;
+bool ApiAtCmd_TrumpetVoicePlay_Flag=FALSE;//功放控制标志位
 u8 CSQ_Flag=0;
 u8 KeyDownUpChoose_GroupOrUser_Flag=0;
 
 
 const u8 *ucRxCheckCard = "GETICCID:";
-const u8 *ucRxZTTS0 = "ZTTS:0";
+const u8 *ucRxPASTATE1 = "PASTATE:1";
+const u8 *ucRxPASTATE0 = "PASTATE:0";
 const u8 *ucRxCSQ31 = "CSQ:31";
 const u8 *ucRxCSQ99 = "CSQ:99";
 const u8 *ucGpsPosition = "LATLON:";
@@ -308,14 +309,15 @@ void ApiAtCmd_10msRenew(void)
        }
        AtCmdDrvobj.NetState.IccId.Len = i;
     }
-    ucRet = memcmp(pBuf, ucRxZTTS0, 6);//GETICCID
+    ucRet = memcmp(pBuf, ucRxPASTATE1, 9);// +PASTATE:1
     if(ucRet == 0x00)
     {
-      VoiceEnd_Flag=1;
+      ApiAtCmd_TrumpetVoicePlay_Flag=TRUE;
     }
-    else
+    ucRet = memcmp(pBuf, ucRxPASTATE0, 9);// +PASTATE:0
+    if(ucRet == 0x00)
     {
-      VoiceEnd_Flag=0;
+      ApiAtCmd_TrumpetVoicePlay_Flag=FALSE;
     }
     ucRet = memcmp(pBuf, ucRxCSQ31, 6);//CSQ:31
     if(ucRet == 0x00)

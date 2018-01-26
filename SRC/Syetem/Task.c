@@ -351,6 +351,19 @@ else//0空闲状态；1接收状态
   else//空闲状态
   {}
 }
+
+/********控制功放喇叭*************************************/
+if(ApiAtCmd_TrumpetVoicePlay_Flag==TRUE)
+{
+  AUDIO_IOAFPOW(ON);//在VOICE_SetOutput()加了打开，在cacel按键加了功放打开
+}
+else
+{
+  AUDIO_IOAFPOW(OFF);
+}
+/***********************************************/
+
+
 }
 
 void TASK_WriteFreq(void)

@@ -50,6 +50,7 @@ void VOICE_SetOutput(AtVoiceType Id, u8 *buf, u8 Len)
 		VoiceDrvObj.Timer = 0x00;
 		VOICE_Renew();
 	}
+        AUDIO_IOAFPOW(ON);
 	return;
 }
 
