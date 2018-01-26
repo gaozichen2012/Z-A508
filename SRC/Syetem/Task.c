@@ -103,6 +103,7 @@ void Task_RunStart(void)
 
 void Task_RunNormalOperation(void)
 {
+  
   Keyboard_Test();
   UART3_ToMcuMain();
 /***********PTT状态检测*************************************************************************************************************************/
@@ -111,17 +112,26 @@ void Task_RunNormalOperation(void)
     switch(KeyDownUpChoose_GroupOrUser_Flag)
     {
     case 0://默认PTT状态
-      Set_RedLed(LED_ON);
-      Set_GreenLed(LED_OFF);
+
       ApiPocCmd_WritCommand(PocComm_StartPTT,ucStartPTT,strlen((char const *)ucStartPTT));
       while(ReadInput_KEY_PTT==0)
       {
+        if(POC_ReceivedVoice_Flag==TRUE)//如果正在接受语音
+        {
+          goto PTT_Exit;
+        }
+        else
+        {
+          Set_RedLed(LED_ON);
+          Set_GreenLed(LED_OFF);
         api_disp_icoid_output( eICO_IDTX, TRUE, TRUE);//发射信号图标
         api_disp_all_screen_refresh();// 全屏统一刷新
+        }
       }
       api_disp_icoid_output( eICO_IDTALKAR, TRUE, TRUE);//默认无发射无接收信号图标
       api_disp_all_screen_refresh();// 全屏统一刷新
       ApiPocCmd_WritCommand(PocComm_EndPTT,ucEndPTT,strlen((char const *)ucEndPTT));
+      PTT_Exit:
       break;
     case 1://=1，进入某群组
       VOICE_SetOutput(ATVOICE_FreePlay,"f25d09902d4e",12);//播报已选中
@@ -324,7 +334,7 @@ if(POC_EnterPersonalCalling_Flag==2)//如果是被单呼
     }
 
 /*********判断发射接收图标状态****************************************************************************************************************************/
-if(POC_ReceivedVoiceStart_Flag==2)//刚接收语音状态
+  if(POC_ReceivedVoiceStart_Flag==2)//刚接收语音状态
 {
   api_disp_icoid_output( eICO_IDVOX, TRUE, TRUE);//接收信号图标
   api_disp_all_screen_refresh();// 全屏统一刷新

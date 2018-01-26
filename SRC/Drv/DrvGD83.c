@@ -6,6 +6,7 @@
 
 #define DrvCommHead_Len         15
 #define DrvMC8332_UART_NoMAX    3	//define UART Tx buffer length value
+#define DrvMC8332Poc_UART_NoMAX 5	//define UART Tx buffer length value
 #define DrvMC8332_UART_NoLEN    50	//define UART Rx buffer length value
 #define DrvMC8332Caret_UART_NoLEN  40	//define UART Rx buffer length value
 #define DrvMC8332At_UART_NoLEN  40	//define UART Rx buffer length value
@@ -96,8 +97,8 @@ typedef struct{							//define UART drive data type
   }RxGpsNotifyBuf;
   struct{
     u8 cNotifyHead, cNotifyTail, cNotifyLen;
-    u8 Notify[DrvMC8332_UART_NoMAX][DrvMC8332Poc_UART_NoLEN];
-    u8 NotifyLen[DrvMC8332_UART_NoMAX];
+    u8 Notify[DrvMC8332Poc_UART_NoMAX][DrvMC8332Poc_UART_NoLEN];
+    u8 NotifyLen[DrvMC8332Poc_UART_NoMAX];
   }RxPocNotifyBuf;
 }DrvMC8332_UART_DRV;
 
@@ -475,7 +476,7 @@ static void AtNotify_Queue_Start(u8 *buf, u8 len)
 static void PocNotify_Queue_Start(u8 *buf, u8 len)
 {
   u8 i;
-  if(DrvGD83DrvObj.RxPocNotifyBuf.cNotifyHead >= DrvMC8332_UART_NoMAX)
+  if(DrvGD83DrvObj.RxPocNotifyBuf.cNotifyHead >= DrvMC8332Poc_UART_NoMAX)
   {
     DrvGD83DrvObj.RxPocNotifyBuf.cNotifyHead = 0;
   }
@@ -580,7 +581,7 @@ static void Notify_Queue_Stop(void)
       break;
     case Head_AtPoc:
     case Head_PlusPoc:
-      if((DrvGD83DrvObj.RxPocNotifyBuf.cNotifyLen < DrvMC8332_UART_NoMAX)
+      if((DrvGD83DrvObj.RxPocNotifyBuf.cNotifyLen < DrvMC8332Poc_UART_NoMAX)
          && (DrvGD83DrvObj.RxPocNotifyBuf.NotifyLen[DrvGD83DrvObj.RxPocNotifyBuf.cNotifyHead] != 0x00))
       {
         DrvGD83DrvObj.RxPocNotifyBuf.cNotifyLen++;
@@ -723,7 +724,7 @@ u8 DrvMC8332_PocNotify_Queue_front(u8 **pBuf)
 	{
 		*pBuf = DrvGD83DrvObj.RxPocNotifyBuf.Notify[DrvGD83DrvObj.RxPocNotifyBuf.cNotifyTail];
 		r=DrvGD83DrvObj.RxPocNotifyBuf.NotifyLen[DrvGD83DrvObj.RxPocNotifyBuf.cNotifyTail];
-		if(++DrvGD83DrvObj.RxPocNotifyBuf.cNotifyTail >= DrvMC8332_UART_NoMAX)
+		if(++DrvGD83DrvObj.RxPocNotifyBuf.cNotifyTail >= DrvMC8332Poc_UART_NoMAX)
 		{
 			DrvGD83DrvObj.RxPocNotifyBuf.cNotifyTail = 0;
 		}

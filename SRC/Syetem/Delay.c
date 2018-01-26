@@ -312,9 +312,10 @@ static void DEL_500msProcess(void)			//delay 500ms process server
 
 static void DEL_1msProcess(void)
 {
- // if (DelDrvObj.Msg.Bit.b1ms == DEL_RUN)
+  if (DelDrvObj.Msg.Bit.b1ms == DEL_RUN)
   {
- //   DelDrvObj.Msg.Bit.b1ms = DEL_IDLE;
+    DelDrvObj.Msg.Bit.b1ms = DEL_IDLE;
+    //ApiPocCmd_83_1msRenew();
     ApiPocCmd_10msRenew();
     ApiCaretCmd_10msRenew();
     ApiAtCmd_10msRenew();
@@ -331,32 +332,4 @@ static void DEL_10msProcess(void)
     ApGpsCmd_10msRenew();
   }
   return;
-}
-
-//延时测试，需在初始化中加入DEL_SetTimer(1,100);
-void Delay_Test(void)
-{
-
-    while(1)
-    {
-      Set_RedLed(LED_OFF);
-      Set_GreenLed(LED_OFF);
-      if(DEL_GetTimer(1) == TRUE)
-      {
-        DEL_SetTimer(0,100);
-        ApiPocCmd_WritCommand(PocComm_OpenPOC,"666",strlen((char const *)"666"));
-        break;
-      }
-    }
-    while(1)
-    {
-      Set_RedLed(LED_ON);
-      Set_GreenLed(LED_ON);
-      if(DEL_GetTimer(0) == TRUE)
-      {
-        DEL_SetTimer(1,100);
-        ApiPocCmd_WritCommand(PocComm_OpenPOC,"666",strlen((char const *)"666"));
-        break;
-      }
-    }
 }

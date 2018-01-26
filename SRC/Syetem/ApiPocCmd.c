@@ -19,6 +19,7 @@ u8 POC_AtEnterPersonalCalling_Flag=0;
 u8 POC_AtQuitPersonalCalling_Flag=0;
 u8 POC_EnterGroupCalling_Flag=0;
 u8 POC_QuitGroupCalling_Flag=0;
+bool POC_ReceivedVoice_Flag=FALSE;
 u8 POC_ReceivedVoiceStart_Flag=0;
 u8 POC_ReceivedVoiceEnd_Flag=0;
 bool POC_Receive86_Flag=FALSE;
@@ -236,6 +237,33 @@ bool ApiPocCmd_user_info_set(u8 *pBuf, u8 len)//cTxBuf为存放ip账号密码的信息
 	return r;
 }
 
+#if 1//绿灯bUG
+/*void ApiPocCmd_83_1msRenew(void)
+{
+  u8 ucId,i, Len;
+  u8 * pBuf, ucRet;
+  while((Len = DrvMC8332_PocNotify_Queue_front(&pBuf)) != 0x00)
+  {
+    ucId = COML_AscToHex(pBuf, 0x02);
+    if(ucId==0x83)
+    {
+      ucId = COML_AscToHex(pBuf+2, 0x02);
+      if(ucId == 0x00)
+      {
+        POC_ReceivedVoice_Flag=TRUE;
+        POC_ReceivedVoiceStart_Flag=2;//0:正常 1：收到语音 2：刚开始语音
+        POC_ReceivedVoiceEnd_Flag=1;//0:正常 1：收到语音 2：刚结束语音
+      }
+      if(ucId == 0xff)
+      {
+        POC_ReceivedVoice_Flag=FALSE;
+        POC_ReceivedVoiceEnd_Flag=2;//0:正常 1：收到语音 2：刚结束语音
+        POC_ReceivedVoiceStart_Flag=0;//0:正常 1：收到语音 2：刚开始语音
+      }
+    }
+  }
+}*/
+#endif
 
 void ApiPocCmd_10msRenew(void)
 {
@@ -276,6 +304,7 @@ void ApiPocCmd_10msRenew(void)
       }
 #endif
       break;
+
     case 0x0E://在线用户个数
       ucId = COML_AscToHex(pBuf+8, 0x04);
       PocCmdDrvobj.WorkState.UseState.PttUserName.UserNum = ucId;
@@ -331,24 +360,24 @@ void ApiPocCmd_10msRenew(void)
         PocCmdDrvobj.WorkState.UseState.Msg.Bits.bLogin = 0x00;
       }
       break;
-    case 0x8B://为什么8B有的时候收不到，绿灯常亮
-      ucId = COML_AscToHex(pBuf+4, 0x02);
+/********判断是否是被呼状态******************************/
+    case 0x83:
+      ucId = COML_AscToHex(pBuf+2, 0x02);
       if(ucId == 0x00)
       {
+        POC_ReceivedVoice_Flag=TRUE;
+        POC_ReceivedVoiceStart_Flag=2;//0:正常 1：收到语音 2：刚开始语音
+        POC_ReceivedVoiceEnd_Flag=1;//0:正常 1：收到语音 2：刚结束语音
+      }
+      if(ucId == 0xff)
+      {
+        POC_ReceivedVoice_Flag=FALSE;
         POC_ReceivedVoiceEnd_Flag=2;//0:正常 1：收到语音 2：刚结束语音
         POC_ReceivedVoiceStart_Flag=0;//0:正常 1：收到语音 2：刚开始语音
       }
-      if(ucId == 0x01)
-      {
-       if(POC_QuitGroupCalling_Flag==2)//如果是正在退组状态则不识别8b0001
-       {}
-       else
-        {
-          POC_ReceivedVoiceStart_Flag=2;//0:正常 1：收到语音 2：刚开始语音
-          POC_ReceivedVoiceEnd_Flag=1;//0:正常 1：收到语音 2：刚结束语音
-        }
-      }
-      
+      break;
+/**************************************/
+    case 0x8B:
       break;
     case 0x86:
       POC_Receive86_Flag=TRUE;

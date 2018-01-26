@@ -18,7 +18,7 @@ void LED_IntOutputRenew(void)
   }
   else
   {
-    if(POC_ReceivedVoiceStart_Flag==1)
+    if(POC_ReceivedVoice_Flag==TRUE)
     {
       Set_GreenLed(LED_ON);
     }
