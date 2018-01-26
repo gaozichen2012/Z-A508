@@ -20,6 +20,7 @@ u8 POC_AtQuitPersonalCalling_Flag=0;
 u8 POC_EnterGroupCalling_Flag=0;
 u8 POC_QuitGroupCalling_Flag=0;
 bool POC_ReceivedVoice_Flag=FALSE;
+bool ApiPocCmd_Tone_Flag=FALSE;
 u8 POC_ReceivedVoiceStart_Flag=0;
 u8 POC_ReceivedVoiceEnd_Flag=0;
 bool POC_Receive86_Flag=FALSE;
@@ -378,6 +379,11 @@ void ApiPocCmd_10msRenew(void)
       break;
 /**************************************/
     case 0x8B:
+      ucId = COML_AscToHex(pBuf+4, 0x02);
+      if(ucId==0x03)
+      {
+        ApiPocCmd_Tone_Flag=TRUE;
+      }
       break;
     case 0x86:
       POC_Receive86_Flag=TRUE;

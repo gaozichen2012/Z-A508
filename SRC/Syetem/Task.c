@@ -109,6 +109,7 @@ void Task_RunNormalOperation(void)
 /***********PTT状态检测*************************************************************************************************************************/
   if(ReadInput_KEY_PTT==0)
   {
+    AUDIO_IOAFPOW(ON);//打开功放，解决DIDI提示音听不见
     switch(KeyDownUpChoose_GroupOrUser_Flag)
     {
     case 0://默认PTT状态
@@ -353,14 +354,23 @@ else//0空闲状态；1接收状态
 }
 
 /********控制功放喇叭*************************************/
-if(ApiAtCmd_TrumpetVoicePlay_Flag==TRUE)
+if(ApiPocCmd_Tone_Flag==TRUE)//8b0003 解决按PTT无提示音的问题
 {
-  AUDIO_IOAFPOW(ON);//在VOICE_SetOutput()加了打开，在cacel按键加了功放打开
+  AUDIO_IOAFPOW(ON);
 }
 else
 {
-  AUDIO_IOAFPOW(OFF);
+  if(ApiAtCmd_TrumpetVoicePlay_Flag==TRUE)
+  {
+    AUDIO_IOAFPOW(ON);//在VOICE_SetOutput()加了打开，在识别POC:91加了功放打开;PTT键
+  }
+  else
+  {
+    AUDIO_IOAFPOW(OFF);
+  }
+  
 }
+
 /***********************************************/
 
 

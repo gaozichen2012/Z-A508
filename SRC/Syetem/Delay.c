@@ -12,6 +12,7 @@ u8 TimeCount=0;
 u8 TimeCount2=0;
 u8 TimeCount3=0;
 u8 TimeCount_Light=0;
+u8 ToneTimeCount=0;
 bool LockingState_Flag=FALSE;
 typedef struct {
   union {
@@ -231,6 +232,16 @@ static void DEL_500msProcess(void)			//delay 500ms process server
     DEL_500ms_Count++;
     DEL_500ms_Count2++;
     TimeCount_Light++;
+    
+    if(ApiPocCmd_Tone_Flag==TRUE)
+    {
+      ToneTimeCount++;
+      if(ToneTimeCount>=4)
+      {
+        ApiPocCmd_Tone_Flag=FALSE;
+        ToneTimeCount=0;
+      }
+    }
     
     if(TimeCount_Light>=20)//10s
     {
