@@ -6,6 +6,8 @@
 #define DEL_RUN			0x01
 
 #define TimeoutLimit            240//键盘超时锁定时间10s
+u8 *ucGPSSendToAtPort   ="AT+GPSFUNC=21";
+u8 *ucGPSUploadTime_5s  ="AT+GPSFUNC=2,5";
 u8 DEL_500ms_Count=0;
 u8 DEL_500ms_Count2=0;
 u8 TimeCount=0;
@@ -13,6 +15,7 @@ u8 TimeCount2=0;
 u8 TimeCount3=0;
 u8 TimeCount_Light=0;
 u8 ToneTimeCount=0;
+u8 GpsReconnectionTimeCount=0;
 bool LockingState_Flag=FALSE;
 typedef struct {
   union {
@@ -233,6 +236,19 @@ static void DEL_500msProcess(void)			//delay 500ms process server
     DEL_500ms_Count2++;
     TimeCount_Light++;
     
+    if(ApiAtCmd_GetLoginState()==TRUE)//登录成功
+      {
+        GpsReconnectionTimeCount++;
+        if(GpsReconnectionTimeCount==2*10)
+        {
+          NoUseNum=ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)ucGPSSendToAtPort,strlen((char const *)ucGPSSendToAtPort));//设置GPS定位信息发送到串口
+          NoUseNum=ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)ucGPSUploadTime_5s,strlen((char const *)ucGPSUploadTime_5s));//设置GPS定位信息5s发送一次
+          GpsReconnectionTimeCount=21;
+        }
+        if(GpsReconnectionTimeCount>=25)
+        {GpsReconnectionTimeCount=21;}
+      }
+
     if(ApiPocCmd_Tone_Flag==TRUE)
     {
       ToneTimeCount++;

@@ -61,8 +61,7 @@ static TASK_DRV	TaskDrvObj;
 u8 *ucSwitch            = "10000002";
 u8 *ucGroupListInfo     = "0D0000";
 u8 *ucGD83Reset         = "at^reset";
-u8 *ucGPSSendToAtPort   ="AT+GPSFUNC=21";
-u8 *ucGPSUploadTime_5s  ="AT+GPSFUNC=2,5";
+
 
 #if 0//电池电量测试
 u8 Test3=0;
@@ -147,8 +146,8 @@ api_lcd_pwr_on_hint("欧");
       Task_RunStart();
       if(ApiAtCmd_GetLoginState()==TRUE)//登录成功
       {
-        NoUseNum=ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)ucGPSSendToAtPort,strlen((char const *)ucGPSSendToAtPort));//设置GPS定位信息发送到串口
-        NoUseNum=ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)ucGPSUploadTime_5s,strlen((char const *)ucGPSUploadTime_5s));//设置GPS定位信息5s发送一次
+        //NoUseNum=ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)ucGPSSendToAtPort,strlen((char const *)ucGPSSendToAtPort));//设置GPS定位信息发送到串口
+        //NoUseNum=ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)ucGPSUploadTime_5s,strlen((char const *)ucGPSUploadTime_5s));//设置GPS定位信息5s发送一次
         api_lcd_pwr_on_hint("正在获取群组信息");
         TaskDrvObj.NewId=Task_NormalOperation;
       }

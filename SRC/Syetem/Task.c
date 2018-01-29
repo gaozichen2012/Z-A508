@@ -103,7 +103,6 @@ void Task_RunStart(void)
 
 void Task_RunNormalOperation(void)
 {
-  
   Keyboard_Test();
   UART3_ToMcuMain();
 /***********PTT状态检测*************************************************************************************************************************/
@@ -182,18 +181,40 @@ void Task_RunNormalOperation(void)
     }
     else
     {
+      //当前用户：
       api_lcd_pwr_on_hint("                ");//显示当前群组昵称
+      api_lcd_pwr_on_hint4(Get_GBK_ActiveUserID());//显示当前用户名
+      VOICE_SetOutput(ATVOICE_FreePlay,Get_Unicode_ActiveUserID(),strlen((char const *)Get_Unicode_ActiveUserID()));//播报当前用户手机号
+      
+      DEL_SetTimer(0,350);
+      while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+      //当前群组
+      api_lcd_pwr_on_hint("                ");//显示当前群组昵称
+      api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
+      api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
+      VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetMainWorkName(),strlen((char const *)ApiAtCmd_GetMainWorkName()));
+      DEL_SetTimer(0,200);
+      while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+      //电量百分之百
+      VOICE_SetOutput(ATVOICE_FreePlay,"3575cf917e7606527e76",20);//播报当前用户手机号
+      DEL_SetTimer(0,300);
+      while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+        /*群组名：
+          电池电量：
+            在线人数：*/
+      /*api_lcd_pwr_on_hint("                ");//显示当前群组昵称
       api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
       api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
     
       Key_PersonalCalling_Flag=0;
-      VOICE_SetOutput(ATVOICE_FreePlay,"535f4d52A47FC47E",16);//当前群组
-      DEL_SetTimer(0,100);
+      VOICE_SetOutput(ATVOICE_FreePlay,"31003900380030003000330030003700340037003200",44);//当前群组
+      //VOICE_SetOutput(ATVOICE_FreePlay,"535f4d52A47FC47E",16);//当前群组
+      DEL_SetTimer(0,350);
       while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
       //VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetMainWorkName(),ApiAtCmd_GetMainWorkNameLen());
       VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetMainWorkName(),strlen((char const *)ApiAtCmd_GetMainWorkName()));
       // VOICE_SetOutput(ATVOICE_FreePlay,"13663d6d4b6dd58bc47e3100",strlen((char const *)"13663d6d4b6dd58bc47e3100"));
-      
+      */
     }
   }
 /*******个呼键状态检测***************************************************************************************************************************************/

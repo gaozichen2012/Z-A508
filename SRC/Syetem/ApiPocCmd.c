@@ -6,9 +6,13 @@
 #define APIPOC_UserName_Len			30
 
 u8 ReadBuffer[80];//Test 存EEPROM读取的数据使用
+u8 ASCII_ActiveUserID[22];//Test 存EEPROM读取的数据使用
+u8 Get_Unicode_ActiveUserIDBuf[45];//
+u8 Get_0X_ActiveUserIDBuf[11];//
 //u8 TestReadBuffer[300];//存EEPROM读取部标数据测试
 u8 UnicodeForGbk_MainWorkNameBuf[15];
 u8 UnicodeForGbk_MainUserNameBuf[15];
+
 const u8 *ucAtPocHead   = "AT+POC=";
 const u8 *ucTingEnd   = "0B0000";
 const u8 *ucTingStart   = "0B0001";
@@ -150,6 +154,7 @@ void ApiPocCmd_WritCommand(PocCommType id, u8 *buf, u16 len)
   case PocComm_SetParam://设置账号密码
     DrvGD83_UART_TxCommand((u8 *)ucSetIPAndID,strlen((char const *)ucSetIPAndID));
     FILE_Read(0,80,ReadBuffer);//80位
+   // FILE_Read(28,22,ActiveUserID);
 //    FILE_Read(0x230,250,TestReadBuffer);//0x260-0x2cc
     DrvGD83_UART_TxCommand(ReadBuffer, strlen((char const *)ReadBuffer));
     break;
@@ -731,4 +736,41 @@ u8 *UnicodeForGbk_MainUserName(void)
     }
   }
 }
+//当前用户ID（播报使用）
+u8 *Get_Unicode_ActiveUserID(void)
+{
+  u8 Len=0,i=0;
+  FILE_Read(28,22,ASCII_ActiveUserID);//3139383030333037343732
+  Len=strlen((char const *)ASCII_ActiveUserID);
+  for(i=0;i<Len;i++)
+  {
+    if(i%2==0)//偶数
+    {
+      Get_Unicode_ActiveUserIDBuf[2*i]=ASCII_ActiveUserID[i];
+    }
+    else//奇数
+    {
+      Get_Unicode_ActiveUserIDBuf[2*i-1]=ASCII_ActiveUserID[i];
+      Get_Unicode_ActiveUserIDBuf[2*i]=0x30;
+      Get_Unicode_ActiveUserIDBuf[2*i+1]=0x30;
+    }
+  }
+  //31003900380030003000330030003700340037003200
+  return Get_Unicode_ActiveUserIDBuf;
+}
 
+//当前用户ID（显示屏使用）
+u8 *Get_GBK_ActiveUserID(void)
+{
+  u8 i=0,Len=0;
+  FILE_Read(28,22,ASCII_ActiveUserID);//3139383030333037343732
+  Len=strlen((char const *)ASCII_ActiveUserID);
+  for(i=0;i<Len;i++)
+  {
+    if(i%2!=0)
+    {
+      Get_0X_ActiveUserIDBuf[(i-1)/2]=ASCII_ActiveUserID[i];
+    }
+  }
+  return Get_0X_ActiveUserIDBuf;
+}

@@ -598,7 +598,7 @@ void ApiGpsCmd_100msRenew(void)//决定什么时候发送什么数据
                     {
                       GpsCmd_GbWritCommand(GPSCOMM_Position, (void*)0, 0);
                       //ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)"AT^CDMATIME",strlen((char const *)"AT^CDMATIME"));//发送获取CDMATIME获取时间
-                      PositionInformationSendToATPORT_Flag=FALSE;
+                      //PositionInformationSendToATPORT_Flag=FALSE;
                     }
                     else
                     {
