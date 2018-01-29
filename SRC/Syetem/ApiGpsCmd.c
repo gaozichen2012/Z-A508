@@ -822,7 +822,7 @@ static void GpsCmd_GbDataTransave(GpsCommType GpsComm)//定位信息转换，等会要用到
   
   GpsFunDrvObj.InfoRecord.Position.ulLatitude =Data_Longitude_Minute()*1000000+Data_Longitude_Second();
   GpsFunDrvObj.InfoRecord.Position.ulLongitude=Data_Latitude_Minute()*1000000+Data_Latitude_Second();
-  GpsFunDrvObj.InfoRecord.Position.usSpeed=1;
+  GpsFunDrvObj.InfoRecord.Position.usSpeed=Data_Speed();
   //经纬度成功存组，准备与平台连接，收到一次数据发送一次数据
   pPositInfo->stParam.ulLatitude = GpsFunDrvObj.InfoRecord.Position.ulLatitude;//经纬度在此存入（此时的GpsFunDrvObj.InfoRecord.Position.ulLatitude已经乘以1000000）
   pPositInfo->stParam.ulLongitude = GpsFunDrvObj.InfoRecord.Position.ulLongitude;//经纬度在此存入

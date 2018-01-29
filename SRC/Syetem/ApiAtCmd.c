@@ -15,6 +15,7 @@ const u8 *ucRxCSQ31 = "CSQ:31";
 const u8 *ucRxCSQ99 = "CSQ:99";
 const u8 *ucGpsPosition = "LATLON:";
 const u8 *ucCDMATIME = "^CDMATIME:";
+const u8 *ucGPSINFO = "^GPSINFO:";
 const u8 *ucSIMST1="^SIMST:1";
 const u8 *ucSIMST255="^SIMST:255";
 const u8 *ucCaretPPPCFG="^PPPCFG:";
@@ -81,8 +82,11 @@ typedef struct{
                 }Position;
                 u8 TimeBuf[20];//存放AT收到的时间信息
                 u8 TimeBufLen;//接收时间信息的数据长度
+                u8 GpsInfoBuf[30];//存放AT收到的速度数据
+                u8 GpsInfoBufLen;//接收速度的数据长度
                 u8 ucDate[3];//年月日
                 u8 ucTime[3];//时分秒
+                u8 ucSpeed;
 		u8 RssiValue;
 		u8 Buf[30];
 		u8 Len;
@@ -287,7 +291,21 @@ void ApiCaretCmd_10msRenew(void)
        }
        AtCmdDrvobj.NetState.TimeBufLen = i;
     } 
-/**********************************************************************************************/
+/*********获取当前速度*************************************************************************************/
+    ucRet = memcmp(pBuf, ucGPSINFO, 9);
+    if(ucRet == 0x00)
+    {
+      if(Len > 9)//去頭
+      {
+        Len -= 9;
+      }
+       for(i = 0x00; i < Len; i++)
+       {
+         AtCmdDrvobj.NetState.GpsInfoBuf[i] = pBuf[i + 9];//
+       }
+       AtCmdDrvobj.NetState.GpsInfoBufLen = i;
+    }
+/*****************************************************************************************************/
   }
 }
 
@@ -353,8 +371,8 @@ void ApiAtCmd_Get_location_Information(void)
 {
   u8 *pBuf;
   u8 i=0,cDot=0,cDot2=0,cHead=0,cHead2=0;
-  
   u8 cCount=0;//Time
+  u8 cSpeedInfoCount=0;
   
   
 /***************获取经纬度数据*********************************************************************************************************/
@@ -447,6 +465,24 @@ void ApiAtCmd_Get_location_Information(void)
         AtCmdDrvobj.NetState.ucDate[2] = COML_AscToHex(&pBuf[cHead2], i-cHead2);//日
         cHead2 = i+1;
       }
+    }
+  }
+/********获取当前速度gpsinfo***************************************************************************************************************************/
+//2,394,22.517246,113.917666,0
+  pBuf=AtCmdDrvobj.NetState.GpsInfoBuf;
+  for(i=0;i<AtCmdDrvobj.NetState.GpsInfoBufLen;i++)
+  {
+    if(','==pBuf[i])
+    {
+      switch(cSpeedInfoCount)
+      {
+      case 3:
+        AtCmdDrvobj.NetState.ucSpeed = COML_AscToHex(&pBuf[i+1],AtCmdDrvobj.NetState.GpsInfoBufLen-i-1);//speed
+        break;
+      default:
+        break;
+      }
+      cSpeedInfoCount++;
     }
   }
 /***********************************************************************************************************************************/
@@ -597,4 +633,8 @@ u8 Data_Date1(void)
 u8 Data_Date2(void)
 {
   return AtCmdDrvobj.NetState.ucDate[2];
+}
+u8 Data_Speed(void)
+{
+  return AtCmdDrvobj.NetState.ucSpeed;
 }

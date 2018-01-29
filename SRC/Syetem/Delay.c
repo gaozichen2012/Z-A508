@@ -276,6 +276,10 @@ static void DEL_500msProcess(void)			//delay 500ms process server
     if(DEL_500ms_Count2>=10)
     {
       ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)"AT^CDMATIME",strlen((char const *)"AT^CDMATIME"));//发送获取CDMATIME获取时间
+      if(PositionInformationSendToATPORT_Flag==TRUE)//如果定位成功，每个5秒发送一次gpsinfo获取速度
+      {
+        ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)"AT^GPSINFO",strlen((char const *)"AT^GPSINFO"));//发送获取CDMATIME获取时间
+      }
       DEL_500ms_Count2=0;
     }
     
