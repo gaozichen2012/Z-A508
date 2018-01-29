@@ -1,5 +1,6 @@
 #include "AllHead.h"
 
+u8 BatteryLevel=0;
 bool LowVoltageDetection_Flag;
 
 static u16 OneChannelGetADValue(ADC2_Channel_TypeDef ADC2_Channel,\
@@ -52,26 +53,32 @@ void LowVoltageDetection(void)
       if(ADValue<=350&&ADValue>=300)
       {
         api_disp_icoid_output( eICO_IDBATT , TRUE, TRUE);
+        BatteryLevel=0;
       }//电池电量0级
       else if(ADValue<=360&&ADValue>350)
       {
         api_disp_icoid_output( eICO_IDBATT1, TRUE, TRUE);
+        BatteryLevel=1;
       }//电池电量1级
       else if(ADValue<=375&&ADValue>365)
       {
         api_disp_icoid_output( eICO_IDBATT2, TRUE, TRUE);
+        BatteryLevel=2;
       }//电池电量2级
       else if(ADValue<=390&&ADValue>380)
       {
         api_disp_icoid_output( eICO_IDBATT3, TRUE, TRUE);
+        BatteryLevel=3;
       }//电池电量3级
       else if(ADValue<=405&&ADValue>395)
       {
         api_disp_icoid_output( eICO_IDBATT4, TRUE, TRUE);
+        BatteryLevel=4;
       }//电池电量4级
       else if(ADValue<=500&&ADValue>410)
       {
         api_disp_icoid_output( eICO_IDBATT5, TRUE, TRUE);
+        BatteryLevel=5;
       }//电池电量5级
       else{}
       if(LowVoltageDetection_Flag==1)//识别从低电量到高电量的状态
@@ -82,4 +89,32 @@ void LowVoltageDetection(void)
       SetTaskId(Task_NormalOperation);
     }
   }
+}
+
+void KeyBatteryReport(void)
+{
+  switch(BatteryLevel)
+  {
+  case 0:
+    VOICE_SetOutput(ATVOICE_FreePlay,"3575cf917e7606524b4e3500",24);//百分之五
+    break;
+  case 1:
+    VOICE_SetOutput(ATVOICE_FreePlay,"3575cf917e7606524b4e32004153",28);//百分之20
+    break;
+  case 2:
+    VOICE_SetOutput(ATVOICE_FreePlay,"3575cf917e7606524b4e34004153",28);//百分之40
+    break;
+  case 3:
+    VOICE_SetOutput(ATVOICE_FreePlay,"3575cf917e7606524b4e36004153",28);//百分之60
+    break;
+  case 4:
+    VOICE_SetOutput(ATVOICE_FreePlay,"3575cf917e7606524b4e38004153",28);//百分80
+    break;
+  case 5:
+    VOICE_SetOutput(ATVOICE_FreePlay,"3575cf917e7606527e76",20);//百分百
+    break;
+  default:
+    break;
+  }
+
 }

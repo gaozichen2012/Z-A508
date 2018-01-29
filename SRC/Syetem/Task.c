@@ -195,9 +195,9 @@ void Task_RunNormalOperation(void)
       VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetMainWorkName(),strlen((char const *)ApiAtCmd_GetMainWorkName()));
       DEL_SetTimer(0,200);
       while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
-      //电量百分之百
-      VOICE_SetOutput(ATVOICE_FreePlay,"3575cf917e7606527e76",20);//播报当前用户手机号
-      DEL_SetTimer(0,300);
+      //电量播报
+      KeyBatteryReport();
+      DEL_SetTimer(0,200);
       while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
         /*群组名：
           电池电量：
