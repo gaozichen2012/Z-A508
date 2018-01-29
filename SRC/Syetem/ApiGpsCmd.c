@@ -814,7 +814,8 @@ static void GpsCmd_GbDataTransave(GpsCommType GpsComm)//定位信息转换，等会要用到
   //COML_StringReverse(0x02,GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.HeadInfo.stParam.ucMsgID.ucData);//原消息ID反序，屏蔽看是否正序
   pPositInfo->stParam.Warning.ucData = 0;
   pPositInfo->stParam.WorkStatus.ucData = 0;
-  pPositInfo->stParam.WorkStatus.Bits.bAcc = GpsFunDrvObj.InfoRecord.Msg.bAcc;
+  pPositInfo->stParam.WorkStatus.Bits.bAcc = 1;//=GpsFunDrvObj.InfoRecord.Msg.bAcc;
+  pPositInfo->stParam.WorkStatus.Bits.bLock= 1;//=1车门加锁
   GpsFunDrvObj.InfoRecord.Position.Msg.bGpsVolid=1;//手动赋值
   pPositInfo->stParam.WorkStatus.Bits.bGpsVolid = GpsFunDrvObj.InfoRecord.Position.Msg.bGpsVolid;
   pPositInfo->stParam.WorkStatus.Bits.bNorthOrSouth = GpsFunDrvObj.InfoRecord.Position.Msg.bNorthOrSouth;
@@ -822,7 +823,7 @@ static void GpsCmd_GbDataTransave(GpsCommType GpsComm)//定位信息转换，等会要用到
   
   GpsFunDrvObj.InfoRecord.Position.ulLatitude =Data_Longitude_Minute()*1000000+Data_Longitude_Second();
   GpsFunDrvObj.InfoRecord.Position.ulLongitude=Data_Latitude_Minute()*1000000+Data_Latitude_Second();
-  GpsFunDrvObj.InfoRecord.Position.usSpeed=Data_Speed();
+  GpsFunDrvObj.InfoRecord.Position.usSpeed=Data_Speed()*10;
   //经纬度成功存组，准备与平台连接，收到一次数据发送一次数据
   pPositInfo->stParam.ulLatitude = GpsFunDrvObj.InfoRecord.Position.ulLatitude;//经纬度在此存入（此时的GpsFunDrvObj.InfoRecord.Position.ulLatitude已经乘以1000000）
   pPositInfo->stParam.ulLongitude = GpsFunDrvObj.InfoRecord.Position.ulLongitude;//经纬度在此存入
@@ -847,7 +848,7 @@ static void GpsCmd_GbDataTransave(GpsCommType GpsComm)//定位信息转换，等会要用到
   //COML_StringReverse(0x04, (u8 *)(&pPositInfo->stParam.ulLongitude));
   //COML_StringReverse(0x02, (u8 *)(&pPositInfo->stParam.usAltitude));
   //COML_StringReverse(0x02, (u8 *)(&pPositInfo->stParam.usSpeed));
-  COML_StringReverse(0x02, (u8 *)(&pPositInfo->stParam.usDirection));
+  //COML_StringReverse(0x02, (u8 *)(&pPositInfo->stParam.usDirection));
   //COML_StringReverse(0x03, (u8 *)(&pPositInfo->stParam.Date));
   i = pPositInfo->stParam.Time.ucData[0];
   ucIndex = ((i >> 0x04) * 10);
