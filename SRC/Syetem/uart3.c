@@ -59,6 +59,7 @@ static bool UART_Link(u8 cId);
 static bool UART_PasCommand(void);
 static bool UART_KeyCommand(void);//判断开始链接的密码
 static bool UART_WriteCommand(void);//PC写入MCU识别
+static bool UART_ReadCommand(void);
 static bool UART_PocCommand(void);
 bool api_poc_command_set(u8 cId, u8 *pBuf);
 static void UART_TxSend(u16 len);
@@ -124,7 +125,7 @@ void UART3_ToMcuMain(void)
 					{
 						//if (UART_DbgCommand() == FALSE)				//dad command process	
 						{
-							//if (UART_ReadCommand() == FALSE)		//read command process
+							if (UART_ReadCommand() == FALSE)		//read command process
 							{
 								if (UART_WriteCommand() == FALSE)	//write command process	
 								{
@@ -450,7 +451,6 @@ static bool UART_WriteCommand(void)
             return FALSE;
           }
         }
-
 	adr = UartDrvObj.TxRxBuf.cRxBuf[4];//0x02//cRxBuf[4]为地址高8位
 	adr <<= 8;
 	adr |= UartDrvObj.TxRxBuf.cRxBuf[5]; //0x30//35//3A//3F//44//4D//52//60//cRxBuf[5]为地址低8位
@@ -464,7 +464,7 @@ static bool UART_WriteCommand(void)
 		{
 			goto UARTWriteCommand_Exit;
 		}
-		if (UART_GetCheckSum() == FALSE)			//data check process
+		if (UART_GetCheckSum() == FALSE)//data check process
 		{
 			goto UARTWriteCommand_Exit;
 		}
@@ -494,6 +494,68 @@ static bool UART_WriteCommand(void)
 UARTWriteCommand_Exit:
   return TRUE;
 }
+
+/******************************************************************************
+; Function Description	: UART read command process program
+; Enter Parameter	: void
+; Return Parameter	: TRUE 	work right return value
+;			FALSE	work error return value
+******************************************************************************/
+static bool UART_ReadCommand(void)
+{
+  u16 adr,len;
+  for(len = 0; len < 4; len++) 	//read command process
+  {
+    if(READ_TABLE[len] != UartDrvObj.TxRxBuf.cRxBuf[len]) //是否收到PC发送的READ指令
+    {
+      return FALSE;
+    }
+  }
+  adr = UartDrvObj.TxRxBuf.cRxBuf[4];
+  adr <<= 8;
+  adr |= UartDrvObj.TxRxBuf.cRxBuf[5];
+  len = UartDrvObj.TxRxBuf.cRxBuf[6];
+  len <<= 8;
+  len |= UartDrvObj.TxRxBuf.cRxBuf[7];
+        if(adr==0x260)
+        {
+          adr=0x260;
+        }
+  /*if (FILE_InStatus(adr+len) == FALSE)	//file test process
+  {
+    UART_ErrorAck(UART_READWRITE);
+  }
+  else*/
+  {
+    UART_RightAck(len);
+    if (UART_RxFrame(1) == TRUE)//UART synchronization process
+    {
+      while((len/UART_TXBUFLEN) != 0)
+      {
+        if (FILE_Read(adr,UART_TXBUFLEN,UartDrvObj.TxRxBuf.cTxBuf) == FALSE)
+        {
+          goto UARTReadCommand_Exit;
+        }
+        UART_TxSend(UART_TXBUFLEN);
+        len -= UART_TXBUFLEN;
+        adr += UART_TXBUFLEN;
+      }
+      len %= UART_TXBUFLEN;
+      if (len != 0)
+      {
+        if (FILE_Read(adr,len,UartDrvObj.TxRxBuf.cTxBuf) == TRUE)
+        {
+          UART_TxSend(len);
+        }
+      }
+    }
+  }
+UARTReadCommand_Exit:
+  return TRUE;
+}
+
+
+
 
 static bool UART_PocCommand(void)
 {

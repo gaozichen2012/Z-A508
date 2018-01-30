@@ -12,7 +12,7 @@ u8 Get_0X_ActiveUserIDBuf[11];//
 //u8 TestReadBuffer[300];//存EEPROM读取部标数据测试
 u8 UnicodeForGbk_MainWorkNameBuf[15];
 u8 UnicodeForGbk_MainUserNameBuf[15];
-
+u8 UnicodeForGbk_SpeakerRightnowNameBuf[15];
 const u8 *ucAtPocHead   = "AT+POC=";
 const u8 *ucTingEnd   = "0B0000";
 const u8 *ucTingStart   = "0B0001";
@@ -79,6 +79,11 @@ typedef struct{
         }Bits;u16 Byte;
 			}Msg;
 			u8 Timer;
+                        struct{
+                                u8 PresentUserId;
+				u8 Name[APIPOC_UserName_Len];
+				u8 NameLen;
+			}SpeakerRightnow;
 			struct{
                           
 				u8 PresentGroupId;
@@ -374,6 +379,19 @@ void ApiPocCmd_10msRenew(void)
         POC_ReceivedVoice_Flag=TRUE;
         POC_ReceivedVoiceStart_Flag=2;//0:正常 1：收到语音 2：刚开始语音
         POC_ReceivedVoiceEnd_Flag=1;//0:正常 1：收到语音 2：刚结束语音
+        //83000000000107592875268df7533100f7530000
+        if(Len >= 12)
+        {
+          PocCmdDrvobj.WorkState.UseState.SpeakerRightnow.NameLen = Len - 12;
+          if(PocCmdDrvobj.WorkState.UseState.SpeakerRightnow.NameLen > APIPOC_UserName_Len)
+          {
+            PocCmdDrvobj.WorkState.UseState.SpeakerRightnow.NameLen = APIPOC_UserName_Len;
+          }
+        }
+        for(i = 0x00; i < PocCmdDrvobj.WorkState.UseState.SpeakerRightnow.NameLen; i++)
+        {
+          PocCmdDrvobj.WorkState.UseState.SpeakerRightnow.Name[i] = pBuf[i+12];//存入当前说话人的名字
+        }
       }
       if(ucId == 0xff)
       {
@@ -736,6 +754,33 @@ u8 *UnicodeForGbk_MainUserName(void)
     }
   }
 }
+
+//显示屏显示组呼模式下当前说话人的昵称
+u8 *UnicodeForGbk_SpeakerRightnowName(void)
+{
+  u8 Buf2[30];
+  u8 i=0;
+  while(1)
+  {
+    if(4*i<=PocCmdDrvobj.WorkState.UseState.SpeakerRightnow.NameLen)
+    {
+      Buf2[4*i+0]=PocCmdDrvobj.WorkState.UseState.SpeakerRightnow.Name[4*i+2];
+      Buf2[4*i+1]=PocCmdDrvobj.WorkState.UseState.SpeakerRightnow.Name[4*i+3];
+      Buf2[4*i+2]=PocCmdDrvobj.WorkState.UseState.SpeakerRightnow.Name[4*i+0];
+      Buf2[4*i+3]=PocCmdDrvobj.WorkState.UseState.SpeakerRightnow.Name[4*i+1];
+      UnicodeForGbk_SpeakerRightnowNameBuf[2*i+0]=COML_AscToHex(Buf2+(4*i), 0x02);
+      UnicodeForGbk_SpeakerRightnowNameBuf[2*i+1]=COML_AscToHex(Buf2+(4*i)+2, 0x02);
+      i++;
+    }
+    else
+    {
+      Buf2[PocCmdDrvobj.WorkState.UseState.SpeakerRightnow.NameLen]='\0';
+
+      return UnicodeForGbk_SpeakerRightnowNameBuf;
+    }
+  }
+}
+   
 //当前用户ID（播报使用）
 u8 *Get_Unicode_ActiveUserID(void)
 {

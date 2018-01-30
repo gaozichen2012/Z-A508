@@ -67,6 +67,7 @@ extern u8 *HexToChar_PersonalCallingNum(void);//16进制转字符串 按键播报当前用户I
 
 extern u8 *UnicodeForGbk_MainWorkName(void);
 extern u8 *UnicodeForGbk_MainUserName(void);
+extern u8 *UnicodeForGbk_SpeakerRightnowName(void);
 extern u8 *Get_Unicode_ActiveUserID(void);
 extern u8 *Get_GBK_ActiveUserID(void);
 #endif

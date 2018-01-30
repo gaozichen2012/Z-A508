@@ -25,7 +25,7 @@ void LED_IntOutputRenew(void)
     else
     {
       LED_Conut++;
-      if(LED_Conut>=29)
+      if(LED_Conut>=99)
       {
         if(PositionInfoSendToATPORT_RedLed_Flag==TRUE)
         {
@@ -36,7 +36,7 @@ void LED_IntOutputRenew(void)
           Set_GreenLed(LED_ON);
         }
       }
-      if(LED_Conut>=30)
+      if(LED_Conut>=100)
       {
         //PositionInformationSendToATPORT_Flag=FALSE;
         PositionInfoSendToATPORT_RedLed_Flag=FALSE;

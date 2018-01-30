@@ -1,6 +1,7 @@
 #include "AllHead.h"
 
 u8 BatteryLevel=0;
+u8 Count=0;
 bool LowVoltageDetection_Flag;
 
 static u16 OneChannelGetADValue(ADC2_Channel_TypeDef ADC2_Channel,\
@@ -34,23 +35,29 @@ static u16 OneChannelGetADValue(ADC2_Channel_TypeDef ADC2_Channel,\
 }
 void LowVoltageDetection(void)
 {
-  u16 ADValue;
+  u16 ADValue=0;
+
   ADValue=OneChannelGetADValue(ADC2_CHANNEL_2,ADC2_SCHMITTTRIG_CHANNEL2);
   
   if(GetTaskId()==Task_Start)
   {}
   else
   {
-    if(ADValue<=340&&ADValue>=300)
+    if(ADValue<=350&&ADValue>=200)//345为3.42播报
     {
-      api_disp_icoid_output( eICO_IDBATT, TRUE, TRUE);//电池电量3级
-      SetTaskId(TASK_LOBATT);
-      
-      LowVoltageDetection_Flag=TRUE;
+      Count++;
+      if(Count>=50)
+      {
+        api_disp_icoid_output( eICO_IDBATT, TRUE, TRUE);
+        SetTaskId(TASK_LOBATT);
+        LowVoltageDetection_Flag=TRUE;
+        Count=60;
+      }
     }
     else
     {
-      if(ADValue<=350&&ADValue>=300)
+      Count=0;
+      if(ADValue<=350&&ADValue>=200)
       {
         api_disp_icoid_output( eICO_IDBATT , TRUE, TRUE);
         BatteryLevel=0;
