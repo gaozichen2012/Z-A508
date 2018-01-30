@@ -3,6 +3,7 @@
 bool NoUseNum=FALSE;
 u8 AlarmCount=4;//2G3G切换计数,默认为3G模式
 u8 NetworkType_2Gor3G_Flag=3;
+u8 PersonCallIco_Flag=0;//根据显示组呼个呼图标判断状态
 #if 1 //test
 u8 Key_Flag_0=0;
 u8 Key_PersonalCalling_Flag=0;
@@ -281,6 +282,7 @@ if(POC_EnterPersonalCalling_Flag==2)//如果是被单呼
       api_lcd_pwr_on_hint(HexToChar_MainUserId());//显示当前群组ID
       api_lcd_pwr_on_hint4(UnicodeForGbk_MainUserName());//显示当前用户昵称
       api_disp_icoid_output( eICO_IDPOWERH, TRUE, TRUE);//显示个呼图标
+      PersonCallIco_Flag=1;
       api_disp_all_screen_refresh();// 全屏统一刷新
       POC_EnterPersonalCalling_Flag=1;//在单呼模式
 }
@@ -297,6 +299,7 @@ if(POC_EnterPersonalCalling_Flag==2)//如果是被单呼
           api_lcd_pwr_on_hint(HexToChar_MainUserId());//显示当前用户ID
           api_lcd_pwr_on_hint4(UnicodeForGbk_MainUserName());//显示当前用户昵称
           api_disp_icoid_output( eICO_IDPOWERH, TRUE, TRUE);//显示个呼图标
+          PersonCallIco_Flag=1;
           api_disp_all_screen_refresh();// 全屏统一刷新//可能会对POC开机PoC指令识别有影响
             POC_AtEnterPersonalCalling_Flag=1;
           }
@@ -311,6 +314,7 @@ if(POC_EnterPersonalCalling_Flag==2)//如果是被单呼
               api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
               api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
               api_disp_icoid_output( eICO_IDPOWERM, TRUE, TRUE);//显示组呼图标
+              PersonCallIco_Flag=0;
               api_disp_all_screen_refresh();// 全屏统一刷新//可能会对POC开机PoC指令识别有影响
             }
           }
@@ -335,6 +339,7 @@ if(POC_EnterPersonalCalling_Flag==2)//如果是被单呼
               api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
               api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
               api_disp_icoid_output( eICO_IDPOWERM, TRUE, TRUE);//显示组呼图标
+              PersonCallIco_Flag=0;
               api_disp_all_screen_refresh();// 全屏统一刷新//可能会对POC开机PoC指令识别有影响
               POC_QuitGroupCalling_Flag=1;
           }
@@ -356,29 +361,52 @@ if(POC_EnterPersonalCalling_Flag==2)//如果是被单呼
     }
 
 /*********判断发射接收图标状态****************************************************************************************************************************/
+if(PersonCallIco_Flag==1)
+{
   if(POC_ReceivedVoiceStart_Flag==2)//刚接收语音状态
-{
-  api_disp_icoid_output( eICO_IDVOX, TRUE, TRUE);//接收信号图标
-  api_lcd_pwr_on_hint("                ");//清屏
-  api_lcd_pwr_on_hint4(UnicodeForGbk_SpeakerRightnowName());//显示当前说话人的昵称
-  api_disp_all_screen_refresh();// 全屏统一刷新
-  POC_ReceivedVoiceStart_Flag=1;//接收语音状态
-}
-else//0空闲状态；1接收状态
-{
-  if(POC_ReceivedVoiceEnd_Flag==2)//空闲状态
   {
+    api_disp_icoid_output( eICO_IDVOX, TRUE, TRUE);//接收信号图标
+    api_disp_all_screen_refresh();// 全屏统一刷新
+    POC_ReceivedVoiceStart_Flag=1;//接收语音状态
+  }
+  else//0空闲状态；1接收状态
+  {
+    if(POC_ReceivedVoiceEnd_Flag==2)//空闲状态
+    {
+      api_disp_icoid_output( eICO_IDTALKAR, TRUE, TRUE);//默认无发射无接收信号图标
+      api_disp_all_screen_refresh();// 全屏统一刷新
+      POC_ReceivedVoiceEnd_Flag=0;//默认无语音状态
+    }
+    else//空闲状态
+    {}
+  }
+}
+else
+{
+  if(POC_ReceivedVoiceStart_Flag==2)//刚接收语音状态
+  {
+    api_disp_icoid_output( eICO_IDVOX, TRUE, TRUE);//接收信号图标
+    api_lcd_pwr_on_hint("                ");//清屏
+    api_lcd_pwr_on_hint4(UnicodeForGbk_SpeakerRightnowName());//显示当前说话人的昵称
+    api_disp_all_screen_refresh();// 全屏统一刷新
+    POC_ReceivedVoiceStart_Flag=1;//接收语音状态
+  }
+  else//0空闲状态；1接收状态
+  {
+    if(POC_ReceivedVoiceEnd_Flag==2)//空闲状态
+    {
     api_disp_icoid_output( eICO_IDTALKAR, TRUE, TRUE);//默认无发射无接收信号图标
     api_lcd_pwr_on_hint("                ");//清屏
     api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
     api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
     api_disp_all_screen_refresh();// 全屏统一刷新
-    
     POC_ReceivedVoiceEnd_Flag=0;//默认无语音状态
-  }
+    }
   else//空闲状态
   {}
+  }
 }
+
 
 /********控制功放喇叭*************************************/
 if(ApiPocCmd_Tone_Flag==TRUE)//8b0003 解决按PTT无提示音的问题

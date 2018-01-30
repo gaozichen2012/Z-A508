@@ -6,7 +6,7 @@
 
 #define DrvCommHead_Len         15
 #define DrvMC8332_UART_NoMAX    3	//define UART Tx buffer length value
-#define DrvMC8332Poc_UART_NoMAX 5	//define UART Tx buffer length value
+#define DrvMC8332Poc_UART_NoMAX 7	//define UART Tx buffer length value
 #define DrvMC8332_UART_NoLEN    50	//define UART Rx buffer length value
 #define DrvMC8332Caret_UART_NoLEN  40	//define UART Rx buffer length value
 #define DrvMC8332At_UART_NoLEN  40	//define UART Rx buffer length value
