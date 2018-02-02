@@ -55,4 +55,7 @@
 
 //≤Àµ•œ‘ æ
 #include "ApiMenu.h"
+
+//±±∂∑
+#include "ApiBeidou.h"
 #endif

@@ -41,7 +41,7 @@ extern u8 ApiAtCmd_tcp_state(void);
 extern u8 ApiAtCmd_Ppp_state(void);
 extern u32  CHAR_TO_Digital(u8 * pBuf, u8 Len);
 extern void ApiAtCmd_Get_location_Information(void);
-
+extern void ApiAtCmd_Get_DateTime_Information(void);
 extern u8 Data_Longitude_Minute(void);//经度整数位
 extern u32 Data_Longitude_Second(void);//经度小数位
 extern u8 Data_Latitude_Minute(void);//纬度整数位

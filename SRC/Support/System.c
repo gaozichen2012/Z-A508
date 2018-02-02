@@ -106,8 +106,13 @@ void main_app(void)
   enableInterrupts();
   GPIO_Init(GPIOB,GPIO_PIN_3,GPIO_MODE_OUT_PP_LOW_FAST);//NFC
   GPIO_Init(GPIOB,GPIO_PIN_4,GPIO_MODE_OUT_PP_LOW_FAST);//北斗
+#if 1//北斗定位
   GPIO_WriteLow(GPIOB,GPIO_PIN_3);//NFC
   GPIO_WriteHigh(GPIOB,GPIO_PIN_4);//北斗
+#else//写频
+  GPIO_WriteLow(GPIOB,GPIO_PIN_3);//NFC
+  GPIO_WriteLow(GPIOB,GPIO_PIN_4);//北斗
+#endif
 #if 0//EEPROM TEST
   
   TestBuf[0]=0x6b;

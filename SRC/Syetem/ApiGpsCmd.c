@@ -483,39 +483,6 @@ void ApiGpsCmd_PowerOnInitial(void)//bubiao
 
 }
 
-/*void ApiGpsCmd_1sRenew(void)
-{
-  if (SYS_GetCurTaskBuf() == TASK_mPowerOff || SYS_GetCurTaskBuf() == TASK_IDLE)
-  {
-    if(GpsFunDrvObj.GpsPar.Gps.Cfg.Bits.WorkMode != 0x00 &&
-       GpsFunDrvObj.GpsPar.Acc.CountdownTimer != 0x00 &&
-         GpsFunDrvObj.Msg.Bits.bCountDown == OFF)
-    {
-      GpsFunDrvObj.CountdownTimer.Second++;
-      if(GpsFunDrvObj.CountdownTimer.Second >= 60)
-      {
-        GpsFunDrvObj.CountdownTimer.Second = 0x00;
-        GpsFunDrvObj.CountdownTimer.Minute++;
-        if(GpsFunDrvObj.CountdownTimer.Minute >= 60)
-        {
-          GpsFunDrvObj.CountdownTimer.Minute = 0x00;
-          GpsFunDrvObj.CountdownTimer.Hour++;
-          if(GpsFunDrvObj.CountdownTimer.Hour >= ((u16)GpsFunDrvObj.GpsPar.Acc.CountdownTimer*5))
-          {
-            GpsFunDrvObj.Msg.Bits.bCountDown = ON;
-          }
-        }
-      }
-    }
-  }
-  else
-  {
-    GpsFunDrvObj.Msg.Bits.bCountDown = OFF;
-    GpsFunDrvObj.CountdownTimer.Hour = 0x00;
-    GpsFunDrvObj.CountdownTimer.Minute = 0x00;
-  }
-}*/
-
 void ApiGpsCmd_100msRenew(void)//决定什么时候发送什么数据
 {
   if(GetTaskId()==Task_Start)//处于初始状态
@@ -597,13 +564,11 @@ void ApiGpsCmd_100msRenew(void)//决定什么时候发送什么数据
                     if(PositionInformationSendToATPORT_Flag==TRUE)
                     {
                       GpsCmd_GbWritCommand(GPSCOMM_Position, (void*)0, 0);
-                      //ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)"AT^CDMATIME",strlen((char const *)"AT^CDMATIME"));//发送获取CDMATIME获取时间
-                      //PositionInformationSendToATPORT_Flag=FALSE;
                     }
                     else
                     {
-                      GpsCmd_GbWritCommand(GPSCOMM_Puls, (void*)0, 0);//设置终端心跳
-                     //ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)"AT^CDMATIME",strlen((char const *)"AT^CDMATIME"));//发送获取CDMATIME获取时间
+                      //GpsCmd_GbWritCommand(GPSCOMM_Puls, (void*)0, 0);//设置终端心跳
+                       GpsCmd_GbWritCommand(GPSCOMM_Position, (void*)0, 0);
                     }
 #else
                     GpsCmd_GbWritCommand(GPSCOMM_Login, (void*)0, 0);
@@ -820,10 +785,16 @@ static void GpsCmd_GbDataTransave(GpsCommType GpsComm)//定位信息转换，等会要用到
   pPositInfo->stParam.WorkStatus.Bits.bGpsVolid = GpsFunDrvObj.InfoRecord.Position.Msg.bGpsVolid;
   pPositInfo->stParam.WorkStatus.Bits.bNorthOrSouth = GpsFunDrvObj.InfoRecord.Position.Msg.bNorthOrSouth;
   pPositInfo->stParam.WorkStatus.Bits.bEastOrWest = GpsFunDrvObj.InfoRecord.Position.Msg.bEastOrWest;
-  
+#if 1//北斗 BDDirection;//方向
+  GpsFunDrvObj.InfoRecord.Position.ulLongitude =(BDLongitude_Degree*1000000)+((BDLongitude_Minute*10000+BDLongitude_Second)*10/6);//经度Longitude
+  GpsFunDrvObj.InfoRecord.Position.ulLatitude=(BDLatitude_Degree*1000000)+((BDLatitude_Minute*10000+BDLatitude_Second)*10/6);
+  GpsFunDrvObj.InfoRecord.Position.usSpeed=BDSpeed*10;
+  GpsFunDrvObj.InfoRecord.Position.usDirection=BDDirection;
+#else
   GpsFunDrvObj.InfoRecord.Position.ulLatitude =Data_Longitude_Minute()*1000000+Data_Longitude_Second();
   GpsFunDrvObj.InfoRecord.Position.ulLongitude=Data_Latitude_Minute()*1000000+Data_Latitude_Second();
   GpsFunDrvObj.InfoRecord.Position.usSpeed=Data_Speed()*10;
+#endif
   //经纬度成功存组，准备与平台连接，收到一次数据发送一次数据
   pPositInfo->stParam.ulLatitude = GpsFunDrvObj.InfoRecord.Position.ulLatitude;//经纬度在此存入（此时的GpsFunDrvObj.InfoRecord.Position.ulLatitude已经乘以1000000）
   pPositInfo->stParam.ulLongitude = GpsFunDrvObj.InfoRecord.Position.ulLongitude;//经纬度在此存入

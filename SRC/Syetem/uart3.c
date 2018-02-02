@@ -4,7 +4,7 @@
 
 #define UART_IDLE	0x00		//define UART constant value flag
 #define UART_RUN	0x01
-#define UART_RXBUFLEN	16			//define UART Rx buffer length value
+#define UART_RXBUFLEN	16//16			//define UART Rx buffer length value
 #define UART_TXBUFLEN	32			//define UART Tx buffer length value
 #define PASSWORD_ADR	CFG_IDPASS	//define password address value
 #define PASSWORD_LEN	0x0010		//define password length 
@@ -25,7 +25,8 @@ typedef enum {						//password string code
 typedef struct {							//define UART drive data type 
 	u8 bRunPos 	: 1;
 	u8 bProtect	: 1;
-	u8 			: 6;
+        u8 bBDRunPos 	: 1;
+	u8 		: 5;
 	u8 cData;
 	struct {
 		u8 cTxBuf[UART_TXBUFLEN+18];
@@ -75,7 +76,7 @@ void Uart3_Init(void)
 	
 	/*
 	 * 将UART1配置为：
-	 * 波特率 = 115200
+	 * 波特率 = 9600
 	 * 数据位 = 8
 	 * 1位停止位
 	 * 无校验位
@@ -102,15 +103,56 @@ void UART3_Interrupt(void)
   {
     Res = UART3_ReceiveData8();
     UartDrvObj.cData= (u8)Res;
-      UartDrvObj.bRunPos = UART_RUN;
+    UartDrvObj.bRunPos   = UART_RUN;
+#if 1//beidou
+    switch(UartDrvObj.cData)
+    {
+          case '$':
+            RxStartFlag[0]=1;
+            break;
+          case 'G':
+            RxStartFlag[1]=1;
+            break;
+          case 'N':
+            RxStartFlag[2]=1;
+            break;
+          case 'R':
+            RxStartFlag[3]=1;
+            break;
+          case 'M':
+            RxStartFlag[4]=1;
+            break;
+          case 'C':
+            RxStartFlag[5]=1;
+            break;
+          default:
+            break;
+    }
+        if(RxStartFlag[0]==1&&RxStartFlag[1]==1&&RxStartFlag[2]==1&&
+           RxStartFlag[3]==1&&RxStartFlag[4]==1&&RxStartFlag[5]==1)
+        {
+          if(UartDrvObj.cData=='$')
+          {
+            BeidouRxDataLen=0;
+            RxStartFlag[0]=0;
+            RxStartFlag[1]=0;
+            RxStartFlag[2]=0;
+            RxStartFlag[3]=0;
+            RxStartFlag[4]=0;
+            RxStartFlag[5]=0;
+            return;
+          }
+          BeidouRxData[BeidouRxDataLen]=UartDrvObj.cData;
+          BeidouRxDataLen++;
+        }
+                
+#endif
   }
-
 }
 
 void UART3_ToMcuMain(void)
 {
 	u8 cId;
-
 	if (UartDrvObj.bRunPos == UART_RUN) 			//UART meassgae process
 	{
 		UartDrvObj.bRunPos = UART_IDLE;
@@ -714,7 +756,7 @@ static bool UART_GetCheckSum(void)
 	return FALSE;
 }
 
-static bool UART_RxFrame(u16 len)//关键函数：判断PC发送数据的位数，判断函数运行的位置
+static bool UART_RxFrame(u16 len)//关键函数：保存长度为Len的数据
 {
 	u8 i;
 	u16  del;

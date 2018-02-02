@@ -8,7 +8,6 @@ u8 CSQ_Flag=0;
 u8 KeyDownUpChoose_GroupOrUser_Flag=0;
 
 
-const u8 *ucRxCheckCard = "GETICCID:";
 const u8 *ucRxPASTATE1 = "PASTATE:1";
 const u8 *ucRxPASTATE0 = "PASTATE:0";
 const u8 *ucRxCSQ31 = "CSQ:31";
@@ -35,7 +34,7 @@ u8 *ucCheckRssi = "AT+CSQ?";
 u8 *ucCheckCard = "AT^GETICCID";
 bool PositionInformationSendToATPORT_Flag=FALSE;
 bool PositionInfoSendToATPORT_RedLed_Flag=FALSE;
-#define DrvMC8332_IccId_Len 30
+//#define DrvMC8332_IccId_Len 30
 typedef struct{
 	struct{
 		union{
@@ -56,11 +55,7 @@ typedef struct{
 			}Bits;
 			u16 Byte;
 		}Msg;
-		//u8 ucCardPassword[50];
-		struct{
-                  u8 Buf[DrvMC8332_IccId_Len];
-                  u8 Len;
-                }IccId;
+
                 struct{
                   u8 Buf[21];//存放AT收到的经纬度信息
                   u8 BufLen;//接收经纬度信息的数据长度
@@ -73,10 +68,8 @@ typedef struct{
                     }Bit;
                     u8 Byte;
                   }Msg;
-                  u16 Longitude_Degree;
                   u8 Longitude_Minute;//小数点前的数
                   u32 Longitude_Second;//小数点后的数
-                  u16 Latitude_Degree;
                   u8 Latitude_Minute;
                   u32 Latitude_Second;
                 }Position;
@@ -314,19 +307,6 @@ void ApiAtCmd_10msRenew(void)
   u8 * pBuf, ucRet, Len, i;
   while((Len = DrvMC8332_AtNotify_Queue_front(&pBuf)) != 0)
   {
-    ucRet = memcmp(pBuf, ucRxCheckCard, 9);//GETICCID
-    if(ucRet == 0x00)
-    {
-      if(Len > 0x09)//去頭
-      {
-        Len -= 0x09;
-      }
-       for(i = 0x00; i < Len; i++)
-       {
-         AtCmdDrvobj.NetState.IccId.Buf[i] = pBuf[i + 9];
-       }
-       AtCmdDrvobj.NetState.IccId.Len = i;
-    }
     ucRet = memcmp(pBuf, ucRxPASTATE1, 9);// +PASTATE:1
     if(ucRet == 0x00)
     {
@@ -370,8 +350,7 @@ void ApiAtCmd_10msRenew(void)
 void ApiAtCmd_Get_location_Information(void)
 {
   u8 *pBuf;
-  u8 i=0,cDot=0,cDot2=0,cHead=0,cHead2=0;
-  u8 cCount=0;//Time
+  u8 i=0,cDot=0,cHead=0;
   u8 cSpeedInfoCount=0;
   
   
@@ -412,9 +391,34 @@ void ApiAtCmd_Get_location_Information(void)
       }
     }
   }
+/********获取当前速度gpsinfo***************************************************************************************************************************/
+//2,394,22.517246,113.917666,0
+  pBuf=AtCmdDrvobj.NetState.GpsInfoBuf;
+  for(i=0;i<AtCmdDrvobj.NetState.GpsInfoBufLen;i++)
+  {
+    if(','==pBuf[i])
+    {
+      switch(cSpeedInfoCount)
+      {
+      case 3:
+        AtCmdDrvobj.NetState.ucSpeed = COML_AscToHex(&pBuf[i+1],AtCmdDrvobj.NetState.GpsInfoBufLen-i-1);//speed
+        break;
+      default:
+        break;
+      }
+      cSpeedInfoCount++;
+    }
+  }
+/***********************************************************************************************************************************/
+
+}
 /***********获取年月日时分秒信息*********************************************************************************************************************/
 //2018- 1 -18  1  9  :  4   5  :  1
-
+void ApiAtCmd_Get_DateTime_Information(void)
+{
+  u8 *pBuf;
+  u8 i=0,cDot2=0,cHead2=0;
+  u8 cCount=0;//Time
   pBuf=AtCmdDrvobj.NetState.TimeBuf;
   for(i=0;i<AtCmdDrvobj.NetState.TimeBufLen;i++)
   {
@@ -467,25 +471,6 @@ void ApiAtCmd_Get_location_Information(void)
       }
     }
   }
-/********获取当前速度gpsinfo***************************************************************************************************************************/
-//2,394,22.517246,113.917666,0
-  pBuf=AtCmdDrvobj.NetState.GpsInfoBuf;
-  for(i=0;i<AtCmdDrvobj.NetState.GpsInfoBufLen;i++)
-  {
-    if(','==pBuf[i])
-    {
-      switch(cSpeedInfoCount)
-      {
-      case 3:
-        AtCmdDrvobj.NetState.ucSpeed = COML_AscToHex(&pBuf[i+1],AtCmdDrvobj.NetState.GpsInfoBufLen-i-1);//speed
-        break;
-      default:
-        break;
-      }
-      cSpeedInfoCount++;
-    }
-  }
-/***********************************************************************************************************************************/
 }
 
 
@@ -517,17 +502,7 @@ bool ApiAtCmd_PlayVoice(AtVoiceType id, u8 *buf, u8 len)
 }
 
 
-u8 ApiAtCmd_GetIccId(u8 **pBuf)
-{
-	*pBuf = AtCmdDrvobj.NetState.IccId.Buf;
-	return AtCmdDrvobj.NetState.IccId.Len;
-}
-void ApiGetIccidBuf(void)
-{
-  DrvGD83_UART_TxCommand((u8 *)"AT+Printf=",strlen((char const *)"AT+Printf="));
-  DrvGD83_UART_TxCommand((u8 *)AtCmdDrvobj.NetState.IccId.Buf,strlen((char const *)AtCmdDrvobj.NetState.IccId.Buf));
-  DrvGD83_UART_TxCommand((u8 *)"\r\n",strlen((char const *)"\r\n"));                      
-}
+
 
 static void AtCmd_NetParamCode(void)//获取TCP IP地址
 {

@@ -210,7 +210,12 @@ static void DEL_100msProcess(void)
   {
     DelDrvObj.Msg.Bit.b100ms = DEL_IDLE;
     LED_IntOutputRenew();//LED output renew process
+#if 1//±±¶·
+    ApiBeidou_Get_location_Information();
+#else
     ApiAtCmd_Get_location_Information();
+#endif
+    ApiAtCmd_Get_DateTime_Information();
     ApiGpsCmd_100msRenew();
     if(DelDrvObj.Msg.Bit.b500Alternate == DEL_IDLE)
     {
