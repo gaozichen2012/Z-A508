@@ -113,7 +113,7 @@ void Keyboard_Test(void)
         KeyPersonalCallingCount=ApiAtCmd_GetUserNum()-1;
       }
       VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(PersonalCallingNum),ApiAtCmd_GetUserNameLen(PersonalCallingNum));//播报按上键之后对应的用户名
-      api_lcd_pwr_on_hint("对象:   选择个呼");
+      api_lcd_pwr_on_hint("对象:   个呼选择");
       api_lcd_pwr_on_hint2(HexToChar_PersonalCallingNum());
       KeyDownUpChoose_GroupOrUser_Flag=2;
     }

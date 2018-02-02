@@ -359,6 +359,8 @@ void ApiPocCmd_10msRenew(void)
           PocCmdDrvobj.WorkState.UseState.WorkUserName.Name[i];
       }
       PocCmdDrvobj.WorkState.UseState.UserName[ucId].NameLen = PocCmdDrvobj.WorkState.UseState.WorkUserName.NameLen;
+      //首次获取组内成员播报第一个成员
+      VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(0),ApiAtCmd_GetUserNameLen(0));
       break;
     case 0x82://判断是否登录成功
       ucId = COML_AscToHex(pBuf+3, 0x01);

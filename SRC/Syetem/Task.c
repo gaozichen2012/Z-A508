@@ -223,7 +223,7 @@ void Task_RunNormalOperation(void)
   {
     api_lcd_pwr_on_hint("对象:   选择个呼");
     api_lcd_pwr_on_hint2(HexToChar_MainUserId());
-    
+    PersonalCallingNum=0;//解决按单呼键直接选中，单呼用户并不是播报的用户
     KeyCount_PersonalCalling++;
     
     if(KeyCount_PersonalCalling>=2)
@@ -235,7 +235,7 @@ void Task_RunNormalOperation(void)
       KeyCount_PersonalCalling=1;
     }
     ApiPocCmd_WritCommand(PocComm_UserListInfo,ucRequestUserListInfo,strlen((char const *)ucRequestUserListInfo));
-    VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(0),ApiAtCmd_GetUserNameLen(0));
+    //VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(0),ApiAtCmd_GetUserNameLen(0));
     KeyDownUpChoose_GroupOrUser_Flag=2;
   }
 /*******报警键状态检测********************************************************************************************************************************************/
