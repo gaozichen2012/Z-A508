@@ -11,27 +11,27 @@ void MenuDisplay(MenuDisplayType id)
   case Menu1:
     api_lcd_pwr_on_hint3("菜单            ");
     api_lcd_pwr_on_hint5("1/8");
-     api_lcd_pwr_on_hint("背光灯时间      ");
+     api_lcd_pwr_on_hint("群组选择        ");
     break;
   case Menu2:
     api_lcd_pwr_on_hint3("菜单            ");
     api_lcd_pwr_on_hint5("2/8");
-     api_lcd_pwr_on_hint("键盘锁          ");
+     api_lcd_pwr_on_hint("成员选择        ");
     break;
   case Menu3:
     api_lcd_pwr_on_hint3("菜单            ");
     api_lcd_pwr_on_hint5("3/8");
-     api_lcd_pwr_on_hint("GPS信息         ");
+     api_lcd_pwr_on_hint("背光灯设置      ");
      break;
   case Menu4:
     api_lcd_pwr_on_hint3("菜单            ");
     api_lcd_pwr_on_hint5("4/8");
-     api_lcd_pwr_on_hint("北斗定位信息    ");
+     api_lcd_pwr_on_hint("北斗/写频切换   ");
      break;
   case Menu5:
     api_lcd_pwr_on_hint3("菜单            ");
     api_lcd_pwr_on_hint5("5/8");
-     api_lcd_pwr_on_hint("本机信息        ");
+     api_lcd_pwr_on_hint("GPS信息         ");
      break;
   case Menu6:
     api_lcd_pwr_on_hint3("菜单            ");

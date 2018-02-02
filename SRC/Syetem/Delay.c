@@ -16,6 +16,7 @@ u8 TimeCount3=0;
 u8 TimeCount_Light=0;
 u8 ToneTimeCount=0;
 u8 GpsReconnectionTimeCount=0;
+u8 PowerOnCount=0;
 bool LockingState_Flag=FALSE;
 typedef struct {
   union {
@@ -210,7 +211,7 @@ static void DEL_100msProcess(void)
   {
     DelDrvObj.Msg.Bit.b100ms = DEL_IDLE;
     LED_IntOutputRenew();//LED output renew process
-#if 1//北斗
+#ifdef BEIDOU
     ApiBeidou_Get_location_Information();
 #else
     ApiAtCmd_Get_location_Information();
@@ -244,6 +245,15 @@ static void DEL_500msProcess(void)			//delay 500ms process server
     if(ApiAtCmd_GetLoginState()==TRUE)//登录成功
       {
         GpsReconnectionTimeCount++;
+#ifdef BEIDOU
+        PowerOnCount++;
+        if(PowerOnCount>=2*60)//开机定时超过1min，处于北斗模式
+        {
+          GPIO_WriteLow(GPIOB,GPIO_PIN_3);//NFC
+          GPIO_WriteHigh(GPIOB,GPIO_PIN_4);//北斗
+          PowerOnCount=2*60;
+        }
+#endif
         if(GpsReconnectionTimeCount==2*10)
         {
           NoUseNum=ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)ucGPSSendToAtPort,strlen((char const *)ucGPSSendToAtPort));//设置GPS定位信息发送到串口

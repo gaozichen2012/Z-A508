@@ -27,7 +27,11 @@ void LED_IntOutputRenew(void)
       LED_Conut++;
       if(LED_Conut>=99)
       {
+#ifdef BEIDOU//使用外置北斗
+        if(BDValid==1)
+#else//使用内置GPS
         if(PositionInfoSendToATPORT_RedLed_Flag==TRUE)
+#endif
         {
           Set_RedLed(LED_ON);
         }

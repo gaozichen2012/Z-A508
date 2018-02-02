@@ -4,7 +4,7 @@ u8 BeidouRxDataLen=0;
 u8 RxStartFlag[6];
 //北斗消息体
 #if 1
-u8  BDValid;
+u8  BDValid=0;
 u32 BDLongitude_Degree;//度
 u32 BDLongitude_Minute;//分
 u32 BDLongitude_Second;//小数点后的数

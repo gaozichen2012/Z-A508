@@ -2,6 +2,7 @@
 #define __APIBEIDOU_H
 #define COML_FUNENABLE
 
+//#define BEIDOU//默认内置GPS，注释去掉为外置北斗，测试正常工作
 #define BEIDOU_FUNENABLE
 
 #ifdef	BEIDOU_FUNENABLE

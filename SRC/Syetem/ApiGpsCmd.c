@@ -561,14 +561,18 @@ void ApiGpsCmd_100msRenew(void)//决定什么时候发送什么数据
                   if(GpsFunDrvObj.PositionSystem.GbSys.LoginInfo.ucParam.Msg.Bits.bLoginSuccess==OFF)//
                   {
 #if 1//测试不注册鉴权，直接发送位置信息
+#ifdef BEIDOU//使用外置北斗
+                    if(BDValid==1)
+#else//使用内置GPS
                     if(PositionInformationSendToATPORT_Flag==TRUE)
+#endif
                     {
                       GpsCmd_GbWritCommand(GPSCOMM_Position, (void*)0, 0);
                     }
                     else
                     {
-                      //GpsCmd_GbWritCommand(GPSCOMM_Puls, (void*)0, 0);//设置终端心跳
-                       GpsCmd_GbWritCommand(GPSCOMM_Position, (void*)0, 0);
+                      GpsCmd_GbWritCommand(GPSCOMM_Puls, (void*)0, 0);//设置终端心跳
+                       //GpsCmd_GbWritCommand(GPSCOMM_Position, (void*)0, 0);
                     }
 #else
                     GpsCmd_GbWritCommand(GPSCOMM_Login, (void*)0, 0);
@@ -785,12 +789,12 @@ static void GpsCmd_GbDataTransave(GpsCommType GpsComm)//定位信息转换，等会要用到
   pPositInfo->stParam.WorkStatus.Bits.bGpsVolid = GpsFunDrvObj.InfoRecord.Position.Msg.bGpsVolid;
   pPositInfo->stParam.WorkStatus.Bits.bNorthOrSouth = GpsFunDrvObj.InfoRecord.Position.Msg.bNorthOrSouth;
   pPositInfo->stParam.WorkStatus.Bits.bEastOrWest = GpsFunDrvObj.InfoRecord.Position.Msg.bEastOrWest;
-#if 1//北斗 BDDirection;//方向
+#ifdef BEIDOU//使用外置北斗
   GpsFunDrvObj.InfoRecord.Position.ulLongitude =(BDLongitude_Degree*1000000)+((BDLongitude_Minute*10000+BDLongitude_Second)*10/6);//经度Longitude
   GpsFunDrvObj.InfoRecord.Position.ulLatitude=(BDLatitude_Degree*1000000)+((BDLatitude_Minute*10000+BDLatitude_Second)*10/6);
   GpsFunDrvObj.InfoRecord.Position.usSpeed=BDSpeed*10;
   GpsFunDrvObj.InfoRecord.Position.usDirection=BDDirection;
-#else
+#else//使用内置GPS
   GpsFunDrvObj.InfoRecord.Position.ulLatitude =Data_Longitude_Minute()*1000000+Data_Longitude_Second();
   GpsFunDrvObj.InfoRecord.Position.ulLongitude=Data_Latitude_Minute()*1000000+Data_Latitude_Second();
   GpsFunDrvObj.InfoRecord.Position.usSpeed=Data_Speed()*10;
