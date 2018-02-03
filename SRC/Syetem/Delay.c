@@ -5,7 +5,7 @@
 #define DEL_IDLE		0x00
 #define DEL_RUN			0x01
 
-#define TimeoutLimit            240//键盘超时锁定时间10s
+#define TimeoutLimit            30//240//键盘超时锁定时间10s
 u8 *ucGPSSendToAtPort   ="AT+GPSFUNC=21";
 u8 *ucGPSUploadTime_5s  ="AT+GPSFUNC=2,5";
 u8 DEL_500ms_Count=0;
@@ -305,10 +305,14 @@ static void DEL_500msProcess(void)			//delay 500ms process server
       if(GetTaskId()==Task_NormalOperation)
       {
         TimeCount++;
-        if(TimeCount>=TimeoutLimit) 
+        if(TimeCount>=TimeoutLimit) //超时则锁屏
         {
-          //MCU_LCD_BACKLIGTH(OFF);//关闭背光灯
-          TimeCount=TimeoutLimit;
+          if(TimeCount==TimeoutLimit)
+          {
+            api_disp_icoid_output( eICO_IDBANDWIDTHW, TRUE, TRUE);//锁屏图标
+            api_disp_all_screen_refresh();// 全屏统一刷新
+          }
+          TimeCount=TimeoutLimit+1;
           LockingState_Flag=TRUE;//超时锁定标志位
         }
         else
@@ -326,7 +330,6 @@ static void DEL_500msProcess(void)			//delay 500ms process server
         {
           TimeCount2++;
           api_lcd_pwr_on_hint("按OK键,再按*键  ");//
-          //api_lcd_pwr_on_hint("OK键,再*键");//按OK键再按*键（不能出现按字）
           if(TimeCount2>=2)//1s
           {
             TimeCount2=0;

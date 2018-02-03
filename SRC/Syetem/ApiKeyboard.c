@@ -161,6 +161,8 @@ void Keyboard_Test(void)
     {
       
       VOICE_SetOutput(ATVOICE_FreePlay,"2c54527b216a0f5f",16);//听筒模式
+      api_disp_icoid_output( eICO_IDMONITER, TRUE, TRUE);//听筒模式图标
+      api_disp_all_screen_refresh();// 全屏统一刷新
       DEL_SetTimer(0,100);
       while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
       NoUseNum=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)ucVGR1,strlen((char const *)ucVGR1));//
@@ -171,6 +173,8 @@ void Keyboard_Test(void)
       if(AkeyvolumeCount==1)
       {
         VOICE_SetOutput(ATVOICE_FreePlay,"4d51d063216a0f5f",16);//免提模式
+        api_disp_icoid_output( eICO_IDTemper, TRUE, TRUE);//免提模式图标
+        api_disp_all_screen_refresh();// 全屏统一刷新
         DEL_SetTimer(0,100);
         while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
         NoUseNum=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)ucVGR7,strlen((char const *)ucVGR7));//
@@ -198,7 +202,9 @@ void Keyboard_Test(void)
         LockingState_EnterOK_Flag=FALSE;
         LockingState_Flag=FALSE;
         TimeCount=0;
-        MenuDisplay(Menu_Locking_NoOperation);
+        MenuDisplay(Menu_unLocking);
+        api_disp_icoid_output(eICO_IDBANDWIDTHN, TRUE, TRUE);//无锁屏空图标
+        api_disp_all_screen_refresh();// 全屏统一刷新
       }
       else
       {

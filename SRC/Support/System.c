@@ -130,6 +130,7 @@ void main_app(void)
   MIC_IOMUT(OFF); 
   MCU_LCD_BACKLIGTH(ON);//打开背光灯
   api_disp_icoid_output( eICO_IDBATT5, TRUE, TRUE);//显示电池满电图标
+  api_disp_icoid_output( eICO_IDTemper, TRUE, TRUE);//免提模式图标
   api_lcd_pwr_on_hint2("eChat");
 
   BEEP_Time(1);
@@ -140,7 +141,8 @@ void main_app(void)
   {
 #if 0//电池电压采集测试
 
-api_lcd_pwr_on_hint("欧");
+api_disp_icoid_output( eICO_IDBANDWIDTHN, TRUE, TRUE);//默认无发射无接收信号图标
+api_disp_all_screen_refresh();// 全屏统一刷新
 
 #else
     LowVoltageDetection();
