@@ -62,7 +62,8 @@ static bool UART_KeyCommand(void);//判断开始链接的密码
 static bool UART_WriteCommand(void);//PC写入MCU识别
 static bool UART_ReadCommand(void);
 static bool UART_PocCommand(void);
-bool api_poc_command_set(u8 cId, u8 *pBuf);
+static bool api_poc_command_set(u8 cId, u8 *pBuf);
+static u16   api_poc_command_get(u8 cId, u8 *pBuf);
 static void UART_TxSend(u16 len);
 static void UART_RightAck(u16 len);
 static void UART_ErrorAck(UART_ERROR err);
@@ -613,7 +614,7 @@ static bool UART_PocCommand(void)
 			return FALSE;
 		}
 	}
-	if ((UartDrvObj.TxRxBuf.cRxBuf[3] & 0x80) == 0x00) //
+	if ((UartDrvObj.TxRxBuf.cRxBuf[3] & 0x80) == 0x00) //写入对讲机
 	{
 		if (api_poc_command_set(UartDrvObj.TxRxBuf.cRxBuf[3],&UartDrvObj.TxRxBuf.cRxBuf[4]) == FALSE)//cRxBuf[4]=0x13
 		{
@@ -622,17 +623,16 @@ static bool UART_PocCommand(void)
 		else
 		{
 			
-		}
-              
+		}     
 	}
-	else//应该运行else里的程序
+	else//读取对讲机参数
 	{
 		for(i = 0 ; i < 4; i++) 
 		{
 			UartDrvObj.TxRxBuf.cTxBuf[i] = UartDrvObj.TxRxBuf.cRxBuf[4+i];
 		}
 		
-		//i = api_poc_command_get(UartDrvObj.TxRxBuf.cRxBuf[3],UartDrvObj.TxRxBuf.cTxBuf);
+		i = api_poc_command_get(UartDrvObj.TxRxBuf.cRxBuf[3],UartDrvObj.TxRxBuf.cTxBuf);
                 
 	}
 	return TRUE;
@@ -703,6 +703,61 @@ bool api_poc_command_set(u8 cId, u8 *pBuf)
   }
   return r;
 }
+
+u16 api_poc_command_get(u8 cId, u8 *pBuf)
+{
+	u16 len=0, i = 0;
+	u8 * ptBuf;
+
+	switch (cId & 0x7F)//0x80&0x7F=0x00
+	{
+		case 0x00://
+			len = ApiPocCmd_user_info_get(&ptBuf);
+			break;
+			
+		case 0x01:
+			//len = ApiXM39_UART_GetReportPoint(&ptBuf);
+			break;
+			
+		case 0x02://get ESN
+			//len = ApiAtCmd_GetIccId(&ptBuf);
+			break;	
+		case 0x03:
+			//len = ApiAtCmd_GetRssi(&ptBuf);
+			break;
+		default:						//error all D/A off
+			break;
+	}
+	if(len != 0)
+	{
+		UART_RightAck(len);
+		if (UART_RxFrame(1) == TRUE)
+		{
+			while((len - i) >= UART_TXBUFLEN)
+			{
+				memcpy(UartDrvObj.TxRxBuf.cTxBuf, ptBuf+i, UART_TXBUFLEN);
+				i += UART_TXBUFLEN;
+				UART_TxSend(UART_TXBUFLEN);
+			}
+			if(i != len)
+			{
+				memcpy(UartDrvObj.TxRxBuf.cTxBuf, ptBuf+i, len-i);
+				UART_TxSend(len-i);
+			}
+		}
+		else
+		{
+			UART_ErrorAck(UART_TIMEOVER);
+		}
+	}
+	else
+	{
+		UART_ErrorAck(UART_ADERR);
+	}
+	return len;
+}
+
+
 
 static void UART_RightAck(u16 len)
 {

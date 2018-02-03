@@ -206,6 +206,15 @@ void ApiPocCmd_WritCommand(PocCommType id, u8 *buf, u16 len)
   DrvMC8332_TxPort_SetValidable(ON);
 }
 
+//从EEPROM中读取数据传给写频软件
+u8 ApiPocCmd_user_info_get(u8 ** pBuf)
+{
+  u8 Len=0;
+  Len = Combine2Hex(ReadBuffer, strlen((char const *)ReadBuffer), ReadBuffer);
+  *pBuf = ReadBuffer;
+  return strlen((char const *)ReadBuffer);
+}
+
 //写频写入数据存入EEPROM
 bool ApiPocCmd_user_info_set(u8 *pBuf, u8 len)//cTxBuf为存放ip账号密码的信息
 {
