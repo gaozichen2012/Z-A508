@@ -170,7 +170,6 @@ api_disp_all_screen_refresh();// 全屏统一刷新
       break;
     default:
       break;
-      
     }
 #endif   
     

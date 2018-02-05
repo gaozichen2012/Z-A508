@@ -34,6 +34,7 @@ u8 *ucCheckRssi = "AT+CSQ?";
 u8 *ucCheckCard = "AT^GETICCID";
 bool PositionInformationSendToATPORT_Flag=FALSE;
 bool PositionInfoSendToATPORT_RedLed_Flag=FALSE;
+bool PositionInfoSendToATPORT_SetPPP_Flag=FALSE;
 //#define DrvMC8332_IccId_Len 30
 typedef struct{
 	struct{
@@ -174,37 +175,38 @@ void ApiAtCmd_100msRenew(void)
   {
     if(GetTaskId()==Task_NormalOperation)//登录成功进入群组状态
     {
-    if(AtCmdDrvobj.NetState.Msg.Bits.bPppOk == OFF)//如果PPP未连接上
-    {
-      if(ApiAtCmd_WritCommand(ATCOMM11_ZpppOpen, (void*)0, 0) == TRUE)
+      if(PositionInfoSendToATPORT_SetPPP_Flag==TRUE)//如果定位成功(串口收到[经纬度])，则登录部标登录IP、心跳、位置
       {
-      if(ApiAtCmd_WritCommand(ATCOMM12_CheckPPP, (void*)0, 0) == TRUE)
-      {}
-      }
-    }
-    else//PPP连接上了
-    {
-
-        //if()//如果部标定位打开
+        if(AtCmdDrvobj.NetState.Msg.Bits.bPppOk == OFF)//如果PPP未连接上
         {
-          if(AtCmdDrvobj.NetState.Msg.Bits.bTcpOk == OFF)//查询后返回的TCP状态
+          if(ApiAtCmd_WritCommand(ATCOMM11_ZpppOpen, (void*)0, 0) == TRUE)//pocnetopen
           {
-            if(AtCmdDrvobj.NetState.Msg.Bits.bTcp == OFF)//如果TCP是关闭的
+            if(ApiAtCmd_WritCommand(ATCOMM12_CheckPPP, (void*)0, 0) == TRUE)//POCNETOPEN?
+            {}
+          }
+        }
+        else//PPP连接上了
+        {
+          //if()//如果部标定位打开
+          {
+            if(AtCmdDrvobj.NetState.Msg.Bits.bTcpOk == OFF)//查询后返回的TCP状态
             {
-              AtCmd_NetParamCode();//获取IP地址
-              if(ApiAtCmd_WritCommand(ATCOMM9_SetIp, (void*)AtCmdDrvobj.NetState.Buf, AtCmdDrvobj.NetState.Len) == TRUE)//设置IP
+              if(AtCmdDrvobj.NetState.Msg.Bits.bTcp == OFF)//如果TCP是关闭的
               {
-                AtCmdDrvobj.NetState.Msg.Bits.bTcp = ON;
+                AtCmd_NetParamCode();//获取IP地址
+                if(ApiAtCmd_WritCommand(ATCOMM9_SetIp, (void*)AtCmdDrvobj.NetState.Buf, AtCmdDrvobj.NetState.Len) == TRUE)//设置IP
+                {
+                  AtCmdDrvobj.NetState.Msg.Bits.bTcp = ON;
+                }
+              }
+              else//如果TCP是打开的，则检测TCP连接是否正常
+              {
+                AtCmdDrvobj.NetState.Buf[0] = 0x31;
+                if(ApiAtCmd_WritCommand(ATCOMM8_CheckTcp, (void*)AtCmdDrvobj.NetState.Buf, 1) == TRUE)
+                {}
               }
             }
-            else//如果TCP是打开的，则检测TCP连接是否正常
-            {
-              AtCmdDrvobj.NetState.Buf[0] = 0x31;
-              if(ApiAtCmd_WritCommand(ATCOMM8_CheckTcp, (void*)AtCmdDrvobj.NetState.Buf, 1) == TRUE)
-              {}
-            }
           }
-         
         }
       }
     }
@@ -333,6 +335,7 @@ void ApiAtCmd_10msRenew(void)
     {
       PositionInfoSendToATPORT_RedLed_Flag=TRUE;
       PositionInformationSendToATPORT_Flag=TRUE;
+      PositionInfoSendToATPORT_SetPPP_Flag=TRUE;
       if(Len > 7)//去頭
       {
         Len -= 0x07;

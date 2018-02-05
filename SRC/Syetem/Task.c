@@ -278,16 +278,16 @@ void Task_RunNormalOperation(void)
 /***********判断正常进组；正常退出组;被单呼模式；退出单呼模式；主动开始单呼；单呼；主动退出单呼*********************************************************************************************************************/
 if(POC_EnterPersonalCalling_Flag==2)//如果是被单呼
 {
-      api_lcd_pwr_on_hint("                ");//清屏
-      api_lcd_pwr_on_hint(HexToChar_MainUserId());//显示当前群组ID
-      api_lcd_pwr_on_hint4(UnicodeForGbk_MainUserName());//显示当前用户昵称
-      api_disp_icoid_output( eICO_IDPOWERH, TRUE, TRUE);//显示个呼图标
-      PersonCallIco_Flag=1;
-      api_disp_all_screen_refresh();// 全屏统一刷新
-      POC_EnterPersonalCalling_Flag=1;//在单呼模式
+  api_lcd_pwr_on_hint("                ");//清屏
+  api_lcd_pwr_on_hint(HexToChar_MainUserId());//显示当前群组ID
+  api_lcd_pwr_on_hint4(UnicodeForGbk_MainUserName());//显示当前用户昵称
+  api_disp_icoid_output( eICO_IDPOWERH, TRUE, TRUE);//显示个呼图标
+  PersonCallIco_Flag=1;
+  api_disp_all_screen_refresh();// 全屏统一刷新
+  POC_EnterPersonalCalling_Flag=1;//在单呼模式
 }
-    else//如果是正常进组；组内；正常退出组;单呼；退出单呼模式；
-    {
+else//如果是正常进组；组内；正常退出组;单呼；退出单呼模式；
+{
       if(POC_EnterPersonalCalling_Flag==0)//如果是正常进组；组内；正常退出组
       {
         if(POC_EnterGroupCalling_Flag==2)//正在进入群组、进入个呼
@@ -358,7 +358,7 @@ if(POC_EnterPersonalCalling_Flag==2)//如果是被单呼
 
         }
       }
-    }
+}
 
 /*********判断发射接收图标状态****************************************************************************************************************************/
 if(PersonCallIco_Flag==1)
@@ -428,9 +428,7 @@ else
 
 /***********************************************/
 
-
 }
-
 void TASK_WriteFreq(void)
 {
   UART3_ToMcuMain();
