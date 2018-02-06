@@ -13,8 +13,15 @@ typedef enum{
   Menu8             = 0x08,
   Menu_Locking_NoOperation    =0x09,
   Menu_unLocking              =0x0A,
+  Menu_RefreshAllIco          =0x0B,
   Menu_UnlockStep1_Ok         = 0x0F,
 }MenuDisplayType;
 
+typedef enum{
+  GpsInfoMenu       =0x00,
+}SubmenuMenuDisplayType;
+
+extern u8 ApiMenu_GpsInfo_Flag;
 extern void MenuDisplay(MenuDisplayType id);
+extern void SubmenuMenuDisplay(SubmenuMenuDisplayType id);
 #endif

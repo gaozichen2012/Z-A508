@@ -279,6 +279,7 @@ void Task_RunNormalOperation(void)
 /***********判断正常进组；正常退出组;被单呼模式；退出单呼模式；主动开始单呼；单呼；主动退出单呼*********************************************************************************************************************/
 if(POC_EnterPersonalCalling_Flag==2)//如果是被单呼
 {
+  MenuDisplay(Menu_RefreshAllIco);
   api_lcd_pwr_on_hint("                ");//清屏
   api_lcd_pwr_on_hint(HexToChar_MainUserId());//显示当前群组ID
   api_lcd_pwr_on_hint4(UnicodeForGbk_MainUserName());//显示当前用户昵称
@@ -296,12 +297,13 @@ else//如果是正常进组；组内；正常退出组;单呼；退出单呼模式；
 
           if(POC_AtEnterPersonalCalling_Flag==2)//主动开始单呼模式(实际为单呼结束)
           {
-          api_lcd_pwr_on_hint("                ");//清屏
-          api_lcd_pwr_on_hint(HexToChar_MainUserId());//显示当前用户ID
-          api_lcd_pwr_on_hint4(UnicodeForGbk_MainUserName());//显示当前用户昵称
-          api_disp_icoid_output( eICO_IDPOWERH, TRUE, TRUE);//显示个呼图标
-          PersonCallIco_Flag=1;
-          api_disp_all_screen_refresh();// 全屏统一刷新//可能会对POC开机PoC指令识别有影响
+            MenuDisplay(Menu_RefreshAllIco);
+            api_lcd_pwr_on_hint("                ");//清屏
+            api_disp_icoid_output( eICO_IDPOWERH, TRUE, TRUE);//显示个呼图标
+            api_lcd_pwr_on_hint(HexToChar_MainUserId());//显示当前用户ID
+            api_lcd_pwr_on_hint4(UnicodeForGbk_MainUserName());//显示当前用户昵称
+            PersonCallIco_Flag=1;
+            api_disp_all_screen_refresh();// 全屏统一刷新//可能会对POC开机PoC指令识别有影响
             POC_AtEnterPersonalCalling_Flag=1;
           }
           else
@@ -311,10 +313,12 @@ else//如果是正常进组；组内；正常退出组;单呼；退出单呼模式；
             }
             else
             {
+              MenuDisplay(Menu_RefreshAllIco);
               api_lcd_pwr_on_hint("                ");//清屏
+              api_disp_icoid_output( eICO_IDPOWERM, TRUE, TRUE);//显示组呼图标
+              api_disp_icoid_output( BatteryLevel, TRUE, TRUE);
               api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
               api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
-              api_disp_icoid_output( eICO_IDPOWERM, TRUE, TRUE);//显示组呼图标
               PersonCallIco_Flag=0;
               api_disp_all_screen_refresh();// 全屏统一刷新//可能会对POC开机PoC指令识别有影响
             }
@@ -329,17 +333,11 @@ else//如果是正常进组；组内；正常退出组;单呼；退出单呼模式；
         {
           if(POC_QuitGroupCalling_Flag==2)
           {
+              MenuDisplay(Menu_RefreshAllIco);
               api_lcd_pwr_on_hint("                ");//清屏
-              api_lcd_pwr_on_hint3("        ");//清屏，防止显示“个呼短号”
-              api_disp_icoid_output( eICO_IDRXFULL, TRUE, TRUE);//GPRS三格信号图标
-              if(NetworkType_2Gor3G_Flag==3)
-                api_disp_icoid_output( eICO_IDEmergency, TRUE, TRUE);//3G图标
-              else
-                api_disp_icoid_output( eICO_IDPOWERL, TRUE, TRUE);//图标：2G
-              api_disp_icoid_output( eICO_IDTemper, TRUE, TRUE);//免提模式
+              api_disp_icoid_output( eICO_IDPOWERM, TRUE, TRUE);//显示组呼图标
               api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
               api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
-              api_disp_icoid_output( eICO_IDPOWERM, TRUE, TRUE);//显示组呼图标
               PersonCallIco_Flag=0;
               api_disp_all_screen_refresh();// 全屏统一刷新//可能会对POC开机PoC指令识别有影响
               POC_QuitGroupCalling_Flag=1;

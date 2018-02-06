@@ -9,4 +9,5 @@ extern s8 KeyUpDownCount;
 extern void Keyboard_Test(void);
 extern bool NumberKeyboardPressDown_flag;
 extern bool LockingState_EnterOK_Flag;
+extern u8 VoiceType_FreehandOrHandset_Flag;
 #endif

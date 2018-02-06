@@ -37,6 +37,7 @@ u8 *ucCheckCard = "AT^GETICCID";
 bool PositionInformationSendToATPORT_Flag=FALSE;
 bool PositionInfoSendToATPORT_RedLed_Flag=FALSE;
 bool PositionInfoSendToATPORT_SetPPP_Flag=FALSE;
+bool PositionInfoSendToATPORT_InfoDisplay_Flag=FALSE;
 //#define DrvMC8332_IccId_Len 30
 typedef struct{
 	struct{
@@ -360,6 +361,7 @@ void ApiAtCmd_10msRenew(void)
       PositionInfoSendToATPORT_RedLed_Flag=TRUE;
       PositionInformationSendToATPORT_Flag=TRUE;
       PositionInfoSendToATPORT_SetPPP_Flag=TRUE;
+      PositionInfoSendToATPORT_InfoDisplay_Flag=TRUE;
       if(Len > 7)//È¥î^
       {
         Len -= 0x07;

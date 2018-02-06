@@ -19,7 +19,6 @@ u8 GpsReconnectionTimeCount=0;
 u8 PowerOnCount=0;
 u8 CSQTimeCount=0;
 u8 LandingTimeCount=0;
-
 bool LockingState_Flag=FALSE;
 typedef struct {
   union {

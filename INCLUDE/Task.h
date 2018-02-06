@@ -23,7 +23,6 @@ typedef enum {					//task id code process
 	Task_Start              =0x0C,//Tom added in 2017.11.17
         Task_NormalOperation    =0x0D,
 	TASK_RESET		= 0xFF
-        
 }TASK_CODE;
 TASKAPI bool NoUseNum;
 TASKAPI u8 NetworkType_2Gor3G_Flag;
@@ -36,4 +35,5 @@ TASKAPI void Task_RunNormalOperation(void);
 TASKAPI void TASK_WriteFreq(void);
 TASKAPI void Task_RunNormalOperation(void);
 TASKAPI void TASK_RunLoBattery(void);
+TASKAPI u8 PersonCallIco_Flag;//根据显示组呼个呼图标判断状态
 #endif

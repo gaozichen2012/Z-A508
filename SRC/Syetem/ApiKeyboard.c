@@ -17,6 +17,7 @@ u8 MenuMode_Flag=0;
 u8 MenuModeCount=1;
 bool NumberKeyboardPressDown_flag=FALSE;
 bool LockingState_EnterOK_Flag=FALSE;
+u8 VoiceType_FreehandOrHandset_Flag=0;
 u8 TestNum1,TestNum2,TestNum3,TestNum4,TestNum5,TestNum6;
 u8 TestNum7,TestNum8,TestNum9,TestNum10,TestNum11,TestNum12;
 u8 TestBuf1[6];//测试显示屏短号号码使用
@@ -98,7 +99,7 @@ void Keyboard_Test(void)
     if(MenuMode_Flag==1)
     {
       MenuModeCount=MenuModeCount-1;
-      if(MenuModeCount<1) {MenuModeCount=8;}
+      if(MenuModeCount<1) {MenuModeCount=7;}
       MenuDisplay(MenuModeCount);
     }
     else
@@ -145,11 +146,50 @@ void Keyboard_Test(void)
     }
     else
     {
-      MenuDisplay(Menu1);
-      MenuMode_Flag=1;
+      switch(MenuModeCount)
+      {
+      case 1://群组选择
+        MenuDisplay(MenuModeCount);
+        MenuMode_Flag=1;
+        break;
+      case 2://成员选择
+        MenuDisplay(MenuModeCount);
+        MenuMode_Flag=1;
+        break;
+      case 3://GPS设置
+            switch(ApiMenu_GpsInfo_Flag)
+            {
+            case 0://默认状态按OK键进入一级菜单
+              MenuDisplay(MenuModeCount);
+              MenuMode_Flag=1;
+              ApiMenu_GpsInfo_Flag=1;
+              break;
+            case 1://在gps信息一级菜单按ok键进入二级菜单
+              SubmenuMenuDisplay(GpsInfoMenu);
+              ApiMenu_GpsInfo_Flag=0;
+              break;
+            }
+        break;
+      case 4://背光灯设置
+        MenuDisplay(MenuModeCount);
+        MenuMode_Flag=1;
+        break;
+      case 5://网络模式
+        MenuDisplay(MenuModeCount);
+        MenuMode_Flag=1;
+        break;
+      case 6://本机信息
+        MenuDisplay(MenuModeCount);
+        MenuMode_Flag=1;
+        break;
+      case 7://北斗/写频切换
+        MenuDisplay(MenuModeCount);
+        MenuMode_Flag=1;
+        break;
+      default:
+        break;
+      }
     }
-    
-
     break;
   case 0x00800000://menu
     NumberKeyboardPressDown_flag=TRUE;
@@ -162,6 +202,7 @@ void Keyboard_Test(void)
       
       VOICE_SetOutput(ATVOICE_FreePlay,"2c54527b216a0f5f",16);//听筒模式
       api_disp_icoid_output( eICO_IDMONITER, TRUE, TRUE);//听筒模式图标
+      VoiceType_FreehandOrHandset_Flag=1;
       api_disp_all_screen_refresh();// 全屏统一刷新
       DEL_SetTimer(0,100);
       while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
@@ -174,6 +215,7 @@ void Keyboard_Test(void)
       {
         VOICE_SetOutput(ATVOICE_FreePlay,"4d51d063216a0f5f",16);//免提模式
         api_disp_icoid_output( eICO_IDTemper, TRUE, TRUE);//免提模式图标
+        VoiceType_FreehandOrHandset_Flag=0;
         api_disp_all_screen_refresh();// 全屏统一刷新
         DEL_SetTimer(0,100);
         while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
@@ -253,7 +295,7 @@ void Keyboard_Test(void)
     if(MenuMode_Flag==1)
     {
       MenuModeCount=MenuModeCount+1;
-      if(MenuModeCount>8) {MenuModeCount=1;}
+      if(MenuModeCount>7) {MenuModeCount=1;}
       MenuDisplay(MenuModeCount);
     }
     else
@@ -299,7 +341,7 @@ void Keyboard_Test(void)
     {
       if(MenuMode_Flag==1)
       {
-        MenuDisplay(Menu0);
+        MenuDisplay(Menu_RefreshAllIco);
         MenuMode_Flag=0;
       }
       api_lcd_pwr_on_hint("    组呼模式    ");
