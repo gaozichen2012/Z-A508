@@ -342,12 +342,12 @@ void ApiAtCmd_10msRenew(void)
     {
       CSQ_Flag=2;
       CSQ99Count_Flag++;
-      if(CSQ99Count_Flag==1)
+      if(CSQ99Count_Flag==2)
       {
         //播报网络信号弱
         VOICE_SetOutput(ATVOICE_FreePlay,"517fdc7ee14ff753315f",20);//播报正在登陆
       }
-      if(CSQ99Count_Flag>=3)//3*5如果3次15s内没有收到则重启
+      if(CSQ99Count_Flag>=4)//3*5如果3次15s内没有收到则重启
       {
         CSQ99Count_Flag=0;
         ApiAtCmd_WritCommand(ATCOMM3_GD83Reset,(void*)0, 0);

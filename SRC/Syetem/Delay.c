@@ -18,6 +18,8 @@ u8 ToneTimeCount=0;
 u8 GpsReconnectionTimeCount=0;
 u8 PowerOnCount=0;
 u8 CSQTimeCount=0;
+u8 LandingTimeCount=0;
+
 bool LockingState_Flag=FALSE;
 typedef struct {
   union {
@@ -244,6 +246,21 @@ static void DEL_500msProcess(void)			//delay 500ms process server
     TimeCount_Light++;
     CSQTimeCount++;
     
+    if(Task_Landing_Flag==TRUE)
+    {
+      LandingTimeCount++;
+      if(LandingTimeCount>=2*30)
+      {
+        LandingTimeCount=2*30;
+        Task_Landing_Flag=FALSE;
+        ApiAtCmd_WritCommand(ATCOMM3_GD83Reset,(void*)0, 0);
+      }
+    }
+    else
+    {
+      LandingTimeCount=0;
+    }
+
 /*********定时5s发一次[AT+CSQ?]*************************************************/
         if(CSQTimeCount>=2*5)
         {

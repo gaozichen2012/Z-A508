@@ -8,6 +8,7 @@ u8 PersonCallIco_Flag=0;//根据显示组呼个呼图标判断状态
 u8 Key_Flag_0=0;
 u8 Key_PersonalCalling_Flag=0;
 bool TASK_Ptt_StartPersonCalling_Flag=FALSE;
+bool Task_Landing_Flag=FALSE;
 u8 KeyCount_PersonalCalling=0;
 #endif
 
@@ -87,6 +88,7 @@ void Task_RunStart(void)
     //  Delay_100ms(10);//1s
       ApiPocCmd_WritCommand(PocComm_OpenPOC,ucPocOpenConfig,strlen((char const *)ucPocOpenConfig));
       BootProcess_PPPCFG_Flag_Zanshi=0;
+      Task_Landing_Flag=TRUE;
     }
   }
   else
