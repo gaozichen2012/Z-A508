@@ -93,7 +93,7 @@ void LowVoltageDetection(void)
         ApiPocCmd_WritCommand(PocComm_Cancel,(u8 *)ucQuitPersonalCalling,strlen((char const *)ucQuitPersonalCalling));
         LowVoltageDetection_Flag=FALSE;
       }
-      SetTaskId(Task_NormalOperation);
+      //SetTaskId(Task_NormalOperation);
     }
   }
 }

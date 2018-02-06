@@ -31,7 +31,6 @@ u8 *ucPocOpenConfig             = "0000000101";
 
 void Task_RunStart(void)
 {
-  
   UART3_ToMcuMain();
   if(BootProcess_SIMST_Flag==1)//收到模块开机指令:SIMST:1
   {

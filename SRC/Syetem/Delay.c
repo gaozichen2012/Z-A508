@@ -17,6 +17,7 @@ u8 TimeCount_Light=0;
 u8 ToneTimeCount=0;
 u8 GpsReconnectionTimeCount=0;
 u8 PowerOnCount=0;
+u8 CSQTimeCount=0;
 bool LockingState_Flag=FALSE;
 typedef struct {
   union {
@@ -241,7 +242,15 @@ static void DEL_500msProcess(void)			//delay 500ms process server
     DEL_500ms_Count++;
     DEL_500ms_Count2++;
     TimeCount_Light++;
+    CSQTimeCount++;
     
+/*********定时5s发一次[AT+CSQ?]*************************************************/
+        if(CSQTimeCount>=2*5)
+        {
+          CSQTimeCount=0;
+          ApiAtCmd_WritCommand(ATCOMM6_CSQ, (void*)0, 0);
+        }
+/***********************************************************/
     if(ApiAtCmd_GetLoginState()==TRUE)//登录成功
       {
         GpsReconnectionTimeCount++;
@@ -254,6 +263,7 @@ static void DEL_500msProcess(void)			//delay 500ms process server
           PowerOnCount=2*60;
         }
 #endif
+
         if(GpsReconnectionTimeCount==2*10)
         {
           NoUseNum=ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)ucGPSSendToAtPort,strlen((char const *)ucGPSSendToAtPort));//设置GPS定位信息发送到串口

@@ -60,7 +60,7 @@ static TASK_DRV	TaskDrvObj;
 
 u8 *ucSwitch            = "10000002";
 u8 *ucGroupListInfo     = "0D0000";
-u8 *ucGD83Reset         = "at^reset";
+
 
 
 #if 0//电池电量测试
@@ -68,9 +68,8 @@ u8 Test3=0;
 u8 TestBuf[5];
 #endif
 
-void main_app(void)
+void main_init(void)
 {
-  //T1[62]=0;//Test
   disableInterrupts();
   SystemClock_Init(HSE_Clock);
   ITC_SetSoftwarePriority(ITC_IRQ_UART1_RX,ITC_PRIORITYLEVEL_3);
@@ -134,9 +133,12 @@ void main_app(void)
   api_lcd_pwr_on_hint2("eChat");
 
   BEEP_Time(1);
-  NoUseNum=ApiAtCmd_WritCommand(ATCOMM3_GD83Reset,(u8 *)ucGD83Reset,strlen((char const *)ucGD83Reset));
+  NoUseNum=ApiAtCmd_WritCommand(ATCOMM3_GD83StartupReset,(void*)0, 0);
   TaskDrvObj.NewId=Task_Start;//Task_Start
-
+}
+void main_app(void)
+{
+  main_init();
   while(1)
   {
 #if 0//电池电压采集测试

@@ -28,6 +28,7 @@ bool ApiPocCmd_Tone_Flag=FALSE;
 u8 POC_ReceivedVoiceStart_Flag=0;
 u8 POC_ReceivedVoiceEnd_Flag=0;
 bool POC_Receive86_Flag=FALSE;
+u8 OffLineCount=0;
 typedef struct{
   struct{
     union{
@@ -127,25 +128,15 @@ typedef struct{
 }PocCmdDrv;
 
 static PocCmdDrv PocCmdDrvobj;
-/*void ApiPocCmd_PowerOnInitial(void)
+void ApiPocCmd_PowerOnInitial(void)
 {
   PocCmdDrvobj.NetState.Msg.Byte = 0x00;
   PocCmdDrvobj.NetState.Timer = 0x00;
   PocCmdDrvobj.NetState.Times = 0x00;
-  PocCmdDrvobj.NetState.ResetTimes = 0x00;
-  PocCmdDrvobj.WorkState.InvFirstPlay = 0x00;
   PocCmdDrvobj.WorkState.UseState.Msg.Byte = 0x00;
   PocCmdDrvobj.WorkState.UseState.Msg.Bits.bInitial = 0x01;
-  PocCmdDrvobj.WorkState.InviteInfo.Msg.Byte = 0x00;
-  PocCmdDrvobj.WorkState.InviteInfo.InviteIndex = 0x00;
-  PocCmdDrvobj.CfgInfo.Msg.Byte = 0x00;
-  PocCmdDrvobj.CfgInfo.GroupInfoLen = 0x00;
-  PocCmdDrvobj.CfgInfo.UseListLen = 0x00;
-  PocCmdDrvobj.CfgInfo.UseInfoLoadPoint.Start = 0;
-  PocCmdDrvobj.CfgInfo.UseInfoLoadPoint.Index = 0;
-  PocCmdDrvobj.CfgInfo.UseInfoLoadPoint.Stop = 16;
-  PocCmdDrvobj.CfgInfo.UseIndex = 0;
-}*/
+  PocCmdDrvobj.WorkState.UseState.Msg.Bits.bLogin=0;
+}
 
 void ApiPocCmd_WritCommand(PocCommType id, u8 *buf, u16 len)
 {
@@ -304,6 +295,7 @@ void ApiPocCmd_10msRenew(void)
           POC_AtEnterPersonalCalling_Flag=2;
           POC_AtQuitPersonalCalling_Flag=1;
           TASK_Ptt_StartPersonCalling_Flag=FALSE;
+          
         }
       }
 #else
@@ -376,6 +368,17 @@ void ApiPocCmd_10msRenew(void)
       if(ucId == 0x02)
       {
         PocCmdDrvobj.WorkState.UseState.Msg.Bits.bLogin = 0x01;
+        OffLineCount=0;
+      }
+      else if(ucId == 0x00)
+      {
+        OffLineCount++;
+        if(OffLineCount>=5)
+        {
+          ApiAtCmd_WritCommand(ATCOMM3_GD83Reset,(void*)0, 0);
+          OffLineCount=0;
+        }
+        PocCmdDrvobj.WorkState.UseState.Msg.Bits.bLogin = 0x00;
       }
       else
       {
@@ -649,6 +652,10 @@ bool ApiPocCmd_GetPttState(void)//判断PPT状态，是否有话权
 bool ApiAtCmd_GetLoginState(void)
 {
   return (bool)PocCmdDrvobj.WorkState.UseState.Msg.Bits.bLogin;
+}
+void ApiAtCmd_SetLoginState(void)
+{
+  PocCmdDrvobj.WorkState.UseState.Msg.Bits.bLogin=0;
 }
 /*
 void ApiGetPocBuf(void)

@@ -35,7 +35,7 @@ extern u8 POC_ReceivedVoiceEnd_Flag;
 extern bool POC_ReceivedVoice_Flag;
 extern bool POC_Receive86_Flag;
 extern bool ApiPocCmd_Tone_Flag;
-//void ApiPocCmd_PowerOnInitial(void);
+extern void ApiPocCmd_PowerOnInitial(void);
 extern void ApiPocCmd_WritCommand(PocCommType id, u8 *buf, u16 len);
 extern bool ApiPocCmd_user_info_set(u8 *pBuf, u8 len);//cTxBuf为存放ip账号密码的信息
 extern u8 ApiPocCmd_user_info_get(u8 ** pBuf);
@@ -43,6 +43,7 @@ extern void ApiPocCmd_10msRenew(void);
 //extern void ApiPocCmd_83_1msRenew(void);
 extern bool ApiPocCmd_GetPttState(void);//判断PPT状态，是否有话权;
 extern bool ApiAtCmd_GetLoginState(void);
+extern void ApiAtCmd_SetLoginState(void);
 extern bool GetPlayState(void);
 extern bool GetPersonalCallingMode(void);//获取是否为个呼模式
 extern void ApiGetPocBuf(void);

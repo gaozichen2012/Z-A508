@@ -5,11 +5,13 @@ u8 BootProcess_PPPCFG_Flag_Zanshi=1;//临时代替PPPCFG检测
 u8 BootProcess_OpenPoc_Flag=0;
 bool ApiAtCmd_TrumpetVoicePlay_Flag=FALSE;//功放控制标志位
 u8 CSQ_Flag=0;
+u8 CSQ99Count_Flag=0;
 u8 KeyDownUpChoose_GroupOrUser_Flag=0;
 
-
+const u8 *ucGD83Reset  = "at^reset";
 const u8 *ucRxPASTATE1 = "PASTATE:1";
 const u8 *ucRxPASTATE0 = "PASTATE:0";
+const u8 *ucCheckRssi = "AT+CSQ?";
 const u8 *ucRxCSQ31 = "CSQ:31";
 const u8 *ucRxCSQ99 = "CSQ:99";
 const u8 *ucGpsPosition = "LATLON:";
@@ -30,7 +32,7 @@ u8 *ucCheckPPP = "AT^POCNETOPEN?";//检查PPP连接是否正常工作
 u8 *ucRxCheckPppOpen = "^POCNETOPEN:1";
 u8 *ucRxCheckPppClose = "^POCNETOPEN:0";
 
-u8 *ucCheckRssi = "AT+CSQ?";
+
 u8 *ucCheckCard = "AT^GETICCID";
 bool PositionInformationSendToATPORT_Flag=FALSE;
 bool PositionInfoSendToATPORT_RedLed_Flag=FALSE;
@@ -101,8 +103,17 @@ bool ApiAtCmd_WritCommand(AtCommType id, u8 *buf, u16 len)
   DrvMC8332_TxPort_SetValidable(ON);
   switch(id)
   {
+  case ATCOMM3_GD83StartupReset://1
+    DrvGD83_UART_TxCommand((u8*)ucGD83Reset,strlen((char const *)ucGD83Reset));
+    break;
   case ATCOMM3_GD83Reset://1
-    DrvGD83_UART_TxCommand(buf, len);
+    //DrvGD83_UART_TxCommand((u8*)ucGD83Reset,strlen((char const *)ucGD83Reset));
+    api_lcd_pwr_on_hint("                ");//
+    main_init();
+    ApiAtCmd_SetLoginState();
+    BootProcess_SIMST_Flag=0;
+    BootProcess_PPPCFG_Flag_Zanshi=1;
+    CSQ_Flag=0;
     break;
   case ATCOMM0_OSSYSHWID://1
     DrvGD83_UART_TxCommand(buf, len);
@@ -120,7 +131,7 @@ bool ApiAtCmd_WritCommand(AtCommType id, u8 *buf, u16 len)
     DrvGD83_UART_TxCommand(buf, len);
     break;
   case ATCOMM6_CSQ://1
-    DrvGD83_UART_TxCommand(buf, len);
+    DrvGD83_UART_TxCommand((u8*)ucCheckRssi, strlen((char const*)ucCheckRssi));
     break;
   case ATCOMM7_VGR://1
     DrvGD83_UART_TxCommand(buf, len);
@@ -147,7 +158,7 @@ bool ApiAtCmd_WritCommand(AtCommType id, u8 *buf, u16 len)
     DrvGD83_UART_TxCommand(ucCheckPPP, strlen((char const *)ucCheckPPP));
     break;
   case ATCOMM13_CheckRssi:
-    DrvGD83_UART_TxCommand(ucCheckRssi, strlen((char const *)ucCheckRssi));
+    DrvGD83_UART_TxCommand((u8*)ucCheckRssi, strlen((char const *)ucCheckRssi));
     break;
   case ATCOMM14_CheckCard:
     DrvGD83_UART_TxCommand(ucCheckCard, strlen((char const *)ucCheckCard));
@@ -319,15 +330,28 @@ void ApiAtCmd_10msRenew(void)
     {
       ApiAtCmd_TrumpetVoicePlay_Flag=FALSE;
     }
+/***********CSQ信号获取及判断****************************************************************/
     ucRet = memcmp(pBuf, ucRxCSQ31, 6);//CSQ:31
     if(ucRet == 0x00)
     {
       CSQ_Flag=1;
+      CSQ99Count_Flag=0;
     }
-    ucRet = memcmp(pBuf, ucRxCSQ99, 6);//CSQ:31
+    ucRet = memcmp(pBuf, ucRxCSQ99, 6);//CSQ:99
     if(ucRet == 0x00)
     {
       CSQ_Flag=2;
+      CSQ99Count_Flag++;
+      if(CSQ99Count_Flag==1)
+      {
+        //播报网络信号弱
+        VOICE_SetOutput(ATVOICE_FreePlay,"517fdc7ee14ff753315f",20);//播报正在登陆
+      }
+      if(CSQ99Count_Flag>=3)//3*5如果3次15s内没有收到则重启
+      {
+        CSQ99Count_Flag=0;
+        ApiAtCmd_WritCommand(ATCOMM3_GD83Reset,(void*)0, 0);
+      }
     }
 /***********GPS经纬度获取（部标使用）****************************************************************/
     ucRet = memcmp(pBuf, ucGpsPosition, 7);//CSQ:31
@@ -346,7 +370,10 @@ void ApiAtCmd_10msRenew(void)
        }
        AtCmdDrvobj.NetState.Position.BufLen = i;
     }
-/**********************************************************************************************/
+
+    
+    
+    
   }
 }
 
