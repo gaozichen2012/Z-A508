@@ -15,6 +15,8 @@ u32 get_key_value(u8 scan_value);
 u8 Key_Flag_1=0;
 u8 MenuMode_Flag=0;
 u8 MenuModeCount=1;
+u8 BacklightTimeSetCount=1;//默认进选择体1
+u8 KeylockTimeSetCount=0x11;//默认进选择体1
 bool NumberKeyboardPressDown_flag=FALSE;
 bool LockingState_EnterOK_Flag=FALSE;
 u8 VoiceType_FreehandOrHandset_Flag=0;
@@ -98,9 +100,24 @@ void Keyboard_Test(void)
     {
     if(MenuMode_Flag==1)
     {
-      MenuModeCount=MenuModeCount-1;
-      if(MenuModeCount<1) {MenuModeCount=7;}
-      MenuDisplay(MenuModeCount);
+      if(ApiMenu_BacklightTimeSet_Flag==2)//如果是设置背光灯二级菜单
+      {
+        BacklightTimeSetCount=BacklightTimeSetCount-1;
+        if(BacklightTimeSetCount<1) {BacklightTimeSetCount=7;}
+        Level3MenuDisplay(BacklightTimeSetCount);
+      }
+      else if(ApiMenu_KeylockTimeSet_Flag==2)//如果是设置键盘锁二级菜单
+      {
+        KeylockTimeSetCount=KeylockTimeSetCount-1;
+        if(KeylockTimeSetCount<0x10) {KeylockTimeSetCount=0x16;}
+        Level3MenuDisplay(KeylockTimeSetCount);
+      }
+      else
+      {
+        MenuModeCount=MenuModeCount-1;
+        if(MenuModeCount<1) {MenuModeCount=7;}
+        MenuDisplay(MenuModeCount);
+      }
     }
     else
     {
@@ -127,7 +144,7 @@ void Keyboard_Test(void)
         GroupCallingNum=ApiAtCmd_GetGroupNum();
         KeyUpDownCount=ApiAtCmd_GetGroupNum()-ApiAtCmd_GetMainGroupId();//
       }
-      VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetGroupName(GroupCallingNum),ApiAtCmd_GetGroupNameLen(GroupCallingNum));
+      VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetGroupName( GroupCallingNum),ApiAtCmd_GetGroupNameLen(GroupCallingNum));
       api_lcd_pwr_on_hint("群组:   选择群组");//显示汉字
       api_lcd_pwr_on_hint2(HexToChar_GroupCallingNum());//显示数据
       KeyDownUpChoose_GroupOrUser_Flag=1;
@@ -171,12 +188,42 @@ void Keyboard_Test(void)
             }
         break;
       case 4://背光灯设置
-        MenuDisplay(MenuModeCount);
-        MenuMode_Flag=1;
+            switch(ApiMenu_BacklightTimeSet_Flag)
+            {
+            case 0://默认状态按OK键进入一级菜单
+              MenuDisplay(MenuModeCount);
+              MenuMode_Flag=1;
+              ApiMenu_BacklightTimeSet_Flag=1;
+              break;
+            case 1://在一级菜单按ok键进入二级菜单
+              SubmenuMenuDisplay(BacklightTimeSet);
+              ApiMenu_BacklightTimeSet_Flag=2;//在上下键中处理
+              break;
+            case 2:
+              MenuDisplay(MenuModeCount);
+              MenuMode_Flag=1;
+              ApiMenu_BacklightTimeSet_Flag=1;
+              break;
+            }
         break;
-      case 5://网络模式
-        MenuDisplay(MenuModeCount);
-        MenuMode_Flag=1;
+      case 5://键盘锁定
+            switch(ApiMenu_KeylockTimeSet_Flag)
+            {
+            case 0://默认状态按OK键进入一级菜单
+              MenuDisplay(MenuModeCount);
+              MenuMode_Flag=1;
+              ApiMenu_KeylockTimeSet_Flag=1;
+              break;
+            case 1://在一级菜单按ok键进入二级菜单
+              SubmenuMenuDisplay(KeylockTimeSet);
+              ApiMenu_KeylockTimeSet_Flag=2;//在上下键中处理
+              break;
+            case 2:
+              MenuDisplay(MenuModeCount);
+              MenuMode_Flag=1;
+              ApiMenu_KeylockTimeSet_Flag=1;
+              break;
+            }
         break;
       case 6://本机信息
         MenuDisplay(MenuModeCount);
@@ -294,9 +341,24 @@ void Keyboard_Test(void)
     {
     if(MenuMode_Flag==1)
     {
-      MenuModeCount=MenuModeCount+1;
-      if(MenuModeCount>7) {MenuModeCount=1;}
-      MenuDisplay(MenuModeCount);
+      if(ApiMenu_BacklightTimeSet_Flag==2)//如果是设置背光灯二级菜单
+      {
+        BacklightTimeSetCount=BacklightTimeSetCount+1;
+        if(BacklightTimeSetCount>7) {BacklightTimeSetCount=1;}
+        Level3MenuDisplay(BacklightTimeSetCount);
+      }
+      else if(ApiMenu_KeylockTimeSet_Flag==2)//如果是设置键盘锁二级菜单
+      {
+        KeylockTimeSetCount=KeylockTimeSetCount+1;
+        if(KeylockTimeSetCount>0x16) {KeylockTimeSetCount=0x10;}
+        Level3MenuDisplay(KeylockTimeSetCount);
+      }
+      else
+      {
+        MenuModeCount=MenuModeCount+1;
+        if(MenuModeCount>7) {MenuModeCount=1;}
+        MenuDisplay(MenuModeCount);
+      }
     }
     else
     {

@@ -2,6 +2,8 @@
 
 #if 1
 u8 ApiMenu_GpsInfo_Flag=0;
+u8 ApiMenu_BacklightTimeSet_Flag=0;
+u8 ApiMenu_KeylockTimeSet_Flag=0;
 #endif
 
 
@@ -13,37 +15,45 @@ void MenuDisplay(MenuDisplayType id)
     break;
   case Menu1:
     api_lcd_pwr_on_hint3("菜单            ");
-    api_lcd_pwr_on_hint5("1/8");
+    api_lcd_pwr_on_hint5("1/7");
      api_lcd_pwr_on_hint("群组选择        ");
     break;
   case Menu2:
     api_lcd_pwr_on_hint3("菜单            ");
-    api_lcd_pwr_on_hint5("2/8");
+    api_lcd_pwr_on_hint5("2/7");
      api_lcd_pwr_on_hint("成员选择        ");
     break;
   case Menu3:
     api_lcd_pwr_on_hint3("菜单            ");
-    api_lcd_pwr_on_hint5("5/8");
+    api_lcd_pwr_on_hint5("3/7");
      api_lcd_pwr_on_hint("GPS信息         ");
      break;
   case Menu4:
     api_lcd_pwr_on_hint3("菜单            ");
-    api_lcd_pwr_on_hint5("3/8");
+    api_lcd_pwr_on_hint5("4/7");
      api_lcd_pwr_on_hint("背光灯设置      ");
+     if(BacklightTimeSetCount==7)
+       BacklightTimeCount=0;
+     else
+     BacklightTimeCount=(BacklightTimeSetCount)*10;
      break;
   case Menu5:
     api_lcd_pwr_on_hint3("菜单            ");
-    api_lcd_pwr_on_hint5("6/8");
-     api_lcd_pwr_on_hint("网络模式        ");
+    api_lcd_pwr_on_hint5("5/7");
+     api_lcd_pwr_on_hint("键盘锁定        ");
+     if(KeylockTimeSetCount==0x10)
+       KeylockTimeCount=200;//如果=200则永远不锁屏
+     else
+     KeylockTimeCount=(KeylockTimeSetCount-0x10)*30;
      break;
   case Menu6:
     api_lcd_pwr_on_hint3("菜单            ");
-    api_lcd_pwr_on_hint5("7/8");
+    api_lcd_pwr_on_hint5("6/7");
      api_lcd_pwr_on_hint("本机信息        ");
     break;
   case Menu7:
     api_lcd_pwr_on_hint3("菜单            ");
-    api_lcd_pwr_on_hint5("4/8");
+    api_lcd_pwr_on_hint5("7/7");
      api_lcd_pwr_on_hint("北斗/写频切换   ");
      break;
 /*  case Menu8:
@@ -137,6 +147,92 @@ void SubmenuMenuDisplay(SubmenuMenuDisplayType id)
     COML_StringReverse(6,Buf2+8);
     api_lcd_pwr_on_hint(Buf2);
     }
+    break;
+  case BacklightTimeSet:
+    Level3MenuDisplay(BacklightTimeSetCount);
+    break;
+  case KeylockTimeSet:
+    Level3MenuDisplay(KeylockTimeSetCount);
+    break;
+
+  }
+}
+
+void Level3MenuDisplay(Level3MenuDisplayType id)
+{
+  switch(id)
+  {
+  case BacklightTimeSet_0s:
+    api_lcd_pwr_on_hint3("背光灯          ");
+    api_lcd_pwr_on_hint5("7/7");
+     api_lcd_pwr_on_hint("关闭            ");
+    break;
+  case BacklightTimeSet_10s:
+    api_lcd_pwr_on_hint3("背光灯          ");
+    api_lcd_pwr_on_hint5("1/7");
+     api_lcd_pwr_on_hint("10秒            ");
+    break;
+  case BacklightTimeSet_20s:
+    api_lcd_pwr_on_hint3("背光灯          ");
+    api_lcd_pwr_on_hint5("2/7");
+     api_lcd_pwr_on_hint("20秒            ");
+    break;
+  case BacklightTimeSet_30s:
+    api_lcd_pwr_on_hint3("背光灯          ");
+    api_lcd_pwr_on_hint5("3/7");
+     api_lcd_pwr_on_hint("30秒            ");
+    break;
+  case BacklightTimeSet_40s:
+    api_lcd_pwr_on_hint3("背光灯          ");
+    api_lcd_pwr_on_hint5("4/7");
+     api_lcd_pwr_on_hint("40秒            ");
+    break;
+  case BacklightTimeSet_50s:
+    api_lcd_pwr_on_hint3("背光灯          ");
+    api_lcd_pwr_on_hint5("5/7");
+     api_lcd_pwr_on_hint("50秒            ");
+    break;
+  case BacklightTimeSet_60s:
+    api_lcd_pwr_on_hint3("背光灯          ");
+    api_lcd_pwr_on_hint5("6/7");
+     api_lcd_pwr_on_hint("60秒            ");
+    break;
+  case KeylockTimeSet_0s:
+    api_lcd_pwr_on_hint3("键盘锁          ");
+    api_lcd_pwr_on_hint5("7/7");
+     api_lcd_pwr_on_hint("关闭            ");
+    break;
+  case KeylockTimeSet_30s:
+    api_lcd_pwr_on_hint3("键盘锁          ");
+    api_lcd_pwr_on_hint5("1/7");
+     api_lcd_pwr_on_hint("30秒            ");
+    break;
+  case KeylockTimeSet_60s:
+    api_lcd_pwr_on_hint3("键盘锁          ");
+    api_lcd_pwr_on_hint5("2/7");
+     api_lcd_pwr_on_hint("60秒            ");
+    break;
+  case KeylockTimeSet_90s:
+    api_lcd_pwr_on_hint3("键盘锁          ");
+    api_lcd_pwr_on_hint5("3/7");
+     api_lcd_pwr_on_hint("90秒            ");
+    break;
+  case KeylockTimeSet_120s:
+    api_lcd_pwr_on_hint3("键盘锁          ");
+    api_lcd_pwr_on_hint5("4/7");
+     api_lcd_pwr_on_hint("120秒           ");
+    break;
+  case KeylockTimeSet_150s:
+    api_lcd_pwr_on_hint3("键盘锁          ");
+    api_lcd_pwr_on_hint5("5/7");
+     api_lcd_pwr_on_hint("150秒           ");
+    break;
+  case KeylockTimeSet_180s:
+    api_lcd_pwr_on_hint3("键盘锁          ");
+    api_lcd_pwr_on_hint5("6/7");
+     api_lcd_pwr_on_hint("180秒           ");
+    break;
+  default:
     break;
   }
 }

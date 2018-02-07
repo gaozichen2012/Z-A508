@@ -5,7 +5,7 @@
 #define DEL_IDLE		0x00
 #define DEL_RUN			0x01
 
-#define TimeoutLimit            30//240//键盘超时锁定时间10s
+//#define TimeoutLimit            30//240//键盘超时锁定时间10s
 u8 *ucGPSSendToAtPort   ="AT+GPSFUNC=21";
 u8 *ucGPSUploadTime_5s  ="AT+GPSFUNC=2,5";
 u8 DEL_500ms_Count=0;
@@ -20,6 +20,8 @@ u8 PowerOnCount=0;
 u8 CSQTimeCount=0;
 u8 LandingTimeCount=0;
 bool LockingState_Flag=FALSE;
+u8 BacklightTimeCount=10;//背光灯时间(需要设置进入eeprom)
+u8 KeylockTimeCount=30;
 typedef struct {
   union {
     struct {
@@ -300,10 +302,10 @@ static void DEL_500msProcess(void)			//delay 500ms process server
       }
     }
     
-    if(TimeCount_Light>=20)//10s
+    if(TimeCount_Light>=2*BacklightTimeCount)//10s
     {
       MCU_LCD_BACKLIGTH(OFF);//关闭背光灯
-      TimeCount_Light=20;
+      TimeCount_Light=2*BacklightTimeCount;
     }
     else
     {
@@ -312,6 +314,7 @@ static void DEL_500msProcess(void)			//delay 500ms process server
     if(NumberKeyboardPressDown_flag==TRUE)
     {
       TimeCount_Light=0;//背光灯计数器清零
+      //NumberKeyboardPressDown_flag=FALSE;
     }
     
     if(DEL_500ms_Count2>=10)
@@ -330,29 +333,30 @@ static void DEL_500msProcess(void)			//delay 500ms process server
     case 1://1s
       if(GetTaskId()==Task_NormalOperation)
       {
-        TimeCount++;
-        if(TimeCount>=TimeoutLimit) //超时则锁屏
+        if(KeylockTimeCount==200)
         {
-          if(TimeCount==TimeoutLimit)
+          TimeCount=0;
+          //NumberKeyboardPressDown_flag=TRUE;
+        }
+        else
+        {
+        TimeCount++;
+
+        if(TimeCount>=KeylockTimeCount) //超时则锁屏
+        {
+          if(TimeCount==KeylockTimeCount)
           {
             api_disp_icoid_output( eICO_IDBANDWIDTHW, TRUE, TRUE);//锁屏图标
             api_disp_all_screen_refresh();// 全屏统一刷新
           }
-          TimeCount=TimeoutLimit+1;
+          TimeCount=KeylockTimeCount+1;
           LockingState_Flag=TRUE;//超时锁定标志位
         }
         else
         {
           //MCU_LCD_BACKLIGTH(ON);//打开背光灯
         }
-        if(NumberKeyboardPressDown_flag==TRUE&&TimeCount<TimeoutLimit)//当数字数字键盘按下
-        {
-          TimeCount=0;//当有按键按下，计数器清零
-          
-          NumberKeyboardPressDown_flag=FALSE;
-        }
-
-        if(NumberKeyboardPressDown_flag==TRUE&&TimeCount>=TimeoutLimit)//超过10秒后再按按键提示“按OK键再按*键”
+        if(NumberKeyboardPressDown_flag==TRUE&&TimeCount>=KeylockTimeCount)//超过10秒后再按按键提示“按OK键再按*键”
         {
           TimeCount2++;
           api_lcd_pwr_on_hint("按OK键,再按*键  ");//
@@ -366,15 +370,21 @@ static void DEL_500msProcess(void)			//delay 500ms process server
         if(LockingState_EnterOK_Flag==TRUE)//锁定界面按下OK键
         {
           TimeCount3++;
-          MCU_LCD_BACKLIGTH(ON);//打开背光灯
+          //MCU_LCD_BACKLIGTH(ON);//打开背光灯
           if(TimeCount3>=4)//3s
           {
             TimeCount3=0;
-            MCU_LCD_BACKLIGTH(OFF);//关闭背光灯
+            //MCU_LCD_BACKLIGTH(OFF);//关闭背光灯
             LockingState_EnterOK_Flag=FALSE;
             MenuDisplay(Menu_Locking_NoOperation);
           }
         }
+      }
+      if(NumberKeyboardPressDown_flag==TRUE&&TimeCount<KeylockTimeCount)//当数字数字键盘按下
+      {
+        TimeCount=0;//当有按键按下，计数器清零
+        NumberKeyboardPressDown_flag=FALSE;
+      }
       }
       break;
     default:
