@@ -568,6 +568,7 @@ void ApiGpsCmd_100msRenew(void)//决定什么时候发送什么数据
 #endif
                     {
                       GpsCmd_GbWritCommand(GPSCOMM_Position, (void*)0, 0);
+                      PositionInformationSendToATPORT_Flag=FALSE;
                     }
                     else
                     {
@@ -792,7 +793,7 @@ static void GpsCmd_GbDataTransave(GpsCommType GpsComm)//定位信息转换，等会要用到
 #ifdef BEIDOU//使用外置北斗
   GpsFunDrvObj.InfoRecord.Position.ulLongitude =(BDLongitude_Degree*1000000)+((BDLongitude_Minute*10000+BDLongitude_Second)*10/6);//经度Longitude
   GpsFunDrvObj.InfoRecord.Position.ulLatitude=(BDLatitude_Degree*1000000)+((BDLatitude_Minute*10000+BDLatitude_Second)*10/6);
-  GpsFunDrvObj.InfoRecord.Position.usSpeed=BDSpeed*10;
+  GpsFunDrvObj.InfoRecord.Position.usSpeed=BDSpeed*6;
   GpsFunDrvObj.InfoRecord.Position.usDirection=BDDirection;
 #else//使用内置GPS
   GpsFunDrvObj.InfoRecord.Position.ulLatitude =Data_Longitude_Minute()*1000000+Data_Longitude_Second();

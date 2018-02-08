@@ -23,9 +23,12 @@ const u8 *ucCaretPPPCFG="^PPPCFG:";
 const u8 *ucPlayZtts = "AT+ZTTS=";
 //New
 u8 *ucCheckTcp = "at^pocsockstat=";//检查TCP Ip是否连接正常
-u8 *ucSetIp = "at^pocsetuptcp=1,";//设置TCP Ip连接
-u8 *ucSendTcp = "at^pocsendtcp=1,0x";//在TCP协议发送数据
-u8 *ucRxCheckTcp = "^POCSOCKSTAT: 1";//TCP连接正常下发指令
+//u8 *ucSetIp = "at^pocsetuptcp=1,";//设置TCP连接1 UDP:0
+//u8 *ucSendTcp = "at^pocsendtcp=1,0x";//在TCP协议发送数据 设置TCP连接1 UDP:0
+//u8 *ucRxCheckTcp = "^POCSOCKSTAT: 1";//TCP连接正常下发指令
+u8 *ucSetIp = "at^POCSETUPUDP=0";//设置TCP连接1 UDP:0
+u8 *ucSendTcp = "at^POCSENDUDP=0,";//at^pocsendudp=0,123.56.80.107,6969,0x
+u8 *ucRxCheckTcp = "^POCSOCKSTAT: 0";//TCP连接正常下发指令
 
 u8 *ucZpppOpen = "at^pocnetopen";//设置PPP连接
 u8 *ucCheckPPP = "AT^POCNETOPEN?";//检查PPP连接是否正常工作
@@ -101,6 +104,7 @@ static void AtCmd_NetParamCode(void);//获取TCP IP地址
 bool ApiAtCmd_WritCommand(AtCommType id, u8 *buf, u16 len)
 {
   bool r = TRUE;
+  u8 Buf1[4];
   DrvMC8332_TxPort_SetValidable(ON);
   switch(id)
   {
@@ -143,12 +147,18 @@ bool ApiAtCmd_WritCommand(AtCommType id, u8 *buf, u16 len)
     break; 
   case ATCOMM9_SetIp	://1
     DrvGD83_UART_TxCommand(ucSetIp, strlen((char const *)ucSetIp));
-    DrvGD83_UART_TxCommand(buf, len);
+    //DrvGD83_UART_TxCommand(buf, len);
     break;
-  case ATCOMM10_SendTcp	://1
+  case ATCOMM10_SendTcp://1
     if(len <= 1024 && len != 0x00)
     {
       DrvGD83_UART_TxCommand(ucSendTcp, strlen((char const *)ucSendTcp));
+      AtCmd_NetParamCode();//获取IP地址
+      DrvGD83_UART_TxCommand(AtCmdDrvobj.NetState.Buf, AtCmdDrvobj.NetState.Len);
+      Buf1[0]=',';
+      Buf1[1]='0';
+      Buf1[2]='x';
+      DrvGD83_UART_TxCommand(Buf1, 3);
       DrvGD83_UART_TxCommand(buf, len);
     }
     break; 
@@ -213,7 +223,7 @@ void ApiAtCmd_100msRenew(void)
               }
               else//如果TCP是打开的，则检测TCP连接是否正常
               {
-                AtCmdDrvobj.NetState.Buf[0] = 0x31;
+                AtCmdDrvobj.NetState.Buf[0] = 0x30;
                 if(ApiAtCmd_WritCommand(ATCOMM8_CheckTcp, (void*)AtCmdDrvobj.NetState.Buf, 1) == TRUE)
                 {}
               }

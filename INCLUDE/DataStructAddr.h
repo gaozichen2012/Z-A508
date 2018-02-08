@@ -86,10 +86,10 @@
 #define nLenCardUserPassword	50
 #define nLenLocalUserInfo	100//0x022f
 #define nLenWorkMode		5//0x0234
-#define nLenWarningTone		5//0x0239
+#define nLenWarningTone		5//0x4235 (5)提示音音量【秒】
 #define nLenSpeech		5//0x0244
-#define nLenDisplay		5
-#define nLenPowerManage		9
+#define nLenDisplay		5//
+#define nLenPowerManage		9//0x4244 (9)低电提示间隔【秒】
 #define nLenTOT			5
 #define nLenKeyProg		14//0x25f
 #define nLenGpsFun		109//部标0x260-0x2cc
@@ -107,16 +107,16 @@
 #define nGrpGpsFun		1
 
 /* data address */
-#define nAddrCardUserPassword	nAddrDbgRes1 + nGrpDbgRes1*nLenDbgRes1 
-#define nAddrLocalUserInfo	nAddrCardUserPassword + nGrpCardUserPassword*nLenCardUserPassword
-#define nAddrWorkMode		nAddrLocalUserInfo + nGrpLocalUserInfo*nLenLocalUserInfo
-#define nAddrWarningTone	nAddrWorkMode + nGrpWorkMode*nLenWorkMode
-#define nAddrSpeech		nAddrWarningTone + nGrpWarningTone*nLenWarningTone
-#define nAddrDisplay		nAddrSpeech + nGrpSpeech*nLenSpeech
-#define nAddrPowerManage	nAddrDisplay + nGrpDisplay*nLenDisplay
-#define nAddrTOT           	nAddrPowerManage + nGrpPowerManage*nLenPowerManage
-#define nAddrKeyProg       	nAddrTOT + nGrpTOT*nLenTOT
-#define nAddrGpsFun		nAddrKeyProg + nGrpKeyProg*nLenKeyProg
+#define nAddrCardUserPassword	nAddrDbgRes1 + nGrpDbgRes1*nLenDbgRes1 //(0x0199+0x05)=0x019E
+#define nAddrLocalUserInfo	nAddrCardUserPassword + nGrpCardUserPassword*nLenCardUserPassword//(0x019E+50)=0x01D0
+#define nAddrWorkMode		nAddrLocalUserInfo + nGrpLocalUserInfo*nLenLocalUserInfo//(0x01D1+100)=0x234
+#define nAddrWarningTone	nAddrWorkMode + nGrpWorkMode*nLenWorkMode//(0x234+5)=0x239
+#define nAddrSpeech		nAddrWarningTone + nGrpWarningTone*nLenWarningTone//(0x239+5)=0x23E
+#define nAddrDisplay		nAddrSpeech + nGrpSpeech*nLenSpeech//(0x23E+5)=0x243
+#define nAddrPowerManage	nAddrDisplay + nGrpDisplay*nLenDisplay//(0x243+5)=0x248
+#define nAddrTOT           	nAddrPowerManage + nGrpPowerManage*nLenPowerManage//(0x248+9)=0x251
+#define nAddrKeyProg       	nAddrTOT + nGrpTOT*nLenTOT//(0x251+5)=0x256
+#define nAddrGpsFun		nAddrKeyProg + nGrpKeyProg*nLenKeyProg//(0x256+14)=0x264
 /* 0x019A-0x2cc */
 
 #define nAddrAudioParam         0x0A62

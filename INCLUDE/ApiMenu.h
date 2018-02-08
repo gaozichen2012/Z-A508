@@ -40,7 +40,8 @@ typedef enum{
   KeylockTimeSet_180s           =0x16,
 }Level3MenuDisplayType;
 
-
+extern u8 ReadBufferA[1];
+extern u8 ReadBufferB[1];
 extern u8 ApiMenu_GpsInfo_Flag;
 extern u8 ApiMenu_BacklightTimeSet_Flag;
 extern u8 ApiMenu_KeylockTimeSet_Flag;
