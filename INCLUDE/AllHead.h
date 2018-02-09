@@ -28,11 +28,8 @@
 #include "DrvGT20L16S1Y.h"
 
 //BEEP
-#include "Beep.h"
 #include "Tone.h"
-
-
-
+#include "Beep.h"
 
 //хннЯ
 #include "Task.h"

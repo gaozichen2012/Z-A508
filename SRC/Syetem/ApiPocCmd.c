@@ -9,7 +9,6 @@ u8 ReadBuffer[80];//Test 存EEPROM读取的数据使用
 u8 ASCII_ActiveUserID[22];//Test 存EEPROM读取的数据使用
 u8 Get_Unicode_ActiveUserIDBuf[45];//
 u8 Get_0X_ActiveUserIDBuf[11];//
-//u8 TestReadBuffer[300];//存EEPROM读取部标数据测试
 u8 UnicodeForGbk_MainWorkNameBuf[15];
 u8 UnicodeForGbk_MainUserNameBuf[15];
 u8 UnicodeForGbk_SpeakerRightnowNameBuf[15];
@@ -52,9 +51,6 @@ typedef struct{
     u8 Buf4[3];
     u8 Buf5[3];
     u8 Buf6[3];
-    u8 Timer;
-    u8 Times;
-    u8 ResetTimes;
     struct{
       struct{
         u8 bSet	: 1;
@@ -77,9 +73,9 @@ typedef struct{
           u16 AlarmMode            	: 1;
           u16 PersonalCallingMode 	: 1;
           u16 			        : 5;
-        }Bits;u16 Byte;
-			}Msg;
-			u8 Timer;
+        }Bits;
+        u16 Byte;
+      }Msg;
                         struct{
                                 u8 PresentUserId;
 				u8 Name[APIPOC_UserName_Len];
@@ -131,8 +127,6 @@ static PocCmdDrv PocCmdDrvobj;
 void ApiPocCmd_PowerOnInitial(void)
 {
   PocCmdDrvobj.NetState.Msg.Byte = 0x00;
-  PocCmdDrvobj.NetState.Timer = 0x00;
-  PocCmdDrvobj.NetState.Times = 0x00;
   PocCmdDrvobj.WorkState.UseState.Msg.Byte = 0x00;
   PocCmdDrvobj.WorkState.UseState.Msg.Bits.bInitial = 0x01;
   PocCmdDrvobj.WorkState.UseState.Msg.Bits.bLogin=0;

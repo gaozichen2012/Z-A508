@@ -2,7 +2,6 @@
 u8 BootProcess_SIMST_Flag=0;
 u8 BootProcess_PPPCFG_Flag=0;
 u8 BootProcess_PPPCFG_Flag_Zanshi=1;//临时代替PPPCFG检测
-u8 BootProcess_OpenPoc_Flag=0;
 bool ApiAtCmd_TrumpetVoicePlay_Flag=FALSE;//功放控制标志位
 u8 CSQ_Flag=0;
 u8 CSQ99Count_Flag=0;
@@ -21,22 +20,19 @@ const u8 *ucSIMST1="^SIMST:1";
 const u8 *ucSIMST255="^SIMST:255";
 const u8 *ucCaretPPPCFG="^PPPCFG:";
 const u8 *ucPlayZtts = "AT+ZTTS=";
-//New
-u8 *ucCheckTcp = "at^pocsockstat=";//检查TCP Ip是否连接正常
+const u8 *ucCheckTcp = "at^pocsockstat=";//检查TCP Ip是否连接正常
 //u8 *ucSetIp = "at^pocsetuptcp=1,";//设置TCP连接1 UDP:0
 //u8 *ucSendTcp = "at^pocsendtcp=1,0x";//在TCP协议发送数据 设置TCP连接1 UDP:0
 //u8 *ucRxCheckTcp = "^POCSOCKSTAT: 1";//TCP连接正常下发指令
-u8 *ucSetIp = "at^POCSETUPUDP=0";//设置TCP连接1 UDP:0
-u8 *ucSendTcp = "at^POCSENDUDP=0,";//at^pocsendudp=0,123.56.80.107,6969,0x
-u8 *ucRxCheckTcp = "^POCSOCKSTAT: 0";//TCP连接正常下发指令
+const u8 *ucSetIp = "at^POCSETUPUDP=0";//设置TCP连接1 UDP:0
+const u8 *ucSendTcp = "at^POCSENDUDP=0,";//at^pocsendudp=0,123.56.80.107,6969,0x
+const u8 *ucRxCheckTcp = "^POCSOCKSTAT: 0";//TCP连接正常下发指令
+const u8 *ucZpppOpen = "at^pocnetopen";//设置PPP连接
+const u8 *ucCheckPPP = "AT^POCNETOPEN?";//检查PPP连接是否正常工作
+const u8 *ucRxCheckPppOpen = "^POCNETOPEN:1";
+const u8 *ucRxCheckPppClose = "^POCNETOPEN:0";
+const u8 *ucCheckCard = "AT^GETICCID";
 
-u8 *ucZpppOpen = "at^pocnetopen";//设置PPP连接
-u8 *ucCheckPPP = "AT^POCNETOPEN?";//检查PPP连接是否正常工作
-u8 *ucRxCheckPppOpen = "^POCNETOPEN:1";
-u8 *ucRxCheckPppClose = "^POCNETOPEN:0";
-
-
-u8 *ucCheckCard = "AT^GETICCID";
 bool PositionInformationSendToATPORT_Flag=FALSE;
 bool PositionInfoSendToATPORT_RedLed_Flag=FALSE;
 bool PositionInfoSendToATPORT_SetPPP_Flag=FALSE;
@@ -66,15 +62,6 @@ typedef struct{
                 struct{
                   u8 Buf[21];//存放AT收到的经纬度信息
                   u8 BufLen;//接收经纬度信息的数据长度
-                  union{
-                    struct{
-                      u8	bEast	: 1;
-                      u8 	bNorth	: 1;
-                      u8	bValid	: 1;
-                      u8		: 5;
-                    }Bit;
-                    u8 Byte;
-                  }Msg;
                   u8 Longitude_Minute;//小数点前的数
                   u32 Longitude_Second;//小数点后的数
                   u8 Latitude_Minute;
@@ -87,19 +74,12 @@ typedef struct{
                 u8 ucDate[3];//年月日
                 u8 ucTime[3];//时分秒
                 u8 ucSpeed;
-		u8 RssiValue;
 		u8 Buf[30];
 		u8 Len;
-		u8 Timer;
-		u8 Times;
-		u8 ResetTimer;
-		u8 OpenPppTimer;
 	}NetState;
 }AtCmdDrv;
 static AtCmdDrv AtCmdDrvobj;
 static void AtCmd_NetParamCode(void);//获取TCP IP地址
-
-
 
 bool ApiAtCmd_WritCommand(AtCommType id, u8 *buf, u16 len)
 {
@@ -146,13 +126,13 @@ bool ApiAtCmd_WritCommand(AtCommType id, u8 *buf, u16 len)
     DrvGD83_UART_TxCommand(buf, len);
     break; 
   case ATCOMM9_SetIp	://1
-    DrvGD83_UART_TxCommand(ucSetIp, strlen((char const *)ucSetIp));
+    DrvGD83_UART_TxCommand((u8*)ucSetIp, strlen((char const *)ucSetIp));
     //DrvGD83_UART_TxCommand(buf, len);
     break;
   case ATCOMM10_SendTcp://1
     if(len <= 1024 && len != 0x00)
     {
-      DrvGD83_UART_TxCommand(ucSendTcp, strlen((char const *)ucSendTcp));
+      DrvGD83_UART_TxCommand((u8*)ucSendTcp, strlen((char const *)ucSendTcp));
       AtCmd_NetParamCode();//获取IP地址
       DrvGD83_UART_TxCommand(AtCmdDrvobj.NetState.Buf, AtCmdDrvobj.NetState.Len);
       Buf1[0]=',';
@@ -163,16 +143,16 @@ bool ApiAtCmd_WritCommand(AtCommType id, u8 *buf, u16 len)
     }
     break; 
   case ATCOMM11_ZpppOpen ://1
-    DrvGD83_UART_TxCommand(ucZpppOpen, strlen((char const *)ucZpppOpen));
+    DrvGD83_UART_TxCommand((u8*)ucZpppOpen, strlen((char const *)ucZpppOpen));
     break;
   case ATCOMM12_CheckPPP ://2
-    DrvGD83_UART_TxCommand(ucCheckPPP, strlen((char const *)ucCheckPPP));
+    DrvGD83_UART_TxCommand((u8*)ucCheckPPP, strlen((char const *)ucCheckPPP));
     break;
   case ATCOMM13_CheckRssi:
     DrvGD83_UART_TxCommand((u8*)ucCheckRssi, strlen((char const *)ucCheckRssi));
     break;
   case ATCOMM14_CheckCard:
-    DrvGD83_UART_TxCommand(ucCheckCard, strlen((char const *)ucCheckCard));
+    DrvGD83_UART_TxCommand((u8*)ucCheckCard, strlen((char const *)ucCheckCard));
     break;
   default:
     break;

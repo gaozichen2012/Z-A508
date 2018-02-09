@@ -51,17 +51,10 @@ typedef union{
     union{
       u8 ucData[2];
       struct{
-#if 1
         u16 Len		: 10;//消息体长度
         u16 Encryption	: 3;//加密
         u16 Subpackage	: 1;//分包
         u16		: 2;
-#else
-        u16		: 2;
-        u16 Subpackage	: 1;//分包
-        u16 Encryption	: 3;//加密
-        u16 Len		: 10;//消息体长度
-#endif
       }Bits;
     }MsgProperty;//消息体属性
     union{
@@ -239,14 +232,6 @@ typedef struct{
          u8 LicensePlate[15];//车牌号
   }LoginInfo;
   struct{
-    union{
-      struct{
-        u8 Enable	: 1;
-        u8 Polarity	: 1;
-        u8		: 6;
-      }Bits;
-      u8 Byte;
-    }Cfg;
     u8 OnReportTime;
     u8 OffReportTime;
     u8 CountdownTimer;
@@ -261,8 +246,6 @@ typedef struct{
     u8 Protocol	        : 3;
     u8			: 2;
   }Msg;
-  u16	 OilMass;
-  u16	 TotalOilMass;
   struct{
     struct{
       u8 bGpsVolid	: 1;
@@ -278,50 +261,19 @@ typedef struct{
     u8 ucDate[3];
     u8 ucTime[3];
   }Position;
-  u8 rev[6];
 }_InfoRecord;
 
 typedef struct{
   struct{
-    u8 uc100Ms;
-    u8 Second;
-    u8 Minute;
-    u8 Hour;
     u8 LoadCount;
   }CountdownTimer;
-  union{
-    struct{
-      u8 bCountDown		: 1;
-      u8 bGpsHardWareOk		: 1;
-      u8			: 6;
-    }Bits;
-    u8 Byte;
-  }Msg;
-
   u8 ucWorkState;
   u16 usPulseTimer;
   u16 usReportTimer;
-  u8 ucCommand[3];
-  u8 ucBlock;
-  _GpsPar GpsPar2;
+  //_GpsPar GpsPar2;
   _GpsPar GpsPar;//存放送EEPROM中读取的数
-  //_GpsPar2 GpsPar2;
   _InfoRecord InfoRecord;
   union{
-    struct{
-      union{
-        struct{
-          u8 bLogin		: 1;
-          u8 bPhotoCommand	: 1;
-          u8 bDataTransmit	: 1;
-          u8			: 5;
-        }Bits;
-        u8 Byte;
-      }Msg;
-      u8 ucStep;
-      //_Xcy_tagGPSPositInfo  stHxkPostInfo;
-      //_Xcy_tagGPSPositInfo_Y stHxkPostInfoY;
-    }XcySys;
     struct{
       struct{
         union{
@@ -361,10 +313,7 @@ typedef struct{
   }PositionSystem;
 }GpsFunDrv;
 
-u16 TestLen11;
-u8 TestBuf11[5]={0x7e,0x01,0x00,0x00,0x23};
 static GpsFunDrv GpsFunDrvObj;
-//static GpsFunDrv stGpsFunDrvObj;
 
 static void GpsCmd_GbAnalytical(u8 *pBuf, u8 len);//收到的数据进行分析
 static void GpsCmd_GbDataTransave(GpsCommType GpsComm);//定位信息转换，等会要用到，POC获取GPS信息转换后发送TCP
@@ -381,7 +330,7 @@ void ApiGpsCmd_PowerOnInitial(void)//bubiao
   FILE_Read2(adr.Adr,adr.Len-16,(u8*)(&GpsFunDrvObj.GpsPar));
   
 
-    GpsFunDrvObj.GpsPar2.LoginInfo.Province.usData=0x002c;//省域ID
+   /* GpsFunDrvObj.GpsPar2.LoginInfo.Province.usData=0x002c;//省域ID
     GpsFunDrvObj.GpsPar2.LoginInfo.County.usData=0x0300;//市县域ID
     GpsFunDrvObj.GpsPar2.LoginInfo.Manufacturer[0]='4';//why
     GpsFunDrvObj.GpsPar2.LoginInfo.Manufacturer[1]='1';
@@ -420,7 +369,7 @@ void ApiGpsCmd_PowerOnInitial(void)//bubiao
     GpsFunDrvObj.GpsPar2.LoginInfo.LicensePlate[7]='3';
     GpsFunDrvObj.GpsPar2.LoginInfo.LicensePlate[8]='8';
     GpsFunDrvObj.GpsPar2.LoginInfo.LicensePlate[9]='8';
-    GpsFunDrvObj.GpsPar2.LoginInfo.LicensePlate[10]=0x00;
+    GpsFunDrvObj.GpsPar2.LoginInfo.LicensePlate[10]=0x00;*/
 
 
     GpsFunDrvObj.usReportTimer = 0;//添加：报告时间设置为0
@@ -478,8 +427,8 @@ void ApiGpsCmd_PowerOnInitial(void)//bubiao
 #endif
     COML_StringReverse(0x06,GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.HeadInfo.stParam.ucTerminalNo.ucData);
     GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.HeadInfo.stParam.SerialNo.usData=0x0000;
-    		memcpy((u8*)&(GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.Message.LoginInfo),
-			(u8*)&(GpsFunDrvObj.GpsPar2.LoginInfo), sizeof(GpsFunDrvObj.GpsPar2.LoginInfo));
+    		//memcpy((u8*)&(GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.Message.LoginInfo),
+			//(u8*)&(GpsFunDrvObj.GpsPar2.LoginInfo), sizeof(GpsFunDrvObj.GpsPar2.LoginInfo));
 
 }
 
@@ -506,7 +455,7 @@ void ApiGpsCmd_100msRenew(void)//决定什么时候发送什么数据
           if(GpsFunDrvObj.PositionSystem.GbSys.State.Msg.Bits.bSpecificAck == 0x00//收到特殊指令标志位=0
              &&(GpsFunDrvObj.PositionSystem.GbSys.State.Msg.Bits.bGeneralAck == 0x00))//如果没有收到命令
           {
-            GpsFunDrvObj.usPulseTimer = (GpsFunDrvObj.GpsPar2.Gps.PulseTime * 10);//将脉冲定时设为一个值
+            GpsFunDrvObj.usPulseTimer = (GpsFunDrvObj.GpsPar.Gps.PulseTime * 10);//将脉冲定时设为一个值
             if(OFF != ApiAtCmd_tcp_state())//疑问，当TCP连接正常工作时
             {
               if(GpsFunDrvObj.PositionSystem.GbSys.State.Msg.Bits.bAuthenticatied != OFF)//认证正确时
@@ -602,12 +551,12 @@ void ApiGpsCmd_100msRenew(void)//决定什么时候发送什么数据
                   if(GpsFunDrvObj.CountdownTimer.LoadCount < 0x05)
                   {
                       GpsFunDrvObj.CountdownTimer.LoadCount++;
-                      GpsFunDrvObj.usReportTimer =(GpsFunDrvObj.GpsPar2.Acc.OnReportTime);
+                      GpsFunDrvObj.usReportTimer =(GpsFunDrvObj.GpsPar.Acc.OnReportTime);
                   }
                   else
                   {
                     GpsFunDrvObj.CountdownTimer.LoadCount = 0x00;
-                    GpsFunDrvObj.usReportTimer =(GpsFunDrvObj.GpsPar2.Acc.OnReportTime);
+                    GpsFunDrvObj.usReportTimer =(GpsFunDrvObj.GpsPar.Acc.OnReportTime);
                   }
                   GpsCmd_GbWritCommand(GPSCOMM_Position, (void*)0, 0);//--------------------------------位置信息发送
                   break;
@@ -733,13 +682,13 @@ static void GpsCmd_GbAnalytical(u8 *pBuf, u8 len)//收到的数据进行分析
       switch(ulParamId)
       {
       case 0x00000001:
-        GpsFunDrvObj.GpsPar2.Gps.PulseTime = ulParamData/10;
+        GpsFunDrvObj.GpsPar.Gps.PulseTime = ulParamData/10;
         break;
       case 0x00000027:
-        GpsFunDrvObj.GpsPar2.Acc.OffReportTime = ulParamData;
+        GpsFunDrvObj.GpsPar.Acc.OffReportTime = ulParamData;
         break;
       case 0x00000029:
-        GpsFunDrvObj.GpsPar2.Acc.OnReportTime = ulParamData;
+        GpsFunDrvObj.GpsPar.Acc.OnReportTime = ulParamData;
         break;
       default:
         break;
