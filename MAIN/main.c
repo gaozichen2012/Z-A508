@@ -14,7 +14,7 @@ void main(void)
   * @retval : None
   */
 void assert_failed(u8* file, u32 line)
-{ 
+{
   while (1)
   {
   }

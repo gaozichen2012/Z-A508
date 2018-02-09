@@ -25,7 +25,7 @@ void LED_IntOutputRenew(void)
     else
     {
       LED_Conut++;
-      if(LED_Conut>=99)
+      if(LED_Conut>=49)
       {
 #ifdef BEIDOU//使用外置北斗
         if(BDValid==1)
@@ -40,7 +40,7 @@ void LED_IntOutputRenew(void)
           Set_GreenLed(LED_ON);
         }
       }
-      if(LED_Conut>=100)
+      if(LED_Conut>=50)
       {
         //PositionInformationSendToATPORT_Flag=FALSE;
         PositionInfoSendToATPORT_RedLed_Flag=FALSE;
