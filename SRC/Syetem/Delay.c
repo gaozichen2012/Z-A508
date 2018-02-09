@@ -20,8 +20,10 @@ u8 PowerOnCount=0;
 u8 CSQTimeCount=0;
 u8 LandingTimeCount=0;
 bool LockingState_Flag=FALSE;
-u8 BacklightTimeCount=10;//背光灯时间(需要设置进入eeprom)
-u8 KeylockTimeCount=30;
+u8 BacklightTimeCount;//=10;//背光灯时间(需要设置进入eeprom)
+u8 KeylockTimeCount;//=30;//键盘锁时间(需要设置进入eeprom)
+u8 ReadBufferA[1];//背光灯时间(需要设置进入eeprom)
+u8 ReadBufferB[1];//键盘锁时间(需要设置进入eeprom)
 typedef struct {
   union {
     struct {
@@ -250,9 +252,9 @@ static void DEL_500msProcess(void)			//delay 500ms process server
     if(Task_Landing_Flag==TRUE)
     {
       LandingTimeCount++;
-      if(LandingTimeCount>=2*30)
+      if(LandingTimeCount>=2*60)
       {
-        LandingTimeCount=2*30;
+        LandingTimeCount=2*60;
         Task_Landing_Flag=FALSE;
         ApiAtCmd_WritCommand(ATCOMM3_GD83Reset,(void*)0, 0);
       }
@@ -302,6 +304,13 @@ static void DEL_500msProcess(void)			//delay 500ms process server
       }
     }
     
+    FILE_Read(0x236,1,ReadBufferA);//背光时间【秒】
+    FILE_Read(0x247,1,ReadBufferB);//键盘锁时间【秒】
+    BacklightTimeCount=10*ReadBufferA[0];
+    if(ReadBufferB[0]==0)
+      KeylockTimeCount=200;//如果=200则永远不锁屏
+    else
+      KeylockTimeCount=30*ReadBufferB[0];
     if(TimeCount_Light>=2*BacklightTimeCount)//10s
     {
       MCU_LCD_BACKLIGTH(OFF);//关闭背光灯

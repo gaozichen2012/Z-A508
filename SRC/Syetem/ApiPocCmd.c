@@ -4,8 +4,7 @@
 #define APIPOC_UserList_Len			16
 #define APIPOC_UserLoad_Len			8
 #define APIPOC_UserName_Len			30
-u8 ReadBufferA[1];
-u8 ReadBufferB[1];
+
 u8 ReadBuffer[80];//Test 存EEPROM读取的数据使用
 u8 ASCII_ActiveUserID[22];//Test 存EEPROM读取的数据使用
 u8 Get_Unicode_ActiveUserIDBuf[45];//

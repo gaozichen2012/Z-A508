@@ -34,38 +34,41 @@ void MenuDisplay(MenuDisplayType id)
     api_lcd_pwr_on_hint3("菜单            ");
     api_lcd_pwr_on_hint5("4/7");
      api_lcd_pwr_on_hint("背光灯设置      ");
-     if(BacklightTimeSetCount==7)
+     if(ApiMenu_BacklightTimeSet_Flag==3)
      {
-       BacklightTimeCount=0;
-       Buf1[0]=BacklightTimeCount;
-       FILE_Write2(0x236,1,Buf1);//背光时间【秒】
-     }
-     else
-     {
-       BacklightTimeCount=(BacklightTimeSetCount)*10;
-       Buf1[0]=BacklightTimeSetCount;
-       FILE_Write2(0x236,1,Buf1);//背光时间【秒】
-       FILE_Read(0x236,1,ReadBufferA);//背光时间【秒】
+       ApiMenu_BacklightTimeSet_Flag=1;
+       if(BacklightTimeSetCount==7)
+       {
+         Buf1[0]=0;
+         FILE_Write2(0x236,1,Buf1);//背光时间【秒】
+       }
+       else
+       {
+         Buf1[0]=BacklightTimeSetCount;
+         FILE_Write2(0x236,1,Buf1);//背光时间【秒】
+       }
      }
      break;
   case Menu5:
     api_lcd_pwr_on_hint3("菜单            ");
     api_lcd_pwr_on_hint5("5/7");
      api_lcd_pwr_on_hint("键盘锁定        ");
-     if(KeylockTimeSetCount==0x10)
+     if(ApiMenu_KeylockTimeSet_Flag==3)
      {
-       KeylockTimeCount=200;//如果=200则永远不锁屏
-       Buf2[0]=KeylockTimeSetCount-0x10;
-       FILE_Write2(0x247,1,Buf2);//键盘锁时间【秒】
+       ApiMenu_KeylockTimeSet_Flag=1;
+       if(KeylockTimeSetCount==0x10)
+       {
+         //KeylockTimeCount=200;//如果=200则永远不锁屏
+         Buf2[0]=KeylockTimeSetCount-0x10;
+         FILE_Write2(0x247,1,Buf2);//键盘锁时间【秒】
+       }
+       else
+       {
+         //KeylockTimeCount=(KeylockTimeSetCount-0x10)*30;
+         Buf2[0]=KeylockTimeSetCount-0x10;
+         FILE_Write2(0x247,1,Buf2);//键盘锁时间【秒】
+       }
      }
-     else
-     {
-       KeylockTimeCount=(KeylockTimeSetCount-0x10)*30;
-       Buf2[0]=KeylockTimeSetCount-0x10;
-       FILE_Write2(0x247,1,Buf2);//键盘锁时间【秒】
-       FILE_Read(0x247,1,ReadBufferB);//键盘锁时间【秒】
-     }
-
      break;
   case Menu6:
     api_lcd_pwr_on_hint3("菜单            ");

@@ -191,18 +191,20 @@ void Keyboard_Test(void)
             switch(ApiMenu_BacklightTimeSet_Flag)
             {
             case 0://默认状态按OK键进入一级菜单
+              ApiMenu_BacklightTimeSet_Flag=1;
               MenuDisplay(MenuModeCount);
               MenuMode_Flag=1;
-              ApiMenu_BacklightTimeSet_Flag=1;
+              
               break;
             case 1://在一级菜单按ok键进入二级菜单
-              SubmenuMenuDisplay(BacklightTimeSet);
               ApiMenu_BacklightTimeSet_Flag=2;//在上下键中处理
+              SubmenuMenuDisplay(BacklightTimeSet);
+              
               break;
             case 2:
+              ApiMenu_BacklightTimeSet_Flag=3;
               MenuDisplay(MenuModeCount);
               MenuMode_Flag=1;
-              ApiMenu_BacklightTimeSet_Flag=1;
               break;
             }
         break;
@@ -210,18 +212,21 @@ void Keyboard_Test(void)
             switch(ApiMenu_KeylockTimeSet_Flag)
             {
             case 0://默认状态按OK键进入一级菜单
+              ApiMenu_KeylockTimeSet_Flag=1;
               MenuDisplay(MenuModeCount);
               MenuMode_Flag=1;
-              ApiMenu_KeylockTimeSet_Flag=1;
+              
               break;
             case 1://在一级菜单按ok键进入二级菜单
-              SubmenuMenuDisplay(KeylockTimeSet);
               ApiMenu_KeylockTimeSet_Flag=2;//在上下键中处理
+              SubmenuMenuDisplay(KeylockTimeSet);
+              
               break;
             case 2:
+              ApiMenu_KeylockTimeSet_Flag=3;
               MenuDisplay(MenuModeCount);
               MenuMode_Flag=1;
-              ApiMenu_KeylockTimeSet_Flag=1;
+              
               break;
             }
         break;
