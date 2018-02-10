@@ -10,6 +10,8 @@ u8 Key_PersonalCalling_Flag=0;
 bool TASK_Ptt_StartPersonCalling_Flag=FALSE;
 bool Task_Landing_Flag=FALSE;
 u8 KeyCount_PersonalCalling=0;
+u8 EnterPttMomentCount=0;
+bool EnterPttMoment_Flag=FALSE;
 #endif
 
 u8 *ucStartPTT                  = "0B0000";
@@ -108,6 +110,23 @@ void Task_RunNormalOperation(void)
   Keyboard_Test();
   UART3_ToMcuMain();
 /***********PTT状态检测*************************************************************************************************************************/
+  if(ReadInput_KEY_PTT==0)//判断按下PTT的瞬间
+  {
+    EnterPttMomentCount++;
+    if(EnterPttMomentCount==1)
+      EnterPttMoment_Flag=TRUE;
+    else
+    {
+      EnterPttMoment_Flag=FALSE;
+      EnterPttMomentCount=3;
+    }
+  }
+  else
+  {
+    EnterPttMomentCount=0;
+    EnterPttMoment_Flag=FALSE;
+  }
+  
   if(ReadInput_KEY_PTT==0)
   {
     AUDIO_IOAFPOW(ON);//打开功放，解决DIDI提示音听不见
@@ -115,7 +134,18 @@ void Task_RunNormalOperation(void)
     {
     case 0://默认PTT状态
 
-      ApiPocCmd_WritCommand(PocComm_StartPTT,ucStartPTT,strlen((char const *)ucStartPTT));
+      if(POC_ReceivedVoice_Flag==TRUE)//解决对方说话时按PTT接收语音异常的问题
+      {
+        if(EnterPttMoment_Flag==TRUE)
+        {
+          VOICE_SetOutput(ATVOICE_FreePlay,"8179d153",8);//禁发
+        }
+      }
+      else
+      {
+        ApiPocCmd_WritCommand(PocComm_StartPTT,ucStartPTT,strlen((char const *)ucStartPTT));
+      }
+      
       while(ReadInput_KEY_PTT==0)
       {
         if(POC_ReceivedVoice_Flag==TRUE)//如果正在接受语音
@@ -435,7 +465,7 @@ void TASK_WriteFreq(void)
 void TASK_RunLoBattery(void)
 {
   api_lcd_pwr_on_hint(" 电量低  请充电  ");
-  VOICE_SetOutput(ATVOICE_FreePlay,"3575606c3575cf914e4f0cfff78b45513575",36);//群组选择
+  VOICE_SetOutput(ATVOICE_FreePlay,"3575606c3575cf914e4f0cfff78b73513a6745513575",44);//群组选择
   DEL_SetTimer(0,1000);
   while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
   BEEP_Time(10);

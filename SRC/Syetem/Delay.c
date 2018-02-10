@@ -19,6 +19,8 @@ u8 GpsReconnectionTimeCount=0;
 u8 PowerOnCount=0;
 u8 CSQTimeCount=0;
 u8 LandingTimeCount=0;
+u8 PrimaryLowPowerCount=0;
+u8 ForbiddenSendPttCount=0;
 bool LockingState_Flag=FALSE;
 u8 BacklightTimeCount;//=10;//背光灯时间(需要设置进入eeprom)
 u8 KeylockTimeCount;//=30;//键盘锁时间(需要设置进入eeprom)
@@ -240,6 +242,7 @@ static void DEL_100msProcess(void)
 
 static void DEL_500msProcess(void)			//delay 500ms process server
 {
+  u8 i;
   if (DelDrvObj.Msg.Bit.b500ms == DEL_RUN) 
   {
     DelDrvObj.Msg.Bit.b500ms = DEL_IDLE;
@@ -248,7 +251,19 @@ static void DEL_500msProcess(void)			//delay 500ms process server
     DEL_500ms_Count2++;
     TimeCount_Light++;
     CSQTimeCount++;
-    
+
+/*********初级电量报警30s播报一次********************************/
+    if(PrimaryLowPower_Flag==TRUE)
+    {
+      PrimaryLowPowerCount++;
+      if(PrimaryLowPowerCount>=2*30)
+      {
+        PrimaryLowPowerCount=0;
+        VOICE_SetOutput(ATVOICE_FreePlay,"3575606c3575cf914e4f0cfff78b45513575",36);//播报电池电量低请充电
+        PrimaryLowPower_Flag=FALSE;
+      }
+    }
+/*********登录超过60s重启*********************************/
     if(Task_Landing_Flag==TRUE)
     {
       LandingTimeCount++;

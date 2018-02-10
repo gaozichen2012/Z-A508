@@ -2,8 +2,9 @@
 
 u8 BatteryLevel=0;
 u8 Count=0;
+u8 Count2=0;
 bool LowVoltageDetection_Flag;
-
+bool PrimaryLowPower_Flag=FALSE;
 static u16 OneChannelGetADValue(ADC2_Channel_TypeDef ADC2_Channel,\
   ADC2_SchmittTrigg_TypeDef ADC2_SchmittTriggerChannel);
 void ADC_Init(void)
@@ -43,7 +44,7 @@ void LowVoltageDetection(void)
   {}
   else
   {
-    if(ADValue<=350&&ADValue>=200)//345为3.42播报
+    if(ADValue<=345&&ADValue>=200)//345为3.42播报
     {
       Count++;
       if(Count>=50)
@@ -51,12 +52,24 @@ void LowVoltageDetection(void)
         api_disp_icoid_output( eICO_IDBATT, TRUE, TRUE);
         SetTaskId(TASK_LOBATT);
         LowVoltageDetection_Flag=TRUE;
-        Count=60;
+        Count=0;
+      }
+    }
+    else if(ADValue<355&&ADValue>345)
+    {
+      Count2++;
+      if(Count2>=50)
+      {
+        api_disp_icoid_output( eICO_IDBATT, TRUE, TRUE);
+        SetTaskId(Task_NormalOperation);
+        PrimaryLowPower_Flag=TRUE;
+        Count2=0;
+        
       }
     }
     else
     {
-      Count=0;
+      SetTaskId(Task_NormalOperation); 
       if(ADValue<=350&&ADValue>=200)
       {
         api_disp_icoid_output( eICO_IDBATT , TRUE, TRUE);
