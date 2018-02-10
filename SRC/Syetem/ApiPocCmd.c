@@ -198,7 +198,7 @@ u8 ApiPocCmd_user_info_get(u8 ** pBuf)
   u8 Len=0;
   Len = Combine2Hex(ReadBuffer, strlen((char const *)ReadBuffer), ReadBuffer);
   *pBuf = ReadBuffer;
-  return strlen((char const *)ReadBuffer);
+  return (strlen((char const *)ReadBuffer))/2;
 }
 
 //写频写入数据存入EEPROM
