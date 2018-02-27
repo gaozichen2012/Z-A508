@@ -14,7 +14,8 @@
 #define UART_RXMAXDEL	0x2000		//define UART Rx MAX softwave delay length
 #define UART_RXDELAY	0x0800		//define UART Rx delay softwave delay length	
 #define UART_TXMAXDEL	0x0800		//define UART Tx MAX softwave delay length value
-#define UART_TXBUSY		0			//define UART Tx busy delay length value
+#define UART_TXBUSY	0			//define UART Tx busy delay length value
+
 typedef enum {						//password string code
 	PAS_NULL   = 0x00,				//MCU passwrod null code	
 	PAS_ENCODE = 0x01,				//MCU password encode code
@@ -427,7 +428,7 @@ static bool UART_KeyCommand(void)//判断开始链接的密码
 		{
 			UartDrvObj.TxRxBuf.cTxBuf[i] = UartDrvObj.TxRxBuf.cRxBuf[4+i];//UartDrvObj.TxRxBuf.cTxBuf存入的数应该为：41 2D 35 31//6B 65 79 81 41 2D 35 31 9E
 		}
-#if 0//暂时屏蔽从EEPROM中获取软件版本，直接赋值
+#if 1//暂时屏蔽从EEPROM中获取软件版本，直接赋值
 		i = KCMD_KeyCmdGet(UartDrvObj.TxRxBuf.cRxBuf[3],UartDrvObj.TxRxBuf.cTxBuf);//UartDrvObj.TxRxBuf.cRxBuf[3]=0x81
 #else
                 UartDrvObj.TxRxBuf.cTxBuf[0] ='A';

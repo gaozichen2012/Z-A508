@@ -57,4 +57,7 @@
 
 //北斗
 #include "ApiBeidou.h"
+
+//软件版本设置
+#include "KeyCmd.h"
 #endif

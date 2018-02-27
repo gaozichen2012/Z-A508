@@ -4,6 +4,7 @@
 #include<stdlib.h>
 
 u8 Test1=0;
+u8 SendGpsLoginInfoCount=0;
 typedef enum{
 	GPSREV_Ack		= 0x8001,//平台通用应答
 	GPSREV_Puls		= 0x8002,//终端心跳
@@ -328,8 +329,8 @@ void ApiGpsCmd_PowerOnInitial(void)//bubiao
   
   adr = CFG_GetCurAdr(ADR_IDGpsFun);//部标注册信息获取
   FILE_Read2(adr.Adr,adr.Len-16,(u8*)(&GpsFunDrvObj.GpsPar));
-  
-
+  //adr = CFG_GetCurAdr(ADR_IDRadioMode);
+  //adr  = CFG_GetCurAdr(ADR_IDEEPROMVER);
    /* GpsFunDrvObj.GpsPar2.LoginInfo.Province.usData=0x002c;//省域ID
     GpsFunDrvObj.GpsPar2.LoginInfo.County.usData=0x0300;//市县域ID
     GpsFunDrvObj.GpsPar2.LoginInfo.Manufacturer[0]='4';//why
@@ -340,13 +341,7 @@ void ApiGpsCmd_PowerOnInitial(void)//bubiao
     
     
 
-    GpsFunDrvObj.GpsPar2.LoginInfo.TerminalID[0]='0';//终端ID
-    GpsFunDrvObj.GpsPar2.LoginInfo.TerminalID[1]='0';
-    GpsFunDrvObj.GpsPar2.LoginInfo.TerminalID[2]='0';
-    GpsFunDrvObj.GpsPar2.LoginInfo.TerminalID[3]='0';
-    GpsFunDrvObj.GpsPar2.LoginInfo.TerminalID[4]='1';
-    GpsFunDrvObj.GpsPar2.LoginInfo.TerminalID[5]='1';
-    GpsFunDrvObj.GpsPar2.LoginInfo.TerminalID[6]='1';
+
     GpsFunDrvObj.GpsPar2.LoginInfo.TerminalType[0]='2';
     GpsFunDrvObj.GpsPar2.LoginInfo.TerminalType[1]='0';
     GpsFunDrvObj.GpsPar2.LoginInfo.TerminalType[2]='1';
@@ -356,21 +351,29 @@ void ApiGpsCmd_PowerOnInitial(void)//bubiao
     GpsFunDrvObj.GpsPar2.LoginInfo.TerminalType[6]=0x00;
     GpsFunDrvObj.GpsPar2.LoginInfo.TerminalType[7]=0x00;//终端型号
 
-    GpsFunDrvObj.GpsPar2.LoginInfo.TerminalColor=0x04;//车牌颜色
+    GpsFunDrvObj.GpsPar2.LoginInfo.TerminalColor=0x04;//车牌颜色*/
 
-
-    GpsFunDrvObj.GpsPar2.LoginInfo.LicensePlate[0]='9';//车牌号
-    GpsFunDrvObj.GpsPar2.LoginInfo.LicensePlate[1]='8';
-    GpsFunDrvObj.GpsPar2.LoginInfo.LicensePlate[2]='0';
-    GpsFunDrvObj.GpsPar2.LoginInfo.LicensePlate[3]='0';
-    GpsFunDrvObj.GpsPar2.LoginInfo.LicensePlate[4]='3';
-    GpsFunDrvObj.GpsPar2.LoginInfo.LicensePlate[5]='0';
-    GpsFunDrvObj.GpsPar2.LoginInfo.LicensePlate[6]='5';
-    GpsFunDrvObj.GpsPar2.LoginInfo.LicensePlate[7]='3';
-    GpsFunDrvObj.GpsPar2.LoginInfo.LicensePlate[8]='8';
-    GpsFunDrvObj.GpsPar2.LoginInfo.LicensePlate[9]='8';
-    GpsFunDrvObj.GpsPar2.LoginInfo.LicensePlate[10]=0x00;*/
-
+#if 1//客户要求需要添加终端ID及车牌号信息以及里程
+    GpsFunDrvObj.GpsPar.LoginInfo.TerminalID[0]='6';//终端ID
+    GpsFunDrvObj.GpsPar.LoginInfo.TerminalID[1]='6';
+    GpsFunDrvObj.GpsPar.LoginInfo.TerminalID[2]='6';
+    GpsFunDrvObj.GpsPar.LoginInfo.TerminalID[3]='6';
+    GpsFunDrvObj.GpsPar.LoginInfo.TerminalID[4]='6';
+    GpsFunDrvObj.GpsPar.LoginInfo.TerminalID[5]='6';
+    GpsFunDrvObj.GpsPar.LoginInfo.TerminalID[6]='6';
+    
+    GpsFunDrvObj.GpsPar.LoginInfo.LicensePlate[0]='7';//车牌号
+    GpsFunDrvObj.GpsPar.LoginInfo.LicensePlate[1]='7';
+    GpsFunDrvObj.GpsPar.LoginInfo.LicensePlate[2]='7';
+    GpsFunDrvObj.GpsPar.LoginInfo.LicensePlate[3]='7';
+    GpsFunDrvObj.GpsPar.LoginInfo.LicensePlate[4]='7';
+    GpsFunDrvObj.GpsPar.LoginInfo.LicensePlate[5]='7';
+    GpsFunDrvObj.GpsPar.LoginInfo.LicensePlate[6]='7';
+    GpsFunDrvObj.GpsPar.LoginInfo.LicensePlate[7]='7';
+    GpsFunDrvObj.GpsPar.LoginInfo.LicensePlate[8]='7';
+    GpsFunDrvObj.GpsPar.LoginInfo.LicensePlate[9]='7';
+    GpsFunDrvObj.GpsPar.LoginInfo.LicensePlate[10]=0x00;
+#endif
 
     GpsFunDrvObj.usReportTimer = 0;//添加：报告时间设置为0
     GpsFunDrvObj.PositionSystem.GbSys.State.ucStep=0x00;
@@ -516,6 +519,11 @@ void ApiGpsCmd_100msRenew(void)//决定什么时候发送什么数据
                     if(PositionInformationSendToATPORT_Flag==TRUE)
 #endif
                     {
+                      if(SendGpsLoginInfoCount==0)
+                      {
+                        GpsCmd_GbWritCommand(GPSCOMM_Login, (void*)0, 0);
+                      }
+                      //SendGpsLoginInfoCount++;
                       GpsCmd_GbWritCommand(GPSCOMM_Position, (void*)0, 0);
                       PositionInformationSendToATPORT_Flag=FALSE;
                     }
@@ -648,7 +656,7 @@ static void GpsCmd_GbAnalytical(u8 *pBuf, u8 len)//收到的数据进行分析
   case GPSREV_Puls:
     break;
   case GPSREV_Login:
-    if(pBuf[15] == 0x00)
+   /* if(pBuf[15] == 0x00)
     {
       pBuf+=16;
       Len-=0x03;//若Len=0，减3后就会变成负数，则异常
@@ -657,8 +665,8 @@ static void GpsCmd_GbAnalytical(u8 *pBuf, u8 len)//收到的数据进行分析
         GpsFunDrvObj.PositionSystem.GbSys.LoginInfo.ucParam.AuthenticationId[i] = pBuf[i];
       }
       GpsFunDrvObj.PositionSystem.GbSys.LoginInfo.ucParam.Msg.Bits.bLen = Len;
-      GpsFunDrvObj.PositionSystem.GbSys.LoginInfo.ucParam.Msg.Bits.bLoginSuccess = ON;
-    }
+      //GpsFunDrvObj.PositionSystem.GbSys.LoginInfo.ucParam.Msg.Bits.bLoginSuccess = ON;
+    }*/
     break;
   case GPSREV_Logout:
     break;
@@ -831,8 +839,9 @@ static bool GpsCmd_GbWritCommand(GpsCommType id, u8 *buf, u8 len)
     COML_StringReverse(0x02,GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.HeadInfo.stParam.MsgProperty.ucData);//消息体属性
     COML_StringReverse(0x02,GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.HeadInfo.stParam.SerialNo.ucData);//流水号
     i = strlen((char const *)GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.Message.LoginInfo.LicensePlate);//车牌号的长度
+    //COML_StringReverse(i,GpsFunDrvObj->PositionSystem.GbSys.MsgBody.Param.Message.LoginInfo.LicensePlate);
     pack_data(GpsFunDrvObj.PositionSystem.GbSys.MsgBody.ucData, 37+i);//计算消息头和消息体的总长度len=12+25+车牌号长度，并将数据GpsFunDrvObj.PositionSystem.GbSys.MsgBody.ucData按照部标要求打包放入GpsFunDrvObj.PositionSystem.GbSys.TempBuf.ucData
-
+    
     GpsFunDrvObj.PositionSystem.GbSys.TempBuf.TestLen=COMLHexArray2String(GpsFunDrvObj.PositionSystem.GbSys.TempBuf.ucData,
                                                                           GpsFunDrvObj.PositionSystem.GbSys.TempBuf.Len,
                                                                           GpsFunDrvObj.PositionSystem.GbSys.TempBuf.ucTestData);
