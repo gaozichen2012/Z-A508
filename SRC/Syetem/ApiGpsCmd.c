@@ -737,8 +737,8 @@ static void GpsCmd_GbDataTransave(GpsCommType GpsComm)//定位信息转换，等会要用到
   pPositInfo->stParam.WorkStatus.Bits.bLock= 1;//=1车门加锁
   GpsFunDrvObj.InfoRecord.Position.Msg.bGpsVolid=1;//手动赋值
   pPositInfo->stParam.WorkStatus.Bits.bGpsVolid = GpsFunDrvObj.InfoRecord.Position.Msg.bGpsVolid;
-  pPositInfo->stParam.WorkStatus.Bits.bNorthOrSouth = GpsFunDrvObj.InfoRecord.Position.Msg.bNorthOrSouth;
-  pPositInfo->stParam.WorkStatus.Bits.bEastOrWest = GpsFunDrvObj.InfoRecord.Position.Msg.bEastOrWest;
+  pPositInfo->stParam.WorkStatus.Bits.bNorthOrSouth = 0;//GpsFunDrvObj.InfoRecord.Position.Msg.bNorthOrSouth;
+  pPositInfo->stParam.WorkStatus.Bits.bEastOrWest = 0;//GpsFunDrvObj.InfoRecord.Position.Msg.bEastOrWest;
 #ifdef BEIDOU//使用外置北斗
   GpsFunDrvObj.InfoRecord.Position.ulLongitude =(BDLongitude_Degree*1000000)+((BDLongitude_Minute*10000+BDLongitude_Second)*10/6);//经度Longitude
   GpsFunDrvObj.InfoRecord.Position.ulLatitude=(BDLatitude_Degree*1000000)+((BDLatitude_Minute*10000+BDLatitude_Second)*10/6);
