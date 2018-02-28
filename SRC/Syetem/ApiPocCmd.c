@@ -4,7 +4,7 @@
 #define APIPOC_UserList_Len			16
 #define APIPOC_UserLoad_Len			8
 #define APIPOC_UserName_Len			30
-
+//u8 TestReadBuffer[250];
 u8 ReadBuffer[80];//Test 存EEPROM读取的数据使用
 u8 ASCII_ActiveUserID[22];//Test 存EEPROM读取的数据使用
 u8 Get_Unicode_ActiveUserIDBuf[45];//
@@ -146,7 +146,7 @@ void ApiPocCmd_WritCommand(PocCommType id, u8 *buf, u16 len)
     FILE_Read(0,80,ReadBuffer);//80位
 
    // FILE_Read(28,22,ActiveUserID);
-//    FILE_Read(0x230,250,TestReadBuffer);//0x260-0x2cc
+    //FILE_Read(0x230,250,TestReadBuffer);//0x260-0x2cc
     DrvGD83_UART_TxCommand(ReadBuffer, strlen((char const *)ReadBuffer));
     break;
   case PocComm_GetParam:
