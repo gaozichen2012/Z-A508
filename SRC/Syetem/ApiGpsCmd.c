@@ -132,7 +132,7 @@ typedef union{
 }_Gb_WorkState;//位置基本信息数据格式中的状态位
 
 typedef union{
-  u8 ucData[GPS_GB_POSITION_LEN];
+  u8 ucData[GPS_GB_POSITION_LEN+3];//3为附加消息长度
   struct{
     _Gb_AlarmState Warning;//报警标志
     _Gb_WorkState WorkStatus;//定位状态
@@ -147,6 +147,11 @@ typedef union{
     struct{
       u8 ucData[3];
     }Time;//时间
+    struct{
+      u8 AddInfoID;
+      u8 AddInfoLen;
+      u8 AddInfo;
+    }AdditionPositInfo;//附加消息+3
   }stParam;
 }_PositInfo;
 
@@ -262,6 +267,7 @@ typedef struct{
     u8 ucDate[3];
     u8 ucTime[3];
   }Position;
+  u8 rev[6];
 }_InfoRecord;
 
 typedef struct{
@@ -324,6 +330,9 @@ static u8 COMLHexArray2String(u8 * buf1,u8 Len1,u8 * buf2);//16进制数组转字符串
 void ApiGpsCmd_PowerOnInitial(void)//bubiao
 {
   u16 i;
+  u8 j,k;
+  u8 TerminalIDLen=0;
+  u8 LicensePlateLen=0;
   u8 ucIndex0 = 0, ucIndex1 = 0;
   ADRLEN_INF	adr;
   
@@ -427,6 +436,39 @@ void ApiGpsCmd_PowerOnInitial(void)//bubiao
     GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.HeadInfo.stParam.ucTerminalNo.ucData[2]=0x30;
     GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.HeadInfo.stParam.ucTerminalNo.ucData[1]=0x53;
     GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.HeadInfo.stParam.ucTerminalNo.ucData[0]=0x88;
+#endif
+    
+#if 1//客户要求需要添加终端ID及车牌号信息以及里程
+    TerminalIDLen=strlen((char const *)GpsFunDrvObj.GpsPar.LoginInfo.TerminalID);
+    LicensePlateLen=strlen((char const *)GpsFunDrvObj.GpsPar.LoginInfo.LicensePlate);
+    for(j=0;j<TerminalIDLen;j++)
+    {
+      GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.Message.LoginInfo.TerminalID[j]=GpsFunDrvObj.GpsPar.LoginInfo.TerminalID[j];
+    }
+    for(k=0;k<LicensePlateLen;k++)
+    {
+      GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.Message.LoginInfo.LicensePlate[k]=GpsFunDrvObj.GpsPar.LoginInfo.LicensePlate[k];
+    }
+#else
+    GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.Message.LoginInfo.TerminalID[0]='6';//终端ID
+    GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.Message.LoginInfo.TerminalID[1]='6';
+    GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.Message.LoginInfo.TerminalID[2]='6';
+    GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.Message.LoginInfo.TerminalID[3]='6';
+    GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.Message.LoginInfo.TerminalID[4]='6';
+    GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.Message.LoginInfo.TerminalID[5]='6';
+    GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.Message.LoginInfo.TerminalID[6]='6';
+    
+    GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.Message.LoginInfo.LicensePlate[0]='7';//车牌号
+    GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.Message.LoginInfo.LicensePlate[1]='7';
+    GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.Message.LoginInfo.LicensePlate[2]='7';
+    GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.Message.LoginInfo.LicensePlate[3]='7';
+    GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.Message.LoginInfo.LicensePlate[4]='7';
+    GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.Message.LoginInfo.LicensePlate[5]='7';
+    GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.Message.LoginInfo.LicensePlate[6]='7';
+    GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.Message.LoginInfo.LicensePlate[7]='7';
+    GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.Message.LoginInfo.LicensePlate[8]='7';
+    GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.Message.LoginInfo.LicensePlate[9]='7';
+    GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.Message.LoginInfo.LicensePlate[10]=0x00;
 #endif
     COML_StringReverse(0x06,GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.HeadInfo.stParam.ucTerminalNo.ucData);
     GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.HeadInfo.stParam.SerialNo.usData=0x0000;
@@ -765,6 +807,10 @@ static void GpsCmd_GbDataTransave(GpsCommType GpsComm)//定位信息转换，等会要用到
   pPositInfo->stParam.usAltitude = GpsFunDrvObj.InfoRecord.Position.usAltitude;
   pPositInfo->stParam.usSpeed = GpsFunDrvObj.InfoRecord.Position.usSpeed;
   pPositInfo->stParam.usDirection = GpsFunDrvObj.InfoRecord.Position.usDirection;
+  //位置附加消息添加里程值
+  pPositInfo->stParam.AdditionPositInfo.AddInfoID=0x01;
+  pPositInfo->stParam.AdditionPositInfo.AddInfoLen=0x01;
+  pPositInfo->stParam.AdditionPositInfo.AddInfo=0x88;
   //日期手动赋值2018-1-18 17:28:20
   GpsFunDrvObj.InfoRecord.Position.ucTime[0]=Data_Time0();
   GpsFunDrvObj.InfoRecord.Position.ucTime[1]=Data_Time1();
@@ -799,9 +845,6 @@ static bool GpsCmd_GbWritCommand(GpsCommType id, u8 *buf, u8 len)
 {
   bool r = TRUE;
   u16 i = 0;
-  u8 j,k;
-  u8 TerminalIDLen=0;
-  u8 LicensePlateLen=0;
   GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.HeadInfo.stParam.MsgProperty.Bits.Encryption=0;
   GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.HeadInfo.stParam.MsgProperty.Bits.Subpackage=0;
   switch(id)
@@ -832,39 +875,6 @@ static bool GpsCmd_GbWritCommand(GpsCommType id, u8 *buf, u8 len)
     //ApiAtCmd_WritCommand(ATCOMM10_SendTcp, GpsFunDrvObj.PositionSystem.GbSys.TempBuf.ucData,GpsFunDrvObj.PositionSystem.GbSys.TempBuf.Len);
     break;
   case GPSCOMM_Login:
-    
-#if 1//客户要求需要添加终端ID及车牌号信息以及里程
-    TerminalIDLen=strlen((char const *)GpsFunDrvObj.GpsPar.LoginInfo.TerminalID);
-    LicensePlateLen=strlen((char const *)GpsFunDrvObj.GpsPar.LoginInfo.LicensePlate);
-    for(j=0;j<TerminalIDLen;j++)
-    {
-      GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.Message.LoginInfo.TerminalID[j]=GpsFunDrvObj.GpsPar.LoginInfo.TerminalID[j];
-    }
-    for(k=0;k<LicensePlateLen;k++)
-    {
-      GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.Message.LoginInfo.LicensePlate[k]=GpsFunDrvObj.GpsPar.LoginInfo.LicensePlate[k];
-    }
-#else
-    GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.Message.LoginInfo.TerminalID[0]='6';//终端ID
-    GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.Message.LoginInfo.TerminalID[1]='6';
-    GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.Message.LoginInfo.TerminalID[2]='6';
-    GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.Message.LoginInfo.TerminalID[3]='6';
-    GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.Message.LoginInfo.TerminalID[4]='6';
-    GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.Message.LoginInfo.TerminalID[5]='6';
-    GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.Message.LoginInfo.TerminalID[6]='6';
-    
-    GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.Message.LoginInfo.LicensePlate[0]='7';//车牌号
-    GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.Message.LoginInfo.LicensePlate[1]='7';
-    GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.Message.LoginInfo.LicensePlate[2]='7';
-    GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.Message.LoginInfo.LicensePlate[3]='7';
-    GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.Message.LoginInfo.LicensePlate[4]='7';
-    GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.Message.LoginInfo.LicensePlate[5]='7';
-    GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.Message.LoginInfo.LicensePlate[6]='7';
-    GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.Message.LoginInfo.LicensePlate[7]='7';
-    GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.Message.LoginInfo.LicensePlate[8]='7';
-    GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.Message.LoginInfo.LicensePlate[9]='7';
-    GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.Message.LoginInfo.LicensePlate[10]=0x00;
-#endif
     GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.HeadInfo.stParam.MsgProperty.Bits.Encryption=0;
     GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.HeadInfo.stParam.MsgProperty.Bits.Subpackage=0;
     
@@ -884,6 +894,10 @@ static bool GpsCmd_GbWritCommand(GpsCommType id, u8 *buf, u8 len)
                                                                           GpsFunDrvObj.PositionSystem.GbSys.TempBuf.Len,
                                                                           GpsFunDrvObj.PositionSystem.GbSys.TempBuf.ucTestData);
     ApiAtCmd_WritCommand(ATCOMM10_SendTcp, GpsFunDrvObj.PositionSystem.GbSys.TempBuf.ucTestData,GpsFunDrvObj.PositionSystem.GbSys.TempBuf.TestLen);//临时缓冲区存放加密后的设备注册消息包
+    for(i=0;i<84;i++)//不清除可能会对下条消息造成影响
+    {
+      GpsFunDrvObj.PositionSystem.GbSys.TempBuf.ucTestData[i]='\0';
+    }
     break;
   case GPSCOMM_Logout:
     if(GpsFunDrvObj.ucWorkState != id)
@@ -915,13 +929,17 @@ static bool GpsCmd_GbWritCommand(GpsCommType id, u8 *buf, u8 len)
     GpsCmd_GbDataTransave(GPSCOMM_Position);
     GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.HeadInfo.stParam.MsgProperty.Bits.Len = GPS_GB_POSITION_LEN+6+4;
     //COML_StringReverse(0x02,GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.HeadInfo.stParam.MsgProperty.ucData);//原消息ID反序，屏蔽看是否正序
-    pack_data(GpsFunDrvObj.PositionSystem.GbSys.MsgBody.ucData, GPS_GB_HEAD_LEN+GPS_GB_POSITION_LEN+6+4);
+    //pack_data(GpsFunDrvObj.PositionSystem.GbSys.MsgBody.ucData, GPS_GB_HEAD_LEN+GPS_GB_POSITION_LEN+6+4);
+    pack_data(GpsFunDrvObj.PositionSystem.GbSys.MsgBody.ucData, GPS_GB_HEAD_LEN+GPS_GB_POSITION_LEN+3);
     GpsFunDrvObj.PositionSystem.GbSys.TempBuf.TestLen=COMLHexArray2String(GpsFunDrvObj.PositionSystem.GbSys.TempBuf.ucData,
                                                                           GpsFunDrvObj.PositionSystem.GbSys.TempBuf.Len,
                                                                           GpsFunDrvObj.PositionSystem.GbSys.TempBuf.ucTestData);
 
     ApiAtCmd_WritCommand(ATCOMM10_SendTcp, GpsFunDrvObj.PositionSystem.GbSys.TempBuf.ucTestData,GpsFunDrvObj.PositionSystem.GbSys.TempBuf.TestLen);//临时缓冲区存放加密后的设备注册消息包
-
+    for(i=0;i<2*84;i++)
+    {
+      GpsFunDrvObj.PositionSystem.GbSys.TempBuf.ucTestData[i]='\0';
+    }
     //ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)"AT^CDMATIME",strlen((char const *)"AT^CDMATIME"));//发送获取CDMATIME获取时间
     break;
   case GPSCOMM_PositionAck:
