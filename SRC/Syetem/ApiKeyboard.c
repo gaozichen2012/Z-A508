@@ -100,13 +100,13 @@ void Keyboard_Test(void)
     {
     if(MenuMode_Flag==1)
     {
-      if(ApiMenu_BacklightTimeSet_Flag==2)//如果是设置背光灯二级菜单
+      if(ApiMenu_BacklightTimeSet_Flag==1)//如果是设置背光灯二级菜单
       {
         BacklightTimeSetCount=BacklightTimeSetCount-1;
         if(BacklightTimeSetCount<1) {BacklightTimeSetCount=7;}
         Level3MenuDisplay(BacklightTimeSetCount);
       }
-      else if(ApiMenu_KeylockTimeSet_Flag==2)//如果是设置键盘锁二级菜单
+      else if(ApiMenu_KeylockTimeSet_Flag==1)//如果是设置键盘锁二级菜单
       {
         KeylockTimeSetCount=KeylockTimeSetCount-1;
         if(KeylockTimeSetCount<0x10) {KeylockTimeSetCount=0x16;}
@@ -163,19 +163,20 @@ void Keyboard_Test(void)
     }
     else
     { 
-      switch(MenuModeCount)
+      switch(MenuModeCount)//默认按ok键进入一级菜单
       {
       case 1://群组选择
+        Key_PersonalCalling_Flag=0;//进入组呼标志位
         switch(ApiMenu_SwitchGroup_Flag)
         {
-        case 0://默认状态按OK键进入一级菜单
+        case 0://一级按OK键进入二级菜单
           MenuDisplay(MenuModeCount);
           MenuMode_Flag=1;
           ApiMenu_SwitchGroup_Flag=1;
           break;
-        case 1://在gps信息一级菜单按ok键进入二级菜单
+        case 1://二级菜单再按ok键进入一级菜单
           SubmenuMenuDisplay(GroupSwitch);
-          VOICE_SetOutput(ATVOICE_FreePlay,"07526263A47FC47E",16);//上下键切换群组
+          VOICE_SetOutput(ATVOICE_FreePlay,"07526263A47FC47E",16);//切换群组
           ApiMenu_SwitchGroup_Flag=0;
           MenuMode_Flag=0;
           break;
@@ -184,14 +185,14 @@ void Keyboard_Test(void)
       case 2://成员选择
         switch(ApiMenu_SwitchCallUser_Flag)
         {
-        case 0://默认状态按OK键进入一级菜单
+        case 1://二级菜单按OK键进入一级菜单
           MenuDisplay(MenuModeCount);
           MenuMode_Flag=1;
-          ApiMenu_SwitchCallUser_Flag=1;
-          break;
-        case 1://在gps信息一级菜单按ok键进入二级菜单
-          MenuDisplay(Menu_RefreshAllIco);
           ApiMenu_SwitchCallUser_Flag=0;
+          break;
+        case 0://一级菜单按ok键进入二级菜单
+          MenuDisplay(Menu_RefreshAllIco);
+          ApiMenu_SwitchCallUser_Flag=1;
           MenuMode_Flag=0;
           /*******直接搬个呼键状态检测的程序***************************************************************************************************************************************/
           api_lcd_pwr_on_hint("对象:   选择个呼");
@@ -209,33 +210,33 @@ void Keyboard_Test(void)
       case 3://GPS设置
             switch(ApiMenu_GpsInfo_Flag)
             {
-            case 0://默认状态按OK键进入一级菜单
+            case 1://二级菜单按OK键进入一级菜单
               MenuDisplay(MenuModeCount);
               MenuMode_Flag=1;
-              ApiMenu_GpsInfo_Flag=1;
-              break;
-            case 1://在gps信息一级菜单按ok键进入二级菜单
-              SubmenuMenuDisplay(GpsInfoMenu);
               ApiMenu_GpsInfo_Flag=0;
+              break;
+            case 0://一级菜单按ok键进入二级菜单
+              SubmenuMenuDisplay(GpsInfoMenu);
+              ApiMenu_GpsInfo_Flag=1;
               break;
             }
         break;
       case 4://背光灯设置
             switch(ApiMenu_BacklightTimeSet_Flag)
             {
-            case 0://默认状态按OK键进入一级菜单
-              ApiMenu_BacklightTimeSet_Flag=1;
+            case 2://二级菜单按ok键进入一级菜单
+              ApiMenu_BacklightTimeSet_Flag=0;
               MenuDisplay(MenuModeCount);
               MenuMode_Flag=1;
               
               break;
-            case 1://在一级菜单按ok键进入二级菜单
-              ApiMenu_BacklightTimeSet_Flag=2;//在上下键中处理
+            case 0://在一级菜单按ok键进入二级菜单
+              ApiMenu_BacklightTimeSet_Flag=1;//在上下键中处理
               SubmenuMenuDisplay(BacklightTimeSet);
               
               break;
-            case 2:
-              ApiMenu_BacklightTimeSet_Flag=3;
+            case 1:
+              ApiMenu_BacklightTimeSet_Flag=2;
               MenuDisplay(MenuModeCount);
               MenuMode_Flag=1;
               break;
@@ -244,19 +245,19 @@ void Keyboard_Test(void)
       case 5://键盘锁定
             switch(ApiMenu_KeylockTimeSet_Flag)
             {
-            case 0://默认状态按OK键进入一级菜单
-              ApiMenu_KeylockTimeSet_Flag=1;
+            case 2://默认状态按OK键进入一级菜单
+              ApiMenu_KeylockTimeSet_Flag=0;
               MenuDisplay(MenuModeCount);
               MenuMode_Flag=1;
               
               break;
-            case 1://在一级菜单按ok键进入二级菜单
-              ApiMenu_KeylockTimeSet_Flag=2;//在上下键中处理
+            case 0://在一级菜单按ok键进入二级菜单
+              ApiMenu_KeylockTimeSet_Flag=1;//在上下键中处理
               SubmenuMenuDisplay(KeylockTimeSet);
               
               break;
-            case 2:
-              ApiMenu_KeylockTimeSet_Flag=3;
+            case 1:
+              ApiMenu_KeylockTimeSet_Flag=2;
               MenuDisplay(MenuModeCount);
               MenuMode_Flag=1;
               
@@ -266,29 +267,29 @@ void Keyboard_Test(void)
       case 6://本机信息
             switch(ApiMenu_NativeInfo_Flag)
             {
-            case 0://默认状态按OK键进入一级菜单
+            case 1://默认状态按OK键进入一级菜单
               MenuDisplay(MenuModeCount);
               MenuMode_Flag=1;
-              ApiMenu_NativeInfo_Flag=1;
-              break;
-            case 1://在gps信息一级菜单按ok键进入二级菜单
-              SubmenuMenuDisplay(NativeInfoMenu);
               ApiMenu_NativeInfo_Flag=0;
+              break;
+            case 0://在gps信息一级菜单按ok键进入二级菜单
+              SubmenuMenuDisplay(NativeInfoMenu);
+              ApiMenu_NativeInfo_Flag=1;
               break;
             }
         break;
       case 7://北斗/写频切换
         switch(ApiMenu_BeiDouOrWritingFrequency_Flag)
         {
-        case 0://默认状态按OK键进入一级菜单
+        case 1://二级菜单按OK键进入一级菜单
           MenuDisplay(MenuModeCount);
           MenuMode_Flag=1;
-          ApiMenu_BeiDouOrWritingFrequency_Flag=1;
-          break;
-        case 1://在gps信息一级菜单按ok键进入二级菜单
-          SubmenuMenuDisplay(BeiDouOrWritingFrequencySwitch);
           ApiMenu_BeiDouOrWritingFrequency_Flag=0;
-          MenuMode_Flag=0;
+          break;
+        case 0://一级菜单按ok键进入二级菜单
+          SubmenuMenuDisplay(BeiDouOrWritingFrequencySwitch);
+          ApiMenu_BeiDouOrWritingFrequency_Flag=1;
+          MenuMode_Flag=1;
           break;
         }
         break;
@@ -296,6 +297,7 @@ void Keyboard_Test(void)
         break;
       }
     }
+    Delay_100ms(1);
     break;
   case 0x00800000://menu
     NumberKeyboardPressDown_flag=TRUE;
@@ -345,19 +347,6 @@ void Keyboard_Test(void)
     if(TestNum8>=KeyCountNum)
     {
       TestNum8=0;
-      if(LockingState_EnterOK_Flag==TRUE)//如果锁定状态下按了OK键然后按了#键
-      {
-        LockingState_EnterOK_Flag=FALSE;
-        LockingState_Flag=FALSE;
-        TimeCount=0;
-        MenuDisplay(Menu_unLocking);
-        api_disp_icoid_output(eICO_IDBANDWIDTHN, TRUE, TRUE);//无锁屏空图标
-        api_disp_all_screen_refresh();// 全屏统一刷新
-      }
-      else
-      {
-        NumberKeyboardPressDown_flag=TRUE;
-      }
     }
     break;  
   case 0x00000100://5
@@ -388,8 +377,20 @@ void Keyboard_Test(void)
     TestNum12++;
     if(TestNum12>=KeyCountNum)
     {
+            if(LockingState_EnterOK_Flag==TRUE)//如果锁定状态下按了OK键然后按了#键
+      {
+        LockingState_EnterOK_Flag=FALSE;
+        LockingState_Flag=FALSE;
+        TimeCount=0;
+        MenuDisplay(Menu_unLocking);
+        api_disp_icoid_output(eICO_IDBANDWIDTHN, TRUE, TRUE);//无锁屏空图标
+        api_disp_all_screen_refresh();// 全屏统一刷新
+      }
+      else
+      {
+        NumberKeyboardPressDown_flag=TRUE;
+      }
       TestNum12=0;
-      NumberKeyboardPressDown_flag=TRUE;
     }
     break;  
   case 0x00000400://up
@@ -400,13 +401,13 @@ void Keyboard_Test(void)
     {
     if(MenuMode_Flag==1)
     {
-      if(ApiMenu_BacklightTimeSet_Flag==2)//如果是设置背光灯二级菜单
+      if(ApiMenu_BacklightTimeSet_Flag==1)//如果是设置背光灯二级菜单
       {
         BacklightTimeSetCount=BacklightTimeSetCount+1;
         if(BacklightTimeSetCount>7) {BacklightTimeSetCount=1;}
         Level3MenuDisplay(BacklightTimeSetCount);
       }
-      else if(ApiMenu_KeylockTimeSet_Flag==2)//如果是设置键盘锁二级菜单
+      else if(ApiMenu_KeylockTimeSet_Flag==1)//如果是设置键盘锁二级菜单
       {
         KeylockTimeSetCount=KeylockTimeSetCount+1;
         if(KeylockTimeSetCount>0x16) {KeylockTimeSetCount=0x10;}
@@ -460,17 +461,56 @@ void Keyboard_Test(void)
     {}
     else
     {
+      
       if(MenuMode_Flag==1)
       {
-        MenuDisplay(Menu_RefreshAllIco);
-        MenuMode_Flag=0;
+        if(ApiMenu_GpsInfo_Flag==1)
+        {
+          MenuDisplay(MenuModeCount);
+          MenuMode_Flag=1;
+          ApiMenu_GpsInfo_Flag=0;
+        }
+        else if(ApiMenu_NativeInfo_Flag==1)
+        {
+          MenuDisplay(MenuModeCount);
+          MenuMode_Flag=1;
+          ApiMenu_NativeInfo_Flag=0;
+        }
+        else if(ApiMenu_BeiDouOrWritingFrequency_Flag==1)
+        {
+          MenuDisplay(MenuModeCount);
+          MenuMode_Flag=1;
+          ApiMenu_BeiDouOrWritingFrequency_Flag=0;
+        }
+        else if(ApiMenu_BacklightTimeSet_Flag==1)
+        {
+          ApiMenu_BacklightTimeSet_Flag=0;
+          MenuDisplay(MenuModeCount);
+          MenuMode_Flag=1;
+        }
+        else if(ApiMenu_KeylockTimeSet_Flag==1)
+        {
+          ApiMenu_KeylockTimeSet_Flag=0;
+          MenuDisplay(MenuModeCount);
+          MenuMode_Flag=1;
+        }
+        else
+        {
+          MenuDisplay(Menu_RefreshAllIco);
+          MenuMode_Flag=0;
+          api_lcd_pwr_on_hint("    组呼模式    ");
+          ApiPocCmd_WritCommand(PocComm_Cancel,(u8 *)ucQuitPersonalCalling,strlen((char const *)ucQuitPersonalCalling));
+          Key_Flag_1=1;//按键延时标志位
+          Key_PersonalCalling_Flag=0;//进入组呼标志位
+        }
       }
+      else
+      {
       api_lcd_pwr_on_hint("    组呼模式    ");
-      
         ApiPocCmd_WritCommand(PocComm_Cancel,(u8 *)ucQuitPersonalCalling,strlen((char const *)ucQuitPersonalCalling));
         Key_Flag_1=1;//按键延时标志位
         Key_PersonalCalling_Flag=0;//进入组呼标志位
-
+      }
 
     }
     break;  

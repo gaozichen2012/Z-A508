@@ -38,9 +38,9 @@ void MenuDisplay(MenuDisplayType id)
     api_lcd_pwr_on_hint3("菜单            ");
     api_lcd_pwr_on_hint5("4/7");
      api_lcd_pwr_on_hint("背光灯设置      ");
-     if(ApiMenu_BacklightTimeSet_Flag==3)
+     if(ApiMenu_BacklightTimeSet_Flag==2)
      {
-       ApiMenu_BacklightTimeSet_Flag=1;
+       ApiMenu_BacklightTimeSet_Flag=0;
        if(BacklightTimeSetCount==7)
        {
          Buf1[0]=0;
@@ -57,9 +57,9 @@ void MenuDisplay(MenuDisplayType id)
     api_lcd_pwr_on_hint3("菜单            ");
     api_lcd_pwr_on_hint5("5/7");
      api_lcd_pwr_on_hint("键盘锁定        ");
-     if(ApiMenu_KeylockTimeSet_Flag==3)
+     if(ApiMenu_KeylockTimeSet_Flag==2)
      {
-       ApiMenu_KeylockTimeSet_Flag=1;
+       ApiMenu_KeylockTimeSet_Flag=0;
        if(KeylockTimeSetCount==0x10)
        {
          //KeylockTimeCount=200;//如果=200则永远不锁屏
@@ -125,7 +125,7 @@ void MenuDisplay(MenuDisplayType id)
   case Menu_UnlockStep1_Ok:
     //MenuDisplay(Menu_RefreshAllIco);
     api_lcd_pwr_on_hint("                ");//清屏
-    api_lcd_pwr_on_hint("再按*键         ");
+    api_lcd_pwr_on_hint("再按#键         ");
     break;
   default:
     break;
@@ -190,7 +190,8 @@ void SubmenuMenuDisplay(SubmenuMenuDisplayType id)
     Level3MenuDisplay(KeylockTimeSetCount);
     break;
   case BeiDouOrWritingFrequencySwitch:
-    api_lcd_pwr_on_hint("非此版本功能    ");
+    api_lcd_pwr_on_hint3("                ");//清屏
+     api_lcd_pwr_on_hint("  非此版本功能  ");
     break;
   }
 }

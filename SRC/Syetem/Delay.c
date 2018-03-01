@@ -383,7 +383,7 @@ static void DEL_500msProcess(void)			//delay 500ms process server
         if(NumberKeyboardPressDown_flag==TRUE&&TimeCount>=KeylockTimeCount)//超过10秒后再按按键提示“按OK键再按*键”
         {
           TimeCount2++;
-          api_lcd_pwr_on_hint("按OK键,再按*键  ");//
+          api_lcd_pwr_on_hint("按OK键,再按#键  ");//
           if(TimeCount2>=2)//1s
           {
             TimeCount2=0;
