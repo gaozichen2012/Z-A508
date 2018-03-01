@@ -16,6 +16,12 @@ static const MCU_VERSION Mcu_Version = {	//mcu vwersion information
 	{"res"}
 };
 
+//修改版本时必须也修改此处版本
+void MCU_VERSIONForMenu(void)
+{
+  api_lcd_pwr_on_hint3("软件:V1.01.01   ");//清屏
+  api_lcd_pwr_on_hint("更新时间:2018.2  ");//清屏
+}
 static u8 KCMD_GetMcuVersion(u8* pBuf);
 
 u8 KCMD_KeyCmdGet(u8 cId,u8 *pBuf)

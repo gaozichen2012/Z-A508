@@ -231,8 +231,18 @@ void Keyboard_Test(void)
             }
         break;
       case 6://本机信息
-        MenuDisplay(MenuModeCount);
-        MenuMode_Flag=1;
+            switch(ApiMenu_NativeInfo_Flag)
+            {
+            case 0://默认状态按OK键进入一级菜单
+              MenuDisplay(MenuModeCount);
+              MenuMode_Flag=1;
+              ApiMenu_NativeInfo_Flag=1;
+              break;
+            case 1://在gps信息一级菜单按ok键进入二级菜单
+              SubmenuMenuDisplay(NativeInfoMenu);
+              ApiMenu_NativeInfo_Flag=0;
+              break;
+            }
         break;
       case 7://北斗/写频切换
         MenuDisplay(MenuModeCount);
@@ -425,7 +435,7 @@ void Keyboard_Test(void)
     break;
   }
   GeHuTest(ulAllKeyID);
-  if(Key_Flag_1==1)
+  if(Key_Flag_1==1)//按下按键延迟1秒
   {
     DEL_SetTimer(1,50);
     while(1)
@@ -671,8 +681,7 @@ if(KeyBoardState==TRUE)//识别按下按键到松开按键的过程
     api_lcd_pwr_on_hint3("个呼短号        ");
      api_lcd_pwr_on_hint("                ");
      api_lcd_pwr_on_hint(TestBuf1);
-
-    
+ 
 }
   #endif
 

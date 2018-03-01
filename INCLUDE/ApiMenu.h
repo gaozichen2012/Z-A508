@@ -21,6 +21,7 @@ typedef enum{
   GpsInfoMenu          =0x00,
   BacklightTimeSet     =0x01,
   KeylockTimeSet      =0x02,
+  NativeInfoMenu        =0x03,
 }SubmenuMenuDisplayType;
 
 typedef enum{
@@ -42,6 +43,7 @@ typedef enum{
 
 
 extern u8 ApiMenu_GpsInfo_Flag;
+extern u8 ApiMenu_NativeInfo_Flag;
 extern u8 ApiMenu_BacklightTimeSet_Flag;
 extern u8 ApiMenu_KeylockTimeSet_Flag;
 

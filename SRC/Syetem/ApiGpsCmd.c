@@ -762,7 +762,6 @@ static void GpsCmd_GbAnalytical(u8 *pBuf, u8 len)//收到的数据进行分析
   }
 }
 
-
 static void GpsCmd_GbDataTransave(GpsCommType GpsComm)//定位信息转换，等会要用到，POC获取GPS信息转换后发送TCP
 {
   u8 i = 0;

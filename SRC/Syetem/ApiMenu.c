@@ -2,6 +2,7 @@
 
 #if 1
 u8 ApiMenu_GpsInfo_Flag=0;
+u8 ApiMenu_NativeInfo_Flag=0;
 u8 ApiMenu_BacklightTimeSet_Flag=0;
 u8 ApiMenu_KeylockTimeSet_Flag=0;
 #endif
@@ -144,8 +145,6 @@ void SubmenuMenuDisplay(SubmenuMenuDisplayType id)
     }
     else
     {
-    //Longitude经度Data_Latitude_Minute()*1000000+Data_Latitude_Second();
-    //Latitudew纬度Data_Longitude_Minute()*1000000+Data_Longitude_Second();
     //换算并显示经度
     Buf1[0]=0xbe;
     Buf1[1]=0xad;
@@ -172,13 +171,15 @@ void SubmenuMenuDisplay(SubmenuMenuDisplayType id)
     api_lcd_pwr_on_hint(Buf2);
     }
     break;
+  case NativeInfoMenu:
+    MCU_VERSIONForMenu();
+    break;
   case BacklightTimeSet:
     Level3MenuDisplay(BacklightTimeSetCount);
     break;
   case KeylockTimeSet:
     Level3MenuDisplay(KeylockTimeSetCount);
     break;
-
   }
 }
 

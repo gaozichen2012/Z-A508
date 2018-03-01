@@ -24,6 +24,6 @@ typedef enum {					//key command id type
 	KCMD_IDRESET 	= 0xFF
 }KCMD_IDTYPE;	//function option id list
 
-u8 KCMD_KeyCmdGet(u8 cId,u8* pBuf);
-
+extern u8 KCMD_KeyCmdGet(u8 cId,u8* pBuf);
+extern void MCU_VERSIONForMenu(void);
 #endif

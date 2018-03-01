@@ -430,6 +430,7 @@ static bool UART_KeyCommand(void)//判断开始链接的密码
 		}
 #if 1//暂时屏蔽从EEPROM中获取软件版本，直接赋值
 		i = KCMD_KeyCmdGet(UartDrvObj.TxRxBuf.cRxBuf[3],UartDrvObj.TxRxBuf.cTxBuf);//UartDrvObj.TxRxBuf.cRxBuf[3]=0x81
+
 #else
                 UartDrvObj.TxRxBuf.cTxBuf[0] ='A';
                 UartDrvObj.TxRxBuf.cTxBuf[1] ='-';
