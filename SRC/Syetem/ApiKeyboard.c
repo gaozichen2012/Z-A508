@@ -162,16 +162,49 @@ void Keyboard_Test(void)
       LockingState_EnterOK_Flag=TRUE;
     }
     else
-    {
+    { 
       switch(MenuModeCount)
       {
       case 1://群组选择
-        MenuDisplay(MenuModeCount);
-        MenuMode_Flag=1;
+        switch(ApiMenu_SwitchGroup_Flag)
+        {
+        case 0://默认状态按OK键进入一级菜单
+          MenuDisplay(MenuModeCount);
+          MenuMode_Flag=1;
+          ApiMenu_SwitchGroup_Flag=1;
+          break;
+        case 1://在gps信息一级菜单按ok键进入二级菜单
+          SubmenuMenuDisplay(GroupSwitch);
+          VOICE_SetOutput(ATVOICE_FreePlay,"07526263A47FC47E",16);//上下键切换群组
+          ApiMenu_SwitchGroup_Flag=0;
+          MenuMode_Flag=0;
+          break;
+        }
         break;
       case 2://成员选择
-        MenuDisplay(MenuModeCount);
-        MenuMode_Flag=1;
+        switch(ApiMenu_SwitchCallUser_Flag)
+        {
+        case 0://默认状态按OK键进入一级菜单
+          MenuDisplay(MenuModeCount);
+          MenuMode_Flag=1;
+          ApiMenu_SwitchCallUser_Flag=1;
+          break;
+        case 1://在gps信息一级菜单按ok键进入二级菜单
+          MenuDisplay(Menu_RefreshAllIco);
+          ApiMenu_SwitchCallUser_Flag=0;
+          MenuMode_Flag=0;
+          /*******直接搬个呼键状态检测的程序***************************************************************************************************************************************/
+          api_lcd_pwr_on_hint("对象:   选择个呼");
+          api_lcd_pwr_on_hint2(HexToChar_MainUserId());
+          PersonalCallingNum=0;//解决按单呼键直接选中，单呼用户并不是播报的用户
+          Key_PersonalCalling_Flag=1;
+          VOICE_SetOutput(ATVOICE_FreePlay,"2a4e7c542000106258540990e962",28);//个呼成员选择
+          DEL_SetTimer(0,200);
+          while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+          ApiPocCmd_WritCommand(PocComm_UserListInfo,"0E000000000064",strlen((char const *)"0E000000000064"));
+          KeyDownUpChoose_GroupOrUser_Flag=2;
+          break;
+        }
         break;
       case 3://GPS设置
             switch(ApiMenu_GpsInfo_Flag)
@@ -245,8 +278,19 @@ void Keyboard_Test(void)
             }
         break;
       case 7://北斗/写频切换
-        MenuDisplay(MenuModeCount);
-        MenuMode_Flag=1;
+        switch(ApiMenu_BeiDouOrWritingFrequency_Flag)
+        {
+        case 0://默认状态按OK键进入一级菜单
+          MenuDisplay(MenuModeCount);
+          MenuMode_Flag=1;
+          ApiMenu_BeiDouOrWritingFrequency_Flag=1;
+          break;
+        case 1://在gps信息一级菜单按ok键进入二级菜单
+          SubmenuMenuDisplay(BeiDouOrWritingFrequencySwitch);
+          ApiMenu_BeiDouOrWritingFrequency_Flag=0;
+          MenuMode_Flag=0;
+          break;
+        }
         break;
       default:
         break;
@@ -630,7 +674,6 @@ void GeHuTest(u32 KeyID)
     {
       KeyBoardState=FALSE;
     }
-    
     break;
   }
   

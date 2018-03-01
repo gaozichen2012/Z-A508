@@ -1,10 +1,13 @@
 #include "AllHead.h"
 
 #if 1
+u8 ApiMenu_SwitchGroup_Flag=0;
+u8 ApiMenu_SwitchCallUser_Flag=0;
 u8 ApiMenu_GpsInfo_Flag=0;
 u8 ApiMenu_NativeInfo_Flag=0;
 u8 ApiMenu_BacklightTimeSet_Flag=0;
 u8 ApiMenu_KeylockTimeSet_Flag=0;
+u8 ApiMenu_BeiDouOrWritingFrequency_Flag=0;
 #endif
 
 
@@ -135,6 +138,12 @@ void SubmenuMenuDisplay(SubmenuMenuDisplayType id)
   u8 Buf2[16];//={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
   switch(id)
   {
+  case GroupSwitch: 
+    MenuDisplay(Menu_RefreshAllIco);
+    api_lcd_pwr_on_hint("                ");//清屏
+    api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
+    api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
+    break;
   case GpsInfoMenu:
      api_lcd_pwr_on_hint("                ");//清屏
     api_lcd_pwr_on_hint3("                ");//清屏
@@ -179,6 +188,9 @@ void SubmenuMenuDisplay(SubmenuMenuDisplayType id)
     break;
   case KeylockTimeSet:
     Level3MenuDisplay(KeylockTimeSetCount);
+    break;
+  case BeiDouOrWritingFrequencySwitch:
+    api_lcd_pwr_on_hint("非此版本功能    ");
     break;
   }
 }

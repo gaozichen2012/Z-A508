@@ -18,10 +18,12 @@ typedef enum{
 }MenuDisplayType;
 
 typedef enum{
-  GpsInfoMenu          =0x00,
-  BacklightTimeSet     =0x01,
-  KeylockTimeSet      =0x02,
-  NativeInfoMenu        =0x03,
+  GpsInfoMenu                           =0x00,
+  BacklightTimeSet                      =0x01,
+  KeylockTimeSet                        =0x02,
+  NativeInfoMenu                        =0x03,
+  GroupSwitch                           =0x04,
+  BeiDouOrWritingFrequencySwitch        =0x05,
 }SubmenuMenuDisplayType;
 
 typedef enum{
@@ -41,11 +43,13 @@ typedef enum{
   KeylockTimeSet_180s           =0x16,
 }Level3MenuDisplayType;
 
-
+extern u8 ApiMenu_SwitchGroup_Flag;
+extern u8 ApiMenu_SwitchCallUser_Flag;
 extern u8 ApiMenu_GpsInfo_Flag;
 extern u8 ApiMenu_NativeInfo_Flag;
 extern u8 ApiMenu_BacklightTimeSet_Flag;
 extern u8 ApiMenu_KeylockTimeSet_Flag;
+extern u8 ApiMenu_BeiDouOrWritingFrequency_Flag;
 
 extern void MenuDisplay(MenuDisplayType id);
 extern void SubmenuMenuDisplay(SubmenuMenuDisplayType id);
