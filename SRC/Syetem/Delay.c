@@ -392,7 +392,7 @@ static void DEL_500msProcess(void)			//delay 500ms process server
           }
         }
         if(LockingState_EnterOK_Flag==TRUE)//锁定界面按下OK键
-        {
+        {                                                           
           TimeCount3++;
           //MCU_LCD_BACKLIGTH(ON);//打开背光灯
           if(TimeCount3>=4)//3s
@@ -410,6 +410,9 @@ static void DEL_500msProcess(void)			//delay 500ms process server
         NumberKeyboardPressDown_flag=FALSE;
       }
       }
+      
+        
+       
       break;
     default:
       break;

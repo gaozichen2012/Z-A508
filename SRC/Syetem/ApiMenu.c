@@ -34,6 +34,7 @@ void MenuDisplay(MenuDisplayType id)
     api_lcd_pwr_on_hint5("3/7");
      api_lcd_pwr_on_hint("GPS–≈œ¢         ");
      break;
+     
   case Menu4:
     api_lcd_pwr_on_hint3("≤Àµ•            ");
     api_lcd_pwr_on_hint5("4/7");
