@@ -3,7 +3,7 @@
 #define DrvMC8332_UseId_Len			100			//define UART Tx buffer length value
 #define APIPOC_UserList_Len			16
 #define APIPOC_UserLoad_Len			8
-#define APIPOC_UserName_Len			30
+#define APIPOC_UserName_Len			32//30 in20180303 群组名最多7位，群组数最大40个
 //u8 TestReadBuffer[250];
 u8 ReadBuffer[80];//Test 存EEPROM读取的数据使用
 u8 ASCII_ActiveUserID[22];//Test 存EEPROM读取的数据使用
@@ -101,7 +101,7 @@ typedef struct{
                                 u8 Id[8];
 				u8 Name[APIPOC_UserName_Len];
 				u8 NameLen;
-			}Group[50];//原50，内存测试改为10---------------------------------------test----------------------------------------------------------
+			}Group[40];//原50，内存测试改为10---------------------------------------test----------------------------------------------------------
                         struct{
                                 u8 Id[8];
 				u8 Name[APIPOC_UserName_Len];

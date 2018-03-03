@@ -618,6 +618,7 @@ void Keyboard_Test(void)
         else//如果处于组呼模式则应该无变化
         {
           MenuMode_Flag=0;
+          api_lcd_pwr_on_hint("                ");//清屏
           api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
           api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
           Key_Flag_1=1;//按键延时标志位
