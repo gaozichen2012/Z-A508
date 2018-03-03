@@ -85,7 +85,7 @@ void Task_RunStart(void)
       Delay_100ms(10);//1s
       ApiPocCmd_WritCommand(PocComm_SetParam,ucPocOpenConfig,strlen((char const *)ucPocOpenConfig));//配置echat账号、IP
       Delay_100ms(40);//4s
-      VOICE_SetOutput(ATVOICE_FreePlay,"636b28577b764696",16);//播报正在登陆
+      VOICE_SetOutput(ATVOICE_FreePlay,"636b28577b764696",16);//播报正在登陆 
      api_lcd_pwr_on_hint("   正在登陆...    ");
     //  Delay_100ms(10);//1s
       ApiPocCmd_WritCommand(PocComm_OpenPOC,ucPocOpenConfig,strlen((char const *)ucPocOpenConfig));

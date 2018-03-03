@@ -17,6 +17,7 @@ u8 MenuMode_Flag=0;
 u8 MenuModeCount=1;
 u8 BacklightTimeSetCount=1;//默认进选择体1
 u8 KeylockTimeSetCount=0x11;//默认进选择体1
+u8 TheMenuLayer_Flag=0;//所处菜单层级；默认状态：1 一级菜单：1 二级菜单：2
 bool NumberKeyboardPressDown_flag=FALSE;
 bool LockingState_EnterOK_Flag=FALSE;
 u8 VoiceType_FreehandOrHandset_Flag=0;
@@ -169,15 +170,17 @@ void Keyboard_Test(void)
         Key_PersonalCalling_Flag=0;//进入组呼标志位
         switch(ApiMenu_SwitchGroup_Flag)
         {
-        case 0://一级按OK键进入二级菜单
+        case 0://默认模式按OK键进入一级菜单
           MenuDisplay(MenuModeCount);
           MenuMode_Flag=1;
           ApiMenu_SwitchGroup_Flag=1;
+          TheMenuLayer_Flag=1;//处于一级菜单
           break;
-        case 1://二级菜单再按ok键进入一级菜单
+        case 1://一级菜单再按ok键默认模式
           SubmenuMenuDisplay(GroupSwitch);
           VOICE_SetOutput(ATVOICE_FreePlay,"07526263A47FC47E",16);//切换群组
           ApiMenu_SwitchGroup_Flag=0;
+          TheMenuLayer_Flag=0;//处于0级菜单，进入换组为菜单外功能
           MenuMode_Flag=0;
           break;
         }
@@ -185,12 +188,13 @@ void Keyboard_Test(void)
       case 2://成员选择
         switch(ApiMenu_SwitchCallUser_Flag)
         {
-        case 1://二级菜单按OK键进入一级菜单
+        case 1://默认菜单按OK键进入一级菜单
           MenuDisplay(MenuModeCount);
           MenuMode_Flag=1;
           ApiMenu_SwitchCallUser_Flag=0;
+          TheMenuLayer_Flag=1;//处于一级菜单
           break;
-        case 0://一级菜单按ok键进入二级菜单
+        case 0://一级菜单按ok键进入单呼模式
           MenuDisplay(Menu_RefreshAllIco);
           ApiMenu_SwitchCallUser_Flag=1;
           MenuMode_Flag=0;
@@ -204,6 +208,7 @@ void Keyboard_Test(void)
           while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
           ApiPocCmd_WritCommand(PocComm_UserListInfo,"0E000000000064",strlen((char const *)"0E000000000064"));
           KeyDownUpChoose_GroupOrUser_Flag=2;
+          TheMenuLayer_Flag=0;//处于0级菜单，进入单呼模式为菜单外功能
           break;
         }
         break;
@@ -214,31 +219,33 @@ void Keyboard_Test(void)
               MenuDisplay(MenuModeCount);
               MenuMode_Flag=1;
               ApiMenu_GpsInfo_Flag=0;
+              TheMenuLayer_Flag=1;//处于一级菜单
               break;
             case 0://一级菜单按ok键进入二级菜单
               SubmenuMenuDisplay(GpsInfoMenu);
               ApiMenu_GpsInfo_Flag=1;
+              TheMenuLayer_Flag=2;//处于二级菜单
               break;
             }
         break;
       case 4://背光灯设置
             switch(ApiMenu_BacklightTimeSet_Flag)
             {
-            case 2://二级菜单按ok键进入一级菜单
+            case 2:
               ApiMenu_BacklightTimeSet_Flag=0;
               MenuDisplay(MenuModeCount);
               MenuMode_Flag=1;
-              
               break;
             case 0://在一级菜单按ok键进入二级菜单
               ApiMenu_BacklightTimeSet_Flag=1;//在上下键中处理
               SubmenuMenuDisplay(BacklightTimeSet);
-              
+              TheMenuLayer_Flag=2;//处于二级菜单
               break;
-            case 1:
+            case 1://二级菜单按ok键进入一级菜单
               ApiMenu_BacklightTimeSet_Flag=2;
               MenuDisplay(MenuModeCount);
               MenuMode_Flag=1;
+              TheMenuLayer_Flag=1;//处于一级菜单
               break;
             }
         break;
@@ -249,18 +256,17 @@ void Keyboard_Test(void)
               ApiMenu_KeylockTimeSet_Flag=0;
               MenuDisplay(MenuModeCount);
               MenuMode_Flag=1;
-              
               break;
             case 0://在一级菜单按ok键进入二级菜单
               ApiMenu_KeylockTimeSet_Flag=1;//在上下键中处理
               SubmenuMenuDisplay(KeylockTimeSet);
-              
+              TheMenuLayer_Flag=2;//处于二级菜单
               break;
             case 1:
               ApiMenu_KeylockTimeSet_Flag=2;
               MenuDisplay(MenuModeCount);
               MenuMode_Flag=1;
-              
+              TheMenuLayer_Flag=1;//处于一级菜单
               break;
             }
         break;
@@ -271,10 +277,12 @@ void Keyboard_Test(void)
               MenuDisplay(MenuModeCount);
               MenuMode_Flag=1;
               ApiMenu_NativeInfo_Flag=0;
+              TheMenuLayer_Flag=1;//处于一级菜单
               break;
             case 0://在gps信息一级菜单按ok键进入二级菜单
               SubmenuMenuDisplay(NativeInfoMenu);
               ApiMenu_NativeInfo_Flag=1;
+              TheMenuLayer_Flag=2;//处于二级菜单
               break;
             }
         break;
@@ -285,11 +293,13 @@ void Keyboard_Test(void)
           MenuDisplay(MenuModeCount);
           MenuMode_Flag=1;
           ApiMenu_BeiDouOrWritingFrequency_Flag=0;
+          TheMenuLayer_Flag=1;//处于一级菜单
           break;
         case 0://一级菜单按ok键进入二级菜单
           SubmenuMenuDisplay(BeiDouOrWritingFrequencySwitch);
           ApiMenu_BeiDouOrWritingFrequency_Flag=1;
           MenuMode_Flag=1;
+          TheMenuLayer_Flag=2;//处于二级菜单
           break;
         }
         break;
@@ -461,55 +471,158 @@ void Keyboard_Test(void)
     {}
     else
     {
-      
       if(MenuMode_Flag==1)
       {
-        if(ApiMenu_GpsInfo_Flag==1)
+        if(TheMenuLayer_Flag==2)//二级菜单按返回键返回1级菜单
         {
-          MenuDisplay(MenuModeCount);
-          MenuMode_Flag=1;
-          ApiMenu_GpsInfo_Flag=0;
+          if(ApiMenu_GpsInfo_Flag==1)
+          {
+            MenuDisplay(MenuModeCount);
+            MenuMode_Flag=1;
+            ApiMenu_GpsInfo_Flag=0;
+            TheMenuLayer_Flag=1;//处于一级菜单
+          }
+          else if(ApiMenu_NativeInfo_Flag==1)
+          {
+            MenuDisplay(MenuModeCount);
+            MenuMode_Flag=1;
+            ApiMenu_NativeInfo_Flag=0;
+            TheMenuLayer_Flag=1;//处于一级菜单
+          }
+          else if(ApiMenu_BeiDouOrWritingFrequency_Flag==1)
+          {
+            MenuDisplay(MenuModeCount);
+            MenuMode_Flag=1;
+            ApiMenu_BeiDouOrWritingFrequency_Flag=0;
+            TheMenuLayer_Flag=1;//处于一级菜单
+          }
+          else if(ApiMenu_BacklightTimeSet_Flag==1)
+          {
+            ApiMenu_BacklightTimeSet_Flag=0;
+            MenuDisplay(MenuModeCount);
+            MenuMode_Flag=1;
+            TheMenuLayer_Flag=1;//处于一级菜单
+          }
+          else if(ApiMenu_KeylockTimeSet_Flag==1)
+          {
+            ApiMenu_KeylockTimeSet_Flag=0;
+            MenuDisplay(MenuModeCount);
+            MenuMode_Flag=1;
+            TheMenuLayer_Flag=1;//处于一级菜单
+          }
+          else
+          {}
         }
-        else if(ApiMenu_NativeInfo_Flag==1)
+        else if(TheMenuLayer_Flag==1)
         {
-          MenuDisplay(MenuModeCount);
-          MenuMode_Flag=1;
-          ApiMenu_NativeInfo_Flag=0;
-        }
-        else if(ApiMenu_BeiDouOrWritingFrequency_Flag==1)
-        {
-          MenuDisplay(MenuModeCount);
-          MenuMode_Flag=1;
-          ApiMenu_BeiDouOrWritingFrequency_Flag=0;
-        }
-        else if(ApiMenu_BacklightTimeSet_Flag==1)
-        {
-          ApiMenu_BacklightTimeSet_Flag=0;
-          MenuDisplay(MenuModeCount);
-          MenuMode_Flag=1;
-        }
-        else if(ApiMenu_KeylockTimeSet_Flag==1)
-        {
-          ApiMenu_KeylockTimeSet_Flag=0;
-          MenuDisplay(MenuModeCount);
-          MenuMode_Flag=1;
+          switch(MenuModeCount)//默认按ok键进入一级菜单
+          {
+          case 1://群组选择
+            if(ApiMenu_SwitchGroup_Flag==1)//以下为一级菜单按返回键进入默认界面
+            {
+              TheMenuLayer_Flag=0;//处于一级菜单
+              MenuMode_Flag=0;
+              ApiMenu_SwitchGroup_Flag=0;
+              MenuDisplay(Menu_RefreshAllIco);
+              api_lcd_pwr_on_hint("                ");//清屏
+              api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
+              api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
+            }
+            break;
+          case 2://成员选择
+            if(ApiMenu_SwitchCallUser_Flag==0)//以下为一级菜单按返回键进入默认界面
+            {
+              TheMenuLayer_Flag=0;//处于一级菜单
+              MenuMode_Flag=0;
+              ApiMenu_SwitchCallUser_Flag=1;
+              MenuDisplay(Menu_RefreshAllIco);
+              api_lcd_pwr_on_hint("                ");//清屏
+              api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
+              api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
+            }
+            break;
+          case 3://GPS信息
+            if(ApiMenu_GpsInfo_Flag==0)//以下为一级菜单按返回键进入默认界面
+            {
+              TheMenuLayer_Flag=0;//处于一级菜单
+              MenuMode_Flag=0;
+              ApiMenu_GpsInfo_Flag=1;
+              MenuDisplay(Menu_RefreshAllIco);
+              api_lcd_pwr_on_hint("                ");//清屏
+              api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
+              api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
+            }
+            break;
+          case 4://背光灯设置
+            if(ApiMenu_BacklightTimeSet_Flag==0)
+            {
+              TheMenuLayer_Flag=0;//处于一级菜单
+              MenuMode_Flag=0;
+              ApiMenu_BacklightTimeSet_Flag=1;
+              MenuDisplay(Menu_RefreshAllIco);
+              api_lcd_pwr_on_hint("                ");//清屏
+              api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
+              api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
+            }
+            break;
+          case 5://键盘锁定
+            if(ApiMenu_KeylockTimeSet_Flag==0)
+            {
+              TheMenuLayer_Flag=0;//处于一级菜单
+              MenuMode_Flag=0;
+              ApiMenu_KeylockTimeSet_Flag=1;
+              MenuDisplay(Menu_RefreshAllIco);
+              api_lcd_pwr_on_hint("                ");//清屏
+              api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
+              api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
+            }
+            break;
+          case 6://本机信息
+            if(ApiMenu_NativeInfo_Flag==0)
+            {
+              TheMenuLayer_Flag=0;//处于一级菜单
+              MenuMode_Flag=0;
+              ApiMenu_NativeInfo_Flag=1;
+              MenuDisplay(Menu_RefreshAllIco);
+              api_lcd_pwr_on_hint("                ");//清屏
+              api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
+              api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
+            }
+            break;
+          case 7://北斗/写频切换
+            if(ApiMenu_BeiDouOrWritingFrequency_Flag==0)
+            {
+              TheMenuLayer_Flag=0;//处于一级菜单
+              MenuMode_Flag=0;
+              ApiMenu_BeiDouOrWritingFrequency_Flag=1;
+              MenuDisplay(Menu_RefreshAllIco);
+              api_lcd_pwr_on_hint("                ");//清屏
+              api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
+              api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
+            }
+            break;
+          }
         }
         else
+        {}
+        Key_Flag_1=1;//按键延时标志位
+      }
+      else
+      {
+        if(Key_PersonalCalling_Flag==1||POC_EnterPersonalCalling_Flag==1)//如果处于单呼模式，按返回键进入组呼
         {
-          MenuDisplay(Menu_RefreshAllIco);
-          MenuMode_Flag=0;
-          api_lcd_pwr_on_hint("    组呼模式    ");
           ApiPocCmd_WritCommand(PocComm_Cancel,(u8 *)ucQuitPersonalCalling,strlen((char const *)ucQuitPersonalCalling));
           Key_Flag_1=1;//按键延时标志位
           Key_PersonalCalling_Flag=0;//进入组呼标志位
         }
-      }
-      else
-      {
-      api_lcd_pwr_on_hint("    组呼模式    ");
-        ApiPocCmd_WritCommand(PocComm_Cancel,(u8 *)ucQuitPersonalCalling,strlen((char const *)ucQuitPersonalCalling));
-        Key_Flag_1=1;//按键延时标志位
-        Key_PersonalCalling_Flag=0;//进入组呼标志位
+        else//如果处于组呼模式则应该无变化
+        {
+          MenuMode_Flag=0;
+          api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
+          api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
+          Key_Flag_1=1;//按键延时标志位
+        }
+
       }
 
     }
