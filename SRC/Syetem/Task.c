@@ -160,6 +160,7 @@ void Task_RunNormalOperation(void)
         api_disp_all_screen_refresh();// 全屏统一刷新
         }
       }
+      
       api_disp_icoid_output( eICO_IDTALKAR, TRUE, TRUE);//默认无发射无接收信号图标
       api_disp_all_screen_refresh();// 全屏统一刷新
       ApiPocCmd_WritCommand(PocComm_EndPTT,ucEndPTT,strlen((char const *)ucEndPTT));

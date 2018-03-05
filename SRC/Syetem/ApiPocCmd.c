@@ -3,7 +3,7 @@
 #define DrvMC8332_UseId_Len			100			//define UART Tx buffer length value
 #define APIPOC_UserList_Len			16
 #define APIPOC_UserLoad_Len			8
-#define APIPOC_UserName_Len			32//30 in20180303 群组名最多7位，群组数最大40个
+#define APIPOC_UserName_Len			39//30 in20180303 群组名最多7位，群组数最大40个
 //u8 TestReadBuffer[250];
 u8 ReadBuffer[80];//Test 存EEPROM读取的数据使用
 u8 ASCII_ActiveUserID[22];//Test 存EEPROM读取的数据使用
@@ -101,7 +101,7 @@ typedef struct{
                                 u8 Id[8];
 				u8 Name[APIPOC_UserName_Len];
 				u8 NameLen;
-			}Group[40];//原50，内存测试改为10---------------------------------------test----------------------------------------------------------
+			}Group[20];//原50，内存测试改为40---------------------------------------test----------------------------------------------------------
                         struct{
                                 u8 Id[8];
 				u8 Name[APIPOC_UserName_Len];
@@ -709,7 +709,7 @@ u8 *HexToChar_PersonalCallingNum(void)//16进制转字符串 按键播报当前用户ID 显示屏
 u8 *UnicodeForGbk_MainWorkName(void)
 {
   u8 *Buf1;
-  u8 Buf2[30];
+  u8 Buf2[APIPOC_UserName_Len];
 
   u8 Len=0;
   u8 i=0;
@@ -742,7 +742,7 @@ u8 *UnicodeForGbk_MainWorkName(void)
 u8 *UnicodeForGbk_MainUserName(void)
 {
   u8 *Buf1;
-  u8 Buf2[30];
+  u8 Buf2[APIPOC_UserName_Len];
 
   u8 Len=0,i=0;
   Buf1=ApiAtCmd_GetMainUserName();
@@ -771,7 +771,7 @@ u8 *UnicodeForGbk_MainUserName(void)
 //显示屏显示组呼模式下当前说话人的昵称
 u8 *UnicodeForGbk_SpeakerRightnowName(void)
 {
-  u8 Buf2[30];
+  u8 Buf2[APIPOC_UserName_Len];
   u8 i=0;
   while(1)
   {

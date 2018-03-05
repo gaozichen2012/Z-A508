@@ -9,7 +9,7 @@ TriggerName=main
 LimitSize=0
 ByteLimit=50
 [DebugChecksum]
-Checksum=825387359
+Checksum=2120782037
 [CodeCoverage]
 Enabled=_ 0
 [CallStack]
@@ -179,7 +179,11 @@ LoggingEnabled=_ 0
 LogFile=_ ""
 [Breakpoints]
 Bp0=_ "STD_CODE" "{$PROJ_DIR$\..\SRC\Syetem\uart3.c}.471.4" 1 0 0 0 "" 0 ""
-Count=1
+Bp1=_ "STD_CODE" "{$PROJ_DIR$\..\SRC\Syetem\Delay.c}.274.9" 1 0 0 0 "" 0 ""
+Bp2=_ "STD_CODE" "{$PROJ_DIR$\..\SRC\Syetem\ApiAtCmd.c}.344.9" 1 0 0 0 "" 0 ""
+Bp3=_ "STD_CODE" "{$PROJ_DIR$\..\SRC\Syetem\ApiPocCmd.c}.373.11" 1 0 0 0 "" 0 ""
+Bp4=_ "STD_CODE" "{$PROJ_DIR$\..\SRC\Syetem\ApiAtCmd.c}.97.5" 1 0 0 0 "" 0 ""
+Count=5
 [Aliases]
 A0=_ "C:\Users\lei\Desktop\IAR\GT20L16P1Y.c" ""
 Count=1

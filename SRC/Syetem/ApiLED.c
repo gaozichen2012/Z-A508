@@ -48,7 +48,8 @@ void LED_IntOutputRenew(void)
         Set_GreenLed(LED_OFF);
         Set_RedLed(LED_OFF);
         LED_Conut=0;
-      }if(LED_Conut<=48)
+      }
+      if(LED_Conut<=48)
       {
         Set_GreenLed(LED_OFF);
         Set_RedLed(LED_OFF);
