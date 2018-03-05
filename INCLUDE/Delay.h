@@ -17,6 +17,7 @@
 
 DELAPI bool LockingState_Flag;
 DELAPI u8 TimeCount;//超时时间
+DELAPI u8 EnterKeyTimeCount;
 DELAPI u8 BacklightTimeCount;//背光灯时间(需要设置进入eeprom)
 DELAPI u8 KeylockTimeCount;//键盘锁时间(需要设置进入eeprom)
 DELAPI void DEL_PowerOnInitial(void);

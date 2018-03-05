@@ -23,11 +23,14 @@ u8 POC_AtQuitPersonalCalling_Flag=0;
 u8 POC_EnterGroupCalling_Flag=0;
 u8 POC_QuitGroupCalling_Flag=0;
 bool POC_ReceivedVoice_Flag=FALSE;
+bool POC_ReceivedVoice_forPTT_Flag=FALSE;
 bool ApiPocCmd_Tone_Flag=FALSE;
 u8 POC_ReceivedVoiceStart_Flag=0;
 u8 POC_ReceivedVoiceEnd_Flag=0;
 bool POC_Receive86_Flag=FALSE;
 u8 OffLineCount=0;
+u8 OnlineMembership=0;
+bool GettheOnlineMembersDone=FALSE;
 typedef struct{
   struct{
     union{
@@ -357,6 +360,12 @@ void ApiPocCmd_10msRenew(void)
       PocCmdDrvobj.WorkState.UseState.UserName[ucId].NameLen = PocCmdDrvobj.WorkState.UseState.WorkUserName.NameLen;
       //首次获取组内成员播报第一个成员
       VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(0),ApiAtCmd_GetUserNameLen(0));
+      OnlineMembership++;
+      if(OnlineMembership>=PocCmdDrvobj.WorkState.UseState.PttUserName.UserNum)
+      {
+        OnlineMembership=0;
+        GettheOnlineMembersDone=TRUE;
+      }
       break;
     case 0x82://判断是否登录成功
       ucId = COML_AscToHex(pBuf+3, 0x01);
@@ -386,6 +395,7 @@ void ApiPocCmd_10msRenew(void)
       if(ucId == 0x00)
       {
         POC_ReceivedVoice_Flag=TRUE;
+        POC_ReceivedVoice_forPTT_Flag=TRUE;//解决收状态死机BUG，用于换组或个呼状态检测到此指令才可以按PTT说话
         POC_ReceivedVoiceStart_Flag=2;//0:正常 1：收到语音 2：刚开始语音
         POC_ReceivedVoiceEnd_Flag=1;//0:正常 1：收到语音 2：刚结束语音
         //83000000000107592875268df7533100f7530000

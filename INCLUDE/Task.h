@@ -36,4 +36,5 @@ TASKAPI void TASK_WriteFreq(void);
 TASKAPI void Task_RunNormalOperation(void);
 TASKAPI void TASK_RunLoBattery(void);
 TASKAPI u8 PersonCallIco_Flag;//根据显示组呼个呼图标判断状态
+TASKAPI bool EnterKeyTime_2s_Flag;
 #endif

@@ -12,6 +12,7 @@ bool Task_Landing_Flag=FALSE;
 u8 KeyCount_PersonalCalling=0;
 u8 EnterPttMomentCount=0;
 bool EnterPttMoment_Flag=FALSE;
+bool EnterKeyTime_2s_Flag=FALSE;
 #endif
 
 u8 *ucStartPTT                  = "0B0000";
@@ -126,7 +127,30 @@ void Task_RunNormalOperation(void)
     EnterPttMomentCount=0;
     EnterPttMoment_Flag=FALSE;
   }
-  
+
+//解决换组或个呼是，按住PTT进入死循环收不到指令的问题
+  if(KeyDownUpChoose_GroupOrUser_Flag==3)
+  {
+    if(POC_ReceivedVoice_forPTT_Flag==TRUE)
+    {
+      if(POC_ReceivedVoice_Flag==FALSE)
+      {
+        POC_ReceivedVoice_Flag=FALSE;
+        POC_ReceivedVoice_forPTT_Flag=FALSE;
+        KeyDownUpChoose_GroupOrUser_Flag=0;
+      }
+    }
+    else//否则没收到8300时，过2s自行进入默认状态
+    {
+      if(EnterKeyTime_2s_Flag==TRUE)
+      {
+        EnterKeyTime_2s_Flag=FALSE;
+        POC_ReceivedVoice_Flag=FALSE;
+        POC_ReceivedVoice_forPTT_Flag=FALSE;
+        KeyDownUpChoose_GroupOrUser_Flag=0;
+      }
+    }
+  }
   if(ReadInput_KEY_PTT==0)
   {
     AUDIO_IOAFPOW(ON);//打开功放，解决DIDI提示音听不见
@@ -172,17 +196,25 @@ void Task_RunNormalOperation(void)
       while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
       ApiPocCmd_WritCommand(PocComm_EnterGroup,ucPocOpenConfig,strlen((char const *)ucPocOpenConfig));
       Key_Flag_0=1;
-      KeyDownUpChoose_GroupOrUser_Flag=0;
+      KeyDownUpChoose_GroupOrUser_Flag=3;
+      EnterKeyTimeCount=0;
       KeyUpDownCount=0;
       break;
     case 2://=2,呼叫某用户
-      VOICE_SetOutput(ATVOICE_FreePlay,"f25d09902d4e",12);//播报已选中
-      DEL_SetTimer(0,100);
-      while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
-      ApiPocCmd_WritCommand(PocComm_Invite,ucPocOpenConfig,strlen((char const *)ucPocOpenConfig));
-      Key_Flag_0=1;
-      KeyDownUpChoose_GroupOrUser_Flag=0;
-      TASK_Ptt_StartPersonCalling_Flag=TRUE;//判断主动单呼状态（0a）
+      if(GettheOnlineMembersDone==TRUE)
+      {
+        GettheOnlineMembersDone=FALSE;
+        VOICE_SetOutput(ATVOICE_FreePlay,"f25d09902d4e",12);//播报已选中
+        DEL_SetTimer(0,100);
+        while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+        ApiPocCmd_WritCommand(PocComm_Invite,ucPocOpenConfig,strlen((char const *)ucPocOpenConfig));
+        Key_Flag_0=1;
+        KeyDownUpChoose_GroupOrUser_Flag=3;
+        TASK_Ptt_StartPersonCalling_Flag=TRUE;//判断主动单呼状态（0a）
+        EnterKeyTimeCount=0;
+      }
+      break;
+    case 3:
       break;
     default:
       break;

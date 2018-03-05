@@ -21,6 +21,7 @@ u8 CSQTimeCount=0;
 u8 LandingTimeCount=0;
 u8 PrimaryLowPowerCount=0;
 u8 ForbiddenSendPttCount=0;
+u8 EnterKeyTimeCount=0;
 bool LockingState_Flag=FALSE;
 u8 BacklightTimeCount;//=10;//背光灯时间(需要设置进入eeprom)
 u8 KeylockTimeCount;//=30;//键盘锁时间(需要设置进入eeprom)
@@ -251,7 +252,17 @@ static void DEL_500msProcess(void)			//delay 500ms process server
     DEL_500ms_Count2++;
     TimeCount_Light++;
     CSQTimeCount++;
-
+/***************/
+    if(KeyDownUpChoose_GroupOrUser_Flag==3)
+    {
+      if(EnterKeyTimeCount>=4)
+      {
+        EnterKeyTimeCount=0;
+        EnterKeyTime_2s_Flag=TRUE;
+      }
+      EnterKeyTimeCount++;
+    }
+    
 /*********初级电量报警30s播报一次********************************/
     if(PrimaryLowPower_Flag==TRUE)
     {

@@ -20,7 +20,7 @@ typedef enum{
   PocComm_Key			= 0x10
 }PocCommType;
 
-
+extern bool GettheOnlineMembersDone;
 extern u8 POC_EnterPersonalCalling_Flag;
 extern u8 POC_QuitPersonalCalling_Flag;
 
@@ -33,6 +33,7 @@ extern u8 POC_QuitGroupCalling_Flag;
 extern u8 POC_ReceivedVoiceStart_Flag;
 extern u8 POC_ReceivedVoiceEnd_Flag;
 extern bool POC_ReceivedVoice_Flag;
+extern bool POC_ReceivedVoice_forPTT_Flag;
 extern bool POC_Receive86_Flag;
 extern bool ApiPocCmd_Tone_Flag;
 extern void ApiPocCmd_PowerOnInitial(void);
