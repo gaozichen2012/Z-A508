@@ -164,148 +164,185 @@ void Keyboard_Test(void)
     }
     else
     { 
-      switch(MenuModeCount)//默认按ok键进入一级菜单
+      if(KeyDownUpChoose_GroupOrUser_Flag!=0)//如果处于换组或者选择个呼状态
       {
-      case 1://群组选择
-        Key_PersonalCalling_Flag=0;//进入组呼标志位
-        switch(ApiMenu_SwitchGroup_Flag)
+        switch(KeyDownUpChoose_GroupOrUser_Flag)
         {
-        case 0://默认模式按OK键进入一级菜单
-          MenuDisplay(MenuModeCount);
-          MenuMode_Flag=1;
-          ApiMenu_SwitchGroup_Flag=1;
-          TheMenuLayer_Flag=1;//处于一级菜单
+        case 0://默认PTT状态
           break;
-        case 1://一级菜单再按ok键默认模式
-          SubmenuMenuDisplay(GroupSwitch);
-          VOICE_SetOutput(ATVOICE_FreePlay,"07526263A47FC47E",16);//切换群组
-          ApiMenu_SwitchGroup_Flag=0;
-          TheMenuLayer_Flag=0;//处于0级菜单，进入换组为菜单外功能
-          MenuMode_Flag=0;
-          break;
-        }
-        break;
-      case 2://成员选择
-        switch(ApiMenu_SwitchCallUser_Flag)
-        {
-        case 1://默认菜单按OK键进入一级菜单
-          MenuDisplay(MenuModeCount);
-          MenuMode_Flag=1;
-          ApiMenu_SwitchCallUser_Flag=0;
-          TheMenuLayer_Flag=1;//处于一级菜单
-          break;
-        case 0://一级菜单按ok键进入单呼模式
-          MenuDisplay(Menu_RefreshAllIco);
-          ApiMenu_SwitchCallUser_Flag=1;
-          MenuMode_Flag=0;
-          /*******直接搬个呼键状态检测的程序***************************************************************************************************************************************/
-          api_lcd_pwr_on_hint("对象:   选择个呼");
-          api_lcd_pwr_on_hint2(HexToChar_MainUserId());
-          PersonalCallingNum=0;//解决按单呼键直接选中，单呼用户并不是播报的用户
-          Key_PersonalCalling_Flag=1;
-          VOICE_SetOutput(ATVOICE_FreePlay,"2a4e7c542000106258540990e962",28);//个呼成员选择
-          DEL_SetTimer(0,200);
+        case 1://=1，进入某群组
+          VOICE_SetOutput(ATVOICE_FreePlay,"f25d09902d4e",12);//播报已选中
+          DEL_SetTimer(0,100);
           while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
-          ApiPocCmd_WritCommand(PocComm_UserListInfo,"0E000000000064",strlen((char const *)"0E000000000064"));
-          KeyDownUpChoose_GroupOrUser_Flag=2;
-          TheMenuLayer_Flag=0;//处于0级菜单，进入单呼模式为菜单外功能
+          ApiPocCmd_WritCommand(PocComm_EnterGroup,"0000000101",strlen((char const *)"0000000101"));
+          KeyDownUpChoose_GroupOrUser_Flag=3;
+          EnterKeyTimeCount=0;
+          KeyUpDownCount=0;
+          break;
+        case 2://=2,呼叫某用户
+          if(GettheOnlineMembersDone==TRUE)
+          {
+            GettheOnlineMembersDone=FALSE;
+            VOICE_SetOutput(ATVOICE_FreePlay,"f25d09902d4e",12);//播报已选中
+            DEL_SetTimer(0,100);
+            while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+            ApiPocCmd_WritCommand(PocComm_Invite,"0000000101",strlen((char const *)"0000000101"));
+            KeyDownUpChoose_GroupOrUser_Flag=3;
+            TASK_Ptt_StartPersonCalling_Flag=TRUE;//判断主动单呼状态（0a）
+            EnterKeyTimeCount=0;
+          }
+          break;
+        case 3:
+          break;
+        default:
           break;
         }
-        break;
-      case 3://GPS设置
-            switch(ApiMenu_GpsInfo_Flag)
-            {
-            case 1://二级菜单按OK键进入一级菜单
-              MenuDisplay(MenuModeCount);
-              MenuMode_Flag=1;
-              ApiMenu_GpsInfo_Flag=0;
-              TheMenuLayer_Flag=1;//处于一级菜单
-              break;
-            case 0://一级菜单按ok键进入二级菜单
-              SubmenuMenuDisplay(GpsInfoMenu);
-              ApiMenu_GpsInfo_Flag=1;
-              TheMenuLayer_Flag=2;//处于二级菜单
-              break;
-            }
-        break;
-      case 4://背光灯设置
-            switch(ApiMenu_BacklightTimeSet_Flag)
-            {
-            case 2:
-              ApiMenu_BacklightTimeSet_Flag=0;
-              MenuDisplay(MenuModeCount);
-              MenuMode_Flag=1;
-              break;
-            case 0://在一级菜单按ok键进入二级菜单
-              ApiMenu_BacklightTimeSet_Flag=1;//在上下键中处理
-              SubmenuMenuDisplay(BacklightTimeSet);
-              TheMenuLayer_Flag=2;//处于二级菜单
-              break;
-            case 1://二级菜单按ok键进入一级菜单
-              ApiMenu_BacklightTimeSet_Flag=2;
-              MenuDisplay(MenuModeCount);
-              MenuMode_Flag=1;
-              TheMenuLayer_Flag=1;//处于一级菜单
-              break;
-            }
-        break;
-      case 5://键盘锁定
-            switch(ApiMenu_KeylockTimeSet_Flag)
-            {
-            case 2://默认状态按OK键进入一级菜单
-              ApiMenu_KeylockTimeSet_Flag=0;
-              MenuDisplay(MenuModeCount);
-              MenuMode_Flag=1;
-              break;
-            case 0://在一级菜单按ok键进入二级菜单
-              ApiMenu_KeylockTimeSet_Flag=1;//在上下键中处理
-              SubmenuMenuDisplay(KeylockTimeSet);
-              TheMenuLayer_Flag=2;//处于二级菜单
-              break;
-            case 1:
-              ApiMenu_KeylockTimeSet_Flag=2;
-              MenuDisplay(MenuModeCount);
-              MenuMode_Flag=1;
-              TheMenuLayer_Flag=1;//处于一级菜单
-              break;
-            }
-        break;
-      case 6://本机信息
-            switch(ApiMenu_NativeInfo_Flag)
-            {
-            case 1://默认状态按OK键进入一级菜单
-              MenuDisplay(MenuModeCount);
-              MenuMode_Flag=1;
-              ApiMenu_NativeInfo_Flag=0;
-              TheMenuLayer_Flag=1;//处于一级菜单
-              break;
-            case 0://在gps信息一级菜单按ok键进入二级菜单
-              SubmenuMenuDisplay(NativeInfoMenu);
-              ApiMenu_NativeInfo_Flag=1;
-              TheMenuLayer_Flag=2;//处于二级菜单
-              break;
-            }
-        break;
-      case 7://北斗/写频切换
-        switch(ApiMenu_BeiDouOrWritingFrequency_Flag)
-        {
-        case 1://二级菜单按OK键进入一级菜单
-          MenuDisplay(MenuModeCount);
-          MenuMode_Flag=1;
-          ApiMenu_BeiDouOrWritingFrequency_Flag=0;
-          TheMenuLayer_Flag=1;//处于一级菜单
-          break;
-        case 0://一级菜单按ok键进入二级菜单
-          SubmenuMenuDisplay(BeiDouOrWritingFrequencySwitch);
-          ApiMenu_BeiDouOrWritingFrequency_Flag=1;
-          MenuMode_Flag=1;
-          TheMenuLayer_Flag=2;//处于二级菜单
-          break;
-        }
-        break;
-      default:
-        break;
       }
+      else//否则就进入菜单模式
+      {
+        switch(MenuModeCount)//默认按ok键进入一级菜单
+        {
+        case 1://群组选择
+          Key_PersonalCalling_Flag=0;//进入组呼标志位
+          switch(ApiMenu_SwitchGroup_Flag)
+          {
+          case 0://默认模式按OK键进入一级菜单
+            MenuDisplay(MenuModeCount);
+            MenuMode_Flag=1;
+            ApiMenu_SwitchGroup_Flag=1;
+            TheMenuLayer_Flag=1;//处于一级菜单
+            break;
+          case 1://一级菜单再按ok键默认模式
+            SubmenuMenuDisplay(GroupSwitch);
+            VOICE_SetOutput(ATVOICE_FreePlay,"07526263A47FC47E",16);//切换群组
+            ApiMenu_SwitchGroup_Flag=0;
+            TheMenuLayer_Flag=0;//处于0级菜单，进入换组为菜单外功能
+            MenuMode_Flag=0;
+            break;
+          }
+          break;
+        case 2://成员选择
+          switch(ApiMenu_SwitchCallUser_Flag)
+          {
+          case 1://默认菜单按OK键进入一级菜单
+            MenuDisplay(MenuModeCount);
+            MenuMode_Flag=1;
+            ApiMenu_SwitchCallUser_Flag=0;
+            TheMenuLayer_Flag=1;//处于一级菜单
+            break;
+          case 0://一级菜单按ok键进入单呼模式
+            MenuDisplay(Menu_RefreshAllIco);
+            ApiMenu_SwitchCallUser_Flag=1;
+            MenuMode_Flag=0;
+            /*******直接搬个呼键状态检测的程序***************************************************************************************************************************************/
+            api_lcd_pwr_on_hint("对象:   选择个呼");
+            api_lcd_pwr_on_hint2(HexToChar_MainUserId());
+            PersonalCallingNum=0;//解决按单呼键直接选中，单呼用户并不是播报的用户
+            Key_PersonalCalling_Flag=1;
+            VOICE_SetOutput(ATVOICE_FreePlay,"2a4e7c542000106258540990e962",28);//个呼成员选择
+            DEL_SetTimer(0,200);
+            while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+            ApiPocCmd_WritCommand(PocComm_UserListInfo,"0E000000000064",strlen((char const *)"0E000000000064"));
+            KeyDownUpChoose_GroupOrUser_Flag=2;
+            TheMenuLayer_Flag=0;//处于0级菜单，进入单呼模式为菜单外功能
+            break;
+          }
+          break;
+        case 3://GPS设置
+              switch(ApiMenu_GpsInfo_Flag)
+              {
+              case 1://二级菜单按OK键进入一级菜单
+                MenuDisplay(MenuModeCount);
+                MenuMode_Flag=1;
+                ApiMenu_GpsInfo_Flag=0;
+                TheMenuLayer_Flag=1;//处于一级菜单
+                break;
+              case 0://一级菜单按ok键进入二级菜单
+                SubmenuMenuDisplay(GpsInfoMenu);
+                ApiMenu_GpsInfo_Flag=1;
+                TheMenuLayer_Flag=2;//处于二级菜单
+                break;
+              }
+          break;
+        case 4://背光灯设置
+              switch(ApiMenu_BacklightTimeSet_Flag)
+              {
+              case 2:
+                ApiMenu_BacklightTimeSet_Flag=0;
+                MenuDisplay(MenuModeCount);
+                MenuMode_Flag=1;
+                break;
+              case 0://在一级菜单按ok键进入二级菜单
+                ApiMenu_BacklightTimeSet_Flag=1;//在上下键中处理
+                SubmenuMenuDisplay(BacklightTimeSet);
+                TheMenuLayer_Flag=2;//处于二级菜单
+                break;
+              case 1://二级菜单按ok键进入一级菜单
+                ApiMenu_BacklightTimeSet_Flag=2;
+                MenuDisplay(MenuModeCount);
+                MenuMode_Flag=1;
+                TheMenuLayer_Flag=1;//处于一级菜单
+                break;
+              }
+          break;
+        case 5://键盘锁定
+              switch(ApiMenu_KeylockTimeSet_Flag)
+              {
+              case 2://默认状态按OK键进入一级菜单
+                ApiMenu_KeylockTimeSet_Flag=0;
+                MenuDisplay(MenuModeCount);
+                MenuMode_Flag=1;
+                break;
+              case 0://在一级菜单按ok键进入二级菜单
+                ApiMenu_KeylockTimeSet_Flag=1;//在上下键中处理
+                SubmenuMenuDisplay(KeylockTimeSet);
+                TheMenuLayer_Flag=2;//处于二级菜单
+                break;
+              case 1:
+                ApiMenu_KeylockTimeSet_Flag=2;
+                MenuDisplay(MenuModeCount);
+                MenuMode_Flag=1;
+                TheMenuLayer_Flag=1;//处于一级菜单
+                break;
+              }
+          break;
+        case 6://本机信息
+              switch(ApiMenu_NativeInfo_Flag)
+              {
+              case 1://默认状态按OK键进入一级菜单
+                MenuDisplay(MenuModeCount);
+                MenuMode_Flag=1;
+                ApiMenu_NativeInfo_Flag=0;
+                TheMenuLayer_Flag=1;//处于一级菜单
+                break;
+              case 0://在gps信息一级菜单按ok键进入二级菜单
+                SubmenuMenuDisplay(NativeInfoMenu);
+                ApiMenu_NativeInfo_Flag=1;
+                TheMenuLayer_Flag=2;//处于二级菜单
+                break;
+              }
+          break;
+        case 7://北斗/写频切换
+          switch(ApiMenu_BeiDouOrWritingFrequency_Flag)
+          {
+          case 1://二级菜单按OK键进入一级菜单
+            MenuDisplay(MenuModeCount);
+            MenuMode_Flag=1;
+            ApiMenu_BeiDouOrWritingFrequency_Flag=0;
+            TheMenuLayer_Flag=1;//处于一级菜单
+            break;
+          case 0://一级菜单按ok键进入二级菜单
+            SubmenuMenuDisplay(BeiDouOrWritingFrequencySwitch);
+            ApiMenu_BeiDouOrWritingFrequency_Flag=1;
+            MenuMode_Flag=1;
+            TheMenuLayer_Flag=2;//处于二级菜单
+            break;
+          }
+          break;
+        default:
+          break;
+        }
+    }
     }
     Delay_100ms(1);
     break;

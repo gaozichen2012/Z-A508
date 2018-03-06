@@ -157,7 +157,6 @@ void Task_RunNormalOperation(void)
     switch(KeyDownUpChoose_GroupOrUser_Flag)
     {
     case 0://默认PTT状态
-
       if(POC_ReceivedVoice_Flag==TRUE)//解决对方说话时按PTT接收语音异常的问题
       {
         if(EnterPttMoment_Flag==TRUE)
