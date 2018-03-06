@@ -156,7 +156,6 @@ void Keyboard_Test(void)
     //api_lcd_pwr_on_hint("欧标按键:Down  ");
     break;  
   case 0x00000010://ok
-    //NumberKeyboardPressDown_flag=TRUE;
     if(LockingState_Flag==TRUE)
     {
       MenuDisplay(Menu_UnlockStep1_Ok);
@@ -164,6 +163,7 @@ void Keyboard_Test(void)
     }
     else
     { 
+      NumberKeyboardPressDown_flag=TRUE;
       if(KeyDownUpChoose_GroupOrUser_Flag!=0)//如果处于换组或者选择个呼状态
       {
         switch(KeyDownUpChoose_GroupOrUser_Flag)

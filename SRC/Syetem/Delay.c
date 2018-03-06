@@ -346,7 +346,7 @@ static void DEL_500msProcess(void)			//delay 500ms process server
     {
       MCU_LCD_BACKLIGTH(ON);//打开背光灯
     }
-    if(NumberKeyboardPressDown_flag==TRUE)
+    if(NumberKeyboardPressDown_flag==TRUE||LockingState_EnterOK_Flag==TRUE)
     {
       TimeCount_Light=0;//背光灯计数器清零
       //NumberKeyboardPressDown_flag=FALSE;

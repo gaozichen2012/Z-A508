@@ -464,14 +464,30 @@ else
 {
   if(POC_ReceivedVoiceStart_Flag==2)//刚接收语音状态
   {
-    api_disp_icoid_output( eICO_IDVOX, TRUE, TRUE);//接收信号图标
     api_lcd_pwr_on_hint("                ");//清屏
     api_lcd_pwr_on_hint4(UnicodeForGbk_SpeakerRightnowName());//显示当前说话人的昵称
-    api_disp_all_screen_refresh();// 全屏统一刷新
     POC_ReceivedVoiceStart_Flag=1;//接收语音状态
-    //修复BUG： A机换组状态，B机呼A机后，A机按PTT却是换组（被呼后A机应该返回默认状态：PTT_Flag=0）
+    //修复BUG： A机换组状态，B机呼A机后，A机按PTT却是换组（被呼后A机应该返回默认状态：）
     KeyDownUpChoose_GroupOrUser_Flag=0;
     KeyUpDownCount=0;
+    //修复BUG：在菜单界面，B机呼A机，显示屏显示混乱的问题（现为被呼A机退出菜单）
+    if(TheMenuLayer_Flag!=0)
+    {
+      MenuDisplay(Menu_RefreshAllIco);
+      MenuModeCount=1;
+      TheMenuLayer_Flag=0;
+      MenuMode_Flag=0;
+      ApiMenu_SwitchGroup_Flag=0;
+      ApiMenu_SwitchCallUser_Flag=0;
+      ApiMenu_GpsInfo_Flag=0;
+      ApiMenu_BacklightTimeSet_Flag=0;
+      ApiMenu_KeylockTimeSet_Flag=0;
+      ApiMenu_NativeInfo_Flag=0;
+      ApiMenu_BeiDouOrWritingFrequency_Flag=0;
+    }
+    api_disp_icoid_output( eICO_IDVOX, TRUE, TRUE);//接收信号图标
+    api_disp_all_screen_refresh();// 全屏统一刷新
+
   }
   else//0空闲状态；1接收状态
   {
