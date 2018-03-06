@@ -140,7 +140,7 @@ void Task_RunNormalOperation(void)
         KeyDownUpChoose_GroupOrUser_Flag=0;
       }
     }
-    else//否则没收到8300时，过2s自行进入默认状态
+   /* else//否则没收到8300时，过2s自行进入默认状态
     {
       if(EnterKeyTime_2s_Flag==TRUE)
       {
@@ -149,7 +149,7 @@ void Task_RunNormalOperation(void)
         POC_ReceivedVoice_forPTT_Flag=FALSE;
         KeyDownUpChoose_GroupOrUser_Flag=0;
       }
-    }
+    }*/
   }
   if(ReadInput_KEY_PTT==0)
   {
@@ -180,8 +180,26 @@ void Task_RunNormalOperation(void)
         {
           Set_RedLed(LED_ON);
           Set_GreenLed(LED_OFF);
-        api_disp_icoid_output( eICO_IDTX, TRUE, TRUE);//发射信号图标
-        api_disp_all_screen_refresh();// 全屏统一刷新
+          
+          if(TheMenuLayer_Flag!=0)//解决主呼时影响菜单界面信息显示，现在只要按PTT就会退出菜单
+          {
+            MenuDisplay(Menu_RefreshAllIco);
+            api_lcd_pwr_on_hint("                ");//清屏
+            api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
+            api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
+            MenuModeCount=1;
+            TheMenuLayer_Flag=0;
+            MenuMode_Flag=0;
+            ApiMenu_SwitchGroup_Flag=0;
+            ApiMenu_SwitchCallUser_Flag=0;
+            ApiMenu_GpsInfo_Flag=0;
+            ApiMenu_BacklightTimeSet_Flag=0;
+            ApiMenu_KeylockTimeSet_Flag=0;
+            ApiMenu_NativeInfo_Flag=0;
+            ApiMenu_BeiDouOrWritingFrequency_Flag=0;
+          }
+          api_disp_icoid_output( eICO_IDTX, TRUE, TRUE);//发射信号图标
+          api_disp_all_screen_refresh();// 全屏统一刷新
         }
       }
       
@@ -452,6 +470,9 @@ else
     api_lcd_pwr_on_hint4(UnicodeForGbk_SpeakerRightnowName());//显示当前说话人的昵称
     api_disp_all_screen_refresh();// 全屏统一刷新
     POC_ReceivedVoiceStart_Flag=1;//接收语音状态
+    //修复BUG： A机换组状态，B机呼A机后，A机按PTT却是换组（被呼后A机应该返回默认状态：PTT_Flag=0）
+    KeyDownUpChoose_GroupOrUser_Flag=0;
+    KeyUpDownCount=0;
   }
   else//0空闲状态；1接收状态
   {

@@ -381,11 +381,25 @@ static void DEL_500msProcess(void)			//delay 500ms process server
         {
           if(TimeCount==KeylockTimeCount)
           {
-            api_disp_icoid_output( eICO_IDBANDWIDTHW, TRUE, TRUE);//锁屏图标
+            LockingState_Flag=TRUE;//超时锁定标志位
+            //解决BUG：锁屏后会影响一级二级菜单显示，现处理办法为锁屏就退回默认群组状态,所有菜单标志位初始化
+            MenuDisplay(Menu_RefreshAllIco);
+            api_lcd_pwr_on_hint("                ");//清屏
+            api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
+            api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
             api_disp_all_screen_refresh();// 全屏统一刷新
+            MenuModeCount=1;
+            TheMenuLayer_Flag=0;
+            MenuMode_Flag=0;
+            ApiMenu_SwitchGroup_Flag=0;
+            ApiMenu_SwitchCallUser_Flag=0;
+            ApiMenu_GpsInfo_Flag=0;
+            ApiMenu_BacklightTimeSet_Flag=0;
+            ApiMenu_KeylockTimeSet_Flag=0;
+            ApiMenu_NativeInfo_Flag=0;
+            ApiMenu_BeiDouOrWritingFrequency_Flag=0;
           }
           TimeCount=KeylockTimeCount+1;
-          LockingState_Flag=TRUE;//超时锁定标志位
         }
         else
         {

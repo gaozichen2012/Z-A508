@@ -116,7 +116,9 @@ void MenuDisplay(MenuDisplayType id)
     if(LockingState_Flag==FALSE)
       api_disp_icoid_output( eICO_IDBANDWIDTHN, TRUE, TRUE);//无锁屏空图标
     else
+    {
       api_disp_icoid_output( eICO_IDBANDWIDTHW, TRUE, TRUE);//锁屏图标
+    }
     if(PersonCallIco_Flag==0)
       api_disp_icoid_output( eICO_IDPOWERM, TRUE, TRUE);//显示组呼图标
     else

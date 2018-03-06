@@ -622,6 +622,7 @@ void Keyboard_Test(void)
           api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
           api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
           Key_Flag_1=1;//按键延时标志位
+          //用于PTT键及上下键返回默认状态
           KeyDownUpChoose_GroupOrUser_Flag=0;
           KeyUpDownCount=0;
         }
