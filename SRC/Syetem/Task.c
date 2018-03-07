@@ -5,13 +5,14 @@ u8 AlarmCount=4;//2G3G切换计数,默认为3G模式
 u8 NetworkType_2Gor3G_Flag=3;
 u8 PersonCallIco_Flag=0;//根据显示组呼个呼图标判断状态
 #if 1 //test
-u8 Key_Flag_0=0;
 u8 Key_PersonalCalling_Flag=0;
 bool TASK_Ptt_StartPersonCalling_Flag=FALSE;
 bool Task_Landing_Flag=FALSE;
 u8 KeyCount_PersonalCalling=0;
 u8 EnterPttMomentCount=0;
+u8 LoosenPttMomentCount=0;
 bool EnterPttMoment_Flag=FALSE;
+bool LoosenPttMoment_Flag=FALSE;
 bool EnterKeyTime_2s_Flag=FALSE;
 #endif
 
@@ -113,6 +114,7 @@ void Task_RunNormalOperation(void)
 /***********PTT状态检测*************************************************************************************************************************/
   if(ReadInput_KEY_PTT==0)//判断按下PTT的瞬间
   {
+    AUDIO_IOAFPOW(ON);//打开功放，解决DIDI提示音听不见
     EnterPttMomentCount++;
     if(EnterPttMomentCount==1)
       EnterPttMoment_Flag=TRUE;
@@ -121,17 +123,27 @@ void Task_RunNormalOperation(void)
       EnterPttMoment_Flag=FALSE;
       EnterPttMomentCount=3;
     }
+    LoosenPttMoment_Flag=FALSE;
+    LoosenPttMomentCount=0;
   }
   else
   {
     EnterPttMomentCount=0;
     EnterPttMoment_Flag=FALSE;
+    LoosenPttMomentCount++;
+    if(LoosenPttMomentCount==1)
+      LoosenPttMoment_Flag=TRUE;
+    else
+    {
+      LoosenPttMoment_Flag=FALSE;
+      LoosenPttMomentCount=3;
+    }
   }
 
 //解决换组或个呼是，按住PTT进入死循环收不到指令的问题
   
-    if(KeyDownUpChoose_GroupOrUser_Flag==3)
-    {KeyDownUpChoose_GroupOrUser_Flag=0;}
+  if(KeyDownUpChoose_GroupOrUser_Flag==3)
+  {KeyDownUpChoose_GroupOrUser_Flag=0;}
     /*if(KeyDownUpChoose_GroupOrUser_Flag==3)
   {
     if(POC_ReceivedVoice_forPTT_Flag==TRUE)
@@ -154,12 +166,12 @@ void Task_RunNormalOperation(void)
       }
     }
   }*/
-  if(ReadInput_KEY_PTT==0)
+  switch(KeyPttState)//KeyPttState 0：未按PTT 1:按下ptt瞬间  2：按住PTT状态 3：松开PTT瞬间
   {
-    AUDIO_IOAFPOW(ON);//打开功放，解决DIDI提示音听不见
-    switch(KeyDownUpChoose_GroupOrUser_Flag)
+  case 0://未按PTT
+    POC_ReceivedVoiceEndForXTSF_Flag=0;
+    if(KeyDownUpChoose_GroupOrUser_Flag==0)
     {
-    case 0://默认PTT状态
       if(POC_ReceivedVoice_Flag==TRUE)//解决对方说话时按PTT接收语音异常的问题
       {
         if(EnterPttMoment_Flag==TRUE)
@@ -169,53 +181,80 @@ void Task_RunNormalOperation(void)
       }
       else
       {
-        ApiPocCmd_WritCommand(PocComm_StartPTT,ucStartPTT,strlen((char const *)ucStartPTT));
+        if(EnterPttMoment_Flag==TRUE)
+        {
+          ApiPocCmd_WritCommand(PocComm_StartPTT,ucStartPTT,strlen((char const *)ucStartPTT));
+        }
       }
-      
-      while(ReadInput_KEY_PTT==0)
+    }
+
+    break;
+  case 1://1:按下ptt瞬间
+    KeyPttState=2;
+    break;
+  case 2://2：按住PTT状态
+    if(POC_ReceivedVoice_Flag==TRUE)//如果正在接受语音
+    {
+    }
+    else
+    {
+      //解决禁发时间到时，播报“系统释放”，机器已停止发射。但显示屏发射符号不消失，红色指示灯不熄灭
+      if(POC_ReceivedVoiceEndForXTSF_Flag==2)
       {
-        if(POC_ReceivedVoice_Flag==TRUE)//如果正在接受语音
-        {
-          goto PTT_Exit;
-        }
-        else
-        {
-          Set_RedLed(LED_ON);
-          Set_GreenLed(LED_OFF);
-          
-          if(TheMenuLayer_Flag!=0)//解决主呼时影响菜单界面信息显示，现在只要按PTT就会退出菜单
-          {
-            MenuDisplay(Menu_RefreshAllIco);
-            api_lcd_pwr_on_hint("                ");//清屏
-            api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
-            api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
-            MenuModeCount=1;
-            TheMenuLayer_Flag=0;
-            MenuMode_Flag=0;
-            ApiMenu_SwitchGroup_Flag=0;
-            ApiMenu_SwitchCallUser_Flag=0;
-            ApiMenu_GpsInfo_Flag=0;
-            ApiMenu_BacklightTimeSet_Flag=0;
-            ApiMenu_KeylockTimeSet_Flag=0;
-            ApiMenu_NativeInfo_Flag=0;
-            ApiMenu_BeiDouOrWritingFrequency_Flag=0;
-          }
-          api_disp_icoid_output( eICO_IDTX, TRUE, TRUE);//发射信号图标
-          api_disp_all_screen_refresh();// 全屏统一刷新
-        }
+        Set_RedLed(LED_OFF);
+        KeyDownUpChoose_GroupOrUser_Flag=3;
       }
-      
-      api_disp_icoid_output( eICO_IDTALKAR, TRUE, TRUE);//默认无发射无接收信号图标
+      else
+      {
+        Set_RedLed(LED_ON);
+        Set_GreenLed(LED_OFF);
+      if(TheMenuLayer_Flag!=0)//解决主呼时影响菜单界面信息显示，现在只要按PTT就会退出菜单
+      {
+        MenuDisplay(Menu_RefreshAllIco);
+        api_lcd_pwr_on_hint("                ");//清屏
+        api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
+        api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
+        MenuModeCount=1;
+        TheMenuLayer_Flag=0;
+        MenuMode_Flag=0;
+        ApiMenu_SwitchGroup_Flag=0;
+        ApiMenu_SwitchCallUser_Flag=0;
+        ApiMenu_GpsInfo_Flag=0;
+        ApiMenu_BacklightTimeSet_Flag=0;
+        ApiMenu_KeylockTimeSet_Flag=0;
+        ApiMenu_NativeInfo_Flag=0;
+        ApiMenu_BeiDouOrWritingFrequency_Flag=0;
+      }
+      api_disp_icoid_output( eICO_IDTX, TRUE, TRUE);//发射信号图标
       api_disp_all_screen_refresh();// 全屏统一刷新
+      }
+    }
+    if(LoosenPttMoment_Flag==TRUE)//如果松开PTT瞬间，发送endPTT指令
+    {
       ApiPocCmd_WritCommand(PocComm_EndPTT,ucEndPTT,strlen((char const *)ucEndPTT));
-      PTT_Exit:
+    }
+    break;
+  case 3://3：松开PTT瞬间
+    POC_ReceivedVoiceEndForXTSF_Flag=0;
+    KeyPttState=0;
+    api_disp_icoid_output( eICO_IDTALKAR, TRUE, TRUE);//默认无发射无接收信号图标
+    api_disp_all_screen_refresh();// 全屏统一刷新
+    break;
+  default:
+    break;
+  }
+  
+  if(ReadInput_KEY_PTT==0)
+  {
+    switch(KeyDownUpChoose_GroupOrUser_Flag)
+    {
+    case 0://默认PTT状态
       break;
     case 1://=1，进入某群组
       VOICE_SetOutput(ATVOICE_FreePlay,"f25d09902d4e",12);//播报已选中
       DEL_SetTimer(0,100);
       while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
       ApiPocCmd_WritCommand(PocComm_EnterGroup,ucPocOpenConfig,strlen((char const *)ucPocOpenConfig));
-      Key_Flag_0=1;
       KeyDownUpChoose_GroupOrUser_Flag=3;
       EnterKeyTimeCount=0;
       KeyUpDownCount=0;
@@ -228,7 +267,6 @@ void Task_RunNormalOperation(void)
         DEL_SetTimer(0,100);
         while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
         ApiPocCmd_WritCommand(PocComm_Invite,ucPocOpenConfig,strlen((char const *)ucPocOpenConfig));
-        Key_Flag_0=1;
         KeyDownUpChoose_GroupOrUser_Flag=3;
         TASK_Ptt_StartPersonCalling_Flag=TRUE;//判断主动单呼状态（0a）
         EnterKeyTimeCount=0;
@@ -236,18 +274,15 @@ void Task_RunNormalOperation(void)
       break;
     case 3:
       break;
+    case 4:
+      break;
     default:
       break;
     }
-    if(Key_Flag_0==1)
-    {
-     // DEL_SetTimer(0,100);
-      //while(1)
-      {
-        //Key_Flag_0=0;
-        //if(DEL_GetTimer(0) == TRUE) {break;}
-      }
-    }
+
+    
+    
+    
   }
   else
   {

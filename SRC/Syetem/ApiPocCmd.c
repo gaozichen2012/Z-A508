@@ -27,9 +27,11 @@ bool POC_ReceivedVoice_forPTT_Flag=FALSE;
 bool ApiPocCmd_Tone_Flag=FALSE;
 u8 POC_ReceivedVoiceStart_Flag=0;
 u8 POC_ReceivedVoiceEnd_Flag=0;
+u8 POC_ReceivedVoiceEndForXTSF_Flag=0;
 bool POC_Receive86_Flag=FALSE;
 u8 OffLineCount=0;
 u8 OnlineMembership=0;
+u8 KeyPttState=0;
 bool GettheOnlineMembersDone=FALSE;
 typedef struct{
   struct{
@@ -284,7 +286,6 @@ void ApiPocCmd_10msRenew(void)
     switch(ucId)
     {
     case 0x0A://判断讲话状态
-#if 1
       ucId = COML_AscToHex(pBuf+2, 0x02);
       if(ucId==0x00)
       {
@@ -296,25 +297,21 @@ void ApiPocCmd_10msRenew(void)
           
         }
       }
-#else
+      break;
+    case 0x0B://判断按下PTT
       ucId = COML_AscToHex(pBuf+2, 0x02);
       if(ucId==0x00)
       {
-        if(TASK_Ptt_StartPersonCalling_Flag==TRUE)//如果按下PTT键单呼某用户
-        {
-          POC_AtEnterPersonalCalling_Flag=2;
-          POC_AtQuitPersonalCalling_Flag=1;
-          TASK_Ptt_StartPersonCalling_Flag=FALSE;
-        }
-        else//接收到结束单呼的指令
-        {
-          POC_AtEnterPersonalCalling_Flag=0;
-          POC_AtQuitPersonalCalling_Flag=2;
-        }
+        KeyPttState=1;//KeyPttState 0：未按PTT 1:按下ptt瞬间  2：按住PTT状态 3：松开PTT瞬间
       }
-#endif
       break;
-
+    case 0x0C://判断松开PTT
+      ucId = COML_AscToHex(pBuf+2, 0x02);
+      if(ucId==0x00)
+      {
+        KeyPttState=3;//KeyPttState 0：未按PTT 1:按下ptt瞬间  2：按住PTT状态 3：松开PTT瞬间
+      }
+      break;  
     case 0x0E://在线用户个数
       ucId = COML_AscToHex(pBuf+8, 0x04);
       PocCmdDrvobj.WorkState.UseState.PttUserName.UserNum = ucId;
@@ -398,6 +395,7 @@ void ApiPocCmd_10msRenew(void)
         POC_ReceivedVoice_forPTT_Flag=TRUE;//解决收状态死机BUG，用于换组或个呼状态检测到此指令才可以按PTT说话
         POC_ReceivedVoiceStart_Flag=2;//0:正常 1：收到语音 2：刚开始语音
         POC_ReceivedVoiceEnd_Flag=1;//0:正常 1：收到语音 2：刚结束语音
+        POC_ReceivedVoiceEndForXTSF_Flag=1;
         //83000000000107592875268df7533100f7530000
         if(Len >= 12)
         {
@@ -416,6 +414,7 @@ void ApiPocCmd_10msRenew(void)
       {
         POC_ReceivedVoice_Flag=FALSE;
         POC_ReceivedVoiceEnd_Flag=2;//0:正常 1：收到语音 2：刚结束语音
+        POC_ReceivedVoiceEndForXTSF_Flag=2;
         POC_ReceivedVoiceStart_Flag=0;//0:正常 1：收到语音 2：刚开始语音
       }
       break;
