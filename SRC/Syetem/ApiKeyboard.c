@@ -113,6 +113,8 @@ void Keyboard_Test(void)
         if(KeylockTimeSetCount<0x10) {KeylockTimeSetCount=0x16;}
         Level3MenuDisplay(KeylockTimeSetCount);
       }
+      else if(ApiMenu_GpsInfo_Flag==1||ApiMenu_NativeInfo_Flag==1||ApiMenu_BeiDouOrWritingFrequency_Flag==1)//如果是GPS信息、本机信息、北斗写频切换二级菜单
+      {}
       else
       {
         MenuModeCount=MenuModeCount-1;
@@ -182,7 +184,7 @@ void Keyboard_Test(void)
         case 2://=2,呼叫某用户
           if(GettheOnlineMembersDone==TRUE)
           {
-            GettheOnlineMembersDone=FALSE;
+            //GettheOnlineMembersDone=FALSE;
             VOICE_SetOutput(ATVOICE_FreePlay,"f25d09902d4e",12);//播报已选中
             DEL_SetTimer(0,100);
             while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
@@ -251,12 +253,13 @@ void Keyboard_Test(void)
         case 3://GPS设置
               switch(ApiMenu_GpsInfo_Flag)
               {
-              case 1://二级菜单按OK键进入一级菜单
+               //客户要求GPS经纬度及本机信息界面按上下键和OK键无效，只有按退出键退出，故屏蔽以下
+              /*case 1://二级菜单按OK键进入一级菜单
                 MenuDisplay(MenuModeCount);
                 MenuMode_Flag=1;
                 ApiMenu_GpsInfo_Flag=0;
                 TheMenuLayer_Flag=1;//处于一级菜单
-                break;
+                break;*/
               case 0://一级菜单按ok键进入二级菜单
                 SubmenuMenuDisplay(GpsInfoMenu);
                 ApiMenu_GpsInfo_Flag=1;
@@ -309,12 +312,13 @@ void Keyboard_Test(void)
         case 6://本机信息
               switch(ApiMenu_NativeInfo_Flag)
               {
-              case 1://默认状态按OK键进入一级菜单
+                //客户要求GPS经纬度及本机信息界面按上下键和OK键无效，只有按退出键退出，故屏蔽以下
+              /*case 1://默认状态按OK键进入一级菜单
                 MenuDisplay(MenuModeCount);
                 MenuMode_Flag=1;
                 ApiMenu_NativeInfo_Flag=0;
                 TheMenuLayer_Flag=1;//处于一级菜单
-                break;
+                break;*/
               case 0://在gps信息一级菜单按ok键进入二级菜单
                 SubmenuMenuDisplay(NativeInfoMenu);
                 ApiMenu_NativeInfo_Flag=1;
@@ -325,12 +329,13 @@ void Keyboard_Test(void)
         case 7://北斗/写频切换
           switch(ApiMenu_BeiDouOrWritingFrequency_Flag)
           {
-          case 1://二级菜单按OK键进入一级菜单
+            //客户要求GPS经纬度及本机信息界面按上下键和OK键无效，只有按退出键退出，故屏蔽以下
+          /*case 1://二级菜单按OK键进入一级菜单
             MenuDisplay(MenuModeCount);
             MenuMode_Flag=1;
             ApiMenu_BeiDouOrWritingFrequency_Flag=0;
             TheMenuLayer_Flag=1;//处于一级菜单
-            break;
+            break;*/
           case 0://一级菜单按ok键进入二级菜单
             SubmenuMenuDisplay(BeiDouOrWritingFrequencySwitch);
             ApiMenu_BeiDouOrWritingFrequency_Flag=1;
@@ -446,59 +451,62 @@ void Keyboard_Test(void)
     {}
     else
     {
-    if(MenuMode_Flag==1)
-    {
-      if(ApiMenu_BacklightTimeSet_Flag==1)//如果是设置背光灯二级菜单
+      if(MenuMode_Flag==1)
       {
-        BacklightTimeSetCount=BacklightTimeSetCount+1;
-        if(BacklightTimeSetCount>7) {BacklightTimeSetCount=1;}
-        Level3MenuDisplay(BacklightTimeSetCount);
-      }
-      else if(ApiMenu_KeylockTimeSet_Flag==1)//如果是设置键盘锁二级菜单
-      {
-        KeylockTimeSetCount=KeylockTimeSetCount+1;
-        if(KeylockTimeSetCount>0x16) {KeylockTimeSetCount=0x10;}
-        Level3MenuDisplay(KeylockTimeSetCount);
+        if(ApiMenu_BacklightTimeSet_Flag==1)//如果是设置背光灯二级菜单
+        {
+          BacklightTimeSetCount=BacklightTimeSetCount+1;
+          if(BacklightTimeSetCount>7) {BacklightTimeSetCount=1;}
+          Level3MenuDisplay(BacklightTimeSetCount);
+        }
+        else if(ApiMenu_KeylockTimeSet_Flag==1)//如果是设置键盘锁二级菜单
+        {
+          KeylockTimeSetCount=KeylockTimeSetCount+1;
+          if(KeylockTimeSetCount>0x16) {KeylockTimeSetCount=0x10;}
+          Level3MenuDisplay(KeylockTimeSetCount);
+        }
+        else if(ApiMenu_GpsInfo_Flag==1||ApiMenu_NativeInfo_Flag==1||ApiMenu_BeiDouOrWritingFrequency_Flag==1)//如果是GPS信息、本机信息、北斗写频切换二级菜单
+        {}
+        else
+        {
+          MenuModeCount=MenuModeCount+1;
+          if(MenuModeCount>7) {MenuModeCount=1;}
+          MenuDisplay(MenuModeCount);
+        }
       }
       else
       {
-        MenuModeCount=MenuModeCount+1;
-        if(MenuModeCount>7) {MenuModeCount=1;}
-        MenuDisplay(MenuModeCount);
+        if(Key_PersonalCalling_Flag==1)//如果按下个呼键
+        {
+          KeyDownUpChoose_GroupOrUser_Flag=2;
+          KeyPersonalCallingCount++;
+          PersonalCallingNum=KeyPersonalCallingCount;//个呼计数从零开始
+          if(PersonalCallingNum>ApiAtCmd_GetUserNum()-1)
+          {
+            KeyPersonalCallingCount=0;
+            PersonalCallingNum=0;
+          }
+          VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(PersonalCallingNum),ApiAtCmd_GetUserNameLen(PersonalCallingNum));//播报按上键之后对应的用户名
+          api_lcd_pwr_on_hint("对象:   个呼选择");
+          api_lcd_pwr_on_hint2(HexToChar_PersonalCallingNum());
+          KeyDownUpChoose_GroupOrUser_Flag=2;
+        }
+        else
+        {
+          KeyUpDownCount++;
+          GroupCallingNum=ApiAtCmd_GetMainGroupId()+KeyUpDownCount;
+          if(GroupCallingNum>ApiAtCmd_GetGroupNum())
+          {
+            GroupCallingNum=1;
+            KeyUpDownCount=1-ApiAtCmd_GetMainGroupId();
+          }
+          VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetGroupName(GroupCallingNum),ApiAtCmd_GetGroupNameLen(GroupCallingNum));
+          api_lcd_pwr_on_hint("群组:   群组选择");//显示汉字
+          api_lcd_pwr_on_hint2(HexToChar_GroupCallingNum());//显示数据
+          KeyDownUpChoose_GroupOrUser_Flag=1;
+        }
       }
-    }
-    else
-    {
-    if(Key_PersonalCalling_Flag==1)//如果按下个呼键
-    {
-    KeyPersonalCallingCount++;
-    PersonalCallingNum=KeyPersonalCallingCount;//个呼计数从零开始
-    if(PersonalCallingNum>ApiAtCmd_GetUserNum()-1)
-    {
-      KeyPersonalCallingCount=0;
-      PersonalCallingNum=0;
-    }
-    VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(PersonalCallingNum),ApiAtCmd_GetUserNameLen(PersonalCallingNum));//播报按上键之后对应的用户名
-    api_lcd_pwr_on_hint("对象:   个呼选择");
-    api_lcd_pwr_on_hint2(HexToChar_PersonalCallingNum());
-    KeyDownUpChoose_GroupOrUser_Flag=2;
-    }
-    else
-    {
-      KeyUpDownCount++;
-    GroupCallingNum=ApiAtCmd_GetMainGroupId()+KeyUpDownCount;
-    if(GroupCallingNum>ApiAtCmd_GetGroupNum())
-    {
-      GroupCallingNum=1;
-      KeyUpDownCount=1-ApiAtCmd_GetMainGroupId();
-    }
-    VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetGroupName(GroupCallingNum),ApiAtCmd_GetGroupNameLen(GroupCallingNum));
-    api_lcd_pwr_on_hint("群组:   群组选择");//显示汉字
-    api_lcd_pwr_on_hint2(HexToChar_GroupCallingNum());//显示数据
-    KeyDownUpChoose_GroupOrUser_Flag=1;
-    }
-    }
-    Key_Flag_1=1;
+      Key_Flag_1=1;
     }
    
     break;
@@ -552,6 +560,22 @@ void Keyboard_Test(void)
         }
         else if(TheMenuLayer_Flag==1)
         {
+#if 1
+          MenuDisplay(Menu_RefreshAllIco);
+          api_lcd_pwr_on_hint("                ");//清屏
+          api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
+          api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
+          MenuModeCount=1;
+          TheMenuLayer_Flag=0;
+          MenuMode_Flag=0;
+          ApiMenu_SwitchGroup_Flag=0;
+          ApiMenu_SwitchCallUser_Flag=0;
+          ApiMenu_GpsInfo_Flag=0;
+          ApiMenu_BacklightTimeSet_Flag=0;
+          ApiMenu_KeylockTimeSet_Flag=0;
+          ApiMenu_NativeInfo_Flag=0;
+          ApiMenu_BeiDouOrWritingFrequency_Flag=0;
+#else
           switch(MenuModeCount)//默认按ok键进入一级菜单
           {
           case 1://群组选择
@@ -639,6 +663,7 @@ void Keyboard_Test(void)
             }
             break;
           }
+#endif
         }
         else
         {}

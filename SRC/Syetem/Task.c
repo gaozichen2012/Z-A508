@@ -129,7 +129,10 @@ void Task_RunNormalOperation(void)
   }
 
 //解决换组或个呼是，按住PTT进入死循环收不到指令的问题
-  if(KeyDownUpChoose_GroupOrUser_Flag==3)
+  
+    if(KeyDownUpChoose_GroupOrUser_Flag==3)
+    {KeyDownUpChoose_GroupOrUser_Flag=0;}
+    /*if(KeyDownUpChoose_GroupOrUser_Flag==3)
   {
     if(POC_ReceivedVoice_forPTT_Flag==TRUE)
     {
@@ -139,7 +142,7 @@ void Task_RunNormalOperation(void)
         POC_ReceivedVoice_forPTT_Flag=FALSE;
         KeyDownUpChoose_GroupOrUser_Flag=0;
       }
-    }
+    }*/
    /* else//否则没收到8300时，过2s自行进入默认状态
     {
       if(EnterKeyTime_2s_Flag==TRUE)
@@ -149,8 +152,8 @@ void Task_RunNormalOperation(void)
         POC_ReceivedVoice_forPTT_Flag=FALSE;
         KeyDownUpChoose_GroupOrUser_Flag=0;
       }
-    }*/
-  }
+    }
+  }*/
   if(ReadInput_KEY_PTT==0)
   {
     AUDIO_IOAFPOW(ON);//打开功放，解决DIDI提示音听不见
@@ -220,7 +223,7 @@ void Task_RunNormalOperation(void)
     case 2://=2,呼叫某用户
       if(GettheOnlineMembersDone==TRUE)
       {
-        GettheOnlineMembersDone=FALSE;
+        //GettheOnlineMembersDone=FALSE;
         VOICE_SetOutput(ATVOICE_FreePlay,"f25d09902d4e",12);//播报已选中
         DEL_SetTimer(0,100);
         while(1){if(DEL_GetTimer(0) == TRUE) {break;}}

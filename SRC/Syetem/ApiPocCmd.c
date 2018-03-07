@@ -358,12 +358,12 @@ void ApiPocCmd_10msRenew(void)
           PocCmdDrvobj.WorkState.UseState.WorkUserName.Name[i];
       }
       PocCmdDrvobj.WorkState.UseState.UserName[ucId].NameLen = PocCmdDrvobj.WorkState.UseState.WorkUserName.NameLen;
-      //首次获取组内成员播报第一个成员
-      VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(0),ApiAtCmd_GetUserNameLen(0));
+      
       OnlineMembership++;
       if(OnlineMembership>=PocCmdDrvobj.WorkState.UseState.PttUserName.UserNum)
       {
         OnlineMembership=0;
+        VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(0),ApiAtCmd_GetUserNameLen(0));//首次获取组内成员播报第一个成员
         GettheOnlineMembersDone=TRUE;
       }
       break;
