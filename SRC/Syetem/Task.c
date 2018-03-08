@@ -239,6 +239,7 @@ void Task_RunNormalOperation(void)
     if(LoosenPttMoment_Flag==TRUE)//如果松开PTT瞬间，发送endPTT指令
     {
       ApiPocCmd_WritCommand(PocComm_EndPTT,ucEndPTT,strlen((char const *)ucEndPTT));
+      Set_RedLed(LED_OFF);
     }
     break;
   case 3://3：松开PTT瞬间
@@ -293,7 +294,7 @@ void Task_RunNormalOperation(void)
   }
   else
   {
-    Set_RedLed(LED_OFF);
+    //Set_RedLed(LED_OFF);
 
   }
 /*******组呼键状态检测***********************************************************************************************************************************/
@@ -308,6 +309,21 @@ void Task_RunNormalOperation(void)
     }
     else
     {
+      if(TheMenuLayer_Flag!=0)//解决组呼键影响菜单界面信息显示，现在只要按组呼键就会退出菜单
+      {
+        MenuDisplay(Menu_RefreshAllIco);
+        MenuModeCount=1;
+        TheMenuLayer_Flag=0;
+        MenuMode_Flag=0;
+        ApiMenu_SwitchGroup_Flag=0;
+        ApiMenu_SwitchCallUser_Flag=0;
+        ApiMenu_GpsInfo_Flag=0;
+        ApiMenu_BacklightTimeSet_Flag=0;
+        ApiMenu_KeylockTimeSet_Flag=0;
+        ApiMenu_NativeInfo_Flag=0;
+        ApiMenu_BeiDouOrWritingFrequency_Flag=0;
+      }
+      
       //当前用户：
       api_lcd_pwr_on_hint("                ");//显示当前群组昵称
       api_lcd_pwr_on_hint4(Get_GBK_ActiveUserID());//显示当前用户名
@@ -326,27 +342,26 @@ void Task_RunNormalOperation(void)
       KeyBatteryReport();
       DEL_SetTimer(0,200);
       while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
-        /*群组名：
-          电池电量：
-            在线人数：*/
-      /*api_lcd_pwr_on_hint("                ");//显示当前群组昵称
-      api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
-      api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
-    
-      Key_PersonalCalling_Flag=0;
-      VOICE_SetOutput(ATVOICE_FreePlay,"31003900380030003000330030003700340037003200",44);//当前群组
-      //VOICE_SetOutput(ATVOICE_FreePlay,"535f4d52A47FC47E",16);//当前群组
-      DEL_SetTimer(0,350);
-      while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
-      //VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetMainWorkName(),ApiAtCmd_GetMainWorkNameLen());
-      VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetMainWorkName(),strlen((char const *)ApiAtCmd_GetMainWorkName()));
-      // VOICE_SetOutput(ATVOICE_FreePlay,"13663d6d4b6dd58bc47e3100",strlen((char const *)"13663d6d4b6dd58bc47e3100"));
-      */
+
     }
   }
 /*******个呼键状态检测***************************************************************************************************************************************/
   if(ReadInput_KEY_2==0)//个呼键
   {
+    if(TheMenuLayer_Flag!=0)//解决个呼键影响菜单界面信息显示，现在只要按个呼键就会退出菜单
+    {
+        MenuDisplay(Menu_RefreshAllIco);
+        MenuModeCount=1;
+        TheMenuLayer_Flag=0;
+        MenuMode_Flag=0;
+        ApiMenu_SwitchGroup_Flag=0;
+        ApiMenu_SwitchCallUser_Flag=0;
+        ApiMenu_GpsInfo_Flag=0;
+        ApiMenu_BacklightTimeSet_Flag=0;
+        ApiMenu_KeylockTimeSet_Flag=0;
+        ApiMenu_NativeInfo_Flag=0;
+        ApiMenu_BeiDouOrWritingFrequency_Flag=0;
+    }
     api_lcd_pwr_on_hint("对象:   选择个呼");
     api_lcd_pwr_on_hint2(HexToChar_MainUserId());
     PersonalCallingNum=0;//解决按单呼键直接选中，单呼用户并不是播报的用户

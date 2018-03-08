@@ -153,7 +153,7 @@ void SubmenuMenuDisplay(SubmenuMenuDisplayType id)
     if(PositionInfoSendToATPORT_InfoDisplay_Flag==FALSE)//未定位显示000
     {
       api_lcd_pwr_on_hint3("经度:000.000000 ");//清屏
-       api_lcd_pwr_on_hint("纬度:00.000000 0");//清屏
+       api_lcd_pwr_on_hint("纬度:00.000000  ");//清屏
     }
     else
     {
