@@ -42,6 +42,7 @@ typedef struct {							//define password drive data type
 	u8 ComanType;
 }PAS_TYPE;
 
+bool WriteFreq_Flag=FALSE;
 static UART_DRV	UartDrvObj;	//define UART drive data
 static PAS_TYPE PasObj;	//define password data
 
@@ -161,6 +162,7 @@ void UART3_ToMcuMain(void)
 		cId = UartDrvObj.cData;//UartDrvObj.cData为串口接收到的数据，数据传递到cId
 		if ((cId == 0x5A) || (cId == 0xA5) || (cId == 0xAA))		//UART cId process process //判断接收到的数据是否是：5A、A5、AA
 		{
+                  WriteFreq_Flag=TRUE;
 			if (UART_Link(cId) == TRUE)								//UART link process
 			{			
 				if (UART_KeyCommand() == FALSE)						//key command process

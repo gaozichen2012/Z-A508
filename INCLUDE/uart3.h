@@ -21,6 +21,7 @@ typedef enum {					//UART string error code
 	UART_FUNCTION	= 0xFE,		//UART MCU function error code 
 	UART_FAILI		= 0xFF		//UART MCU failial code
 }UART_ERROR;
+extern bool WriteFreq_Flag;
 
 extern void Uart3_Init(void);
 extern void UART3_Interrupt(void);

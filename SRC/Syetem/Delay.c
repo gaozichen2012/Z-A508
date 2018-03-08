@@ -6,6 +6,7 @@
 #define DEL_RUN			0x01
 
 //#define TimeoutLimit            30//240//键盘超时锁定时间10s
+u8 WriteFreqTimeCount=0;
 u8 *ucGPSSendToAtPort   ="AT+GPSFUNC=21";
 u8 *ucGPSUploadTime_5s  ="AT+GPSFUNC=2,5";
 u8 DEL_500ms_Count=0;
@@ -252,6 +253,16 @@ static void DEL_500msProcess(void)			//delay 500ms process server
     DEL_500ms_Count2++;
     TimeCount_Light++;
     CSQTimeCount++;
+/*****进入写频状态5s后将写频标志位清零****************/
+    if(WriteFreq_Flag==TRUE)
+    {
+      if(WriteFreqTimeCount>=10)
+      {
+        WriteFreq_Flag=FALSE;
+        WriteFreqTimeCount=0;
+      }
+      WriteFreqTimeCount++;
+    }
 /***************/
     if(KeyDownUpChoose_GroupOrUser_Flag==3)
     {

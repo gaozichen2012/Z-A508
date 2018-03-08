@@ -139,7 +139,11 @@ void Task_RunNormalOperation(void)
       LoosenPttMomentCount=3;
     }
   }
-
+//解决写频时，影响其他机器使用（其他机器处于接收状态）
+  if(WriteFreq_Flag==TRUE)//解决写频时，群组内其他机器一直有滴滴滴的声音
+  {
+    ApiPocCmd_WritCommand(PocComm_EndPTT,ucEndPTT,strlen((char const *)ucEndPTT));
+  }
 //解决换组或个呼是，按住PTT进入死循环收不到指令的问题
   
   if(KeyDownUpChoose_GroupOrUser_Flag==3)
@@ -181,9 +185,12 @@ void Task_RunNormalOperation(void)
       }
       else
       {
-        if(EnterPttMoment_Flag==TRUE)
+        if(WriteFreq_Flag==FALSE)//解决写频时，群组内其他机器一直有滴滴滴的声音
         {
-          ApiPocCmd_WritCommand(PocComm_StartPTT,ucStartPTT,strlen((char const *)ucStartPTT));
+          if(EnterPttMoment_Flag==TRUE)
+          {
+            ApiPocCmd_WritCommand(PocComm_StartPTT,ucStartPTT,strlen((char const *)ucStartPTT));
+          }
         }
       }
     }
@@ -537,6 +544,7 @@ else
     api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
     api_disp_all_screen_refresh();// 全屏统一刷新
     POC_ReceivedVoiceEnd_Flag=0;//默认无语音状态
+    Key_PersonalCalling_Flag=0;//解决被结束单呼后，按上下键任然是切换个呼成员
     }
   else//空闲状态
   {}
