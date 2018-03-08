@@ -152,8 +152,8 @@ void SubmenuMenuDisplay(SubmenuMenuDisplayType id)
     api_lcd_pwr_on_hint3("                ");//清屏
     if(PositionInfoSendToATPORT_InfoDisplay_Flag==FALSE)//未定位显示000
     {
-      api_lcd_pwr_on_hint3("经度:00.000000  ");//清屏
-       api_lcd_pwr_on_hint("纬度:000.000000 ");//清屏
+      api_lcd_pwr_on_hint3("经度:000.000000 ");//清屏
+       api_lcd_pwr_on_hint("纬度:00.000000 0");//清屏
     }
     else
     {
@@ -168,6 +168,7 @@ void SubmenuMenuDisplay(SubmenuMenuDisplayType id)
     Buf1[8]=0x2e;
     COML_DecToAsc(Data_Latitude_Second(), Buf1+9);
     COML_StringReverse(6,Buf1+9);
+    Buf1[15]='\0';
     api_lcd_pwr_on_hint3(Buf1);
     //换算并显示纬度
     Buf2[0]=0xce;
@@ -180,6 +181,7 @@ void SubmenuMenuDisplay(SubmenuMenuDisplayType id)
     Buf2[7]=0x2e;
     COML_DecToAsc(Data_Longitude_Second(), Buf2+8);
     COML_StringReverse(6,Buf2+8);
+    Buf2[14]='\0';
     api_lcd_pwr_on_hint(Buf2);
     }
     break;

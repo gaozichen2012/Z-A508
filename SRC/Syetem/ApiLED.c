@@ -41,7 +41,7 @@ void LED_IntOutputRenew(void)
         }
         
       }
-      if(LED_Conut>=50)
+      if(LED_Conut>=53)
       {
         //PositionInformationSendToATPORT_Flag=FALSE;
         PositionInfoSendToATPORT_RedLed_Flag=FALSE;
