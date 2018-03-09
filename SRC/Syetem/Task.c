@@ -338,6 +338,7 @@ void Task_RunNormalOperation(void)
 /*******个呼键状态检测***************************************************************************************************************************************/
   if(ReadInput_KEY_2==0)//个呼键
   {
+    GettheOnlineMembersDone=FALSE;//解决个呼按键与上下键逻辑混乱问题，个呼键按下直到播报第一个成员后才可以按上下键切换个呼成员
     if(TheMenuLayer_Flag!=0)//解决个呼键影响菜单界面信息显示，现在只要按个呼键就会退出菜单
     {
         MenuDisplay(Menu_RefreshAllIco);
@@ -361,6 +362,7 @@ void Task_RunNormalOperation(void)
     while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
     ApiPocCmd_WritCommand(PocComm_UserListInfo,ucRequestUserListInfo,strlen((char const *)ucRequestUserListInfo));
     KeyDownUpChoose_GroupOrUser_Flag=2;
+    KeyPersonalCallingCount=0;//解决单呼模式，上下键成员非正常顺序，第一个成员在切换时会第二、第三个碰到
   }
 /*******报警键状态检测********************************************************************************************************************************************/
   if(ReadInput_KEY_4==0)//报警键

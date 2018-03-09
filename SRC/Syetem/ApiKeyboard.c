@@ -127,18 +127,21 @@ void Keyboard_Test(void)
     {
     if(Key_PersonalCalling_Flag==1)//如果按下个呼键
     {
-      KeyPersonalCallingCount--;
-      PersonalCallingNum=KeyPersonalCallingCount;//个呼计数从零开始
-      if(PersonalCallingNum<0)
+      if(GettheOnlineMembersDone==TRUE)
       {
-        PersonalCallingNum=ApiAtCmd_GetUserNum()-1;
-        KeyPersonalCallingCount=ApiAtCmd_GetUserNum()-1;
+        KeyPersonalCallingCount--;
+        PersonalCallingNum=KeyPersonalCallingCount;//个呼计数从零开始
+        if(PersonalCallingNum<0)
+        {
+          PersonalCallingNum=ApiAtCmd_GetUserNum()-1;
+          KeyPersonalCallingCount=ApiAtCmd_GetUserNum()-1;
+        }
+        VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(PersonalCallingNum),ApiAtCmd_GetUserNameLen(PersonalCallingNum));//播报按上键之后对应的用户名
+        UpDownSwitching_Flag=TRUE;
+        api_lcd_pwr_on_hint("对象:   个呼选择");
+        api_lcd_pwr_on_hint2(HexToChar_PersonalCallingNum());
+        KeyDownUpChoose_GroupOrUser_Flag=2;
       }
-      VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(PersonalCallingNum),ApiAtCmd_GetUserNameLen(PersonalCallingNum));//播报按上键之后对应的用户名
-      UpDownSwitching_Flag=TRUE;
-      api_lcd_pwr_on_hint("对象:   个呼选择");
-      api_lcd_pwr_on_hint2(HexToChar_PersonalCallingNum());
-      KeyDownUpChoose_GroupOrUser_Flag=2;
     }
     else
     {
@@ -195,6 +198,7 @@ void Keyboard_Test(void)
             KeyDownUpChoose_GroupOrUser_Flag=3;
             TASK_Ptt_StartPersonCalling_Flag=TRUE;//判断主动单呼状态（0a）
             EnterKeyTimeCount=0;
+            
           }
           break;
         case 3:
@@ -240,6 +244,7 @@ void Keyboard_Test(void)
             ApiMenu_SwitchCallUser_Flag=1;
             MenuMode_Flag=0;
             /*******直接搬个呼键状态检测的程序***************************************************************************************************************************************/
+            GettheOnlineMembersDone=FALSE;//解决个呼按键与上下键逻辑混乱问题，个呼键按下直到播报第一个成员后才可以按上下键切换个呼成员
             api_lcd_pwr_on_hint("对象:   选择个呼");
             api_lcd_pwr_on_hint2(HexToChar_MainUserId());
             PersonalCallingNum=0;//解决按单呼键直接选中，单呼用户并不是播报的用户
@@ -250,6 +255,7 @@ void Keyboard_Test(void)
             ApiPocCmd_WritCommand(PocComm_UserListInfo,"0E000000000064",strlen((char const *)"0E000000000064"));
             KeyDownUpChoose_GroupOrUser_Flag=2;
             TheMenuLayer_Flag=0;//处于0级菜单，进入单呼模式为菜单外功能
+            KeyPersonalCallingCount=0;//解决单呼模式，上下键成员非正常顺序，第一个成员在切换时会第二、第三个碰到
             break;
           }
           break;
@@ -481,19 +487,22 @@ void Keyboard_Test(void)
       {
         if(Key_PersonalCalling_Flag==1)//如果按下个呼键
         {
-          KeyDownUpChoose_GroupOrUser_Flag=2;
-          KeyPersonalCallingCount++;
-          PersonalCallingNum=KeyPersonalCallingCount;//个呼计数从零开始
-          if(PersonalCallingNum>ApiAtCmd_GetUserNum()-1)
+          if(GettheOnlineMembersDone==TRUE)
           {
-            KeyPersonalCallingCount=0;
-            PersonalCallingNum=0;
+            KeyDownUpChoose_GroupOrUser_Flag=2;
+            KeyPersonalCallingCount++;
+            PersonalCallingNum=KeyPersonalCallingCount;//个呼计数从零开始
+            if(PersonalCallingNum>ApiAtCmd_GetUserNum()-1)
+            {
+              KeyPersonalCallingCount=0;
+              PersonalCallingNum=0;
+            }
+            VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(PersonalCallingNum),ApiAtCmd_GetUserNameLen(PersonalCallingNum));//播报按上键之后对应的用户名
+            UpDownSwitching_Flag=TRUE;
+            api_lcd_pwr_on_hint("对象:   个呼选择");
+            api_lcd_pwr_on_hint2(HexToChar_PersonalCallingNum());
+            KeyDownUpChoose_GroupOrUser_Flag=2;
           }
-          VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(PersonalCallingNum),ApiAtCmd_GetUserNameLen(PersonalCallingNum));//播报按上键之后对应的用户名
-          UpDownSwitching_Flag=TRUE;
-          api_lcd_pwr_on_hint("对象:   个呼选择");
-          api_lcd_pwr_on_hint2(HexToChar_PersonalCallingNum());
-          KeyDownUpChoose_GroupOrUser_Flag=2;
         }
         else
         {
