@@ -26,6 +26,7 @@ extern u8 BootProcess_SIMST_Flag;
 extern u8 BootProcess_PPPCFG_Flag;
 extern u8 BootProcess_PPPCFG_Flag_Zanshi;//¡Ÿ ±¥˙ÃÊPPPCFGºÏ≤‚
 extern bool ApiAtCmd_TrumpetVoicePlay_Flag;
+extern bool ApiAtCmd_ZTTS0_Flag;
 extern u8 KeyDownUpChoose_GroupOrUser_Flag;
 extern u8 CSQ_Flag;
 extern bool PositionInformationSendToATPORT_Flag;

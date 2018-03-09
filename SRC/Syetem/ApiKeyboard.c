@@ -33,6 +33,7 @@ u8 TestBuf1[6];//测试显示屏短号号码使用
   u8 numCount=0;//测试显示屏短号号码使用
 bool PressButton;//测试短号功能使用
 bool KeyBoardState;//测试短号功能使用
+bool UpDownSwitching_Flag=FALSE;
 static void GeHuTest(u32 KeyID);
 void Keyboard_Test(void)
 {
@@ -134,6 +135,7 @@ void Keyboard_Test(void)
         KeyPersonalCallingCount=ApiAtCmd_GetUserNum()-1;
       }
       VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(PersonalCallingNum),ApiAtCmd_GetUserNameLen(PersonalCallingNum));//播报按上键之后对应的用户名
+      UpDownSwitching_Flag=TRUE;
       api_lcd_pwr_on_hint("对象:   个呼选择");
       api_lcd_pwr_on_hint2(HexToChar_PersonalCallingNum());
       KeyDownUpChoose_GroupOrUser_Flag=2;
@@ -148,6 +150,7 @@ void Keyboard_Test(void)
         KeyUpDownCount=ApiAtCmd_GetGroupNum()-ApiAtCmd_GetMainGroupId();//
       }
       VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetGroupName( GroupCallingNum),ApiAtCmd_GetGroupNameLen(GroupCallingNum));
+      UpDownSwitching_Flag=TRUE;
       api_lcd_pwr_on_hint("群组:   选择群组");//显示汉字
       api_lcd_pwr_on_hint2(HexToChar_GroupCallingNum());//显示数据
       KeyDownUpChoose_GroupOrUser_Flag=1;
@@ -487,6 +490,7 @@ void Keyboard_Test(void)
             PersonalCallingNum=0;
           }
           VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(PersonalCallingNum),ApiAtCmd_GetUserNameLen(PersonalCallingNum));//播报按上键之后对应的用户名
+          UpDownSwitching_Flag=TRUE;
           api_lcd_pwr_on_hint("对象:   个呼选择");
           api_lcd_pwr_on_hint2(HexToChar_PersonalCallingNum());
           KeyDownUpChoose_GroupOrUser_Flag=2;
@@ -501,6 +505,7 @@ void Keyboard_Test(void)
             KeyUpDownCount=1-ApiAtCmd_GetMainGroupId();
           }
           VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetGroupName(GroupCallingNum),ApiAtCmd_GetGroupNameLen(GroupCallingNum));
+          UpDownSwitching_Flag=TRUE;
           api_lcd_pwr_on_hint("群组:   群组选择");//显示汉字
           api_lcd_pwr_on_hint2(HexToChar_GroupCallingNum());//显示数据
           KeyDownUpChoose_GroupOrUser_Flag=1;
@@ -676,6 +681,7 @@ void Keyboard_Test(void)
           ApiPocCmd_WritCommand(PocComm_Cancel,(u8 *)ucQuitPersonalCalling,strlen((char const *)ucQuitPersonalCalling));
           Key_Flag_1=1;//按键延时标志位
           Key_PersonalCalling_Flag=0;//进入组呼标志位
+          KeyDownUpChoose_GroupOrUser_Flag=0;//解决（个呼键→返回键→OK或PTT）屏幕显示错误的BUG
         }
         else//如果处于组呼模式则应该无变化
         {

@@ -8,7 +8,6 @@ u8 PersonCallIco_Flag=0;//根据显示组呼个呼图标判断状态
 u8 Key_PersonalCalling_Flag=0;
 bool TASK_Ptt_StartPersonCalling_Flag=FALSE;
 bool Task_Landing_Flag=FALSE;
-u8 KeyCount_PersonalCalling=0;
 u8 EnterPttMomentCount=0;
 u8 LoosenPttMomentCount=0;
 bool EnterPttMoment_Flag=FALSE;
@@ -40,9 +39,7 @@ void Task_RunStart(void)
   if(BootProcess_SIMST_Flag==1)//收到模块开机指令:SIMST:1
   {
     api_disp_icoid_output( eICO_IDRXNULL, TRUE, TRUE);//GPRS无信号图标
-    
     BEEP_Time(50);
-    
     NoUseNum=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)ucCLVL,strlen((char const *)ucCLVL));//
     Delay_100ms(1);//0.1s
     NoUseNum=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)ucVGR,strlen((char const *)ucVGR));//
@@ -55,18 +52,12 @@ void Task_RunStart(void)
     Delay_100ms(1);//0.1s
     NoUseNum=ApiAtCmd_WritCommand(ATCOMM2_ZTTS_Abell,(u8 *)ucZTTS_Abell,strlen((char const *)ucZTTS_Abell));//播报游标广域对讲机
     api_lcd_pwr_on_hint("中兴易洽广域对讲");
-      //api_lcd_pwr_on_hint("中1 b c 广域对讲");
     Delay_100ms(25);//2.5s
     NoUseNum=ApiAtCmd_WritCommand(ATCOMM1_PPPCFG,(u8 *)ucPPPCFG,strlen((char const *)ucPPPCFG));//1.发送PPPCFG
     BootProcess_SIMST_Flag=0;
     VOICE_SetOutput(ATVOICE_FreePlay,"1c64227d517fdc7e",16);//播报搜索网络
-    //DEL_SetTimer(0,100);
-    //while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
     api_lcd_pwr_on_hint("   搜索网络...  ");
     NoUseNum=ApiAtCmd_WritCommand(ATCOMM6_CSQ,(u8 *)ucCSQ,strlen((char const *)ucCSQ));//CSQ?
-    //Delay_100ms(100);//0.1s
-    //DEL_SetTimer(0,100);
-    //while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
   }
   else
   {
@@ -89,7 +80,6 @@ void Task_RunStart(void)
       Delay_100ms(40);//4s
       VOICE_SetOutput(ATVOICE_FreePlay,"636b28577b764696",16);//播报正在登陆 
      api_lcd_pwr_on_hint("   正在登陆...    ");
-    //  Delay_100ms(10);//1s
       ApiPocCmd_WritCommand(PocComm_OpenPOC,ucPocOpenConfig,strlen((char const *)ucPocOpenConfig));
       BootProcess_PPPCFG_Flag_Zanshi=0;
       Task_Landing_Flag=TRUE;
@@ -365,18 +355,11 @@ void Task_RunNormalOperation(void)
     api_lcd_pwr_on_hint("对象:   选择个呼");
     api_lcd_pwr_on_hint2(HexToChar_MainUserId());
     PersonalCallingNum=0;//解决按单呼键直接选中，单呼用户并不是播报的用户
-    KeyCount_PersonalCalling++;
-    
-    if(KeyCount_PersonalCalling>=2)
-    {
-      Key_PersonalCalling_Flag=1;
-      VOICE_SetOutput(ATVOICE_FreePlay,"2a4e7c542000106258540990e962",28);//个呼成员选择
-      DEL_SetTimer(0,200);
-      while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
-      KeyCount_PersonalCalling=1;
-    }
+    Key_PersonalCalling_Flag=1;
+    VOICE_SetOutput(ATVOICE_FreePlay,"2a4e7c542000106258540990e962",28);//个呼成员选择
+    DEL_SetTimer(0,200);
+    while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
     ApiPocCmd_WritCommand(PocComm_UserListInfo,ucRequestUserListInfo,strlen((char const *)ucRequestUserListInfo));
-    //VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(0),ApiAtCmd_GetUserNameLen(0));
     KeyDownUpChoose_GroupOrUser_Flag=2;
   }
 /*******报警键状态检测********************************************************************************************************************************************/
@@ -574,14 +557,28 @@ if(ApiPocCmd_Tone_Flag==TRUE)//8b0003 解决按PTT无提示音的问题
 }
 else
 {
-  if(ApiAtCmd_TrumpetVoicePlay_Flag==TRUE)
+  if(UpDownSwitching_Flag==TRUE)//按上下键换组换人状态
   {
-    AUDIO_IOAFPOW(ON);//在VOICE_SetOutput()加了打开，在识别POC:91加了功放打开;PTT键
+    AUDIO_IOAFPOW(ON);
+    if(ApiAtCmd_ZTTS0_Flag==TRUE)
+    {
+      AUDIO_IOAFPOW(OFF);
+      UpDownSwitching_Flag=FALSE;
+      ApiAtCmd_ZTTS0_Flag=FALSE;
+    }
   }
   else
   {
-    AUDIO_IOAFPOW(OFF);
+    if(ApiAtCmd_TrumpetVoicePlay_Flag==TRUE)
+    {
+      AUDIO_IOAFPOW(ON);//在VOICE_SetOutput()加了打开，在识别POC:91加了功放打开;PTT键
+    }
+    else
+    {
+      AUDIO_IOAFPOW(OFF);
+    }
   }
+
   
 }
 

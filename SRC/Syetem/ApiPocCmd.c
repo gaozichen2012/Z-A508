@@ -542,7 +542,6 @@ void ApiPocCmd_10msRenew(void)
       }
       if(ucId==0x00)//如果为指令代表离开群组
       {
-        
       }
       else//r如果为在群组内
       {

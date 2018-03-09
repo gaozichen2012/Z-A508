@@ -15,4 +15,5 @@ extern u8 KeylockTimeSetCount;
 extern u8 TheMenuLayer_Flag;//所处菜单层级；默认状态：1 一级菜单：1 二级菜单：2
 extern u8 MenuMode_Flag;
 extern u8 MenuModeCount;
+extern bool UpDownSwitching_Flag;
 #endif

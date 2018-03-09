@@ -3,6 +3,7 @@ u8 BootProcess_SIMST_Flag=0;
 u8 BootProcess_PPPCFG_Flag=0;
 u8 BootProcess_PPPCFG_Flag_Zanshi=1;//临时代替PPPCFG检测
 bool ApiAtCmd_TrumpetVoicePlay_Flag=FALSE;//功放控制标志位
+bool ApiAtCmd_ZTTS0_Flag=FALSE;
 u8 CSQ_Flag=0;
 u8 CSQ99Count_Flag=0;
 u8 KeyDownUpChoose_GroupOrUser_Flag=0;
@@ -10,6 +11,7 @@ u8 KeyDownUpChoose_GroupOrUser_Flag=0;
 const u8 *ucGD83Reset  = "at^reset";
 const u8 *ucRxPASTATE1 = "PASTATE:1";
 const u8 *ucRxPASTATE0 = "PASTATE:0";
+const u8 *ucRxZTTS0 = "ZTTS:0";
 const u8 *ucCheckRssi = "AT+CSQ?";
 const u8 *ucRxCSQ31 = "CSQ:31";
 const u8 *ucRxCSQ99 = "CSQ:99";
@@ -320,6 +322,11 @@ void ApiAtCmd_10msRenew(void)
     if(ucRet == 0x00)
     {
       ApiAtCmd_TrumpetVoicePlay_Flag=FALSE;
+    }
+    ucRet = memcmp(pBuf, ucRxZTTS0, 6);// +PASTATE:0
+    if(ucRet == 0x00)
+    {
+      ApiAtCmd_ZTTS0_Flag=TRUE;
     }
 /***********CSQ信号获取及判断****************************************************************/
     ucRet = memcmp(pBuf, ucRxCSQ31, 6);//CSQ:31
