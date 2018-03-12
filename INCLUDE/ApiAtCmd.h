@@ -20,8 +20,10 @@ typedef enum{
   ATCOMM13_CheckRssi            = 0x0D,
   ATCOMM14_CheckCard            = 0x0E,
   ATCOMM3_GD83StartupReset      = 0x0F,
+  ATCOMM15_HDRCSQ               = 0x10,
 }AtCommType;
 
+extern u8 HDRCSQValue;//HDRCSQ的值
 extern u8 BootProcess_SIMST_Flag;
 extern u8 BootProcess_PPPCFG_Flag;
 extern u8 BootProcess_PPPCFG_Flag_Zanshi;//临时代替PPPCFG检测
@@ -34,6 +36,7 @@ extern bool PositionInfoSendToATPORT_RedLed_Flag;
 extern bool PositionInfoSendToATPORT_InfoDisplay_Flag;
 extern bool ApiAtCmd_WritCommand(AtCommType id, u8 *buf, u16 len);
 extern bool ApiAtCmd_PlayVoice(AtVoiceType id, u8 *buf, u8 len);
+extern void HDRCSQSignalIcons(void);
 extern void ApiAtCmd_100msRenew(void);
 extern void ApiCaretCmd_10msRenew(void);
 extern void ApiAtCmd_10msRenew(void);

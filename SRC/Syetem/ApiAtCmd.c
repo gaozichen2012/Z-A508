@@ -7,14 +7,15 @@ bool ApiAtCmd_ZTTS0_Flag=FALSE;
 u8 CSQ_Flag=0;
 u8 CSQ99Count_Flag=0;
 u8 KeyDownUpChoose_GroupOrUser_Flag=0;
-
+u8 HDRCSQValue=0;//HDRCSQ的值
 const u8 *ucGD83Reset  = "at^reset";
 const u8 *ucRxPASTATE1 = "PASTATE:1";
 const u8 *ucRxPASTATE0 = "PASTATE:0";
 const u8 *ucRxZTTS0 = "ZTTS:0";
 const u8 *ucCheckRssi = "AT+CSQ?";
-const u8 *ucRxCSQ31 = "CSQ:31";
-const u8 *ucRxCSQ99 = "CSQ:99";
+const u8 *ucHDRCSQ = "AT^HDRCSQ";
+const u8 *ucRxCSQ = "CSQ:";
+const u8 *ucRxHDRCSQ = "^HDRCSQ:";
 const u8 *ucGpsPosition = "LATLON:";
 const u8 *ucCDMATIME = "^CDMATIME:";
 const u8 *ucGPSINFO = "^GPSINFO:";
@@ -78,6 +79,8 @@ typedef struct{
                 u8 ucSpeed;
 		u8 Buf[30];
 		u8 Len;
+                u8 HDRCSQBuf[2];
+                u8 HDRCSQLen;
 	}NetState;
 }AtCmdDrv;
 static AtCmdDrv AtCmdDrvobj;
@@ -119,6 +122,9 @@ bool ApiAtCmd_WritCommand(AtCommType id, u8 *buf, u16 len)
     break;
   case ATCOMM6_CSQ://1
     DrvGD83_UART_TxCommand((u8*)ucCheckRssi, strlen((char const*)ucCheckRssi));
+    break;
+  case ATCOMM15_HDRCSQ:
+    DrvGD83_UART_TxCommand((u8*)ucHDRCSQ, strlen((char const*)ucHDRCSQ));
     break;
   case ATCOMM7_VGR://1
     DrvGD83_UART_TxCommand(buf, len);
@@ -221,6 +227,53 @@ void ApiCaretCmd_10msRenew(void)
   u8 * pBuf, ucRet, Len,i;
   while((Len = DrvMC8332_CaretNotify_Queue_front(&pBuf)) != 0)
   {
+    /***********HDRCSQ信号获取及判断****************************************************************/
+    ucRet = memcmp(pBuf, ucRxHDRCSQ, 8);
+    if(ucRet == 0x00)
+    {
+      if(Len > 8)//去頭
+      {
+        Len -= 8;
+      }
+       for(i = 0x00; i < Len; i++)
+       {
+         AtCmdDrvobj.NetState.HDRCSQBuf[i] = pBuf[i + 8];//
+       }
+       AtCmdDrvobj.NetState.HDRCSQLen = i;
+      HDRCSQValue=CHAR_TO_Digital(AtCmdDrvobj.NetState.HDRCSQBuf,2);
+      if(AtCmdDrvobj.NetState.HDRCSQLen==1)
+      {
+        
+      }
+      else
+      {
+        if(HDRCSQValue>=80)//5格
+        {
+        }
+        else if(HDRCSQValue>=70&&HDRCSQValue<80)
+        {
+          
+        }
+        else if(HDRCSQValue>=60&&HDRCSQValue<70)
+        {
+          
+        }
+        else if(HDRCSQValue>=40&&HDRCSQValue<60)
+        {
+          
+        }
+        else if(HDRCSQValue>=20&&HDRCSQValue<40)
+        {
+          
+        }
+        else
+        {
+          
+        }
+        
+      }
+    } 
+    /*********************************************************/
     ucRet = memcmp(pBuf, ucSIMST1, 8);//^SIMST:1
     if(ucRet == 0x00)
     {
@@ -329,7 +382,7 @@ void ApiAtCmd_10msRenew(void)
       ApiAtCmd_ZTTS0_Flag=TRUE;
     }
 /***********CSQ信号获取及判断****************************************************************/
-    ucRet = memcmp(pBuf, ucRxCSQ31, 6);//CSQ:31
+/*    ucRet = memcmp(pBuf, ucRxCSQ31, 6);//CSQ:31
     if(ucRet == 0x00)
     {
       CSQ_Flag=1;
@@ -350,7 +403,7 @@ void ApiAtCmd_10msRenew(void)
         CSQ99Count_Flag=0;
         ApiAtCmd_WritCommand(ATCOMM3_GD83Reset,(void*)0, 0);
       }
-    }
+    }*/
 /***********GPS经纬度获取（部标使用）****************************************************************/
     ucRet = memcmp(pBuf, ucGpsPosition, 7);//CSQ:31
     if(ucRet == 0x00)
@@ -641,4 +694,32 @@ u8 Data_Date2(void)
 u8 Data_Speed(void)
 {
   return AtCmdDrvobj.NetState.ucSpeed;
+}
+
+void HDRCSQSignalIcons(void)
+{
+  if(HDRCSQValue>=80)//5格
+  {
+    api_disp_icoid_output( eICO_IDSPEAKER, TRUE, TRUE);//5格信号
+  }
+  else if(HDRCSQValue>=70&&HDRCSQValue<80)
+  {
+    api_disp_icoid_output( eICO_IDSCANPA, TRUE, TRUE);//4格信号
+  }
+  else if(HDRCSQValue>=60&&HDRCSQValue<70)
+  {
+    api_disp_icoid_output( eICO_IDSCAN, TRUE, TRUE);//3格信号
+  }
+  else if(HDRCSQValue>=40&&HDRCSQValue<60)
+  {
+    api_disp_icoid_output( eICO_IDRXNULL, TRUE, TRUE);//2格信号
+  }
+  else if(HDRCSQValue>=20&&HDRCSQValue<40)
+  {
+    api_disp_icoid_output( eICO_IDRXFULL, TRUE, TRUE);//1格信号
+  }
+  else
+  {
+    api_disp_icoid_output( eICO_IDMESSAGE, TRUE, TRUE);//0格信号
+  }
 }

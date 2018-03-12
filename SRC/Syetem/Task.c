@@ -57,7 +57,7 @@ void Task_RunStart(void)
     BootProcess_SIMST_Flag=0;
     VOICE_SetOutput(ATVOICE_FreePlay,"1c64227d517fdc7e",16);//播报搜索网络
     api_lcd_pwr_on_hint("   搜索网络...  ");
-    NoUseNum=ApiAtCmd_WritCommand(ATCOMM6_CSQ,(u8 *)ucCSQ,strlen((char const *)ucCSQ));//CSQ?
+    NoUseNum=ApiAtCmd_WritCommand(ATCOMM15_HDRCSQ,(u8 *)ucCSQ,strlen((char const *)ucCSQ));//CSQ?
   }
   else
   {
@@ -68,9 +68,9 @@ void Task_RunStart(void)
       Delay_100ms(100);//10s
     }
   }
-  if(CSQ_Flag==1)//CSQ?
+  if(HDRCSQValue>=30)//CSQ?
   {
-    api_disp_icoid_output( eICO_IDRXFULL, TRUE, TRUE);//GPRS三格信号图标
+    HDRCSQSignalIcons();
     api_disp_icoid_output( eICO_IDEmergency, TRUE, TRUE);//开机搜到信号，显示3G图标
     api_lcd_pwr_on_hint("   正在登陆..     ");
     if(BootProcess_PPPCFG_Flag_Zanshi==1)//如果收到^PPPCFG//因为有时收不到该指令，临时屏蔽，后期加上
@@ -87,12 +87,12 @@ void Task_RunStart(void)
   }
   else
   {
-    if(CSQ_Flag==2)
+    if(HDRCSQValue<30)
     {
       Delay_100ms(50);//5s
       VOICE_SetOutput(ATVOICE_FreePlay,"1c64227d517fdc7e",16);//播报搜索网络
       api_lcd_pwr_on_hint("   搜索网络...  ");
-      NoUseNum=ApiAtCmd_WritCommand(ATCOMM6_CSQ,(u8 *)ucCSQ,strlen((char const *)ucCSQ));//CSQ?
+      NoUseNum=ApiAtCmd_WritCommand(ATCOMM15_HDRCSQ,(u8 *)ucCSQ,strlen((char const *)ucCSQ));//CSQ?
     }
   }
 }
@@ -580,10 +580,7 @@ else
       AUDIO_IOAFPOW(OFF);
     }
   }
-
-  
 }
-
 /***********************************************/
 
 }

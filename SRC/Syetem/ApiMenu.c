@@ -104,7 +104,8 @@ void MenuDisplay(MenuDisplayType id)
     break;
   case Menu_RefreshAllIco:
     api_lcd_pwr_on_hint3("                ");//«Â∆¡
-    api_disp_icoid_output( eICO_IDRXFULL, TRUE, TRUE);//GPRS»˝∏Ò–≈∫≈Õº±Í
+    //api_disp_icoid_output( eICO_IDRXFULL, TRUE, TRUE);//GPRS»˝∏Ò–≈∫≈Õº±Í
+    HDRCSQSignalIcons();
     if(NetworkType_2Gor3G_Flag==3)
       api_disp_icoid_output( eICO_IDEmergency, TRUE, TRUE);//3GÕº±Í
     else
@@ -213,32 +214,32 @@ void Level3MenuDisplay(Level3MenuDisplayType id)
   case BacklightTimeSet_10s:
     api_lcd_pwr_on_hint3("±≥π‚µ∆          ");
     api_lcd_pwr_on_hint5("1/7");
-     api_lcd_pwr_on_hint("10√Î            ");
+     api_lcd_pwr_on_hint("5√Î            ");
     break;
   case BacklightTimeSet_20s:
     api_lcd_pwr_on_hint3("±≥π‚µ∆          ");
     api_lcd_pwr_on_hint5("2/7");
-     api_lcd_pwr_on_hint("20√Î            ");
+     api_lcd_pwr_on_hint("10√Î            ");
     break;
   case BacklightTimeSet_30s:
     api_lcd_pwr_on_hint3("±≥π‚µ∆          ");
     api_lcd_pwr_on_hint5("3/7");
-     api_lcd_pwr_on_hint("30√Î            ");
+     api_lcd_pwr_on_hint("15√Î            ");
     break;
   case BacklightTimeSet_40s:
     api_lcd_pwr_on_hint3("±≥π‚µ∆          ");
     api_lcd_pwr_on_hint5("4/7");
-     api_lcd_pwr_on_hint("40√Î            ");
+     api_lcd_pwr_on_hint("20√Î            ");
     break;
   case BacklightTimeSet_50s:
     api_lcd_pwr_on_hint3("±≥π‚µ∆          ");
     api_lcd_pwr_on_hint5("5/7");
-     api_lcd_pwr_on_hint("50√Î            ");
+     api_lcd_pwr_on_hint("25√Î            ");
     break;
   case BacklightTimeSet_60s:
     api_lcd_pwr_on_hint3("±≥π‚µ∆          ");
     api_lcd_pwr_on_hint5("6/7");
-     api_lcd_pwr_on_hint("60√Î            ");
+     api_lcd_pwr_on_hint("30√Î            ");
     break;
   case KeylockTimeSet_0s:
     api_lcd_pwr_on_hint3("º¸≈ÃÀ¯          ");

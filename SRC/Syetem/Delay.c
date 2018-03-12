@@ -6,6 +6,7 @@
 #define DEL_RUN			0x01
 
 //#define TimeoutLimit            30//240//键盘超时锁定时间10s
+u8 SignalPoorCount=0;
 u8 WriteFreqTimeCount=0;
 u8 *ucGPSSendToAtPort   ="AT+GPSFUNC=21";
 u8 *ucGPSUploadTime_5s  ="AT+GPSFUNC=2,5";
@@ -305,8 +306,28 @@ static void DEL_500msProcess(void)			//delay 500ms process server
         if(CSQTimeCount>=2*5)
         {
           CSQTimeCount=0;
-          ApiAtCmd_WritCommand(ATCOMM6_CSQ, (void*)0, 0);
+          ApiAtCmd_WritCommand(ATCOMM15_HDRCSQ, (void*)0, 0);
+          HDRCSQSignalIcons();
+          api_disp_all_screen_refresh();// 全屏统一刷新
         }
+/******************************************************************************/
+    if(GetTaskId()==Task_NormalOperation)
+    {
+      if(HDRCSQValue<=30)
+      {
+        SignalPoorCount++;
+        if(SignalPoorCount>=20)
+        {
+          ApiAtCmd_WritCommand(ATCOMM3_GD83Reset,(void*)0, 0);
+          SignalPoorCount=0;
+        }
+      }
+      else
+      {
+        SignalPoorCount=0;
+      }
+    }
+
 /***********************************************************/
     if(ApiAtCmd_GetLoginState()==TRUE)//登录成功
       {
@@ -343,7 +364,7 @@ static void DEL_500msProcess(void)			//delay 500ms process server
     
     FILE_Read(0x236,1,ReadBufferA);//背光时间【秒】
     FILE_Read(0x247,1,ReadBufferB);//键盘锁时间【秒】
-    BacklightTimeCount=10*ReadBufferA[0];
+    BacklightTimeCount=5*ReadBufferA[0];
     if(ReadBufferB[0]==0)
       KeylockTimeCount=200;//如果=200则永远不锁屏
     else
