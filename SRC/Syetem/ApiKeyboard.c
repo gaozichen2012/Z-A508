@@ -138,6 +138,7 @@ void Keyboard_Test(void)
         }
         VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(PersonalCallingNum),ApiAtCmd_GetUserNameLen(PersonalCallingNum));//播报按上键之后对应的用户名
         UpDownSwitching_Flag=TRUE;
+        UpDownSwitchingCount=0;
         api_lcd_pwr_on_hint("对象:   个呼选择");
         api_lcd_pwr_on_hint2(HexToChar_PersonalCallingNum());
         KeyDownUpChoose_GroupOrUser_Flag=2;
@@ -154,6 +155,7 @@ void Keyboard_Test(void)
       }
       VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetGroupName( GroupCallingNum),ApiAtCmd_GetGroupNameLen(GroupCallingNum));
       UpDownSwitching_Flag=TRUE;
+      UpDownSwitchingCount=0;
       api_lcd_pwr_on_hint("群组:   选择群组");//显示汉字
       api_lcd_pwr_on_hint2(HexToChar_GroupCallingNum());//显示数据
       KeyDownUpChoose_GroupOrUser_Flag=1;
@@ -499,6 +501,7 @@ void Keyboard_Test(void)
             }
             VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(PersonalCallingNum),ApiAtCmd_GetUserNameLen(PersonalCallingNum));//播报按上键之后对应的用户名
             UpDownSwitching_Flag=TRUE;
+            UpDownSwitchingCount=0;
             api_lcd_pwr_on_hint("对象:   个呼选择");
             api_lcd_pwr_on_hint2(HexToChar_PersonalCallingNum());
             KeyDownUpChoose_GroupOrUser_Flag=2;
@@ -515,6 +518,7 @@ void Keyboard_Test(void)
           }
           VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetGroupName(GroupCallingNum),ApiAtCmd_GetGroupNameLen(GroupCallingNum));
           UpDownSwitching_Flag=TRUE;
+          UpDownSwitchingCount=0;
           api_lcd_pwr_on_hint("群组:   群组选择");//显示汉字
           api_lcd_pwr_on_hint2(HexToChar_GroupCallingNum());//显示数据
           KeyDownUpChoose_GroupOrUser_Flag=1;

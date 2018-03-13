@@ -24,6 +24,7 @@ u8 LandingTimeCount=0;
 u8 PrimaryLowPowerCount=0;
 u8 ForbiddenSendPttCount=0;
 u8 EnterKeyTimeCount=0;
+u8 UpDownSwitchingCount=0;
 bool LockingState_Flag=FALSE;
 u8 BacklightTimeCount;//=10;//背光灯时间(需要设置进入eeprom)
 u8 KeylockTimeCount;//=30;//键盘锁时间(需要设置进入eeprom)
@@ -254,6 +255,17 @@ static void DEL_500msProcess(void)			//delay 500ms process server
     DEL_500ms_Count2++;
     TimeCount_Light++;
     CSQTimeCount++;
+/*****************************************************/
+    if(UpDownSwitching_Flag==TRUE)
+    {
+      UpDownSwitchingCount++;
+      if(UpDownSwitchingCount>=2*3)
+      {
+        UpDownSwitchingCount=0;
+        UpDownSwitching_Flag=0;
+        AUDIO_IOAFPOW(OFF);
+      }
+    }
 /*****进入写频状态5s后将写频标志位清零****************/
     if(WriteFreq_Flag==TRUE)
     {

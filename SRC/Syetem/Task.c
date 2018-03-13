@@ -600,12 +600,13 @@ else
   if(UpDownSwitching_Flag==TRUE)//按上下键换组换人状态
   {
     AUDIO_IOAFPOW(ON);
-    if(ApiAtCmd_ZTTS0_Flag==TRUE)
+    
+    /*if(ApiAtCmd_ZTTS0_Flag==TRUE)
     {
       AUDIO_IOAFPOW(OFF);
       UpDownSwitching_Flag=FALSE;
       ApiAtCmd_ZTTS0_Flag=FALSE;
-    }
+    }*/
   }
   else
   {
