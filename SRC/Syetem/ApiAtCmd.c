@@ -8,6 +8,7 @@ u8 CSQ_Flag=0;
 u8 CSQ99Count_Flag=0;
 u8 KeyDownUpChoose_GroupOrUser_Flag=0;
 u8 HDRCSQValue=0;//HDRCSQ的值
+u8 CSQValue=0;//HDRCSQ的值
 const u8 *ucGD83Reset  = "at^reset";
 const u8 *ucRxPASTATE1 = "PASTATE:1";
 const u8 *ucRxPASTATE0 = "PASTATE:0";
@@ -81,6 +82,8 @@ typedef struct{
 		u8 Len;
                 u8 HDRCSQBuf[2];
                 u8 HDRCSQLen;
+                u8 CSQBuf[2];
+                u8 CSQLen;
 	}NetState;
 }AtCmdDrv;
 static AtCmdDrv AtCmdDrvobj;
@@ -240,38 +243,8 @@ void ApiCaretCmd_10msRenew(void)
          AtCmdDrvobj.NetState.HDRCSQBuf[i] = pBuf[i + 8];//
        }
        AtCmdDrvobj.NetState.HDRCSQLen = i;
-      HDRCSQValue=CHAR_TO_Digital(AtCmdDrvobj.NetState.HDRCSQBuf,2);
-      if(AtCmdDrvobj.NetState.HDRCSQLen==1)
-      {
-        
-      }
-      else
-      {
-        if(HDRCSQValue>=80)//5格
-        {
-        }
-        else if(HDRCSQValue>=70&&HDRCSQValue<80)
-        {
-          
-        }
-        else if(HDRCSQValue>=60&&HDRCSQValue<70)
-        {
-          
-        }
-        else if(HDRCSQValue>=40&&HDRCSQValue<60)
-        {
-          
-        }
-        else if(HDRCSQValue>=20&&HDRCSQValue<40)
-        {
-          
-        }
-        else
-        {
-          
-        }
-        
-      }
+      if(NetworkType_2Gor3G_Flag==3)
+       HDRCSQValue=CHAR_TO_Digital(AtCmdDrvobj.NetState.HDRCSQBuf,2);
     } 
     /*********************************************************/
     ucRet = memcmp(pBuf, ucSIMST1, 8);//^SIMST:1
@@ -382,6 +355,31 @@ void ApiAtCmd_10msRenew(void)
       ApiAtCmd_ZTTS0_Flag=TRUE;
     }
 /***********CSQ信号获取及判断****************************************************************/
+    ucRet = memcmp(pBuf, ucRxCSQ, 4);
+    if(ucRet == 0x00)
+    {
+      if(Len > 4)//去頭
+      {
+        Len -= 4;
+      }
+       for(i = 0x00; i < Len; i++)
+       {
+         AtCmdDrvobj.NetState.CSQBuf[i] = pBuf[i + 4];//
+       }
+       AtCmdDrvobj.NetState.CSQLen = i;
+      CSQValue=CHAR_TO_Digital(AtCmdDrvobj.NetState.CSQBuf,2);
+      if(NetworkType_2Gor3G_Flag==2)
+      {
+        if(CSQValue==99)
+        {
+          HDRCSQValue=0;
+        }
+        else
+        {
+          HDRCSQValue=CSQValue*2;
+        }
+      }
+    } 
 /*    ucRet = memcmp(pBuf, ucRxCSQ31, 6);//CSQ:31
     if(ucRet == 0x00)
     {
@@ -396,7 +394,7 @@ void ApiAtCmd_10msRenew(void)
       if(CSQ99Count_Flag==2)
       {
         //播报网络信号弱
-        VOICE_SetOutput(ATVOICE_FreePlay,"517fdc7ee14ff753315f",20);//播报正在登陆
+        VOICE_SetOutput(ATVOICE_FreePlay,"517fdc7ee14ff753315f",20);
       }
       if(CSQ99Count_Flag>=4)//3*5如果3次15s内没有收到则重启
       {

@@ -292,7 +292,7 @@ static void DEL_500msProcess(void)			//delay 500ms process server
       LandingTimeCount++;
       if(LandingTimeCount>=2*60)
       {
-        LandingTimeCount=2*60;
+        LandingTimeCount=0;
         Task_Landing_Flag=FALSE;
         ApiAtCmd_WritCommand(ATCOMM3_GD83Reset,(void*)0, 0);
       }
@@ -301,12 +301,19 @@ static void DEL_500msProcess(void)			//delay 500ms process server
     {
       LandingTimeCount=0;
     }
-
 /*********定时5s发一次[AT+CSQ?]*************************************************/
         if(CSQTimeCount>=2*5)
         {
           CSQTimeCount=0;
+          if(NetworkType_2Gor3G_Flag==3)//如果是3G发送HDRCSQ，2G发送CSQ
           ApiAtCmd_WritCommand(ATCOMM15_HDRCSQ, (void*)0, 0);
+          else
+          {
+            if(NetworkType_2Gor3G_Flag==2)
+            {
+              ApiAtCmd_WritCommand(ATCOMM6_CSQ, (void*)0, 0);
+            }
+          }
           HDRCSQSignalIcons();
           api_disp_all_screen_refresh();// 全屏统一刷新
         }
@@ -316,7 +323,12 @@ static void DEL_500msProcess(void)			//delay 500ms process server
       if(HDRCSQValue<=30)
       {
         SignalPoorCount++;
-        if(SignalPoorCount>=20)
+        if(SignalPoorCount==20*2||SignalPoorCount==40*2)
+        {
+          //播报网络信号弱
+          VOICE_SetOutput(ATVOICE_FreePlay,"517fdc7ee14ff753315f",20);
+        }
+        if(SignalPoorCount>=60*2)//无信号六十秒，60s重启一次
         {
           ApiAtCmd_WritCommand(ATCOMM3_GD83Reset,(void*)0, 0);
           SignalPoorCount=0;
@@ -441,7 +453,7 @@ static void DEL_500msProcess(void)			//delay 500ms process server
         {
           TimeCount2++;
           api_lcd_pwr_on_hint("按OK键,再按#键  ");//
-          if(TimeCount2>=2)//1s
+          if(TimeCount2>=2)//0.5s
           {
             TimeCount2=0;
             NumberKeyboardPressDown_flag=FALSE;

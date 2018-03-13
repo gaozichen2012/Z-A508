@@ -1,5 +1,7 @@
 #define TASKABLE
 #include "AllHead.h"
+u8 SSWLCount=0;
+u8 StartingUpStep=0;
 bool NoUseNum=FALSE;
 u8 AlarmCount=4;//2G3G切换计数,默认为3G模式
 u8 NetworkType_2Gor3G_Flag=3;
@@ -39,7 +41,7 @@ void Task_RunStart(void)
   if(BootProcess_SIMST_Flag==1)//收到模块开机指令:SIMST:1
   {
     api_disp_icoid_output( eICO_IDRXNULL, TRUE, TRUE);//GPRS无信号图标
-    BEEP_Time(50);
+    //BEEP_Time(50);
     NoUseNum=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)ucCLVL,strlen((char const *)ucCLVL));//
     Delay_100ms(1);//0.1s
     NoUseNum=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)ucVGR,strlen((char const *)ucVGR));//
@@ -58,6 +60,7 @@ void Task_RunStart(void)
     VOICE_SetOutput(ATVOICE_FreePlay,"1c64227d517fdc7e",16);//播报搜索网络
     api_lcd_pwr_on_hint("   搜索网络...  ");
     NoUseNum=ApiAtCmd_WritCommand(ATCOMM15_HDRCSQ,(u8 *)ucCSQ,strlen((char const *)ucCSQ));//CSQ?
+    StartingUpStep=1;
   }
   else
   {
@@ -68,33 +71,60 @@ void Task_RunStart(void)
       Delay_100ms(100);//10s
     }
   }
-  if(HDRCSQValue>=30)//CSQ?
+  if(StartingUpStep==1)
   {
-    HDRCSQSignalIcons();
-    api_disp_icoid_output( eICO_IDEmergency, TRUE, TRUE);//开机搜到信号，显示3G图标
-    api_lcd_pwr_on_hint("   正在登陆..     ");
-    if(BootProcess_PPPCFG_Flag_Zanshi==1)//如果收到^PPPCFG//因为有时收不到该指令，临时屏蔽，后期加上
+    if(HDRCSQValue>=30)//CSQ?
     {
-      Delay_100ms(10);//1s
-      ApiPocCmd_WritCommand(PocComm_SetParam,ucPocOpenConfig,strlen((char const *)ucPocOpenConfig));//配置echat账号、IP
-      Delay_100ms(40);//4s
-      VOICE_SetOutput(ATVOICE_FreePlay,"636b28577b764696",16);//播报正在登陆 
-     api_lcd_pwr_on_hint("   正在登陆...    ");
-      ApiPocCmd_WritCommand(PocComm_OpenPOC,ucPocOpenConfig,strlen((char const *)ucPocOpenConfig));
-      BootProcess_PPPCFG_Flag_Zanshi=0;
-      Task_Landing_Flag=TRUE;
+      SSWLCount=0;
+      HDRCSQSignalIcons();
+      api_disp_icoid_output( eICO_IDEmergency, TRUE, TRUE);//开机搜到信号，显示3G图标
+      api_lcd_pwr_on_hint("   正在登陆..     ");
+      if(BootProcess_PPPCFG_Flag_Zanshi==1)//如果收到^PPPCFG//因为有时收不到该指令，临时屏蔽，后期加上
+      {
+        Delay_100ms(10);//1s
+        ApiPocCmd_WritCommand(PocComm_SetParam,ucPocOpenConfig,strlen((char const *)ucPocOpenConfig));//配置echat账号、IP
+        Delay_100ms(40);//4s
+        VOICE_SetOutput(ATVOICE_FreePlay,"636b28577b764696",16);//播报正在登陆 
+       api_lcd_pwr_on_hint("   正在登陆...    ");
+        ApiPocCmd_WritCommand(PocComm_OpenPOC,ucPocOpenConfig,strlen((char const *)ucPocOpenConfig));
+        BootProcess_PPPCFG_Flag_Zanshi=0;
+        Task_Landing_Flag=TRUE;
+        StartingUpStep=0;
+      }
+    }
+    else
+    {
+      if(HDRCSQValue<30&&BootProcess_SIMST_Flag==0)
+      {
+        Delay_100ms(50);//5s
+        SSWLCount++;
+        if(SSWLCount==10||SSWLCount==20)
+        {
+          VOICE_SetOutput(ATVOICE_FreePlay,"517fdc7ee14ff753315f",20);//播报网络信号弱
+        }
+        else if(SSWLCount==30)
+        {
+          ApiAtCmd_WritCommand(ATCOMM3_GD83Reset,(void*)0, 0);
+          SSWLCount=0;
+        }
+        else
+        {
+          VOICE_SetOutput(ATVOICE_FreePlay,"1c64227d517fdc7e",16);//播报搜索网络
+        }
+        api_lcd_pwr_on_hint("   搜索网络...  ");
+        if(NetworkType_2Gor3G_Flag==3)//如果是3G发送HDRCSQ，2G发送CSQ
+          ApiAtCmd_WritCommand(ATCOMM15_HDRCSQ, (void*)0, 0);
+        else
+        {
+          if(NetworkType_2Gor3G_Flag==2)
+          {
+            ApiAtCmd_WritCommand(ATCOMM6_CSQ, (void*)0, 0);
+          }
+        }
+      }
     }
   }
-  else
-  {
-    if(HDRCSQValue<30)
-    {
-      Delay_100ms(50);//5s
-      VOICE_SetOutput(ATVOICE_FreePlay,"1c64227d517fdc7e",16);//播报搜索网络
-      api_lcd_pwr_on_hint("   搜索网络...  ");
-      NoUseNum=ApiAtCmd_WritCommand(ATCOMM15_HDRCSQ,(u8 *)ucCSQ,strlen((char const *)ucCSQ));//CSQ?
-    }
-  }
+
 }
 
 void Task_RunNormalOperation(void)
