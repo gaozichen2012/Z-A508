@@ -105,7 +105,30 @@ void MenuDisplay(MenuDisplayType id)
   case Menu_RefreshAllIco:
     api_lcd_pwr_on_hint3("                ");//清屏
     //api_disp_icoid_output( eICO_IDRXFULL, TRUE, TRUE);//GPRS三格信号图标
-    HDRCSQSignalIcons();
+    if(HDRCSQValue>=80)//5格
+    {
+      api_disp_icoid_output( eICO_IDSPEAKER, TRUE, TRUE);//5格信号
+    }
+    else if(HDRCSQValue>=70&&HDRCSQValue<80)
+    {
+      api_disp_icoid_output( eICO_IDSCANPA, TRUE, TRUE);//4格信号
+    }
+    else if(HDRCSQValue>=60&&HDRCSQValue<70)
+    {
+      api_disp_icoid_output( eICO_IDSCAN, TRUE, TRUE);//3格信号
+    }
+    else if(HDRCSQValue>=40&&HDRCSQValue<60)
+    {
+      api_disp_icoid_output( eICO_IDRXNULL, TRUE, TRUE);//2格信号
+    }
+    else if(HDRCSQValue>=20&&HDRCSQValue<40)
+    {
+      api_disp_icoid_output( eICO_IDRXFULL, TRUE, TRUE);//1格信号
+    }
+    else
+    {
+      api_disp_icoid_output( eICO_IDMESSAGE, TRUE, TRUE);//0格信号
+    }
     if(NetworkType_2Gor3G_Flag==3)
       api_disp_icoid_output( eICO_IDEmergency, TRUE, TRUE);//3G图标
     else

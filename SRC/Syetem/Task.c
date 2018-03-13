@@ -124,8 +124,8 @@ void Task_RunStart(void)
       }
     }
   }
-
 }
+
 
 void Task_RunNormalOperation(void)
 {
@@ -403,6 +403,7 @@ void Task_RunNormalOperation(void)
       NetworkType_2Gor3G_Flag=2;
       VOICE_SetOutput(ATVOICE_FreePlay,"517fdc7e075262633a4e32004700216a0f5f",36);//网络切换为2G模式
       api_disp_icoid_output( eICO_IDPOWERL, TRUE, TRUE);//图标：2G
+      api_disp_icoid_output( eICO_IDMESSAGE, TRUE, TRUE);//0格信号
       api_disp_all_screen_refresh();// 全屏统一刷新
       DEL_SetTimer(0,200);
       while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
@@ -420,6 +421,7 @@ void Task_RunNormalOperation(void)
       NetworkType_2Gor3G_Flag=3;
       VOICE_SetOutput(ATVOICE_FreePlay,"517fdc7e075262633a4e33004700216a0f5f",36);//网络切换为3G模式
       api_disp_icoid_output( eICO_IDEmergency, TRUE, TRUE);//图标：3G
+      api_disp_icoid_output( eICO_IDMESSAGE, TRUE, TRUE);//0格信号
       api_disp_all_screen_refresh();// 全屏统一刷新
       DEL_SetTimer(0,200);
       while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
@@ -488,6 +490,10 @@ else//如果是正常进组；组内；正常退出组;单呼；退出单呼模式；
         {
           if(POC_QuitGroupCalling_Flag==2)
           {
+            if(POC_AtEnterPersonalCalling_Flag==2)//解决切换个呼,按PTT确认，播报单呼模式时，中间不应显示一下组呼信息，再显示个呼
+            {}
+            else
+            {
               MenuDisplay(Menu_RefreshAllIco);
               api_lcd_pwr_on_hint("                ");//清屏
               api_disp_icoid_output( eICO_IDPOWERM, TRUE, TRUE);//显示组呼图标
@@ -496,6 +502,8 @@ else//如果是正常进组；组内；正常退出组;单呼；退出单呼模式；
               PersonCallIco_Flag=0;
               api_disp_all_screen_refresh();// 全屏统一刷新//可能会对POC开机PoC指令识别有影响
               POC_QuitGroupCalling_Flag=1;
+            }
+
           }
 
         }

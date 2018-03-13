@@ -696,28 +696,33 @@ u8 Data_Speed(void)
 
 void HDRCSQSignalIcons(void)
 {
-  if(HDRCSQValue>=80)//5格
+  if(MenuMode_Flag==0)
   {
-    api_disp_icoid_output( eICO_IDSPEAKER, TRUE, TRUE);//5格信号
+    if(HDRCSQValue>=80)//5格
+    {
+      api_disp_icoid_output( eICO_IDSPEAKER, TRUE, TRUE);//5格信号
+    }
+    else if(HDRCSQValue>=70&&HDRCSQValue<80)
+    {
+      api_disp_icoid_output( eICO_IDSCANPA, TRUE, TRUE);//4格信号
+    }
+    else if(HDRCSQValue>=60&&HDRCSQValue<70)
+    {
+      api_disp_icoid_output( eICO_IDSCAN, TRUE, TRUE);//3格信号
+    }
+    else if(HDRCSQValue>=40&&HDRCSQValue<60)
+    {
+      api_disp_icoid_output( eICO_IDRXNULL, TRUE, TRUE);//2格信号
+    }
+    else if(HDRCSQValue>=20&&HDRCSQValue<40)
+    {
+      api_disp_icoid_output( eICO_IDRXFULL, TRUE, TRUE);//1格信号
+    }
+    else
+    {
+      api_disp_icoid_output( eICO_IDMESSAGE, TRUE, TRUE);//0格信号
+    }
+    api_disp_all_screen_refresh();// 全屏统一刷新
   }
-  else if(HDRCSQValue>=70&&HDRCSQValue<80)
-  {
-    api_disp_icoid_output( eICO_IDSCANPA, TRUE, TRUE);//4格信号
-  }
-  else if(HDRCSQValue>=60&&HDRCSQValue<70)
-  {
-    api_disp_icoid_output( eICO_IDSCAN, TRUE, TRUE);//3格信号
-  }
-  else if(HDRCSQValue>=40&&HDRCSQValue<60)
-  {
-    api_disp_icoid_output( eICO_IDRXNULL, TRUE, TRUE);//2格信号
-  }
-  else if(HDRCSQValue>=20&&HDRCSQValue<40)
-  {
-    api_disp_icoid_output( eICO_IDRXFULL, TRUE, TRUE);//1格信号
-  }
-  else
-  {
-    api_disp_icoid_output( eICO_IDMESSAGE, TRUE, TRUE);//0格信号
-  }
+
 }

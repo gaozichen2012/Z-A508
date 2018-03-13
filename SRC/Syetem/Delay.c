@@ -302,7 +302,7 @@ static void DEL_500msProcess(void)			//delay 500ms process server
       LandingTimeCount=0;
     }
 /*********定时5s发一次[AT+CSQ?]*************************************************/
-        if(CSQTimeCount>=2*5)
+        if(CSQTimeCount>=2*2)
         {
           CSQTimeCount=0;
           if(NetworkType_2Gor3G_Flag==3)//如果是3G发送HDRCSQ，2G发送CSQ
@@ -315,7 +315,7 @@ static void DEL_500msProcess(void)			//delay 500ms process server
             }
           }
           HDRCSQSignalIcons();
-          api_disp_all_screen_refresh();// 全屏统一刷新
+          
         }
 /******************************************************************************/
     if(GetTaskId()==Task_NormalOperation)
