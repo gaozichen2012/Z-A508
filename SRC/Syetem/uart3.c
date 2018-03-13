@@ -538,6 +538,9 @@ static bool UART_WriteCommand(void)
 		}
 		UART_RightAck(0x00);
 	}
+        Set_GreenLed(LED_OFF);
+        Set_RedLed(LED_ON);
+
 UARTWriteCommand_Exit:
   return TRUE;
 }
@@ -595,8 +598,11 @@ static bool UART_ReadCommand(void)
           UART_TxSend(len);
         }
       }
+      Set_GreenLed(LED_ON);
+      Set_RedLed(LED_OFF);
     }
   }
+
 UARTReadCommand_Exit:
   return TRUE;
 }
@@ -620,6 +626,7 @@ static bool UART_PocCommand(void)
 	}
 	if ((UartDrvObj.TxRxBuf.cRxBuf[3] & 0x80) == 0x00) //写入对讲机
 	{
+
 		if (api_poc_command_set(UartDrvObj.TxRxBuf.cRxBuf[3],&UartDrvObj.TxRxBuf.cRxBuf[4]) == FALSE)//cRxBuf[4]=0x13
 		{
 			UART_ErrorAck(UART_DAERR);
@@ -631,6 +638,7 @@ static bool UART_PocCommand(void)
 	}
 	else//读取对讲机参数
 	{
+
 		for(i = 0 ; i < 4; i++) 
 		{
 			UartDrvObj.TxRxBuf.cTxBuf[i] = UartDrvObj.TxRxBuf.cRxBuf[4+i];
