@@ -52,6 +52,14 @@ void LED_IntOutputRenew(void)
       if(LED_Conut<=48)
       {
         Set_GreenLed(LED_OFF);
+        if(WriteFreq_Flag==TRUE)//解决读频红灯常亮的问题，应该是闪红灯
+        {
+          Set_RedLed(LED_OFF);
+        }
+        else
+        {
+        }
+        
         //Set_RedLed(LED_OFF);
       }
     }

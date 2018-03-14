@@ -41,7 +41,7 @@ typedef struct {							//define password drive data type
 	u8 cErrNum;
 	u8 ComanType;
 }PAS_TYPE;
-
+bool WritingFrequency=FALSE;
 bool WriteFreq_Flag=FALSE;
 static UART_DRV	UartDrvObj;	//define UART drive data
 static PAS_TYPE PasObj;	//define password data
@@ -180,7 +180,18 @@ void UART3_ToMcuMain(void)
 										UART_ErrorAck(UART_FAILI);
 									}
 								}
+                                                                else
+                                                                {
+                                                                  Set_GreenLed(LED_ON);
+                                                                  Set_RedLed(LED_OFF);
+                                                                  
+                                                                }
 							}
+                                                        else
+                                                        {
+                                                          Set_GreenLed(LED_OFF);
+                                                          Set_RedLed(LED_ON);
+                                                        }
 						}
 					}
 				}
@@ -498,6 +509,7 @@ static bool UART_WriteCommand(void)
             return FALSE;
           }
         }
+
 	adr = UartDrvObj.TxRxBuf.cRxBuf[4];//0x02//cRxBuf[4]为地址高8位
 	adr <<= 8;
 	adr |= UartDrvObj.TxRxBuf.cRxBuf[5]; //0x30//35//3A//3F//44//4D//52//60//cRxBuf[5]为地址低8位
@@ -538,8 +550,6 @@ static bool UART_WriteCommand(void)
 		}
 		UART_RightAck(0x00);
 	}
-        Set_GreenLed(LED_ON);
-        Set_RedLed(LED_OFF);
 
 UARTWriteCommand_Exit:
   return TRUE;
@@ -598,8 +608,8 @@ static bool UART_ReadCommand(void)
           UART_TxSend(len);
         }
       }
-      Set_GreenLed(LED_OFF);
-      Set_RedLed(LED_ON);
+      //Set_GreenLed(LED_OFF);
+      //Set_RedLed(LED_ON);
     }
   }
 

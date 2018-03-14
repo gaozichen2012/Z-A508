@@ -485,7 +485,7 @@ static void DEL_500msProcess(void)			//delay 500ms process server
         }
         if(LockingState_EnterOK_Flag==TRUE)//锁定界面按下OK键
         {                                                           
-          TimeCount3++;
+          TimeCount3++;//解锁成功也应该至零，
           //MCU_LCD_BACKLIGTH(ON);//打开背光灯
           if(TimeCount3>=4)//3s
           {

@@ -440,11 +440,12 @@ void Keyboard_Test(void)
     TestNum12++;
     if(TestNum12>=KeyCountNum)
     {
-            if(LockingState_EnterOK_Flag==TRUE)//如果锁定状态下按了OK键然后按了#键
+      if(LockingState_EnterOK_Flag==TRUE)//如果锁定状态下按了OK键然后按了#键
       {
         LockingState_EnterOK_Flag=FALSE;
         LockingState_Flag=FALSE;
         TimeCount=0;
+        TimeCount3=0;//解决锁屏键偶尔失效的问题
         MenuDisplay(Menu_unLocking);
         api_disp_icoid_output(eICO_IDBANDWIDTHN, TRUE, TRUE);//无锁屏空图标
         api_disp_all_screen_refresh();// 全屏统一刷新
