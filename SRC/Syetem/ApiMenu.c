@@ -91,16 +91,37 @@ void MenuDisplay(MenuDisplayType id)
      api_lcd_pwr_on_hint("语音播报        ");
     break;*/
   case Menu_Locking_NoOperation:
-    api_lcd_pwr_on_hint("                ");//清屏
-    MenuDisplay(Menu_RefreshAllIco);
-    api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
-    api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
+    if(PersonCallIco_Flag==0)
+    {
+      MenuDisplay(Menu_RefreshAllIco);
+      api_lcd_pwr_on_hint("                ");//清屏
+      api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
+      api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
+    }
+    else
+    {
+      MenuDisplay(Menu_RefreshAllIco);
+      api_lcd_pwr_on_hint("                ");//清屏
+      api_lcd_pwr_on_hint(HexToChar_MainUserId());//显示当前用户ID
+      api_lcd_pwr_on_hint4(UnicodeForGbk_MainUserName());//显示当前用户昵称
+    }
+    
     break;
   case Menu_unLocking:
-    MenuDisplay(Menu_RefreshAllIco);
-    api_lcd_pwr_on_hint("                ");//清屏
-     api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
-     api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
+    if(PersonCallIco_Flag==0)
+    {
+      MenuDisplay(Menu_RefreshAllIco);
+      api_lcd_pwr_on_hint("                ");//清屏
+      api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
+      api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
+    }
+    else
+    {
+      MenuDisplay(Menu_RefreshAllIco);
+      api_lcd_pwr_on_hint("                ");//清屏
+      api_lcd_pwr_on_hint(HexToChar_MainUserId());//显示当前用户ID
+      api_lcd_pwr_on_hint4(UnicodeForGbk_MainUserName());//显示当前用户昵称
+    }
     break;
   case Menu_RefreshAllIco:
     api_lcd_pwr_on_hint3("                ");//清屏

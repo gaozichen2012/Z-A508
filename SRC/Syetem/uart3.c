@@ -538,8 +538,8 @@ static bool UART_WriteCommand(void)
 		}
 		UART_RightAck(0x00);
 	}
-        Set_GreenLed(LED_OFF);
-        Set_RedLed(LED_ON);
+        Set_GreenLed(LED_ON);
+        Set_RedLed(LED_OFF);
 
 UARTWriteCommand_Exit:
   return TRUE;
@@ -598,8 +598,8 @@ static bool UART_ReadCommand(void)
           UART_TxSend(len);
         }
       }
-      Set_GreenLed(LED_ON);
-      Set_RedLed(LED_OFF);
+      Set_GreenLed(LED_OFF);
+      Set_RedLed(LED_ON);
     }
   }
 

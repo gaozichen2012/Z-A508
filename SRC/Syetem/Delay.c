@@ -440,10 +440,21 @@ static void DEL_500msProcess(void)			//delay 500ms process server
             LockingState_Flag=TRUE;//超时锁定标志位
             //解决BUG：锁屏后会影响一级二级菜单显示，现处理办法为锁屏就退回默认群组状态,所有菜单标志位初始化
             MenuDisplay(Menu_RefreshAllIco);
-            api_lcd_pwr_on_hint("                ");//清屏
-            api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
-            api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
-            api_disp_all_screen_refresh();// 全屏统一刷新
+            if(PersonCallIco_Flag==0)
+            {
+              api_lcd_pwr_on_hint("                ");//清屏
+              api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
+              api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
+              api_disp_all_screen_refresh();// 全屏统一刷新
+            }
+            else
+            {
+              api_lcd_pwr_on_hint("                ");//清屏
+              api_lcd_pwr_on_hint(HexToChar_MainUserId());//显示当前用户ID
+              api_lcd_pwr_on_hint4(UnicodeForGbk_MainUserName());//显示当前用户昵称
+              api_disp_all_screen_refresh();// 全屏统一刷新
+            }
+
             MenuModeCount=1;
             TheMenuLayer_Flag=0;
             MenuMode_Flag=0;
