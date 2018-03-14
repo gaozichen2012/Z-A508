@@ -218,6 +218,11 @@ void Task_RunNormalOperation(void)
     break;
   case 1://1:按下ptt瞬间
     KeyPttState=2;
+    if(LoosenPttMoment_Flag==TRUE)//如果松开PTT瞬间，发送endPTT指令
+    {
+      ApiPocCmd_WritCommand(PocComm_EndPTT,ucEndPTT,strlen((char const *)ucEndPTT));
+      Set_RedLed(LED_OFF);
+    }
     break;
   case 2://2：按住PTT状态
     if(POC_ReceivedVoice_Flag==TRUE)//如果正在接受语音

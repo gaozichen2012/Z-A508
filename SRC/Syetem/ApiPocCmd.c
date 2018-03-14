@@ -26,6 +26,7 @@ bool POC_ReceivedVoice_Flag=FALSE;
 bool POC_ReceivedVoice_forPTT_Flag=FALSE;
 bool ApiPocCmd_Tone_Flag=FALSE;
 bool SwitchGroupBUG=FALSE;
+bool POC_ReceivedNoVoice_Flag=FALSE;
 u8 POC_ReceivedVoiceStart_Flag=0;
 u8 POC_ReceivedVoiceEnd_Flag=0;
 u8 POC_ReceivedVoiceEndForXTSF_Flag=0;
@@ -403,6 +404,8 @@ void ApiPocCmd_10msRenew(void)
             //解决切换群组出现话权下发指令，导致禁发 
             PocCmdDrvobj.WorkState.UseState.SpeakerRightnow.NameLen = 0;
             SwitchGroupBUG=TRUE;
+            //解决进入个呼模式，按住PTT键不送，被呼方第一次不亮绿灯却能接收到语音的问题
+            POC_ReceivedNoVoice_Flag=TRUE;
           }
           else
           {
@@ -420,6 +423,8 @@ void ApiPocCmd_10msRenew(void)
       }
       if(ucId == 0xff)
       {
+        POC_ReceivedNoVoice_Flag=FALSE;
+        Set_GreenLed(LED_ON);
         if(SwitchGroupBUG==TRUE)
         {
           SwitchGroupBUG=FALSE;
@@ -452,11 +457,19 @@ void ApiPocCmd_10msRenew(void)
       }
       else
       {
+#if 1//test测试单呼后换组不正常的BUG
+        if(ucId==0x00)//收到则退出单呼（退出单呼、进组状态）
+        {
+          POC_EnterPersonalCalling_Flag=0;
+          POC_QuitPersonalCalling_Flag=2;
+        }
+#else
         if(ucId==0x00&&POC_QuitPersonalCalling_Flag==1)//收到则退出单呼（退出单呼、进组状态）
         {
           POC_EnterPersonalCalling_Flag=0;
           POC_QuitPersonalCalling_Flag=2;
         }
+#endif
       }
 /****************群组状态判断及群组信息获取**************************************************************/
 #if 1//将群组名与单呼名分开
@@ -467,7 +480,7 @@ void ApiPocCmd_10msRenew(void)
         POC_QuitGroupCalling_Flag=2;//0默认 1在群组内 2正在退出
 #if 1//被呼主动结束单呼不显示群组名BUG
         POC_EnterPersonalCalling_Flag=0;
-        POC_QuitPersonalCalling_Flag=2;
+        //POC_QuitPersonalCalling_Flag=2;
 #endif
       }
       else//正在进入群组或单呼

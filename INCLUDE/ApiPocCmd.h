@@ -37,6 +37,7 @@ extern u8 POC_ReceivedVoiceEndForXTSF_Flag;
 extern bool POC_ReceivedVoice_Flag;
 extern bool POC_ReceivedVoice_forPTT_Flag;
 extern bool POC_Receive86_Flag;
+extern bool POC_ReceivedNoVoice_Flag;
 extern bool ApiPocCmd_Tone_Flag;
 extern void ApiPocCmd_PowerOnInitial(void);
 extern void ApiPocCmd_WritCommand(PocCommType id, u8 *buf, u16 len);

@@ -25,6 +25,7 @@ u8 PrimaryLowPowerCount=0;
 u8 ForbiddenSendPttCount=0;
 u8 EnterKeyTimeCount=0;
 u8 UpDownSwitchingCount=0;
+u8 POC_ReceivedNoVoiceCount=0;
 bool LockingState_Flag=FALSE;
 u8 BacklightTimeCount;//=10;//背光灯时间(需要设置进入eeprom)
 u8 KeylockTimeCount;//=30;//键盘锁时间(需要设置进入eeprom)
@@ -255,6 +256,20 @@ static void DEL_500msProcess(void)			//delay 500ms process server
     DEL_500ms_Count2++;
     TimeCount_Light++;
     CSQTimeCount++;
+/*******解决呼叫方第一次呼叫，被呼方不亮绿灯的问题**********************************************/
+    if(POC_ReceivedNoVoice_Flag==TRUE)
+    {
+      POC_ReceivedNoVoiceCount++;
+      if(POC_ReceivedNoVoiceCount>=2)
+      {
+        POC_ReceivedNoVoiceCount=2;
+        Set_GreenLed(LED_ON);
+      }
+    }
+    else
+    {
+      POC_ReceivedNoVoiceCount=0;
+    }
 /*****************************************************/
     if(UpDownSwitching_Flag==TRUE)
     {
@@ -262,7 +277,7 @@ static void DEL_500msProcess(void)			//delay 500ms process server
       if(UpDownSwitchingCount>=2*3)
       {
         UpDownSwitchingCount=0;
-        UpDownSwitching_Flag=0;
+        UpDownSwitching_Flag=FALSE;
         AUDIO_IOAFPOW(OFF);
       }
     }

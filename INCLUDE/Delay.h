@@ -14,7 +14,6 @@
 #else
 	#define DELAPI	extern
 #endif
-
 DELAPI bool LockingState_Flag;
 DELAPI u8 TimeCount;//³¬Ê±Ê±¼ä
 DELAPI u8 TimeCount3;
