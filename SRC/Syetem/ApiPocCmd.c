@@ -27,6 +27,7 @@ bool POC_ReceivedVoice_forPTT_Flag=FALSE;
 bool ApiPocCmd_Tone_Flag=FALSE;
 bool SwitchGroupBUG=FALSE;
 bool POC_ReceivedNoVoice_Flag=FALSE;
+bool EnterPersonalCalling=FALSE;
 u8 POC_ReceivedVoiceStart_Flag=0;
 u8 POC_ReceivedVoiceEnd_Flag=0;
 u8 POC_ReceivedVoiceEndForXTSF_Flag=0;
@@ -293,10 +294,7 @@ void ApiPocCmd_10msRenew(void)
       {
         if(TASK_Ptt_StartPersonCalling_Flag==TRUE)//如果按下PTT键单呼某用户
         {
-          POC_AtEnterPersonalCalling_Flag=2;
-          POC_AtQuitPersonalCalling_Flag=1;
-          TASK_Ptt_StartPersonCalling_Flag=FALSE;
-          
+          EnterPersonalCalling=TRUE;
         }
       }
       break;
@@ -457,14 +455,14 @@ void ApiPocCmd_10msRenew(void)
       }
       else
       {
-#if 1//test测试单呼后换组不正常的BUG
+#if 0//test测试单呼后换组不正常的BUG
         if(ucId==0x00)//收到则退出单呼（退出单呼、进组状态）
         {
           POC_EnterPersonalCalling_Flag=0;
           POC_QuitPersonalCalling_Flag=2;
         }
 #else
-        if(ucId==0x00&&POC_QuitPersonalCalling_Flag==1)//收到则退出单呼（退出单呼、进组状态）
+        if(POC_QuitPersonalCalling_Flag==1)//收到则退出单呼（退出单呼、进组状态）
         {
           POC_EnterPersonalCalling_Flag=0;
           POC_QuitPersonalCalling_Flag=2;
@@ -476,20 +474,37 @@ void ApiPocCmd_10msRenew(void)
       ucId = COML_AscToHex(pBuf+10, 0x02);
       if(ucId==0xff)
       {
+        if(POC_EnterPersonalCalling_Flag==1)
+        {
+          POC_EnterPersonalCalling_Flag=0;
+          POC_QuitPersonalCalling_Flag=2;
+          POC_AtEnterPersonalCalling_Flag=0;
+          POC_AtQuitPersonalCalling_Flag=0;
+        }
+        if(POC_AtEnterPersonalCalling_Flag==1)
+        {
+          POC_AtEnterPersonalCalling_Flag=0;
+          POC_AtQuitPersonalCalling_Flag=2;
+          POC_EnterPersonalCalling_Flag=0;
+          POC_QuitPersonalCalling_Flag=0;
+        }
         POC_EnterGroupCalling_Flag=0;//0默认 1在群组内 2正在进入
         POC_QuitGroupCalling_Flag=2;//0默认 1在群组内 2正在退出
-#if 1//被呼主动结束单呼不显示群组名BUG
-        POC_EnterPersonalCalling_Flag=0;
-        //POC_QuitPersonalCalling_Flag=2;
-#endif
       }
       else//正在进入群组或单呼
       {
+          if(EnterPersonalCalling==TRUE)
+          {
+            POC_AtEnterPersonalCalling_Flag=2;
+            POC_AtQuitPersonalCalling_Flag=1;
+            EnterPersonalCalling=FALSE;
+            TASK_Ptt_StartPersonCalling_Flag=FALSE;
+          }
+        
         if(PocCmdDrvobj.WorkState.UseState.Msg.Bits.PersonalCallingMode == 0x01)//如果是进入单呼模式则86存入单呼名
         {
           POC_EnterGroupCalling_Flag=2;
           POC_QuitGroupCalling_Flag=1;
-
             if(Len >= 12)//如果群组id后面还有群组名
             {
               PocCmdDrvobj.WorkState.UseState.PttUserName.NameLen = Len - 12;
