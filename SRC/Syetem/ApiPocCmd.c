@@ -422,9 +422,12 @@ void ApiPocCmd_10msRenew(void)
       if(ucId == 0xff)
       {
         POC_ReceivedNoVoice_Flag=FALSE;
-        Set_GreenLed(LED_ON);
+        
+        //Set_GreenLed(LED_ON);
         if(SwitchGroupBUG==TRUE)
         {
+          api_disp_icoid_output( eICO_IDTALKAR, TRUE, TRUE);//无发射无接收信号图标
+          api_disp_all_screen_refresh();// 全屏统一刷新
           SwitchGroupBUG=FALSE;
         }
         else

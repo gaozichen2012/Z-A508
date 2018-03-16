@@ -1,6 +1,6 @@
 ###############################################################################
 #
-# IAR ELF Linker V2.20.1.176 for STM8                     15/Mar/2018  16:04:27
+# IAR ELF Linker V2.20.1.176 for STM8                     15/Mar/2018  17:27:42
 # Copyright 2010-2015 IAR Systems AB.
 #
 #    Output file  =  E:\1-source\A508\PRJ\Debug\Exe\A508_DEMO1.out
@@ -466,24 +466,24 @@ __rt_version               = 4
   .near.rodata       const    0x00ac74     0x3  uart3.o [1]
                             - 0x00ac77  0x2bf7
 
-"P4", part 1 of 2:                      0x42c9
+"P4", part 1 of 2:                      0x42e8
   .far_func.text     ro code  0x00ac77   0xaaf  ApiKeyboard.o [1]
   .far_func.text     ro code  0x00b726   0x823  DrvGD83.o [1]
   .far_func.text     ro code  0x00bf49   0x77a  Task.o [1]
-  .far_func.text     ro code  0x00c6c3   0x530  ApiPocCmd.o [1]
-  .far_func.text     ro code  0x00cbf3   0x4ea  ApiGpsCmd.o [1]
-  .far_func.text     ro code  0x00d0dd   0x499  Delay.o [1]
-  .far_func.text     ro code  0x00d576   0x349  ApiMenu.o [1]
-  .far_func.text     ro code  0x00d8bf   0x30f  Beep.o [1]
-  .far_func.text     ro code  0x00dbce   0x2ce  ApiGpsCmd.o [1]
-  .far_func.text     ro code  0x00de9c   0x2cd  GT20L16P1Y.o [3]
-  .far_func.text     ro code  0x00e169   0x286  ApiAtCmd.o [1]
-  .far_func.text     ro code  0x00e3ef   0x252  DrvHTG12832.o [1]
-  .far_func.text     ro code  0x00e641   0x251  GT20L16P1Y.o [3]
-  .far_func.text     ro code  0x00e892   0x24d  ApiGpsCmd.o [1]
-  .far_func.text     ro code  0x00eadf   0x235  Task.o [1]
-  .far_func.text     ro code  0x00ed14   0x22c  Config.o [1]
-                            - 0x00ef40  0x42c9
+  .far_func.text     ro code  0x00c6c3   0x53d  ApiPocCmd.o [1]
+  .far_func.text     ro code  0x00cc00   0x4ea  ApiGpsCmd.o [1]
+  .far_func.text     ro code  0x00d0ea   0x4ab  Delay.o [1]
+  .far_func.text     ro code  0x00d595   0x349  ApiMenu.o [1]
+  .far_func.text     ro code  0x00d8de   0x30f  Beep.o [1]
+  .far_func.text     ro code  0x00dbed   0x2ce  ApiGpsCmd.o [1]
+  .far_func.text     ro code  0x00debb   0x2cd  GT20L16P1Y.o [3]
+  .far_func.text     ro code  0x00e188   0x286  ApiAtCmd.o [1]
+  .far_func.text     ro code  0x00e40e   0x252  DrvHTG12832.o [1]
+  .far_func.text     ro code  0x00e660   0x251  GT20L16P1Y.o [3]
+  .far_func.text     ro code  0x00e8b1   0x24d  ApiGpsCmd.o [1]
+  .far_func.text     ro code  0x00eafe   0x235  Task.o [1]
+  .far_func.text     ro code  0x00ed33   0x22c  Config.o [1]
+                            - 0x00ef5f  0x42e8
 
 "P4", part 2 of 2:                      0x5869
   .far_func.text     ro code  0x010000   0x213  ApiAtCmd.o [1]
@@ -789,11 +789,11 @@ E:\1-source\A508\PRJ\Debug\Obj: [1]
     ApiKeyboard.o            2 965      248       33
     ApiLED.o                   163                 1
     ApiMenu.o                1 535      486        7
-    ApiPocCmd.o              3 555       45    2 521
+    ApiPocCmd.o              3 568       45    2 521
     Beep.o                     867                18
     CommonLib.o                980       17
     Config.o                   556
-    Delay.o                  1 642      148       36
+    Delay.o                  1 660      148       36
     DrvGD83.o                2 847       33      943
     DrvGT20L16S1Y.o            679
     DrvHTG12832.o              594                 2
@@ -820,7 +820,7 @@ E:\1-source\A508\PRJ\Debug\Obj: [1]
     sysclock.o                 128
     uart3.o                  2 343       30       73
     ------------------------------------------------
-    Total:                  36 560   11 173    5 027
+    Total:                  36 591   11 173    5 027
 
 command line: [2]
     ------------------------------------------------
@@ -864,7 +864,7 @@ dlstm8mmn.a: [5]
 
     Linker created                       20      256
 ----------------------------------------------------
-    Grand Total:            39 730   11 383    5 299
+    Grand Total:            39 761   11 383    5 299
 
 
 *******************************************************************************
@@ -1023,7 +1023,7 @@ AWU_IRQHandler          0x015855     0x1  Code  Gb  stm8s_it.o [1]
 AkeyvolumeCount         0x000041     0x1  Data  Gb  ApiKeyboard.o [1]
 AlarmCount              0x00005c     0x1  Data  Gb  Task.o [1]
 ApGpsCmd_10msRenew      0x01532e    0x21  Code  Gb  ApiGpsCmd.o [1]
-ApiAtCmd_100msRenew     0x00e367    0x88  Code  Gb  ApiAtCmd.o [1]
+ApiAtCmd_100msRenew     0x00e386    0x88  Code  Gb  ApiAtCmd.o [1]
 ApiAtCmd_10msRenew      0x011da3   0x13b  Code  Gb  ApiAtCmd.o [1]
 ApiAtCmd_GetGroupName   0x015639    0x12  Code  Gb  ApiPocCmd.o [1]
 ApiAtCmd_GetGroupNameLen
@@ -1049,11 +1049,11 @@ ApiAtCmd_PlayVoice      0x013ba8    0x73  Code  Gb  ApiAtCmd.o [1]
 ApiAtCmd_SetLoginState  0x0156a0     0xe  Code  Gb  ApiPocCmd.o [1]
 ApiAtCmd_TrumpetVoicePlay_Flag
                         0x001351     0x1  Data  Gb  ApiAtCmd.o [1]
-ApiAtCmd_WritCommand    0x00e169   0x1fe  Code  Gb  ApiAtCmd.o [1]
+ApiAtCmd_WritCommand    0x00e188   0x1fe  Code  Gb  ApiAtCmd.o [1]
 ApiAtCmd_ZTTS0_Flag     0x001352     0x1  Data  Gb  ApiAtCmd.o [1]
 ApiAtCmd_tcp_state      0x01577d     0xa  Code  Gb  ApiAtCmd.o [1]
 ApiCaretCmd_10msRenew   0x010000   0x213  Code  Gb  ApiAtCmd.o [1]
-ApiGpsCmd_100msRenew    0x00ceed   0x1f0  Code  Gb  ApiGpsCmd.o [1]
+ApiGpsCmd_100msRenew    0x00cefa   0x1f0  Code  Gb  ApiGpsCmd.o [1]
 ApiGpsCmd_PowerOnInitial
                         0x010775   0x193  Code  Gb  ApiGpsCmd.o [1]
 ApiGps_GetTcpIpAddress  0x015800     0x4  Code  Gb  ApiGpsCmd.o [1]
@@ -1072,7 +1072,7 @@ ApiMenu_SwitchCallUser_Flag
                         0x001376     0x1  Data  Gb  ApiMenu.o [1]
 ApiMenu_SwitchGroup_Flag
                         0x001375     0x1  Data  Gb  ApiMenu.o [1]
-ApiPocCmd_10msRenew     0x00c6c3   0x530  Code  Gb  ApiPocCmd.o [1]
+ApiPocCmd_10msRenew     0x00c6c3   0x53d  Code  Gb  ApiPocCmd.o [1]
 ApiPocCmd_Tone_Flag     0x001384     0x1  Data  Gb  ApiPocCmd.o [1]
 ApiPocCmd_WritCommand   0x011329   0x163  Code  Gb  ApiPocCmd.o [1]
 ApiPocCmd_user_info_get
@@ -1084,8 +1084,8 @@ AtCmd_NetParamCode      0x01390e    0x8b  Code  Lc  ApiAtCmd.o [1]
 AtNotify_Queue          0x00b7c0    0x4d  Code  Lc  DrvGD83.o [1]
 AtNotify_Queue_Start    0x00b80d    0x56  Code  Lc  DrvGD83.o [1]
 BEEP_Interrupt10ms      0x01546e    0x1c  Code  Gb  Beep.o [1]
-BEEP_PowerOnInitial     0x00dafb    0xd3  Code  Gb  Beep.o [1]
-BEEP_SetOutput          0x00d8bf   0x23c  Code  Gb  Beep.o [1]
+BEEP_PowerOnInitial     0x00db1a    0xd3  Code  Gb  Beep.o [1]
+BEEP_SetOutput          0x00d8de   0x23c  Code  Gb  Beep.o [1]
 BEEP_Time               0x014cab    0x38  Code  Gb  Beep.o [1]
 BacklightTimeCount      0x0013a1     0x1  Data  Gb  Delay.o [1]
 BacklightTimeSetCount   0x00004a     0x1  Data  Gb  ApiKeyboard.o [1]
@@ -1099,7 +1099,7 @@ BootProcess_PPPCFG_Flag
 BootProcess_PPPCFG_Flag_Zanshi
                         0x000010     0x1  Data  Gb  ApiAtCmd.o [1]
 BootProcess_SIMST_Flag  0x00134f     0x1  Data  Gb  ApiAtCmd.o [1]
-CFG_GetCurAdr           0x00ed14   0x22c  Code  Gb  Config.o [1]
+CFG_GetCurAdr           0x00ed33   0x22c  Code  Gb  Config.o [1]
 CHAR_HIGH               0x00a9ed    0x10  Data  Gb  ApiDisplay.o [1]
 CHAR_TO_Digital         0x013f20    0x67  Code  Gb  ApiAtCmd.o [1]
 CHAR_WIDTH              0x00a9fd    0x10  Data  Gb  ApiDisplay.o [1]
@@ -1125,16 +1125,16 @@ CharCode                0x001346     0x2  Data  Gb  ApiDisplay.o [1]
 Combine2Hex             0x012019   0x134  Code  Gb  CommonLib.o [1]
 Count                   0x00134b     0x1  Data  Gb  ADC.o [1]
 Count2                  0x00134c     0x1  Data  Gb  ADC.o [1]
-DEL_100msProcess        0x00d4e5    0x58  Code  Lc  Delay.o [1]
-DEL_10msProcess         0x00d53d    0x1d  Code  Lc  Delay.o [1]
-DEL_1msProcess          0x00d55a     0xc  Code  Lc  Delay.o [1]
-DEL_500msProcess        0x00d0dd   0x408  Code  Lc  Delay.o [1]
+DEL_100msProcess        0x00d504    0x58  Code  Lc  Delay.o [1]
+DEL_10msProcess         0x00d55c    0x1d  Code  Lc  Delay.o [1]
+DEL_1msProcess          0x00d579     0xc  Code  Lc  Delay.o [1]
+DEL_500msProcess        0x00d0ea   0x41a  Code  Lc  Delay.o [1]
 DEL_500ms_Count         0x001392     0x1  Data  Gb  Delay.o [1]
 DEL_500ms_Count2        0x001393     0x1  Data  Gb  Delay.o [1]
 DEL_GetTimer            0x0145cb    0x55  Code  Gb  Delay.o [1]
 DEL_Interrupt           0x01328e    0xa3  Code  Gb  Delay.o [1]
 DEL_PowerOnInitial      0x015370    0x21  Code  Gb  Delay.o [1]
-DEL_Renew               0x00d566    0x10  Code  Gb  Delay.o [1]
+DEL_Renew               0x00d585    0x10  Code  Gb  Delay.o [1]
 DEL_SetTimer            0x013c1b    0x73  Code  Gb  Delay.o [1]
 DEL_Soft1ms             0x01548a    0x1c  Code  Gb  Delay.o [1]
 DEL_TimerRenew          0x0150ad    0x29  Code  Lc  Delay.o [1]
@@ -1201,7 +1201,7 @@ FLASH_ReadByte          0x0157d2     0x5  Code  Gb  stm8s_flash.o [1]
 FLASH_Unlock            0x01559a    0x16  Code  Gb  stm8s_flash.o [1]
 FLASH_WaitForLastOperation
                         0x014d51    0x36  Code  Gb  stm8s_flash.o [1]
-GB2312_16_GetData       0x00e641   0x251  Code  Gb  GT20L16P1Y.o [3]
+GB2312_16_GetData       0x00e660   0x251  Code  Gb  GT20L16P1Y.o [3]
 GPIO_Init               0x01308f    0xaf  Code  Gb  stm8s_gpio.o [1]
 GPIO_ReadInputPin       0x015787     0x9  Code  Gb  stm8s_gpio.o [1]
 GPIO_WriteHigh          0x0157b5     0x7  Code  Gb  stm8s_gpio.o [1]
@@ -1218,9 +1218,9 @@ Get_Unicode_ActiveUserIDBuf
                         0x001278    0x2d  Data  Gb  ApiPocCmd.o [1]
 GettheOnlineMembersDone
                         0x00138f     0x1  Data  Gb  ApiPocCmd.o [1]
-GpsCmd_GbAnalytical     0x00e892   0x24d  Code  Lc  ApiGpsCmd.o [1]
-GpsCmd_GbDataTransave   0x00dbce   0x2ce  Code  Lc  ApiGpsCmd.o [1]
-GpsCmd_GbWritCommand    0x00cbf3   0x2fa  Code  Lc  ApiGpsCmd.o [1]
+GpsCmd_GbAnalytical     0x00e8b1   0x24d  Code  Lc  ApiGpsCmd.o [1]
+GpsCmd_GbDataTransave   0x00dbed   0x2ce  Code  Lc  ApiGpsCmd.o [1]
+GpsCmd_GbWritCommand    0x00cc00   0x2fa  Code  Lc  ApiGpsCmd.o [1]
 GpsFunDrvObj            0x000f14   0x1c3  Data  Lc  ApiGpsCmd.o [1]
 GpsNotify_Queue         0x00bb01    0x7d  Code  Lc  DrvGD83.o [1]
 GpsNotify_Queue_Start   0x00b90f    0x9a  Code  Lc  DrvGD83.o [1]
@@ -1281,7 +1281,7 @@ MCU_VERSIONForMenu      0x0156ae     0xe  Code  Gb  KeyCmd.o [1]
 MIC_GPIO_Init           0x0156ca     0xd  Code  Gb  McuConfig.o [1]
 MIC_IOMUT               0x0154f3    0x19  Code  Gb  McuConfig.o [1]
 Mcu_Version             0x00a4d1    0x20  Data  Lc  KeyCmd.o [1]
-MenuDisplay             0x00d576   0x349  Code  Gb  ApiMenu.o [1]
+MenuDisplay             0x00d595   0x349  Code  Gb  ApiMenu.o [1]
 MenuModeCount           0x000049     0x1  Data  Gb  ApiKeyboard.o [1]
 MenuMode_Flag           0x001362     0x1  Data  Gb  ApiKeyboard.o [1]
 NetworkType_2Gor3G_Flag
@@ -1399,7 +1399,7 @@ TaskDrvObj              0x0012bb    0x14  Data  Lc  System.o [1]
 Task_Landing_Flag       0x0013ac     0x1  Data  Gb  Task.o [1]
 Task_RunNormalOperation
                         0x00bf49   0x77a  Code  Gb  Task.o [1]
-Task_RunStart           0x00eadf   0x235  Code  Gb  Task.o [1]
+Task_RunStart           0x00eafe   0x235  Code  Gb  Task.o [1]
 Test1                   0x00135c     0x1  Data  Gb  ApiGpsCmd.o [1]
 TestNum1                0x001367     0x1  Data  Gb  ApiKeyboard.o [1]
 TestNum10               0x001370     0x1  Data  Gb  ApiKeyboard.o [1]
@@ -1486,7 +1486,7 @@ VoiceDrvObj             0x00133c     0x6  Data  Lc  Voice.o [1]
 VoiceType_FreehandOrHandset_Flag
                         0x001366     0x1  Data  Gb  ApiKeyboard.o [1]
 WRITE_TABLE             0x00ac6a     0x4  Data  Lc  uart3.o [1]
-WW_GetData              0x00de9c   0x2cd  Code  Gb  GT20L16P1Y.o [3]
+WW_GetData              0x00debb   0x2cd  Code  Gb  GT20L16P1Y.o [3]
 WriteEEPROMByte         0x014bf7    0x3e  Code  Gb  Flash_eeprom.o [1]
 WriteFreqTimeCount      0x001391     0x1  Data  Gb  Delay.o [1]
 WriteFreq_Flag          0x0013b2     0x1  Data  Gb  uart3.o [1]
@@ -1542,18 +1542,18 @@ api_poc_command_set     0x012a57    0xdf  Code  Lc  uart3.o [1]
 drv_gt20_data_output    0x01214d   0x134  Code  Gb  DrvGT20L16S1Y.o [1]
 drv_gt20_data_output2   0x011ede   0x13b  Code  Gb  DrvGT20L16S1Y.o [1]
 drv_gt20_pwr_on_init    0x014d17     0x4  Code  Gb  DrvGT20L16S1Y.o [1]
-drv_htg_clr_allscr      0x00e528    0x35  Code  Gb  DrvHTG12832.o [1]
-drv_htg_pwr_on_init     0x00e635     0xc  Code  Gb  DrvHTG12832.o [1]
-drv_htg_reset           0x00e3ef     0x5  Code  Gb  DrvHTG12832.o [1]
-drv_htg_set_address     0x00e46e    0x40  Code  Gb  DrvHTG12832.o [1]
-drv_htg_write_command   0x00e3f4    0x7a  Code  Gb  DrvHTG12832.o [1]
-drv_htg_write_data      0x00e4ae    0x7a  Code  Gb  DrvHTG12832.o [1]
+drv_htg_clr_allscr      0x00e547    0x35  Code  Gb  DrvHTG12832.o [1]
+drv_htg_pwr_on_init     0x00e654     0xc  Code  Gb  DrvHTG12832.o [1]
+drv_htg_reset           0x00e40e     0x5  Code  Gb  DrvHTG12832.o [1]
+drv_htg_set_address     0x00e48d    0x40  Code  Gb  DrvHTG12832.o [1]
+drv_htg_write_command   0x00e413    0x7a  Code  Gb  DrvHTG12832.o [1]
+drv_htg_write_data      0x00e4cd    0x7a  Code  Gb  DrvHTG12832.o [1]
 drv_keypad_scan         0x010213   0x211  Code  Gb  DrvKeyboard.o [1]
 exit                    0x015848     0x4  Code  Gb  exit.o [5]
 find_zf_tab             0x014ae8    0x47  Code  Gb  GT20L16P1Y.o [3]
 get_key_value           0x012972    0xe5  Code  Gb  ApiKeyboard.o [1]
-htg_delay_ms            0x00e55d    0x1e  Code  Lc  DrvHTG12832.o [1]
-htg_initial             0x00e57b    0x6c  Code  Lc  DrvHTG12832.o [1]
+htg_delay_ms            0x00e57c    0x1e  Code  Lc  DrvHTG12832.o [1]
+htg_initial             0x00e59a    0x6c  Code  Lc  DrvHTG12832.o [1]
 key_scan_board          0x011c64   0x13f  Code  Gb  DrvKeyboard.o [1]
 main                    0x015820     0x4  Code  Gb  main.o [1]
 main_app                0x014851    0x4e  Code  Gb  System.o [1]
@@ -1562,7 +1562,7 @@ mcu_gt20_initial        0x014ce3    0x34  Code  Lc  DrvGT20L16S1Y.o [1]
 mcu_key_pad_out         0x013635    0x96  Code  Gb  DrvKeyboard.o [1]
 mcu_key_pad_read        0x013c8e    0x72  Code  Gb  DrvKeyboard.o [1]
 mcu_key_pad_set         0x011894   0x148  Code  Gb  DrvKeyboard.o [1]
-mcu_lcd_initial         0x00e5e7    0x4e  Code  Lc  DrvHTG12832.o [1]
+mcu_lcd_initial         0x00e606    0x4e  Code  Lc  DrvHTG12832.o [1]
 memcmp                  0x014dbd    0x36  Code  Gb  memcmp.o [5]
 memcpy                  0x01520f    0x26  Code  Gb  memcpy.o [5]
 memset                  0x015583    0x17  Code  Gb  memset.o [5]
@@ -1625,7 +1625,7 @@ ucZpppOpen              0x000037     0x2  Data  Gb  ApiAtCmd.o [1]
 [4] = dbgstm8mmd.a
 [5] = dlstm8mmn.a
 
-  39 730 bytes of readonly  code memory
+  39 761 bytes of readonly  code memory
   11 383 bytes of readonly  data memory
    5 299 bytes of readwrite data memory
 

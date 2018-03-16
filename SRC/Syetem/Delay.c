@@ -264,6 +264,8 @@ static void DEL_500msProcess(void)			//delay 500ms process server
       {
         POC_ReceivedNoVoiceCount=2;
         Set_GreenLed(LED_ON);
+        api_disp_icoid_output( eICO_IDVOX, TRUE, TRUE);//接收信号图标
+        api_disp_all_screen_refresh();// 全屏统一刷新
       }
     }
     else
