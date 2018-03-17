@@ -9,7 +9,7 @@
 u8 SignalPoorCount=0;
 u8 WriteFreqTimeCount=0;
 u8 *ucGPSSendToAtPort   ="AT+GPSFUNC=21";
-u8 *ucGPSUploadTime_5s  ="AT+GPSFUNC=2,5";
+u8 *ucGPSUploadTime_5s  ="AT+GPSFUNC=1";
 u8 DEL_500ms_Count=0;
 u8 DEL_500ms_Count2=0;
 u8 TimeCount=0;
@@ -385,7 +385,7 @@ static void DEL_500msProcess(void)			//delay 500ms process server
 
         if(GpsReconnectionTimeCount==2*10)
         {
-          NoUseNum=ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)ucGPSSendToAtPort,strlen((char const *)ucGPSSendToAtPort));//设置GPS定位信息发送到串口
+          //NoUseNum=ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)ucGPSSendToAtPort,strlen((char const *)ucGPSSendToAtPort));//设置GPS定位信息发送到串口
           NoUseNum=ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)ucGPSUploadTime_5s,strlen((char const *)ucGPSUploadTime_5s));//设置GPS定位信息5s发送一次
           GpsReconnectionTimeCount=21;
         }
@@ -428,10 +428,9 @@ static void DEL_500msProcess(void)			//delay 500ms process server
     if(DEL_500ms_Count2>=10)
     {
       ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)"AT^CDMATIME",strlen((char const *)"AT^CDMATIME"));//发送获取CDMATIME获取时间
-      if(PositionInformationSendToATPORT_Flag==TRUE)//如果定位成功，每个5秒发送一次gpsinfo获取速度
-      {
-        ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)"AT^GPSINFO",strlen((char const *)"AT^GPSINFO"));//发送获取CDMATIME获取时间
-      }
+      //每个5秒发送一次gpsinfo获取速度
+      ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)"AT^GPSINFO",strlen((char const *)"AT^GPSINFO"));//发送获取CDMATIME获取时间
+      ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)"AT^GPSCNO",strlen((char const *)"AT^GPSCNO"));//发送获取CDMATIME获取时间
       DEL_500ms_Count2=0;
     }
     

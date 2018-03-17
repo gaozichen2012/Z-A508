@@ -40,18 +40,33 @@ void Task_RunStart(void)
   UART3_ToMcuMain();
   if(BootProcess_SIMST_Flag==1)//收到模块开机指令:SIMST:1
   {
+#if 0//等会更改
     api_disp_icoid_output( eICO_IDRXNULL, TRUE, TRUE);//GPRS无信号图标
-    //BEEP_Time(50);
     NoUseNum=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)ucCLVL,strlen((char const *)ucCLVL));//
-    Delay_100ms(1);//0.1s
     NoUseNum=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)ucVGR,strlen((char const *)ucVGR));//
-    Delay_100ms(1);//0.1s
     NoUseNum=ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)ucCODECCTL,strlen((char const *)ucCODECCTL));//
-    Delay_100ms(1);//0.1s
     NoUseNum=ApiAtCmd_WritCommand(ATCOMM0_OSSYSHWID,(u8 *)ucOSSYSHWID,strlen((char const *)ucOSSYSHWID));//
-    Delay_100ms(1);//0.1s
     NoUseNum=ApiAtCmd_WritCommand(ATCOMM4_GD83Mode,(u8 *)ucPrefmode4,strlen((char const *)ucPrefmode4));//
-    Delay_100ms(1);//0.1s
+    NoUseNum=ApiAtCmd_WritCommand(ATCOMM2_ZTTS_Abell,(u8 *)ucZTTS_Abell,strlen((char const *)ucZTTS_Abell));//播报游标广域对讲机
+    api_lcd_pwr_on_hint("中兴易洽广域对讲");
+    TaskStartDeleteDelay1=TRUE;
+    if(TaskStartDeleteDelay1==FALSE)
+    {
+      NoUseNum=ApiAtCmd_WritCommand(ATCOMM1_PPPCFG,(u8 *)ucPPPCFG,strlen((char const *)ucPPPCFG));//1.发送PPPCFG
+      BootProcess_SIMST_Flag=0;
+      VOICE_SetOutput(ATVOICE_FreePlay,"1c64227d517fdc7e",16);//播报搜索网络
+      api_lcd_pwr_on_hint("   搜索网络...  ");
+      NoUseNum=ApiAtCmd_WritCommand(ATCOMM15_HDRCSQ,(u8 *)ucCSQ,strlen((char const *)ucCSQ));//CSQ?
+      StartingUpStep=1;
+    }
+
+#else
+    api_disp_icoid_output( eICO_IDRXNULL, TRUE, TRUE);//GPRS无信号图标
+    NoUseNum=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)ucCLVL,strlen((char const *)ucCLVL));//
+    NoUseNum=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)ucVGR,strlen((char const *)ucVGR));//
+    NoUseNum=ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)ucCODECCTL,strlen((char const *)ucCODECCTL));//
+    NoUseNum=ApiAtCmd_WritCommand(ATCOMM0_OSSYSHWID,(u8 *)ucOSSYSHWID,strlen((char const *)ucOSSYSHWID));//
+    NoUseNum=ApiAtCmd_WritCommand(ATCOMM4_GD83Mode,(u8 *)ucPrefmode4,strlen((char const *)ucPrefmode4));//
     NoUseNum=ApiAtCmd_WritCommand(ATCOMM2_ZTTS_Abell,(u8 *)ucZTTS_Abell,strlen((char const *)ucZTTS_Abell));//播报游标广域对讲机
     api_lcd_pwr_on_hint("中兴易洽广域对讲");
     Delay_100ms(25);//2.5s
@@ -61,6 +76,7 @@ void Task_RunStart(void)
     api_lcd_pwr_on_hint("   搜索网络...  ");
     NoUseNum=ApiAtCmd_WritCommand(ATCOMM15_HDRCSQ,(u8 *)ucCSQ,strlen((char const *)ucCSQ));//CSQ?
     StartingUpStep=1;
+#endif
   }
   else
   {

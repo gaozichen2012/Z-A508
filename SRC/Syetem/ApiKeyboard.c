@@ -375,7 +375,7 @@ void Keyboard_Test(void)
       api_disp_icoid_output( eICO_IDMONITER, TRUE, TRUE);//听筒模式图标
       VoiceType_FreehandOrHandset_Flag=1;
       api_disp_all_screen_refresh();// 全屏统一刷新
-      DEL_SetTimer(0,10);
+      DEL_SetTimer(0,30);
       while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
       NoUseNum=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)ucVGR1,strlen((char const *)ucVGR1));//
       AkeyvolumeCount=1;
@@ -388,7 +388,7 @@ void Keyboard_Test(void)
         api_disp_icoid_output( eICO_IDTemper, TRUE, TRUE);//免提模式图标
         VoiceType_FreehandOrHandset_Flag=0;
         api_disp_all_screen_refresh();// 全屏统一刷新
-        DEL_SetTimer(0,20);
+        DEL_SetTimer(0,30);
         while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
         NoUseNum=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)ucVGR7,strlen((char const *)ucVGR7));//
         AkeyvolumeCount=7;
@@ -719,7 +719,7 @@ void Keyboard_Test(void)
   GeHuTest(ulAllKeyID);
   if(Key_Flag_1==1)//按下按键延迟1秒
   {
-    DEL_SetTimer(1,50);
+    DEL_SetTimer(1,30);
     while(1)
     {
       Key_Flag_1=0;

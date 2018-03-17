@@ -20,6 +20,7 @@ const u8 *ucRxHDRCSQ = "^HDRCSQ:";
 const u8 *ucGpsPosition = "LATLON:";
 const u8 *ucCDMATIME = "^CDMATIME:";
 const u8 *ucGPSINFO = "^GPSINFO:";
+const u8 *ucGPSCNO = "^GPSCNO:";
 const u8 *ucSIMST1="^SIMST:1";
 const u8 *ucSIMST255="^SIMST:255";
 const u8 *ucCaretPPPCFG="^PPPCFG:";
@@ -71,10 +72,15 @@ typedef struct{
                   u8 Latitude_Minute;
                   u32 Latitude_Second;
                 }Position;
+                u8 SouXingConut;
+                u16 SignalToNoiseMax;//最大信号值
+                bool EffectiveLocation;//是否收到经纬度信息
                 u8 TimeBuf[20];//存放AT收到的时间信息
                 u8 TimeBufLen;//接收时间信息的数据长度
                 u8 GpsInfoBuf[30];//存放AT收到的速度数据
                 u8 GpsInfoBufLen;//接收速度的数据长度
+                u8 GpsCnoBuf[10];//存放CNO收到的速度数据
+                u8 GpsCnoBufLen;//接收Cno的数据长度
                 u8 ucDate[3];//年月日
                 u8 ucTime[3];//时分秒
                 u8 ucSpeed;
@@ -175,17 +181,17 @@ bool ApiAtCmd_WritCommand(AtCommType id, u8 *buf, u16 len)
 
 void ApiAtCmd_100msRenew(void)
 {
-/*  if(AtCmdDrvobj.NetState.Msg.Bits.bRssi == OFF)//如果没有网络信号
+  if(AtCmdDrvobj.NetState.SignalToNoiseMax>=400&&
+     AtCmdDrvobj.NetState.SignalToNoiseMax<=1000&&
+     AtCmdDrvobj.NetState.SouXingConut>=4&&
+     AtCmdDrvobj.NetState.EffectiveLocation==TRUE)
   {
-    if(AtCmdDrvobj.NetState.Msg.Bits.bCard == ON)//是否有卡
-    {
-    }
-    else
-    {
-    }
+    PositionInfoSendToATPORT_RedLed_Flag=TRUE;
+    PositionInformationSendToATPORT_Flag=TRUE;
+    PositionInfoSendToATPORT_SetPPP_Flag=TRUE;
+    PositionInfoSendToATPORT_InfoDisplay_Flag=TRUE;
   }
-  else//如果有网络信号*/
-  {
+
     if(GetTaskId()==Task_NormalOperation)//登录成功进入群组状态
     {
       if(PositionInfoSendToATPORT_SetPPP_Flag==TRUE)//如果定位成功(串口收到[经纬度])，则登录部标登录IP、心跳、位置
@@ -223,7 +229,6 @@ void ApiAtCmd_100msRenew(void)
         }
       }
     }
-  }
 }
 void ApiCaretCmd_10msRenew(void)
 {
@@ -330,6 +335,20 @@ void ApiCaretCmd_10msRenew(void)
        }
        AtCmdDrvobj.NetState.GpsInfoBufLen = i;
     }
+/*******获取GPSCNO搜星数数据**********************************************************************************************/
+    ucRet = memcmp(pBuf, ucGPSCNO, 8);
+    if(ucRet == 0x00)
+    {
+      if(Len > 8)//去頭
+      {
+        Len -= 8;
+      }
+       for(i = 0x00; i < Len; i++)
+       {
+         AtCmdDrvobj.NetState.GpsCnoBuf[i] = pBuf[i + 8];//
+       }
+       AtCmdDrvobj.NetState.GpsCnoBufLen = i;
+    }
 /*****************************************************************************************************/
   }
 }
@@ -380,36 +399,10 @@ void ApiAtCmd_10msRenew(void)
         }
       }
     } 
-/*    ucRet = memcmp(pBuf, ucRxCSQ31, 6);//CSQ:31
-    if(ucRet == 0x00)
-    {
-      CSQ_Flag=1;
-      CSQ99Count_Flag=0;
-    }
-    ucRet = memcmp(pBuf, ucRxCSQ99, 6);//CSQ:99
-    if(ucRet == 0x00)
-    {
-      CSQ_Flag=2;
-      CSQ99Count_Flag++;
-      if(CSQ99Count_Flag==2)
-      {
-        //播报网络信号弱
-        VOICE_SetOutput(ATVOICE_FreePlay,"517fdc7ee14ff753315f",20);
-      }
-      if(CSQ99Count_Flag>=4)//3*5如果3次15s内没有收到则重启
-      {
-        CSQ99Count_Flag=0;
-        ApiAtCmd_WritCommand(ATCOMM3_GD83Reset,(void*)0, 0);
-      }
-    }*/
 /***********GPS经纬度获取（部标使用）****************************************************************/
-    ucRet = memcmp(pBuf, ucGpsPosition, 7);//CSQ:31
+    ucRet = memcmp(pBuf, ucGpsPosition, 7);
     if(ucRet == 0x00)
     {
-      PositionInfoSendToATPORT_RedLed_Flag=TRUE;
-      PositionInformationSendToATPORT_Flag=TRUE;
-      PositionInfoSendToATPORT_SetPPP_Flag=TRUE;
-      PositionInfoSendToATPORT_InfoDisplay_Flag=TRUE;
       if(Len > 7)//去頭
       {
         Len -= 0x07;
@@ -420,55 +413,24 @@ void ApiAtCmd_10msRenew(void)
        }
        AtCmdDrvobj.NetState.Position.BufLen = i;
     }
-
-    
-    
-    
   }
 }
 
 void ApiAtCmd_Get_location_Information(void)
 {
   u8 *pBuf;
-  u8 i=0,cDot=0,cHead=0;
-  u8 cSpeedInfoCount=0;
+  u8 i=0;
+  u8 cHead2=0;
+  u8 cInfoCount1=0;
+  u8 cInfoCount2=0;
   
-  
-/***************获取经纬度数据*********************************************************************************************************/
-  pBuf=AtCmdDrvobj.NetState.Position.Buf;
-  for(i=0;i<AtCmdDrvobj.NetState.Position.BufLen;i++)
+/*****获取GPSCNO搜星数******************************************************************************************************************************/
+  pBuf=AtCmdDrvobj.NetState.GpsCnoBuf;
+  for(i=0;i<AtCmdDrvobj.NetState.GpsCnoBufLen;i++)
   {
     if(','==pBuf[i])
     {
-      AtCmdDrvobj.NetState.Position.Longitude_Second = CHAR_TO_Digital(&pBuf[cHead], i-cHead);//经度小数位
-      cHead = i+1;
-    }
-    else
-    {
-      if('.' == pBuf[i])//2
-      {
-        switch(cDot)
-        {
-        case 0:
-          if((i - cHead) >= 2)//i-cHead=2
-          {
-            AtCmdDrvobj.NetState.Position.Longitude_Minute = CHAR_TO_Digital(&pBuf[cHead], i);//经度整数位
-            
-          }
-          break;
-        case 1:
-          if((i - cHead) >= 2)
-          {
-            AtCmdDrvobj.NetState.Position.Latitude_Minute = CHAR_TO_Digital(&pBuf[cHead], i-cHead);//纬度整数位
-            AtCmdDrvobj.NetState.Position.Latitude_Second = CHAR_TO_Digital(&pBuf[i+1],AtCmdDrvobj.NetState.Position.BufLen-i-1);//纬度整数
-          }
-          break;
-        default:
-          break;
-        }
-        cHead = i+1;
-        cDot++;
-      }
+      AtCmdDrvobj.NetState.SouXingConut = CHAR_TO_Digital(&pBuf[i+1], AtCmdDrvobj.NetState.GpsCnoBufLen-i-1);//搜星数
     }
   }
 /********获取当前速度gpsinfo***************************************************************************************************************************/
@@ -478,19 +440,59 @@ void ApiAtCmd_Get_location_Information(void)
   {
     if(','==pBuf[i])
     {
-      switch(cSpeedInfoCount)
+      
+      switch(cInfoCount1)
       {
+      case 0:
+        break;
+      case 1:
+        AtCmdDrvobj.NetState.SignalToNoiseMax=CHAR_TO_Digital(&pBuf[cHead2], i-cHead2);//最大信号强度
+        break;
+      case 2:
+        AtCmdDrvobj.NetState.Position.Longitude_Second = CHAR_TO_Digital(&pBuf[cHead2], i-cHead2);//经度小数位
+        break;
       case 3:
+        AtCmdDrvobj.NetState.Position.Latitude_Second = CHAR_TO_Digital(&pBuf[cHead2],i-cHead2);//纬度小数位
         AtCmdDrvobj.NetState.ucSpeed = COML_AscToHex(&pBuf[i+1],AtCmdDrvobj.NetState.GpsInfoBufLen-i-1);//speed
         break;
       default:
         break;
       }
-      cSpeedInfoCount++;
+      cInfoCount1++;
+      cHead2=i+1;
+    }
+    else
+    {
+      if('.' == pBuf[i])
+      {
+        switch(cInfoCount2)
+        {
+        case 0:
+          if((i - cHead2) >= 2)//i-cHead=2
+          {
+            AtCmdDrvobj.NetState.Position.Longitude_Minute = CHAR_TO_Digital(&pBuf[cHead2], i-cHead2);//经度整数位
+            AtCmdDrvobj.NetState.EffectiveLocation=TRUE;
+          }
+          else
+          {
+            AtCmdDrvobj.NetState.EffectiveLocation=FALSE;
+          }
+          break;
+        case 1:
+          if((i - cHead2) >= 2)
+          {
+            AtCmdDrvobj.NetState.Position.Latitude_Minute = CHAR_TO_Digital(&pBuf[cHead2], i-cHead2);//纬度整数位
+            
+          }
+          break;
+        default:
+          break;
+        }
+        cInfoCount2++;
+        cHead2 = i+1;
+      }
     }
   }
-/***********************************************************************************************************************************/
-
 }
 /***********获取年月日时分秒信息*********************************************************************************************************************/
 //2018- 1 -18  1  9  :  4   5  :  1
