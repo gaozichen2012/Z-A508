@@ -12,9 +12,9 @@ u8 *ucGPSSendToAtPort   ="AT+GPSFUNC=21";
 u8 *ucGPSUploadTime_5s  ="AT+GPSFUNC=1";
 u8 DEL_500ms_Count=0;
 u8 DEL_500ms_Count2=0;
-u8 TimeCount=0;
+u16 TimeCount=0;
 u8 TimeCount2=0;
-u8 TimeCount3=0;
+u16 TimeCount3=0;
 u8 TimeCount_Light=0;
 u8 ToneTimeCount=0;
 u8 GpsReconnectionTimeCount=0;
@@ -32,7 +32,7 @@ u8 TaskStartDeleteDelay4Count=0;
 u8 TaskStartDeleteDelay6Count=0;
 bool LockingState_Flag=FALSE;
 u8 BacklightTimeCount;//=10;//背光灯时间(需要设置进入eeprom)
-u8 KeylockTimeCount;//=30;//键盘锁时间(需要设置进入eeprom)
+u16 KeylockTimeCount;//=30;//键盘锁时间(需要设置进入eeprom)
 u8 ReadBufferA[1];//背光灯时间(需要设置进入eeprom)
 u8 ReadBufferB[1];//键盘锁时间(需要设置进入eeprom)
 typedef struct {
@@ -475,13 +475,13 @@ static void DEL_500msProcess(void)			//delay 500ms process server
       DEL_500ms_Count2=0;
     }
     
-    if(DEL_500ms_Count>1) DEL_500ms_Count=0;
-    switch(DEL_500ms_Count)
-    {
-    case 1://1s
+    //if(DEL_500ms_Count>1) DEL_500ms_Count=0;
+    //switch(DEL_500ms_Count)
+    //{
+   // case 1://1s
       if(GetTaskId()==Task_NormalOperation)
       {
-        if(KeylockTimeCount==200)
+        if(KeylockTimeCount==200*2)
         {
           TimeCount=0;
           //NumberKeyboardPressDown_flag=TRUE;
@@ -490,9 +490,9 @@ static void DEL_500msProcess(void)			//delay 500ms process server
         {
         TimeCount++;
 
-        if(TimeCount>=KeylockTimeCount) //超时则锁屏
+        if(TimeCount>=KeylockTimeCount*2) //超时则锁屏
         {
-          if(TimeCount==KeylockTimeCount)
+          if(TimeCount==KeylockTimeCount*2)
           {
             LockingState_Flag=TRUE;//超时锁定标志位
             //解决BUG：锁屏后会影响一级二级菜单显示，现处理办法为锁屏就退回默认群组状态,所有菜单标志位初始化
@@ -523,13 +523,13 @@ static void DEL_500msProcess(void)			//delay 500ms process server
             ApiMenu_NativeInfo_Flag=0;
             ApiMenu_BeiDouOrWritingFrequency_Flag=0;
           }
-          TimeCount=KeylockTimeCount+1;
+          TimeCount=KeylockTimeCount*2+1;
         }
         else
         {
           //MCU_LCD_BACKLIGTH(ON);//打开背光灯
         }
-        if(NumberKeyboardPressDown_flag==TRUE&&TimeCount>=KeylockTimeCount)//超过10秒后再按按键提示“按OK键再按*键”
+        if(NumberKeyboardPressDown_flag==TRUE&&TimeCount>=KeylockTimeCount*2)//超过10秒后再按按键提示“按OK键再按*键”
         {
           TimeCount2++;
           api_lcd_pwr_on_hint("按OK键,再按#键  ");//
@@ -544,7 +544,7 @@ static void DEL_500msProcess(void)			//delay 500ms process server
         {                                                           
           TimeCount3++;//解锁成功也应该至零，
           //MCU_LCD_BACKLIGTH(ON);//打开背光灯
-          if(TimeCount3>=4)//3s
+          if(TimeCount3>=4*2)//3s
           {
             TimeCount3=0;
             //MCU_LCD_BACKLIGTH(OFF);//关闭背光灯
@@ -553,7 +553,7 @@ static void DEL_500msProcess(void)			//delay 500ms process server
           }
         }
       }
-      if(NumberKeyboardPressDown_flag==TRUE&&TimeCount<KeylockTimeCount)//当数字数字键盘按下
+      if(NumberKeyboardPressDown_flag==TRUE&&TimeCount<KeylockTimeCount*2)//当数字数字键盘按下
       {
         TimeCount=0;//当有按键按下，计数器清零
         NumberKeyboardPressDown_flag=FALSE;
@@ -562,10 +562,10 @@ static void DEL_500msProcess(void)			//delay 500ms process server
       
         
        
-      break;
-    default:
-      break;
-    }
+   //   break;
+   // default:
+   //   break;
+   // }
   }
   return;
 }
