@@ -141,12 +141,6 @@ void main_app(void)
   main_init();
   while(1)
   {
-#if 0//电池电压采集测试
-
-api_disp_icoid_output( eICO_IDBANDWIDTHN, TRUE, TRUE);//默认无发射无接收信号图标
-api_disp_all_screen_refresh();// 全屏统一刷新
-
-#else
     LowVoltageDetection();
     DEL_Renew();
     switch(TaskDrvObj.NewId)
@@ -156,8 +150,6 @@ api_disp_all_screen_refresh();// 全屏统一刷新
       if(ApiAtCmd_GetLoginState()==TRUE)//登录成功
       {
         Task_Landing_Flag=FALSE;
-        //NoUseNum=ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)ucGPSSendToAtPort,strlen((char const *)ucGPSSendToAtPort));//设置GPS定位信息发送到串口
-        //NoUseNum=ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)ucGPSUploadTime_5s,strlen((char const *)ucGPSUploadTime_5s));//设置GPS定位信息5s发送一次
         api_lcd_pwr_on_hint("正在获取群组信息");
         TaskDrvObj.NewId=Task_NormalOperation;
       }
@@ -174,7 +166,6 @@ api_disp_all_screen_refresh();// 全屏统一刷新
     default:
       break;
     }
-#endif
     
 /*
 #if 1//按键控制灯亮灭   

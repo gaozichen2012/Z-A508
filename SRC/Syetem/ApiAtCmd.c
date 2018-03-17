@@ -1,7 +1,6 @@
 #include "AllHead.h"
 u8 BootProcess_SIMST_Flag=0;
 u8 BootProcess_PPPCFG_Flag=0;
-u8 BootProcess_PPPCFG_Flag_Zanshi=1;//临时代替PPPCFG检测
 bool ApiAtCmd_TrumpetVoicePlay_Flag=FALSE;//功放控制标志位
 bool ApiAtCmd_ZTTS0_Flag=FALSE;
 u8 CSQ_Flag=0;
@@ -111,8 +110,17 @@ bool ApiAtCmd_WritCommand(AtCommType id, u8 *buf, u16 len)
     main_init();
     ApiAtCmd_SetLoginState();
     BootProcess_SIMST_Flag=0;
-    BootProcess_PPPCFG_Flag_Zanshi=1;
     CSQ_Flag=0;
+    TaskStartDeleteDelay1=0;
+    TaskStartDeleteDelay2=0;
+    TaskStartDeleteDelay3=0;
+    TaskStartDeleteDelay4=1;
+    TaskStartDeleteDelay5=0;
+    TaskStartDeleteDelay6=0;
+    TaskStartDeleteDelay1Count=0;
+    TaskStartDeleteDelay3Count=0;
+    TaskStartDeleteDelay4Count=0;
+    TaskStartDeleteDelay6Count=0;
     break;
   case ATCOMM0_OSSYSHWID://1
     DrvGD83_UART_TxCommand(buf, len);
@@ -249,18 +257,20 @@ void ApiCaretCmd_10msRenew(void)
        }
        AtCmdDrvobj.NetState.HDRCSQLen = i;
       if(NetworkType_2Gor3G_Flag==3)
-       HDRCSQValue=CHAR_TO_Digital(AtCmdDrvobj.NetState.HDRCSQBuf,2);
+       HDRCSQValue=CHAR_TO_Digital(AtCmdDrvobj.NetState.HDRCSQBuf,AtCmdDrvobj.NetState.HDRCSQLen);
     } 
     /*********************************************************/
     ucRet = memcmp(pBuf, ucSIMST1, 8);//^SIMST:1
     if(ucRet == 0x00)
     {
       BootProcess_SIMST_Flag=1;
+      TaskStartDeleteDelay1=1;
     }
     ucRet = memcmp(pBuf, ucSIMST255, 10);//^SIMST:255
     if(ucRet == 0x00)
     {
       BootProcess_SIMST_Flag=2;
+      TaskStartDeleteDelay3=1;
     }
     ucRet = memcmp(pBuf, ucCaretPPPCFG, 8);//GETICCID
     if(ucRet == 0x00)

@@ -37,4 +37,10 @@ TASKAPI void Task_RunNormalOperation(void);
 TASKAPI void TASK_RunLoBattery(void);
 TASKAPI u8 PersonCallIco_Flag;//根据显示组呼个呼图标判断状态
 TASKAPI bool EnterKeyTime_2s_Flag;
+TASKAPI u8 TaskStartDeleteDelay1;
+TASKAPI u8 TaskStartDeleteDelay2;
+TASKAPI u8 TaskStartDeleteDelay3;
+TASKAPI u8 TaskStartDeleteDelay4;
+TASKAPI u8 TaskStartDeleteDelay5;
+TASKAPI u8 TaskStartDeleteDelay6;
 #endif

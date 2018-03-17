@@ -15,6 +15,12 @@ u8 LoosenPttMomentCount=0;
 bool EnterPttMoment_Flag=FALSE;
 bool LoosenPttMoment_Flag=FALSE;
 bool EnterKeyTime_2s_Flag=FALSE;
+u8 TaskStartDeleteDelay1=0;
+u8 TaskStartDeleteDelay2=0;
+u8 TaskStartDeleteDelay3=0;
+u8 TaskStartDeleteDelay4=1;
+u8 TaskStartDeleteDelay5=0;
+u8 TaskStartDeleteDelay6=0;
 #endif
 
 u8 *ucStartPTT                  = "0B0000";
@@ -40,17 +46,19 @@ void Task_RunStart(void)
   UART3_ToMcuMain();
   if(BootProcess_SIMST_Flag==1)//收到模块开机指令:SIMST:1
   {
-#if 0//等会更改
-    api_disp_icoid_output( eICO_IDRXNULL, TRUE, TRUE);//GPRS无信号图标
-    NoUseNum=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)ucCLVL,strlen((char const *)ucCLVL));//
-    NoUseNum=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)ucVGR,strlen((char const *)ucVGR));//
-    NoUseNum=ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)ucCODECCTL,strlen((char const *)ucCODECCTL));//
-    NoUseNum=ApiAtCmd_WritCommand(ATCOMM0_OSSYSHWID,(u8 *)ucOSSYSHWID,strlen((char const *)ucOSSYSHWID));//
-    NoUseNum=ApiAtCmd_WritCommand(ATCOMM4_GD83Mode,(u8 *)ucPrefmode4,strlen((char const *)ucPrefmode4));//
-    NoUseNum=ApiAtCmd_WritCommand(ATCOMM2_ZTTS_Abell,(u8 *)ucZTTS_Abell,strlen((char const *)ucZTTS_Abell));//播报游标广域对讲机
-    api_lcd_pwr_on_hint("中兴易洽广域对讲");
-    TaskStartDeleteDelay1=TRUE;
-    if(TaskStartDeleteDelay1==FALSE)
+    if(TaskStartDeleteDelay1==1)
+    {
+      api_disp_icoid_output( eICO_IDRXNULL, TRUE, TRUE);//GPRS无信号图标
+      NoUseNum=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)ucCLVL,strlen((char const *)ucCLVL));//
+      NoUseNum=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)ucVGR,strlen((char const *)ucVGR));//
+      NoUseNum=ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)ucCODECCTL,strlen((char const *)ucCODECCTL));//
+      NoUseNum=ApiAtCmd_WritCommand(ATCOMM0_OSSYSHWID,(u8 *)ucOSSYSHWID,strlen((char const *)ucOSSYSHWID));//
+      NoUseNum=ApiAtCmd_WritCommand(ATCOMM4_GD83Mode,(u8 *)ucPrefmode4,strlen((char const *)ucPrefmode4));//
+      NoUseNum=ApiAtCmd_WritCommand(ATCOMM2_ZTTS_Abell,(u8 *)ucZTTS_Abell,strlen((char const *)ucZTTS_Abell));//播报游标广域对讲机
+      api_lcd_pwr_on_hint("中兴易洽广域对讲");
+      TaskStartDeleteDelay1=2;
+    }
+    if(TaskStartDeleteDelay2==1)
     {
       NoUseNum=ApiAtCmd_WritCommand(ATCOMM1_PPPCFG,(u8 *)ucPPPCFG,strlen((char const *)ucPPPCFG));//1.发送PPPCFG
       BootProcess_SIMST_Flag=0;
@@ -58,84 +66,75 @@ void Task_RunStart(void)
       api_lcd_pwr_on_hint("   搜索网络...  ");
       NoUseNum=ApiAtCmd_WritCommand(ATCOMM15_HDRCSQ,(u8 *)ucCSQ,strlen((char const *)ucCSQ));//CSQ?
       StartingUpStep=1;
+      TaskStartDeleteDelay2=2;
     }
-
-#else
-    api_disp_icoid_output( eICO_IDRXNULL, TRUE, TRUE);//GPRS无信号图标
-    NoUseNum=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)ucCLVL,strlen((char const *)ucCLVL));//
-    NoUseNum=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)ucVGR,strlen((char const *)ucVGR));//
-    NoUseNum=ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)ucCODECCTL,strlen((char const *)ucCODECCTL));//
-    NoUseNum=ApiAtCmd_WritCommand(ATCOMM0_OSSYSHWID,(u8 *)ucOSSYSHWID,strlen((char const *)ucOSSYSHWID));//
-    NoUseNum=ApiAtCmd_WritCommand(ATCOMM4_GD83Mode,(u8 *)ucPrefmode4,strlen((char const *)ucPrefmode4));//
-    NoUseNum=ApiAtCmd_WritCommand(ATCOMM2_ZTTS_Abell,(u8 *)ucZTTS_Abell,strlen((char const *)ucZTTS_Abell));//播报游标广域对讲机
-    api_lcd_pwr_on_hint("中兴易洽广域对讲");
-    Delay_100ms(25);//2.5s
-    NoUseNum=ApiAtCmd_WritCommand(ATCOMM1_PPPCFG,(u8 *)ucPPPCFG,strlen((char const *)ucPPPCFG));//1.发送PPPCFG
-    BootProcess_SIMST_Flag=0;
-    VOICE_SetOutput(ATVOICE_FreePlay,"1c64227d517fdc7e",16);//播报搜索网络
-    api_lcd_pwr_on_hint("   搜索网络...  ");
-    NoUseNum=ApiAtCmd_WritCommand(ATCOMM15_HDRCSQ,(u8 *)ucCSQ,strlen((char const *)ucCSQ));//CSQ?
-    StartingUpStep=1;
-#endif
   }
   else
   {
     if(BootProcess_SIMST_Flag==2)
     {
-      VOICE_SetOutput(ATVOICE_FreePlay,"c0680d4e30526153",16);//播报检不到卡
-      api_lcd_pwr_on_hint("    检不到卡    ");
-      Delay_100ms(100);//10s
+      if(TaskStartDeleteDelay3==1)
+      {
+        VOICE_SetOutput(ATVOICE_FreePlay,"c0680d4e30526153",16);//播报检不到卡
+        api_lcd_pwr_on_hint("    检不到卡    ");
+        TaskStartDeleteDelay3=2;
+      }
     }
   }
   if(StartingUpStep==1)
   {
     if(HDRCSQValue>=30)//CSQ?
     {
-      SSWLCount=0;
-      HDRCSQSignalIcons();
-      api_disp_icoid_output( eICO_IDEmergency, TRUE, TRUE);//开机搜到信号，显示3G图标
-      api_lcd_pwr_on_hint("   正在登陆..     ");
-      if(BootProcess_PPPCFG_Flag_Zanshi==1)//如果收到^PPPCFG//因为有时收不到该指令，临时屏蔽，后期加上
+      if(TaskStartDeleteDelay4==1)
       {
-        Delay_100ms(10);//1s
+        SSWLCount=0;
+        HDRCSQSignalIcons();
+        api_disp_icoid_output( eICO_IDEmergency, TRUE, TRUE);//开机搜到信号，显示3G图标
+        api_lcd_pwr_on_hint("   正在登陆..     ");
         ApiPocCmd_WritCommand(PocComm_SetParam,ucPocOpenConfig,strlen((char const *)ucPocOpenConfig));//配置echat账号、IP
-        Delay_100ms(40);//4s
-        VOICE_SetOutput(ATVOICE_FreePlay,"636b28577b764696",16);//播报正在登陆 
-       api_lcd_pwr_on_hint("   正在登陆...    ");
+        TaskStartDeleteDelay4=2;
+      }
+      if(TaskStartDeleteDelay5==1)
+      {
+        VOICE_SetOutput(ATVOICE_FreePlay,"636b28577b764696",16);//播报正在登陆
+        api_lcd_pwr_on_hint("   正在登陆...    ");
         ApiPocCmd_WritCommand(PocComm_OpenPOC,ucPocOpenConfig,strlen((char const *)ucPocOpenConfig));
-        BootProcess_PPPCFG_Flag_Zanshi=0;
         Task_Landing_Flag=TRUE;
         StartingUpStep=0;
+        TaskStartDeleteDelay5=2;
       }
     }
     else
     {
       if(HDRCSQValue<30&&BootProcess_SIMST_Flag==0)
       {
-        Delay_100ms(50);//5s
-        SSWLCount++;
-        if(SSWLCount==10||SSWLCount==20)
+        if(TaskStartDeleteDelay6==1)
         {
-          VOICE_SetOutput(ATVOICE_FreePlay,"517fdc7ee14ff753315f",20);//播报网络信号弱
-        }
-        else if(SSWLCount==30)
-        {
-          ApiAtCmd_WritCommand(ATCOMM3_GD83Reset,(void*)0, 0);
-          SSWLCount=0;
-        }
-        else
-        {
-          VOICE_SetOutput(ATVOICE_FreePlay,"1c64227d517fdc7e",16);//播报搜索网络
-        }
-        api_lcd_pwr_on_hint("   搜索网络...  ");
-        if(NetworkType_2Gor3G_Flag==3)//如果是3G发送HDRCSQ，2G发送CSQ
-          ApiAtCmd_WritCommand(ATCOMM15_HDRCSQ, (void*)0, 0);
-        else
-        {
-          if(NetworkType_2Gor3G_Flag==2)
+          SSWLCount++;
+          if(SSWLCount==10||SSWLCount==20)
           {
-            ApiAtCmd_WritCommand(ATCOMM6_CSQ, (void*)0, 0);
+            VOICE_SetOutput(ATVOICE_FreePlay,"517fdc7ee14ff753315f",20);//播报网络信号弱
           }
+          else if(SSWLCount==30)
+          {
+            ApiAtCmd_WritCommand(ATCOMM3_GD83Reset,(void*)0, 0);
+            SSWLCount=0;
+          }
+          else
+          {
+            VOICE_SetOutput(ATVOICE_FreePlay,"1c64227d517fdc7e",16);//播报搜索网络
+          }
+          api_lcd_pwr_on_hint("   搜索网络...  ");
+          if(NetworkType_2Gor3G_Flag==3)//如果是3G发送HDRCSQ，2G发送CSQ
+            ApiAtCmd_WritCommand(ATCOMM15_HDRCSQ, (void*)0, 0);
+          else
+          {
+            if(NetworkType_2Gor3G_Flag==2)
+            {
+              ApiAtCmd_WritCommand(ATCOMM6_CSQ, (void*)0, 0);
+            }
+          }
+          TaskStartDeleteDelay6=0;
         }
       }
     }

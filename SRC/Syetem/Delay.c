@@ -26,6 +26,10 @@ u8 ForbiddenSendPttCount=0;
 u8 EnterKeyTimeCount=0;
 u8 UpDownSwitchingCount=0;
 u8 POC_ReceivedNoVoiceCount=0;
+u8 TaskStartDeleteDelay1Count=0;
+u8 TaskStartDeleteDelay3Count=0;
+u8 TaskStartDeleteDelay4Count=0;
+u8 TaskStartDeleteDelay6Count=0;
 bool LockingState_Flag=FALSE;
 u8 BacklightTimeCount;//=10;//背光灯时间(需要设置进入eeprom)
 u8 KeylockTimeCount;//=30;//键盘锁时间(需要设置进入eeprom)
@@ -256,6 +260,43 @@ static void DEL_500msProcess(void)			//delay 500ms process server
     DEL_500ms_Count2++;
     TimeCount_Light++;
     CSQTimeCount++;
+/*******初始化去延时用定时**************************/
+    if(TaskStartDeleteDelay1==2)//中兴易洽广域对讲
+    {
+      TaskStartDeleteDelay1Count++;
+      if(TaskStartDeleteDelay1Count>=6)
+      {
+        TaskStartDeleteDelay1Count=0;
+        TaskStartDeleteDelay2=1;
+      }
+    }
+    if(TaskStartDeleteDelay3==2)//检不到卡
+    {
+      TaskStartDeleteDelay3Count++;
+      if(TaskStartDeleteDelay3Count>=2*10)
+      {
+        TaskStartDeleteDelay3Count=0;
+        TaskStartDeleteDelay3=1;
+      }
+    }
+    if(TaskStartDeleteDelay4==2)//播报账号信息
+    {
+      TaskStartDeleteDelay4Count++;
+      if(TaskStartDeleteDelay4Count>=2*4)
+      {
+        TaskStartDeleteDelay4Count=0;
+        TaskStartDeleteDelay5=1;
+      }
+    }
+    if(TaskStartDeleteDelay6==0)
+    {
+      TaskStartDeleteDelay6Count++;
+      if(TaskStartDeleteDelay6Count>=2*5)
+      {
+        TaskStartDeleteDelay6Count=0;
+        TaskStartDeleteDelay6=1;
+      }
+    }
 /*******解决呼叫方第一次呼叫，被呼方不亮绿灯的问题**********************************************/
     if(POC_ReceivedNoVoice_Flag==TRUE)
     {

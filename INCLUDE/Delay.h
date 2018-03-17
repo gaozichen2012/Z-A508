@@ -14,6 +14,11 @@
 #else
 	#define DELAPI	extern
 #endif
+
+DELAPI u8 TaskStartDeleteDelay1Count;
+DELAPI u8 TaskStartDeleteDelay3Count;
+DELAPI u8 TaskStartDeleteDelay4Count;
+DELAPI u8 TaskStartDeleteDelay6Count;
 DELAPI bool LockingState_Flag;
 DELAPI u8 TimeCount;//³¬Ê±Ê±¼ä
 DELAPI u8 TimeCount3;
