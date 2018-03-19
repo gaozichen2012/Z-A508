@@ -24,6 +24,7 @@ typedef enum {					//task id code process
         Task_NormalOperation    =0x0D,
 	TASK_RESET		= 0xFF
 }TASK_CODE;
+TASKAPI bool EnterPttMoment_Flag;
 TASKAPI bool NoUseNum;
 TASKAPI u8 NetworkType_2Gor3G_Flag;
 TASKAPI bool TASK_Ptt_StartPersonCalling_Flag;

@@ -404,6 +404,9 @@ void ApiPocCmd_10msRenew(void)
             SwitchGroupBUG=TRUE;
             //解决进入个呼模式，按住PTT键不送，被呼方第一次不亮绿灯却能接收到语音的问题
             POC_ReceivedNoVoice_Flag=TRUE;
+            //解决解决进入个呼模式，按住PTT键不送，被呼方第一次亮绿灯能接收到语音，但此时按下PTT亮红灯的BUG
+            POC_ReceivedVoice_Flag=TRUE;
+            EnterPttMoment_Flag=TRUE;
           }
           else
           {
@@ -421,14 +424,18 @@ void ApiPocCmd_10msRenew(void)
       }
       if(ucId == 0xff)
       {
-        POC_ReceivedNoVoice_Flag=FALSE;
-        
         //Set_GreenLed(LED_ON);
         if(SwitchGroupBUG==TRUE)
         {
-          api_disp_icoid_output( eICO_IDTALKAR, TRUE, TRUE);//无发射无接收信号图标
-          api_disp_all_screen_refresh();// 全屏统一刷新
-          SwitchGroupBUG=FALSE;
+#if 1//解决进入个呼模式，按住PTT键不送，被呼方第一次亮绿灯能接收到语音，松开PTT绿灯常亮的问题
+            POC_ReceivedVoice_Flag=FALSE;
+            POC_ReceivedVoiceEnd_Flag=2;//0:正常 1：收到语音 2：刚结束语音
+            POC_ReceivedVoiceEndForXTSF_Flag=2;
+            POC_ReceivedVoiceStart_Flag=0;//0:正常 1：收到语音 2：刚开始语音
+            api_disp_icoid_output( eICO_IDTALKAR, TRUE, TRUE);//无发射无接收信号图标
+            api_disp_all_screen_refresh();// 全屏统一刷新
+            SwitchGroupBUG=FALSE;
+#endif
         }
         else
         {
@@ -437,6 +444,7 @@ void ApiPocCmd_10msRenew(void)
           POC_ReceivedVoiceEndForXTSF_Flag=2;
           POC_ReceivedVoiceStart_Flag=0;//0:正常 1：收到语音 2：刚开始语音
         }
+        POC_ReceivedNoVoice_Flag=FALSE;
       }
       break;
 /**************************************/
@@ -503,7 +511,12 @@ void ApiPocCmd_10msRenew(void)
             EnterPersonalCalling=FALSE;
             TASK_Ptt_StartPersonCalling_Flag=FALSE;
           }
-        
+#if 1//解决被呼状态下换组后按PTT提示禁发，绿灯亮
+          POC_ReceivedVoice_Flag=FALSE;
+          POC_ReceivedVoiceEnd_Flag=2;//0:正常 1：收到语音 2：刚结束语音
+          POC_ReceivedVoiceEndForXTSF_Flag=2;
+          POC_ReceivedVoiceStart_Flag=0;//0:正常 1：收到语音 2：刚开始语音
+#endif
         if(PocCmdDrvobj.WorkState.UseState.Msg.Bits.PersonalCallingMode == 0x01)//如果是进入单呼模式则86存入单呼名
         {
           POC_EnterGroupCalling_Flag=2;
@@ -523,7 +536,7 @@ void ApiPocCmd_10msRenew(void)
             for(i = 0x00; i < PocCmdDrvobj.WorkState.UseState.PttUserName.NameLen; i++)
             {
               PocCmdDrvobj.WorkState.UseState.PttUserName.Name[i] = pBuf[i+12];//存入获取的群组名
-            }          
+            }
         }
         else//进组存组名
         {
