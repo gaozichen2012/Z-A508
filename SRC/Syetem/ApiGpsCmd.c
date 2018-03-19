@@ -338,6 +338,7 @@ void ApiGpsCmd_PowerOnInitial(void)//bubiao
   
   adr = CFG_GetCurAdr(ADR_IDGpsFun);//部标注册信息获取
   FILE_Read2(adr.Adr,adr.Len-16,(u8*)(&GpsFunDrvObj.GpsPar));
+  FILE_Read(0,80,ReadBuffer);//80位
   //adr = CFG_GetCurAdr(ADR_IDRadioMode);
   //adr  = CFG_GetCurAdr(ADR_IDEEPROMVER);
    /* GpsFunDrvObj.GpsPar2.LoginInfo.Province.usData=0x002c;//省域ID

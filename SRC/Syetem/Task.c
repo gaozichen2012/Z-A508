@@ -403,7 +403,7 @@ void Task_RunNormalOperation(void)
         ApiMenu_NativeInfo_Flag=0;
         ApiMenu_BeiDouOrWritingFrequency_Flag=0;
     }
-    api_lcd_pwr_on_hint("对象:   选择个呼");
+    api_lcd_pwr_on_hint("对象:   个呼选择");
     api_lcd_pwr_on_hint2(HexToChar_MainUserId());
     PersonalCallingNum=0;//解决按单呼键直接选中，单呼用户并不是播报的用户
     Key_PersonalCalling_Flag=1;
@@ -414,6 +414,7 @@ void Task_RunNormalOperation(void)
     KeyDownUpChoose_GroupOrUser_Flag=2;
     KeyPersonalCallingCount=0;//解决单呼模式，上下键成员非正常顺序，第一个成员在切换时会第二、第三个碰到
   }
+  
 /*******报警键状态检测********************************************************************************************************************************************/
   if(ReadInput_KEY_4==0)//报警键
   {
