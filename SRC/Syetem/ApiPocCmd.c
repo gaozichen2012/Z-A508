@@ -440,7 +440,7 @@ void ApiPocCmd_10msRenew(void)
           POC_ReceivedVoice_Flag=FALSE;
           POC_ReceivedVoiceEnd_Flag=2;//0:正常 1：收到语音 2：刚结束语音
           POC_ReceivedVoiceEndForXTSF_Flag=2;
-          POC_ReceivedVoiceStart_Flag=0;//0:正常 1：收到语音 2：刚开始语音
+          //POC_ReceivedVoiceStart_Flag=0;//0:正常 1：收到语音 2：刚开始语音//尝试解决闪屏问题
         }
         POC_ReceivedNoVoice_Flag=FALSE;
       }

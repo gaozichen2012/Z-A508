@@ -529,14 +529,16 @@ void Task_RunNormalOperation(void)
       }
       else
       {
+#if 0//尝试解决退出单呼模式闪屏问题
         MenuDisplay(Menu_RefreshAllIco);
         api_lcd_pwr_on_hint("                ");//清屏
         api_disp_icoid_output( eICO_IDPOWERM, TRUE, TRUE);//显示组呼图标
         api_disp_icoid_output( BatteryLevel, TRUE, TRUE);
         api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
-        api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
+        api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称--2
         PersonCallIco_Flag=0;
         api_disp_all_screen_refresh();// 全屏统一刷新//可能会对POC开机PoC指令识别有影响
+#endif
       }
       POC_EnterGroupCalling_Flag=1;//进入组内
     }
@@ -585,7 +587,7 @@ void Task_RunNormalOperation(void)
           api_lcd_pwr_on_hint("                ");//清屏
           api_disp_icoid_output( eICO_IDPOWERM, TRUE, TRUE);//显示组呼图标
           api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
-          api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
+          api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称--1
           PersonCallIco_Flag=0;
           api_disp_all_screen_refresh();// 全屏统一刷新//可能会对POC开机PoC指令识别有影响
         }
@@ -744,20 +746,24 @@ else
     api_disp_all_screen_refresh();// 全屏统一刷新
 
   }
-  else//0空闲状态；1接收状态
+  else if(POC_ReceivedVoiceStart_Flag==1)//0空闲状态；1接收状态//尝试解决闪屏问题
   {
     if(POC_ReceivedVoiceEnd_Flag==2)//空闲状态
     {
     api_disp_icoid_output( eICO_IDTALKAR, TRUE, TRUE);//默认无发射无接收信号图标
     api_lcd_pwr_on_hint("                ");//清屏
     api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
-    api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
+    api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称--3
     api_disp_all_screen_refresh();// 全屏统一刷新
+    POC_ReceivedVoiceStart_Flag=0;//不在收到ff处清零，在收到endFLAG处理后清零
     POC_ReceivedVoiceEnd_Flag=0;//默认无语音状态
     Key_PersonalCalling_Flag=0;//解决被结束单呼后，按上下键任然是切换个呼成员
     }
-  else//空闲状态
-  {}
+    else//空闲状态
+    {}
+  }
+  else
+  {
   }
 }
 
