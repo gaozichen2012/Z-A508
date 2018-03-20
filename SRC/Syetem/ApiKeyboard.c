@@ -37,8 +37,6 @@ bool UpDownSwitching_Flag=FALSE;
 static void GeHuTest(u32 KeyID);
 void Keyboard_Test(void)
 {
-  
-
   u8 scanvalue = 0;
   u32 ulAllKeyID = 0x00000000;
 

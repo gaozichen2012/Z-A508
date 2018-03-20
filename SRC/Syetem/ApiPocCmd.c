@@ -16,6 +16,7 @@ const u8 *ucAtPocHead   = "AT+POC=";
 const u8 *ucTingEnd   = "0B0000";
 const u8 *ucTingStart   = "0B0001";
 const u8 *ucSetIPAndID    = "010000";
+
 u8 POC_EnterPersonalCalling_Flag=0;
 u8 POC_QuitPersonalCalling_Flag=0;
 u8 POC_AtEnterPersonalCalling_Flag=0;
@@ -509,10 +510,14 @@ void ApiPocCmd_10msRenew(void)
             TASK_Ptt_StartPersonCalling_Flag=FALSE;
           }
 #if 1//解决被呼状态下换组后按PTT提示禁发，绿灯亮
-          POC_ReceivedVoice_Flag=FALSE;
-          POC_ReceivedVoiceEnd_Flag=2;//0:正常 1：收到语音 2：刚结束语音
-          POC_ReceivedVoiceEndForXTSF_Flag=2;
-          POC_ReceivedVoiceStart_Flag=0;//0:正常 1：收到语音 2：刚开始语音
+          if(POC_AtEnterPersonalCalling_Flag==0)//解决单呼模式下显示个呼名前还显示一下群组名的BUG
+          {
+            POC_ReceivedVoice_Flag=FALSE;
+            POC_ReceivedVoiceEnd_Flag=2;//0:正常 1：收到语音 2：刚结束语音
+            POC_ReceivedVoiceEndForXTSF_Flag=2;
+            POC_ReceivedVoiceStart_Flag=0;//0:正常 1：收到语音 2：刚开始语音
+          }
+
 #endif
         if(PocCmdDrvobj.WorkState.UseState.Msg.Bits.PersonalCallingMode == 0x01)//如果是进入单呼模式则86存入单呼名
         {

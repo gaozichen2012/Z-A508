@@ -577,6 +577,7 @@ void Task_RunNormalOperation(void)
         
         if(TASK_Ptt_StartPersonCalling_Flag==TRUE)//解决切换个呼,按PTT确认，播报单呼模式时，中间不应显示一下组呼信息，再显示个呼
         {
+          //api_lcd_pwr_on_hint("   个呼BUG     ");
         }
         else
         {
@@ -591,6 +592,7 @@ void Task_RunNormalOperation(void)
         POC_QuitGroupCalling_Flag=1;
       }
     }
+
   }
 #else
  if(POC_EnterPersonalCalling_Flag==2)//1被单呼
@@ -661,7 +663,9 @@ else//如果是正常进组；组内；正常退出组;单呼；退出单呼模式；
           if(POC_QuitGroupCalling_Flag==2)
           {
             if(POC_AtEnterPersonalCalling_Flag==2)//解决切换个呼,按PTT确认，播报单呼模式时，中间不应显示一下组呼信息，再显示个呼
-            {}
+            {
+              api_lcd_pwr_on_hint("   个呼BUG     ");
+            }
             else//3单呼结束
             {
               MenuDisplay(Menu_RefreshAllIco);
@@ -768,19 +772,14 @@ else
   if(UpDownSwitching_Flag==TRUE)//按上下键换组换人状态
   {
     AUDIO_IOAFPOW(ON);
-    
-    /*if(ApiAtCmd_ZTTS0_Flag==TRUE)
-    {
-      AUDIO_IOAFPOW(OFF);
-      UpDownSwitching_Flag=FALSE;
-      ApiAtCmd_ZTTS0_Flag=FALSE;
-    }*/
+    ApiAtCmd_TrumpetVoicePlayCount=0;
   }
   else
   {
     if(ApiAtCmd_TrumpetVoicePlay_Flag==TRUE)
     {
       AUDIO_IOAFPOW(ON);//在VOICE_SetOutput()加了打开，在识别POC:91加了功放打开;PTT键
+      ApiAtCmd_TrumpetVoicePlayCount=0;
     }
 #if 0//播报声音会出现喇叭提前关闭的情况，所以受到此指令后再延迟两秒关闭喇叭
     else

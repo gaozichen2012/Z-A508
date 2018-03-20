@@ -281,7 +281,7 @@ static void DEL_500msProcess(void)			//delay 500ms process server
       if(ApiAtCmd_TrumpetVoicePlay_Flag==FALSE)
       {
         ApiAtCmd_TrumpetVoicePlayCount++;
-        if(ApiAtCmd_TrumpetVoicePlayCount>=5)
+        if(ApiAtCmd_TrumpetVoicePlayCount>6)
         {
           ApiAtCmd_TrumpetVoicePlayCount=0;
           AUDIO_IOAFPOW(OFF);

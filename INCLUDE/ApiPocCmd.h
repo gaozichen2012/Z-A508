@@ -19,7 +19,7 @@ typedef enum{
   PocComm_UserListInfo          = 0x0E,
   PocComm_Key			= 0x10
 }PocCommType;
-
+extern u8 ApiAtCmd_TrumpetVoicePlayCount;
 extern u8 ReadBuffer[80];//Test 存EEPROM读取的数据使用
 extern u8 KeyPttState;
 extern bool GettheOnlineMembersDone;
