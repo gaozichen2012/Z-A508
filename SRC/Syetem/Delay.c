@@ -30,6 +30,8 @@ u8 TaskStartDeleteDelay1Count=0;
 u8 TaskStartDeleteDelay3Count=0;
 u8 TaskStartDeleteDelay4Count=0;
 u8 TaskStartDeleteDelay6Count=0;
+u8 ApiAtCmd_TrumpetVoicePlayCount=0;
+u8 POC_ReceivedVoiceCount=0;
 bool LockingState_Flag=FALSE;
 u8 BacklightTimeCount;//=10;//背光灯时间(需要设置进入eeprom)
 u16 KeylockTimeCount;//=30;//键盘锁时间(需要设置进入eeprom)
@@ -260,6 +262,33 @@ static void DEL_500msProcess(void)			//delay 500ms process server
     DEL_500ms_Count2++;
     TimeCount_Light++;
     CSQTimeCount++;
+/**********防呆，解决异常禁发问题，常亮绿灯****************************/
+    if(POC_ReceivedVoice_Flag==TRUE)
+    {
+      POC_ReceivedVoiceCount++;
+      if(POC_ReceivedVoiceCount>2*30)
+      {
+        POC_ReceivedVoiceCount=0;
+        POC_ReceivedVoice_Flag=FALSE;
+        POC_ReceivedVoiceEnd_Flag=2;//0:正常 1：收到语音 2：刚结束语音
+        POC_ReceivedVoiceEndForXTSF_Flag=2;
+        POC_ReceivedVoiceStart_Flag=0;//0:正常 1：收到语音 2：刚开始语音
+      }
+    }
+/*********受到关喇叭指令延迟两秒关闭******************************************/
+    if(GetTaskId()==Task_NormalOperation)
+    {
+      if(ApiAtCmd_TrumpetVoicePlay_Flag==FALSE)
+      {
+        ApiAtCmd_TrumpetVoicePlayCount++;
+        if(ApiAtCmd_TrumpetVoicePlayCount>=5)
+        {
+          ApiAtCmd_TrumpetVoicePlayCount=0;
+          AUDIO_IOAFPOW(OFF);
+        }
+      }
+    }
+
 /*******初始化去延时用定时**************************/
     if(TaskStartDeleteDelay1==2)//中兴易洽广域对讲
     {

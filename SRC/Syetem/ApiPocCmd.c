@@ -23,7 +23,6 @@ u8 POC_AtQuitPersonalCalling_Flag=0;
 u8 POC_EnterGroupCalling_Flag=0;
 u8 POC_QuitGroupCalling_Flag=0;
 bool POC_ReceivedVoice_Flag=FALSE;
-bool POC_ReceivedVoice_forPTT_Flag=FALSE;
 bool ApiPocCmd_Tone_Flag=FALSE;
 bool SwitchGroupBUG=FALSE;
 bool POC_ReceivedNoVoice_Flag=FALSE;
@@ -391,7 +390,6 @@ void ApiPocCmd_10msRenew(void)
       ucId = COML_AscToHex(pBuf+2, 0x02);
       if(ucId == 0x00)
       {
-
         //83000000000107592875268df7533100f7530000
         if(Len >= 12)
         {
@@ -411,7 +409,6 @@ void ApiPocCmd_10msRenew(void)
           else
           {
             POC_ReceivedVoice_Flag=TRUE;
-            POC_ReceivedVoice_forPTT_Flag=TRUE;//解决收状态死机BUG，用于换组或个呼状态检测到此指令才可以按PTT说话
             POC_ReceivedVoiceStart_Flag=2;//0:正常 1：收到语音 2：刚开始语音
             POC_ReceivedVoiceEnd_Flag=1;//0:正常 1：收到语音 2：刚结束语音
             POC_ReceivedVoiceEndForXTSF_Flag=1;

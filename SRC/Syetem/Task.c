@@ -782,10 +782,12 @@ else
     {
       AUDIO_IOAFPOW(ON);//在VOICE_SetOutput()加了打开，在识别POC:91加了功放打开;PTT键
     }
+#if 0//播报声音会出现喇叭提前关闭的情况，所以受到此指令后再延迟两秒关闭喇叭
     else
     {
       AUDIO_IOAFPOW(OFF);
     }
+#endif
   }
 }
 /***********************************************/
