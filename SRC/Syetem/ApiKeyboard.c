@@ -690,7 +690,7 @@ void Keyboard_Test(void)
       }
       else
       {
-        if(Key_PersonalCalling_Flag==1||POC_EnterPersonalCalling_Flag==1)//如果处于单呼模式，按返回键进入组呼
+        if(Key_PersonalCalling_Flag==1||POC_EnterPersonalCalling_Flag==1||POC_AtEnterPersonalCalling_Flag==1)//如果处于单呼模式，按返回键进入组呼
         {
           ApiPocCmd_WritCommand(PocComm_Cancel,(u8 *)ucQuitPersonalCalling,strlen((char const *)ucQuitPersonalCalling));
           Key_Flag_1=1;//按键延时标志位
