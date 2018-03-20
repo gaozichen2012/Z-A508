@@ -93,6 +93,7 @@ void MenuDisplay(MenuDisplayType id)
   case Menu_Locking_NoOperation:
     if(PersonCallIco_Flag==0)
     {
+      api_lcd_pwr_on_hint3("                ");//清屏//进入菜单界面锁屏，会对显示有影响
       MenuDisplay(Menu_RefreshAllIco);
       api_lcd_pwr_on_hint("                ");//清屏
       api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
@@ -100,9 +101,11 @@ void MenuDisplay(MenuDisplayType id)
     }
     else
     {
+      api_lcd_pwr_on_hint3("                ");//清屏
       MenuDisplay(Menu_RefreshAllIco);
       api_lcd_pwr_on_hint("                ");//清屏
-      api_lcd_pwr_on_hint(HexToChar_MainUserId());//显示当前用户ID
+      //api_lcd_pwr_on_hint(HexToChar_MainUserId());//显示当前用户ID
+      api_lcd_pwr_on_hint(HexToChar_PersonalCallingNum());//显示当前用户ID
       api_lcd_pwr_on_hint4(UnicodeForGbk_MainUserName());//显示当前用户昵称
     }
     
@@ -110,6 +113,7 @@ void MenuDisplay(MenuDisplayType id)
   case Menu_unLocking:
     if(PersonCallIco_Flag==0)
     {
+      api_lcd_pwr_on_hint3("                ");//清屏
       MenuDisplay(Menu_RefreshAllIco);
       api_lcd_pwr_on_hint("                ");//清屏
       api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
@@ -117,14 +121,16 @@ void MenuDisplay(MenuDisplayType id)
     }
     else
     {
+      api_lcd_pwr_on_hint3("                ");//清屏
       MenuDisplay(Menu_RefreshAllIco);
       api_lcd_pwr_on_hint("                ");//清屏
-      api_lcd_pwr_on_hint(HexToChar_MainUserId());//显示当前用户ID
+      //api_lcd_pwr_on_hint(HexToChar_MainUserId());//显示当前用户ID
+      api_lcd_pwr_on_hint(HexToChar_PersonalCallingNum());//显示当前用户ID
       api_lcd_pwr_on_hint4(UnicodeForGbk_MainUserName());//显示当前用户昵称
     }
     break;
   case Menu_RefreshAllIco:
-    api_lcd_pwr_on_hint3("                ");//清屏
+    //api_lcd_pwr_on_hint3("                ");//清屏
     //api_disp_icoid_output( eICO_IDRXFULL, TRUE, TRUE);//GPRS三格信号图标
     if(HDRCSQValue>=80)//5格
     {

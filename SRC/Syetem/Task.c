@@ -505,7 +505,8 @@ void Task_RunNormalOperation(void)
   {
     MenuDisplay(Menu_RefreshAllIco);
     api_lcd_pwr_on_hint("                ");//清屏
-    api_lcd_pwr_on_hint(HexToChar_MainUserId());//显示当前群组ID
+    //api_lcd_pwr_on_hint(HexToChar_MainUserId());//显示当前群组ID
+    api_lcd_pwr_on_hint(HexToChar_PersonalCallingNum());//显示当前用户ID
     api_lcd_pwr_on_hint4(UnicodeForGbk_MainUserName());//显示当前用户昵称
     api_disp_icoid_output( eICO_IDPOWERH, TRUE, TRUE);//显示个呼图标
     PersonCallIco_Flag=1;
@@ -547,7 +548,8 @@ void Task_RunNormalOperation(void)
         MenuDisplay(Menu_RefreshAllIco);
         api_lcd_pwr_on_hint("                ");//清屏
         api_disp_icoid_output( eICO_IDPOWERH, TRUE, TRUE);//显示个呼图标
-        api_lcd_pwr_on_hint(HexToChar_MainUserId());//显示当前用户ID
+        //api_lcd_pwr_on_hint(HexToChar_MainUserId());//显示当前用户ID
+        api_lcd_pwr_on_hint(HexToChar_PersonalCallingNum());//显示当前用户ID
         api_lcd_pwr_on_hint4(UnicodeForGbk_MainUserName());//显示当前用户昵称
         PersonCallIco_Flag=1;
         api_disp_all_screen_refresh();// 全屏统一刷新//可能会对POC开机PoC指令识别有影响
@@ -639,6 +641,7 @@ else
     api_disp_all_screen_refresh();// 全屏统一刷新
 
   }
+#if 0
   else if(POC_ReceivedVoiceStart_Flag==1)//0空闲状态；1接收状态//尝试解决闪屏问题
   {
     if(POC_ReceivedVoiceEnd_Flag==2)//空闲状态
@@ -658,6 +661,24 @@ else
   else
   {
   }
+#else
+    else//0空闲状态；1接收状态//尝试解决闪屏问题
+    {
+      if(POC_ReceivedVoiceEnd_Flag==2)//空闲状态
+      {
+        api_disp_icoid_output( eICO_IDTALKAR, TRUE, TRUE);//默认无发射无接收信号图标
+        api_lcd_pwr_on_hint("                ");//清屏
+        api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
+        api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称--3
+        api_disp_all_screen_refresh();// 全屏统一刷新
+        POC_ReceivedVoiceStart_Flag=0;//不在收到ff处清零，在收到endFLAG处理后清零
+        POC_ReceivedVoiceEnd_Flag=0;//默认无语音状态
+        Key_PersonalCalling_Flag=0;//解决被结束单呼后，按上下键任然是切换个呼成员
+      }
+      else//空闲状态
+      {}
+    }
+#endif
 }
 
 
@@ -697,11 +718,16 @@ void TASK_WriteFreq(void)
 }
 void TASK_RunLoBattery(void)
 {
+#if 1
   api_lcd_pwr_on_hint(" 电量低  请充电  ");
   VOICE_SetOutput(ATVOICE_FreePlay,"3575606c3575cf914e4f0cfff78b73513a6745513575",44);//群组选择
   DEL_SetTimer(0,1000);
   while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
   BEEP_Time(10);
+#else
+  ApiAtCmd_WritCommand(ATCOMM0_OSSYSHWID,(u8 *)"at+GPSFUNC=0",strlen((char const *)"at+GPSFUNC=0"));//
+  ApiAtCmd_WritCommand(ATCOMM0_OSSYSHWID,(u8 *)"at+pwroff",strlen((char const *)"at+pwroff"));//
+#endif
 }
 void Delay_100ms(u8 T)
 {
