@@ -641,7 +641,7 @@ else
     api_disp_all_screen_refresh();// 全屏统一刷新
 
   }
-#if 0
+#if 1
   else if(POC_ReceivedVoiceStart_Flag==1)//0空闲状态；1接收状态//尝试解决闪屏问题
   {
     if(POC_ReceivedVoiceEnd_Flag==2)//空闲状态
