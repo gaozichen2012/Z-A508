@@ -180,6 +180,7 @@ void Keyboard_Test(void)
           break;
         case 1://=1，进入某群组
           VOICE_SetOutput(ATVOICE_FreePlay,"f25d09902d4e",12);//播报已选中
+          UpDownSwitchingCount=0;//解决选中单呼后切换群组，语音中断的问题
           DEL_SetTimer(0,100);
           while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
           ApiPocCmd_WritCommand(PocComm_EnterGroup,"0000000101",strlen((char const *)"0000000101"));
@@ -192,6 +193,7 @@ void Keyboard_Test(void)
           {
             //GettheOnlineMembersDone=FALSE;
             VOICE_SetOutput(ATVOICE_FreePlay,"f25d09902d4e",12);//播报已选中
+            UpDownSwitchingCount=0;//解决选中单呼后切换群组，语音中断的问题
             DEL_SetTimer(0,100);
             while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
             ApiPocCmd_WritCommand(PocComm_Invite,"0000000101",strlen((char const *)"0000000101"));

@@ -346,7 +346,7 @@ static void DEL_500msProcess(void)			//delay 500ms process server
     if(UpDownSwitching_Flag==TRUE)
     {
       UpDownSwitchingCount++;
-      if(UpDownSwitchingCount>2*3)
+      if(UpDownSwitchingCount>2*8)
       {
         UpDownSwitchingCount=0;
         UpDownSwitching_Flag=FALSE;

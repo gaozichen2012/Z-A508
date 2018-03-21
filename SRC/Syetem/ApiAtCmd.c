@@ -372,6 +372,8 @@ void ApiAtCmd_10msRenew(void)
     if(ucRet == 0x00)
     {
       ApiAtCmd_TrumpetVoicePlay_Flag=TRUE;
+      UpDownSwitchingCount=0;//解决选中单呼后切换群组，语音中断的问题
+      ApiAtCmd_TrumpetVoicePlayCount=0;
     }
     ucRet = memcmp(pBuf, ucRxPASTATE0, 9);// +PASTATE:0
     if(ucRet == 0x00)
