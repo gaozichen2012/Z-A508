@@ -718,7 +718,7 @@ void TASK_RunLoBattery(void)
 {
 #if 1
   api_lcd_pwr_on_hint(" 电量低  请充电  ");
-  VOICE_SetOutput(ATVOICE_FreePlay,"3575606c3575cf914e4f0cfff78b73513a6745513575",44);//群组选择
+  VOICE_SetOutput(ATVOICE_FreePlay,"3575606c3575cf914e4f0cfff78b73513a6745513575",44);//电量低请充电
   DEL_SetTimer(0,1000);
   while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
   BEEP_Time(10);

@@ -3,7 +3,9 @@
 u8 BatteryLevel=0;
 u8 Count=0;
 u8 Count2=0;
+u8 Count3=0;
 bool LowVoltageDetection_Flag;
+bool LobatteryTask_StartFlag=FALSE;
 bool PrimaryLowPower_Flag=FALSE;
 static u16 OneChannelGetADValue(ADC2_Channel_TypeDef ADC2_Channel,\
   ADC2_SchmittTrigg_TypeDef ADC2_SchmittTriggerChannel);
@@ -42,6 +44,19 @@ void LowVoltageDetection(void)
   
  if(GetTaskId()==Task_Start)
  {
+   if(ADValue<=355&&ADValue>=200)
+   {
+     Count3++;
+     if(Count3>100)
+     {
+       LobatteryTask_StartFlag=TRUE;
+     } 
+   }
+   else
+   {
+     Count3=0;
+   }
+   
    if(ADValue<=350&&ADValue>=200)
       {
         api_disp_icoid_output( eICO_IDBATT , TRUE, TRUE);
