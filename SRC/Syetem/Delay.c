@@ -278,11 +278,12 @@ static void DEL_500msProcess(void)			//delay 500ms process server
 /*********受到关喇叭指令延迟两秒关闭******************************************/
     if(GetTaskId()==Task_NormalOperation)
     {
-      if(ApiAtCmd_TrumpetVoicePlay_Flag==FALSE)
+      if(ApiAtCmd_TrumpetVoicePlay_Flag==2)
       {
         ApiAtCmd_TrumpetVoicePlayCount++;
         if(ApiAtCmd_TrumpetVoicePlayCount>6)
         {
+          ApiAtCmd_TrumpetVoicePlay_Flag=0;
           ApiAtCmd_TrumpetVoicePlayCount=0;
           AUDIO_IOAFPOW(OFF);
         }

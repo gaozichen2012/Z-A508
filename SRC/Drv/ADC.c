@@ -75,11 +75,11 @@ void LowVoltageDetection(void)
       else{}
  }
  else
-  {
+ {
     if(ADValue<=345&&ADValue>=200)//345Îª3.42²¥±¨
     {
       Count++;
-      if(Count>=50)
+      if(Count>=100)
       {
         api_disp_icoid_output( eICO_IDBATT, TRUE, TRUE);
         SetTaskId(TASK_LOBATT);
@@ -90,7 +90,7 @@ void LowVoltageDetection(void)
     else if(ADValue<355&&ADValue>345)
     {
       Count2++;
-      if(Count2>=50)
+      if(Count2>=100)
       {
         api_disp_icoid_output( eICO_IDBATT, TRUE, TRUE);
         SetTaskId(Task_NormalOperation);

@@ -695,7 +695,7 @@ else
   }
   else
   {
-    if(ApiAtCmd_TrumpetVoicePlay_Flag==TRUE)
+    if(ApiAtCmd_TrumpetVoicePlay_Flag==1)
     {
       AUDIO_IOAFPOW(ON);//在VOICE_SetOutput()加了打开，在识别POC:91加了功放打开;PTT键
     }

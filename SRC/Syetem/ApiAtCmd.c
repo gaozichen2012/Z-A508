@@ -1,7 +1,7 @@
 #include "AllHead.h"
 u8 BootProcess_SIMST_Flag=0;
 u8 BootProcess_PPPCFG_Flag=0;
-bool ApiAtCmd_TrumpetVoicePlay_Flag=FALSE;//功放控制标志位
+u8 ApiAtCmd_TrumpetVoicePlay_Flag=0;//功放控制标志位
 bool ApiAtCmd_ZTTS0_Flag=FALSE;
 u8 CSQ_Flag=0;
 u8 CSQ99Count_Flag=0;
@@ -189,9 +189,9 @@ bool ApiAtCmd_WritCommand(AtCommType id, u8 *buf, u16 len)
 
 void ApiAtCmd_100msRenew(void)
 {
-  if(AtCmdDrvobj.NetState.SignalToNoiseMax>=400&&
+  if(AtCmdDrvobj.NetState.SignalToNoiseMax>=350&&
      AtCmdDrvobj.NetState.SignalToNoiseMax<=1000&&
-     AtCmdDrvobj.NetState.SouXingConut>=4&&
+     AtCmdDrvobj.NetState.SouXingConut>=3&&
      AtCmdDrvobj.NetState.EffectiveLocation==TRUE)
   {
     PositionInfoSendToATPORT_RedLed_Flag=TRUE;
@@ -371,14 +371,14 @@ void ApiAtCmd_10msRenew(void)
     ucRet = memcmp(pBuf, ucRxPASTATE1, 9);// +PASTATE:1
     if(ucRet == 0x00)
     {
-      ApiAtCmd_TrumpetVoicePlay_Flag=TRUE;
+      ApiAtCmd_TrumpetVoicePlay_Flag=1;
       UpDownSwitchingCount=0;//解决选中单呼后切换群组，语音中断的问题
       ApiAtCmd_TrumpetVoicePlayCount=0;
     }
     ucRet = memcmp(pBuf, ucRxPASTATE0, 9);// +PASTATE:0
     if(ucRet == 0x00)
     {
-      ApiAtCmd_TrumpetVoicePlay_Flag=FALSE;
+      ApiAtCmd_TrumpetVoicePlay_Flag=2;
     }
     ucRet = memcmp(pBuf, ucRxZTTS0, 6);// +PASTATE:0
     if(ucRet == 0x00)
