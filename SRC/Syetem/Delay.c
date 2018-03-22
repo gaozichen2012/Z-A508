@@ -25,7 +25,6 @@ u8 PrimaryLowPowerCount=0;
 u8 ForbiddenSendPttCount=0;
 u8 EnterKeyTimeCount=0;
 u8 UpDownSwitchingCount=0;
-u8 POC_ReceivedNoVoiceCount=0;
 u8 TaskStartDeleteDelay1Count=0;
 u8 TaskStartDeleteDelay3Count=0;
 u8 TaskStartDeleteDelay4Count=0;
@@ -359,6 +358,7 @@ static void DEL_500msProcess(void)			//delay 500ms process server
       }
     }
 /*******解决呼叫方第一次呼叫，被呼方不亮绿灯的问题**********************************************/
+#if 0//去除
     if(POC_ReceivedNoVoice_Flag==TRUE)
     {
       POC_ReceivedNoVoiceCount++;
@@ -374,6 +374,7 @@ static void DEL_500msProcess(void)			//delay 500ms process server
     {
       POC_ReceivedNoVoiceCount=0;
     }
+#endif
 /*****************************************************/
     if(UpDownSwitching_Flag==TRUE)
     {

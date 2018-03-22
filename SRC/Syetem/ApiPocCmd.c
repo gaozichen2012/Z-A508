@@ -26,7 +26,7 @@ u8 POC_QuitGroupCalling_Flag=0;
 bool POC_ReceivedVoice_Flag=FALSE;
 bool ApiPocCmd_Tone_Flag=FALSE;
 bool SwitchGroupBUG=FALSE;
-bool POC_ReceivedNoVoice_Flag=FALSE;
+//bool POC_ReceivedNoVoice_Flag=FALSE;
 bool EnterPersonalCalling=FALSE;
 u8 POC_ReceivedVoiceStart_Flag=0;
 u8 POC_ReceivedVoiceEnd_Flag=0;
@@ -385,12 +385,12 @@ void ApiPocCmd_10msRenew(void)
             //PocCmdDrvobj.WorkState.UseState.SpeakerRightnow.NameLen = APIPOC_UserName_Len;
             //解决切换群组出现话权下发指令，导致禁发 
             PocCmdDrvobj.WorkState.UseState.SpeakerRightnow.NameLen = 0;
-            SwitchGroupBUG=TRUE;
+            //SwitchGroupBUG=TRUE;
             //解决进入个呼模式，按住PTT键不送，被呼方第一次不亮绿灯却能接收到语音的问题
-            POC_ReceivedNoVoice_Flag=TRUE;
+            //POC_ReceivedNoVoice_Flag=TRUE;
             //解决解决进入个呼模式，按住PTT键不送，被呼方第一次亮绿灯能接收到语音，但此时按下PTT亮红灯的BUG
-            POC_ReceivedVoice_Flag=TRUE;
-            EnterPttMoment_Flag=TRUE;
+            //POC_ReceivedVoice_Flag=TRUE;
+            //EnterPttMoment_Flag=TRUE;
           }
           else
           {
@@ -410,7 +410,7 @@ void ApiPocCmd_10msRenew(void)
         //Set_GreenLed(LED_ON);
         if(SwitchGroupBUG==TRUE)
         {
-#if 1//解决进入个呼模式，按住PTT键不送，被呼方第一次亮绿灯能接收到语音，松开PTT绿灯常亮的问题
+#if 0//解决进入个呼模式，按住PTT键不送，被呼方第一次亮绿灯能接收到语音，松开PTT绿灯常亮的问题
             POC_ReceivedVoice_Flag=FALSE;
             POC_ReceivedVoiceEnd_Flag=2;//0:正常 1：收到语音 2：刚结束语音
             POC_ReceivedVoiceEndForXTSF_Flag=2;
@@ -427,7 +427,7 @@ void ApiPocCmd_10msRenew(void)
           POC_ReceivedVoiceEndForXTSF_Flag=2;
           //POC_ReceivedVoiceStart_Flag=0;//0:正常 1：收到语音 2：刚开始语音//尝试解决闪屏问题
         }
-        POC_ReceivedNoVoice_Flag=FALSE;
+        //POC_ReceivedNoVoice_Flag=FALSE;
       }
       break;
 /**************************************/
