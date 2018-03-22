@@ -33,6 +33,7 @@ u8 TaskStartDeleteDelay6Count=0;
 u8 ApiAtCmd_TrumpetVoicePlayCount=0;
 u8 POC_ReceivedVoiceCount=0;
 u8 LobatteryTask_StartCount=0;
+u8 PocNoOnlineMemberCount=0;
 bool LockingState_Flag=FALSE;
 u8 BacklightTimeCount;//=10;//背光灯时间(需要设置进入eeprom)
 u16 KeylockTimeCount;//=30;//键盘锁时间(需要设置进入eeprom)
@@ -263,6 +264,17 @@ static void DEL_500msProcess(void)			//delay 500ms process server
     DEL_500ms_Count2++;
     TimeCount_Light++;
     CSQTimeCount++;
+/*******无在线成员处理*******************/
+    if(PocNoOnlineMember_Flag==TRUE)
+    {
+      PocNoOnlineMemberCount++;
+      if(PocNoOnlineMemberCount>2*1)
+      {
+        PocNoOnlineMemberCount=0;
+        PocNoOnlineMember_Flag=FALSE;
+        PocNoOnlineMember_Flag2=TRUE;
+      }
+    }
 /******登录状态下的低电报警**********************************************/
     if(LobatteryTask_StartFlag==TRUE)
     {

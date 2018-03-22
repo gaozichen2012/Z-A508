@@ -35,6 +35,8 @@ bool POC_Receive86_Flag=FALSE;
 u8 OffLineCount=0;
 u8 OnlineMembership=0;
 u8 KeyPttState=0;
+bool PocNoOnlineMember_Flag=FALSE;
+bool PocNoOnlineMember_Flag2=FALSE;
 bool GettheOnlineMembersDone=FALSE;
 typedef struct{
   struct{
@@ -315,6 +317,17 @@ void ApiPocCmd_10msRenew(void)
     case 0x0E://在线用户个数
       ucId = COML_AscToHex(pBuf+8, 0x04);
       PocCmdDrvobj.WorkState.UseState.PttUserName.UserNum = ucId;
+      if(Len==12)
+      {
+        if(PocCmdDrvobj.WorkState.UseState.PttUserName.UserNum==0)
+        {
+          PocNoOnlineMember_Flag=TRUE;
+        }
+        else
+        { 
+          PocCmdDrvobj.WorkState.UseState.PttUserName.UserNum = ucId;
+        }
+      }
       break;
     case 0x0d://群组个数
       ucId = COML_AscToHex(pBuf+10, 0x02);

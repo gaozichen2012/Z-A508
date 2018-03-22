@@ -388,31 +388,40 @@ void Task_RunNormalOperation(void)
 /*******个呼键状态检测***************************************************************************************************************************************/
   if(ReadInput_KEY_2==0)//个呼键
   {
-    GettheOnlineMembersDone=FALSE;//解决个呼按键与上下键逻辑混乱问题，个呼键按下直到播报第一个成员后才可以按上下键切换个呼成员
-    if(TheMenuLayer_Flag!=0)//解决个呼键影响菜单界面信息显示，现在只要按个呼键就会退出菜单
+    if(POC_EnterPersonalCalling_Flag==1)//解决被呼状态下，按个呼键无效（应该是被呼状态下，让个呼键失效）
     {
-        MenuDisplay(Menu_RefreshAllIco);
-        MenuModeCount=1;
-        TheMenuLayer_Flag=0;
-        MenuMode_Flag=0;
-        ApiMenu_SwitchGroup_Flag=0;
-        ApiMenu_SwitchCallUser_Flag=0;
-        ApiMenu_GpsInfo_Flag=0;
-        ApiMenu_BacklightTimeSet_Flag=0;
-        ApiMenu_KeylockTimeSet_Flag=0;
-        ApiMenu_NativeInfo_Flag=0;
-        ApiMenu_BeiDouOrWritingFrequency_Flag=0;
+      VOICE_SetOutput(ATVOICE_FreePlay,"ab887c542d4e",12);//个呼中
+      DEL_SetTimer(0,50);
+      while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
     }
-    api_lcd_pwr_on_hint("对象:   个呼选择");
-    api_lcd_pwr_on_hint2(HexToChar_MainUserId());
-    PersonalCallingNum=0;//解决按单呼键直接选中，单呼用户并不是播报的用户
-    Key_PersonalCalling_Flag=1;
-    VOICE_SetOutput(ATVOICE_FreePlay,"2a4e7c542000106258540990e962",28);//个呼成员选择
-    DEL_SetTimer(0,200);
-    while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
-    ApiPocCmd_WritCommand(PocComm_UserListInfo,ucRequestUserListInfo,strlen((char const *)ucRequestUserListInfo));
-    KeyDownUpChoose_GroupOrUser_Flag=2;
-    KeyPersonalCallingCount=0;//解决单呼模式，上下键成员非正常顺序，第一个成员在切换时会第二、第三个碰到
+    else
+    {
+      GettheOnlineMembersDone=FALSE;//解决个呼按键与上下键逻辑混乱问题，个呼键按下直到播报第一个成员后才可以按上下键切换个呼成员
+      if(TheMenuLayer_Flag!=0)//解决个呼键影响菜单界面信息显示，现在只要按个呼键就会退出菜单
+      {
+          MenuDisplay(Menu_RefreshAllIco);
+          MenuModeCount=1;
+          TheMenuLayer_Flag=0;
+          MenuMode_Flag=0;
+          ApiMenu_SwitchGroup_Flag=0;
+          ApiMenu_SwitchCallUser_Flag=0;
+          ApiMenu_GpsInfo_Flag=0;
+          ApiMenu_BacklightTimeSet_Flag=0;
+          ApiMenu_KeylockTimeSet_Flag=0;
+          ApiMenu_NativeInfo_Flag=0;
+          ApiMenu_BeiDouOrWritingFrequency_Flag=0;
+      }
+      api_lcd_pwr_on_hint("对象:   个呼选择");
+      api_lcd_pwr_on_hint2(HexToChar_MainUserId());
+      PersonalCallingNum=0;//解决按单呼键直接选中，单呼用户并不是播报的用户
+      Key_PersonalCalling_Flag=1;
+      VOICE_SetOutput(ATVOICE_FreePlay,"2a4e7c542000106258540990e962",28);//个呼成员选择
+      DEL_SetTimer(0,200);
+      while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+      ApiPocCmd_WritCommand(PocComm_UserListInfo,ucRequestUserListInfo,strlen((char const *)ucRequestUserListInfo));
+      KeyDownUpChoose_GroupOrUser_Flag=2;
+      KeyPersonalCallingCount=0;//解决单呼模式，上下键成员非正常顺序，第一个成员在切换时会第二、第三个碰到
+    }
   }
   
 /*******报警键状态检测********************************************************************************************************************************************/
@@ -707,8 +716,20 @@ else
 #endif
   }
 }
-/***********************************************/
-
+/*****如果没有在线成员******************************************/
+if(PocNoOnlineMember_Flag2==TRUE)
+{
+  PocNoOnlineMember_Flag2=FALSE;
+  MenuMode_Flag=0;
+  api_lcd_pwr_on_hint("                ");//清屏
+  api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
+  api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
+  //用于PTT键及上下键返回默认状态
+  KeyDownUpChoose_GroupOrUser_Flag=0;
+  KeyUpDownCount=0;
+  Key_PersonalCalling_Flag=0;//进入组呼标志位
+  KeyDownUpChoose_GroupOrUser_Flag=0;//解决（个呼键→返回键→OK或PTT）屏幕显示错误的BUG
+}
 }
 void TASK_WriteFreq(void)
 {
