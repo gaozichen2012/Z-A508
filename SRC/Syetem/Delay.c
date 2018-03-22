@@ -33,6 +33,7 @@ u8 ApiAtCmd_TrumpetVoicePlayCount=0;
 u8 POC_ReceivedVoiceCount=0;
 u8 LobatteryTask_StartCount=0;
 u8 PocNoOnlineMemberCount=0;
+u8 GetNoOnlineMembersCount=0;
 bool LockingState_Flag=FALSE;
 u8 BacklightTimeCount;//=10;//背光灯时间(需要设置进入eeprom)
 u16 KeylockTimeCount;//=30;//键盘锁时间(需要设置进入eeprom)
@@ -263,6 +264,30 @@ static void DEL_500msProcess(void)			//delay 500ms process server
     DEL_500ms_Count2++;
     TimeCount_Light++;
     CSQTimeCount++;
+/*********按个呼键未获取到在线成员，超时退回组呼模式*************************/
+    if(Key_PersonalCalling_Flag==1&&GettheOnlineMembersDone==FALSE)
+    {
+      GetNoOnlineMembersCount++;
+      if(GetNoOnlineMembersCount>2*3)
+      {
+        GetNoOnlineMembersCount=0;
+        Key_PersonalCalling_Flag=0;//进入组呼标志位
+        api_lcd_pwr_on_hint("                ");//清屏
+        api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
+        api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
+        MenuMode_Flag=0;
+        //用于PTT键及上下键返回默认状态
+        KeyUpDownCount=0;
+        KeyDownUpChoose_GroupOrUser_Flag=0;//解决（个呼键→返回键→OK或PTT）屏幕显示错误的BUG
+      }
+    }
+    else
+    {
+      if(GettheOnlineMembersDone==TRUE)
+      {
+        GetNoOnlineMembersCount=0;
+      }
+    }
 /*******无在线成员处理*******************/
     if(PocNoOnlineMember_Flag==TRUE)
     {
