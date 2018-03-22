@@ -352,7 +352,7 @@ static void DEL_500msProcess(void)			//delay 500ms process server
     if(TaskStartDeleteDelay6==0)
     {
       TaskStartDeleteDelay6Count++;
-      if(TaskStartDeleteDelay6Count>=2*5)
+      if(TaskStartDeleteDelay6Count>=2*6)//6Ãë²¦Ò»´ÎËÑË÷ÍøÂç
       {
         TaskStartDeleteDelay6Count=0;
         TaskStartDeleteDelay6=1;
