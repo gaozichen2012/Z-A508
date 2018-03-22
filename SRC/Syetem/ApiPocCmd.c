@@ -253,34 +253,6 @@ bool ApiPocCmd_user_info_set(u8 *pBuf, u8 len)//cTxBuf为存放ip账号密码的信息
 	return r;
 }
 
-#if 1//绿灯bUG
-/*void ApiPocCmd_83_1msRenew(void)
-{
-  u8 ucId,i, Len;
-  u8 * pBuf, ucRet;
-  while((Len = DrvMC8332_PocNotify_Queue_front(&pBuf)) != 0x00)
-  {
-    ucId = COML_AscToHex(pBuf, 0x02);
-    if(ucId==0x83)
-    {
-      ucId = COML_AscToHex(pBuf+2, 0x02);
-      if(ucId == 0x00)
-      {
-        POC_ReceivedVoice_Flag=TRUE;
-        POC_ReceivedVoiceStart_Flag=2;//0:正常 1：收到语音 2：刚开始语音
-        POC_ReceivedVoiceEnd_Flag=1;//0:正常 1：收到语音 2：刚结束语音
-      }
-      if(ucId == 0xff)
-      {
-        POC_ReceivedVoice_Flag=FALSE;
-        POC_ReceivedVoiceEnd_Flag=2;//0:正常 1：收到语音 2：刚结束语音
-        POC_ReceivedVoiceStart_Flag=0;//0:正常 1：收到语音 2：刚开始语音
-      }
-    }
-  }
-}*/
-#endif
-
 void ApiPocCmd_10msRenew(void)
 {
   u8 ucId,i, Len;

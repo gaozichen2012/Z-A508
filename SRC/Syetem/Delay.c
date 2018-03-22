@@ -302,6 +302,10 @@ static void DEL_500msProcess(void)			//delay 500ms process server
         POC_ReceivedVoiceStart_Flag=0;//0:正常 1：收到语音 2：刚开始语音
       }
     }
+    else
+    {
+      POC_ReceivedVoiceCount=0;
+    }
 /*********受到关喇叭指令延迟两秒关闭******************************************/
     if(GetTaskId()==Task_NormalOperation)
     {
