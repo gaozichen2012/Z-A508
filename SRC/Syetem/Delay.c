@@ -537,7 +537,7 @@ static void DEL_500msProcess(void)			//delay 500ms process server
     if(ReadBufferB[0]==0)
       KeylockTimeCount=200;//如果=200则永远不锁屏
     else
-      KeylockTimeCount=30*ReadBufferB[0];
+      KeylockTimeCount=5*ReadBufferB[0];
     if(TimeCount_Light>=2*BacklightTimeCount)//10s
     {
       MCU_LCD_BACKLIGTH(OFF);//关闭背光灯

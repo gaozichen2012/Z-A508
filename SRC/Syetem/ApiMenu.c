@@ -299,32 +299,32 @@ void Level3MenuDisplay(Level3MenuDisplayType id)
   case KeylockTimeSet_30s:
     api_lcd_pwr_on_hint3("¼üÅÌËø          ");
     api_lcd_pwr_on_hint5("1/7");
-     api_lcd_pwr_on_hint("30Ãë            ");
+     api_lcd_pwr_on_hint("5Ãë            ");
     break;
   case KeylockTimeSet_60s:
     api_lcd_pwr_on_hint3("¼üÅÌËø          ");
     api_lcd_pwr_on_hint5("2/7");
-     api_lcd_pwr_on_hint("60Ãë            ");
+     api_lcd_pwr_on_hint("10Ãë            ");
     break;
   case KeylockTimeSet_90s:
     api_lcd_pwr_on_hint3("¼üÅÌËø          ");
     api_lcd_pwr_on_hint5("3/7");
-     api_lcd_pwr_on_hint("90Ãë            ");
+     api_lcd_pwr_on_hint("15Ãë            ");
     break;
   case KeylockTimeSet_120s:
     api_lcd_pwr_on_hint3("¼üÅÌËø          ");
     api_lcd_pwr_on_hint5("4/7");
-     api_lcd_pwr_on_hint("120Ãë           ");
+     api_lcd_pwr_on_hint("20Ãë           ");
     break;
   case KeylockTimeSet_150s:
     api_lcd_pwr_on_hint3("¼üÅÌËø          ");
     api_lcd_pwr_on_hint5("5/7");
-     api_lcd_pwr_on_hint("150Ãë           ");
+     api_lcd_pwr_on_hint("25Ãë           ");
     break;
   case KeylockTimeSet_180s:
     api_lcd_pwr_on_hint3("¼üÅÌËø          ");
     api_lcd_pwr_on_hint5("6/7");
-     api_lcd_pwr_on_hint("180Ãë           ");
+     api_lcd_pwr_on_hint("30Ãë           ");
     break;
   default:
     break;

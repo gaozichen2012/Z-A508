@@ -265,6 +265,18 @@ void ApiCaretCmd_10msRenew(void)
     {
       BootProcess_SIMST_Flag=1;
       TaskStartDeleteDelay1=1;
+#if 1//处理模块升级后，不重新写账号的问题
+      CSQ_Flag=0;
+      TaskStartDeleteDelay2=0;
+      TaskStartDeleteDelay3=0;
+      TaskStartDeleteDelay4=1;
+      TaskStartDeleteDelay5=0;
+      TaskStartDeleteDelay6=0;
+      TaskStartDeleteDelay1Count=0;
+      TaskStartDeleteDelay3Count=0;
+      TaskStartDeleteDelay4Count=0;
+      TaskStartDeleteDelay6Count=0;
+#endif
     }
     ucRet = memcmp(pBuf, ucSIMST255, 10);//^SIMST:255
     if(ucRet == 0x00)
