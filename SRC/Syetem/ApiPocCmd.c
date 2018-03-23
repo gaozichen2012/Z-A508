@@ -391,6 +391,7 @@ void ApiPocCmd_10msRenew(void)
             //解决解决进入个呼模式，按住PTT键不送，被呼方第一次亮绿灯能接收到语音，但此时按下PTT亮红灯的BUG
             //POC_ReceivedVoice_Flag=TRUE;
             //EnterPttMoment_Flag=TRUE;
+            //可能会导致个呼指示灯异常
           }
           else
           {
