@@ -41,7 +41,7 @@ void LED_IntOutputRenew(void)
         }
         
       }
-      if(LED_Conut>=53)
+      if(LED_Conut>=51)
       {
         PositionInfoSendToATPORT_RedLed_Flag=FALSE;
         Set_GreenLed(LED_OFF);

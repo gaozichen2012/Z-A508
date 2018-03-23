@@ -183,28 +183,7 @@ void Task_RunNormalOperation(void)
   
   if(KeyDownUpChoose_GroupOrUser_Flag==3)
   {KeyDownUpChoose_GroupOrUser_Flag=0;}
-    /*if(KeyDownUpChoose_GroupOrUser_Flag==3)
-  {
-    if(POC_ReceivedVoice_forPTT_Flag==TRUE)
-    {
-      if(POC_ReceivedVoice_Flag==FALSE)
-      {
-        POC_ReceivedVoice_Flag=FALSE;
-        POC_ReceivedVoice_forPTT_Flag=FALSE;
-        KeyDownUpChoose_GroupOrUser_Flag=0;
-      }
-    }*/
-   /* else//否则没收到8300时，过2s自行进入默认状态
-    {
-      if(EnterKeyTime_2s_Flag==TRUE)
-      {
-        EnterKeyTime_2s_Flag=FALSE;
-        POC_ReceivedVoice_Flag=FALSE;
-        POC_ReceivedVoice_forPTT_Flag=FALSE;
-        KeyDownUpChoose_GroupOrUser_Flag=0;
-      }
-    }
-  }*/
+
   switch(KeyPttState)//KeyPttState 0：未按PTT 1:按下ptt瞬间  2：按住PTT状态 3：松开PTT瞬间
   {
   case 0://未按PTT
@@ -287,6 +266,12 @@ void Task_RunNormalOperation(void)
     KeyPttState=0;
     api_disp_icoid_output( eICO_IDTALKAR, TRUE, TRUE);//默认无发射无接收信号图标
     api_disp_all_screen_refresh();// 全屏统一刷新
+#if 1//解决快速按两次PTT异常的问题
+    if(EnterPttMoment_Flag==TRUE)
+    {
+      ApiPocCmd_WritCommand(PocComm_StartPTT,ucStartPTT,strlen((char const *)ucStartPTT));
+    }
+#endif
     break;
   default:
     break;

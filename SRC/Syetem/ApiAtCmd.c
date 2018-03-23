@@ -465,7 +465,11 @@ void ApiAtCmd_Get_location_Information(void)
         break;
       case 3:
         AtCmdDrvobj.NetState.Position.Latitude_Second = CHAR_TO_Digital(&pBuf[cHead2],i-cHead2);//纬度小数位
+#if 0//test,CHAR_TO_Digital速度异常
+        AtCmdDrvobj.NetState.ucSpeed = CHAR_TO_Digital(&pBuf[i+1],AtCmdDrvobj.NetState.GpsInfoBufLen-i-1);//speed
+#else
         AtCmdDrvobj.NetState.ucSpeed = COML_AscToHex(&pBuf[i+1],AtCmdDrvobj.NetState.GpsInfoBufLen-i-1);//speed
+#endif
         break;
       default:
         break;
