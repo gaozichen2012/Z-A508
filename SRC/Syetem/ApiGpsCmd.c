@@ -5,6 +5,7 @@
 
 u8 Test1=0;
 u8 SendGpsLoginInfoCount=0;
+GpsServerType ApiGpsServerType;
 typedef enum{
 	GPSREV_Ack		= 0x8001,//平台通用应答
 	GPSREV_Puls		= 0x8002,//终端心跳
@@ -339,52 +340,25 @@ void ApiGpsCmd_PowerOnInitial(void)//bubiao
   adr = CFG_GetCurAdr(ADR_IDGpsFun);//部标注册信息获取
   FILE_Read2(adr.Adr,adr.Len-16,(u8*)(&GpsFunDrvObj.GpsPar));
   FILE_Read(0,80,ReadBuffer);//80位
-  //adr = CFG_GetCurAdr(ADR_IDRadioMode);
-  //adr  = CFG_GetCurAdr(ADR_IDEEPROMVER);
-   /* GpsFunDrvObj.GpsPar2.LoginInfo.Province.usData=0x002c;//省域ID
-    GpsFunDrvObj.GpsPar2.LoginInfo.County.usData=0x0300;//市县域ID
-    GpsFunDrvObj.GpsPar2.LoginInfo.Manufacturer[0]='4';//why
-    GpsFunDrvObj.GpsPar2.LoginInfo.Manufacturer[1]='1';
-    GpsFunDrvObj.GpsPar2.LoginInfo.Manufacturer[2]='0';
-    GpsFunDrvObj.GpsPar2.LoginInfo.Manufacturer[3]='0';
-    GpsFunDrvObj.GpsPar2.LoginInfo.Manufacturer[4]='0';//制造商ID
-    
-    
-
-
-    GpsFunDrvObj.GpsPar2.LoginInfo.TerminalType[0]='2';
-    GpsFunDrvObj.GpsPar2.LoginInfo.TerminalType[1]='0';
-    GpsFunDrvObj.GpsPar2.LoginInfo.TerminalType[2]='1';
-    GpsFunDrvObj.GpsPar2.LoginInfo.TerminalType[3]='4';
-    GpsFunDrvObj.GpsPar2.LoginInfo.TerminalType[4]='0';
-    GpsFunDrvObj.GpsPar2.LoginInfo.TerminalType[5]='4';
-    GpsFunDrvObj.GpsPar2.LoginInfo.TerminalType[6]=0x00;
-    GpsFunDrvObj.GpsPar2.LoginInfo.TerminalType[7]=0x00;//终端型号
-
-    GpsFunDrvObj.GpsPar2.LoginInfo.TerminalColor=0x04;//车牌颜色*/
-
-#if 0//客户要求需要添加终端ID及车牌号信息以及里程
-    GpsFunDrvObj.GpsPar.LoginInfo.TerminalID[0]='6';//终端ID
-    GpsFunDrvObj.GpsPar.LoginInfo.TerminalID[1]='6';
-    GpsFunDrvObj.GpsPar.LoginInfo.TerminalID[2]='6';
-    GpsFunDrvObj.GpsPar.LoginInfo.TerminalID[3]='6';
-    GpsFunDrvObj.GpsPar.LoginInfo.TerminalID[4]='6';
-    GpsFunDrvObj.GpsPar.LoginInfo.TerminalID[5]='6';
-    GpsFunDrvObj.GpsPar.LoginInfo.TerminalID[6]='6';
-    
-    GpsFunDrvObj.GpsPar.LoginInfo.LicensePlate[0]='7';//车牌号
-    GpsFunDrvObj.GpsPar.LoginInfo.LicensePlate[1]='7';
-    GpsFunDrvObj.GpsPar.LoginInfo.LicensePlate[2]='7';
-    GpsFunDrvObj.GpsPar.LoginInfo.LicensePlate[3]='7';
-    GpsFunDrvObj.GpsPar.LoginInfo.LicensePlate[4]='7';
-    GpsFunDrvObj.GpsPar.LoginInfo.LicensePlate[5]='7';
-    GpsFunDrvObj.GpsPar.LoginInfo.LicensePlate[6]='7';
-    GpsFunDrvObj.GpsPar.LoginInfo.LicensePlate[7]='7';
-    GpsFunDrvObj.GpsPar.LoginInfo.LicensePlate[8]='7';
-    GpsFunDrvObj.GpsPar.LoginInfo.LicensePlate[9]='7';
-    GpsFunDrvObj.GpsPar.LoginInfo.LicensePlate[10]=0x00;
+#if 1//获取参数决定上报哪个平台
+  if(GpsFunDrvObj.GpsPar.Gps.Cfg.Byte==0x09)//部标平台
+  {
+    ApiGpsServerType=GpsServerType_BuBiao;
+  }
+  else if(GpsFunDrvObj.GpsPar.Gps.Cfg.Byte==0x11)//中兴平台
+  {
+    ApiGpsServerType=GpsServerType_ZTE;
+  }
+  else if(GpsFunDrvObj.GpsPar.Gps.Cfg.Byte==0x19)//部标&中兴平台
+  {
+    ApiGpsServerType=GpsServerType_BuBiaoAndZTE;
+  }
+  else
+  {
+    ApiGpsServerType=GpsServerType_ZTE;
+  }
 #endif
-
+  
     GpsFunDrvObj.usReportTimer = 0;//添加：报告时间设置为0
     GpsFunDrvObj.PositionSystem.GbSys.State.ucStep=0x00;
     //Tset

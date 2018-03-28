@@ -514,7 +514,16 @@ static void DEL_500msProcess(void)			//delay 500ms process server
         if(GpsReconnectionTimeCount==2*10)
         {
           //NoUseNum=ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)ucGPSSendToAtPort,strlen((char const *)ucGPSSendToAtPort));//设置GPS定位信息发送到串口
-          //NoUseNum=ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)ucGPSUploadTime_5s,strlen((char const *)ucGPSUploadTime_5s));//设置GPS定位信息5s发送一次
+          switch(ApiGpsServerType)
+          {
+          case GpsServerType_BuBiao:
+            NoUseNum=ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)ucGPSUploadTime_5s,strlen((char const *)ucGPSUploadTime_5s));//设置GPS定位信息5s发送一次
+            break;
+          case GpsServerType_ZTE:
+            break;
+          case GpsServerType_BuBiaoAndZTE:
+            break;
+          }
           GpsReconnectionTimeCount=21;
         }
         if(GpsReconnectionTimeCount>=25)
@@ -555,10 +564,24 @@ static void DEL_500msProcess(void)			//delay 500ms process server
     
     if(DEL_500ms_Count2>=10)
     {
-      ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)"AT^CDMATIME",strlen((char const *)"AT^CDMATIME"));//发送获取CDMATIME获取时间
-      //每个5秒发送一次gpsinfo获取速度
-      ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)"AT^GPSINFO",strlen((char const *)"AT^GPSINFO"));//发送获取CDMATIME获取时间
-      ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)"AT^GPSCNO",strlen((char const *)"AT^GPSCNO"));//发送获取CDMATIME获取时间
+      switch(ApiGpsServerType)
+      {
+      case GpsServerType_BuBiao:
+        ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)"AT^CDMATIME",strlen((char const *)"AT^CDMATIME"));//发送获取CDMATIME获取时间
+        //每个5秒发送一次gpsinfo获取速度
+        ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)"AT^GPSINFO",strlen((char const *)"AT^GPSINFO"));//发送获取CDMATIME获取时间
+        ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)"AT^GPSCNO",strlen((char const *)"AT^GPSCNO"));//发送获取CDMATIME获取时间
+        break;
+      case GpsServerType_ZTE:
+        break;
+      case GpsServerType_BuBiaoAndZTE:
+        ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)"AT^CDMATIME",strlen((char const *)"AT^CDMATIME"));//发送获取CDMATIME获取时间
+        //每个5秒发送一次gpsinfo获取速度
+        ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)"AT^GPSINFO",strlen((char const *)"AT^GPSINFO"));//发送获取CDMATIME获取时间
+        ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)"AT^GPSCNO",strlen((char const *)"AT^GPSCNO"));//发送获取CDMATIME获取时间
+        break;
+          }
+      
       DEL_500ms_Count2=0;
     }
     

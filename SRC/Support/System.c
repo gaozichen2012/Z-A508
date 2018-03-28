@@ -83,7 +83,7 @@ void main_init(void)
   //通讯模块初始化
   //DrvGD83_Init();
   DrvMC8332_Software_Initial();
- ApiGpsCmd_PowerOnInitial();
+  ApiGpsCmd_PowerOnInitial();
   //
   Uart1_Init();//模块通讯使用
   Uart3_Init(); //串口写频使用
@@ -112,17 +112,6 @@ void main_init(void)
   GPIO_WriteHigh(GPIOB,GPIO_PIN_3);//NFC
   GPIO_WriteHigh(GPIOB,GPIO_PIN_4);//北斗
 #endif
-#if 0//EEPROM TEST
-  
-  TestBuf[0]=0x6b;
-  TestBuf[1]=0x27;
-  TestBuf[2]=0x68;
-  TestBuf[3]=0x07;
-  TestBuf[4]='\0';
-
-#endif //EEPROMTEST
-
-  //GD83_ON();
   AUDIO_IOAFMUT(ON);
   AUDIO_IOAFPOW(ON);
   GPIO_Init(GPIOB,GPIO_PIN_6,GPIO_MODE_OUT_PP_LOW_FAST);//LOC MIC MUTE
