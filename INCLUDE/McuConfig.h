@@ -72,7 +72,7 @@ typedef struct {							//address group inforamtion
 #define GPIO_Noise_Mute         GPIOD
 
 #define GPIO_PIN_AF_Mute        GPIO_PIN_4
-#define GPIO_PIN_MIC_Mute       GPIO_PIN_5
+#define GPIO_PIN_MIC_Mute       GPIO_PIN_6
 #define GPIO_PIN_Noise_Mute     GPIO_PIN_7
 
 /******************************************************************************
