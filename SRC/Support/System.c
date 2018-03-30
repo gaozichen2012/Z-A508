@@ -155,7 +155,6 @@ void main_app(void)
     default:
       break;
     }
-    
 /*
 #if 1//°´¼ü¿ØÖÆµÆÁÁÃğ   
     Keyboard_Test();
