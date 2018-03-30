@@ -6,6 +6,7 @@
 #define APIPOC_UserName_Len			39//30 in20180303 群组名最多7位，群组数最大40个
 //u8 TestReadBuffer[250];
 u8 ReadBuffer[80];//Test 存EEPROM读取的数据使用
+
 u8 ASCII_ActiveUserID[22];//Test 存EEPROM读取的数据使用
 u8 Get_Unicode_ActiveUserIDBuf[45];//
 u8 Get_0X_ActiveUserIDBuf[11];//

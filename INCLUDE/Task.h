@@ -24,6 +24,16 @@ typedef enum {					//task id code process
         Task_NormalOperation    =0x0D,
 	TASK_RESET		= 0xFF
 }TASK_CODE;
+
+typedef enum{
+  Key3_OptionZero       =       0x00,
+  Key3_OptionOne        =       0x01,
+  Key3_OptionTwo        =       0x02,
+  Key3_OptionThree      =       0x03,
+  Key3_OptionFour       =       0x04,
+  Key3_OptionFive       =       0x05
+}Key3_OptionType;
+TASKAPI Key3_OptionType Key3Option;
 TASKAPI bool EnterPttMoment_Flag;
 TASKAPI bool NoUseNum;
 TASKAPI u8 NetworkType_2Gor3G_Flag;
