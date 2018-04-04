@@ -22,7 +22,6 @@ typedef enum{
   ATCOMM3_GD83StartupReset      = 0x0F,
   ATCOMM15_HDRCSQ               = 0x10,
 }AtCommType;
-
 extern u8 HDRCSQValue;//HDRCSQµÄÖµ
 extern u8 BootProcess_SIMST_Flag;
 extern u8 BootProcess_PPPCFG_Flag;

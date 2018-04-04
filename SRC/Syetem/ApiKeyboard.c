@@ -3,7 +3,7 @@
 #define KeyCountNum 50//数字键盘消抖-解决了上下键误读数字键问题
 u8 AkeyvolumeCount=7;
 u8 *ucVGR1                       = "AT+VGR=1";//音量增益1
-u8 *ucVGR7                       = "AT+VGR=7";//音量增益7
+u8 *ucVGR7                       = "AT+VGR=7";//音量增益默认7
 u8 *ucKeyUp                = "10000003";
 u8 *ucKeyDown              = "10000004";
 u8 *ucQuitPersonalCalling  = "0A0000ffffffff";

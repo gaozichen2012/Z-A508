@@ -30,8 +30,11 @@ u8 *ucEndPTT                    = "0C0000";
 u8 *ucRequestUserListInfo       = "0E000000000064";
 u8 *ucCLVL                       = "AT+CLVL=7";//音量增益7
 u8 *ucVGR                       = "AT+VGR=7";//音量增益7
-u8 *ucCODECCTL                  = "at^codecctl=9000,1C00,0";//音量增益4000 3c00
-
+#if 0
+u8 *ucCODECCTL                  = "at^codecctl=D800,1C00,0";//音量增益4000 3c00
+#else
+u8 *ucCODECCTL                  = "at^codecctl=6000,2000,1500";//联想音量增益6000,2000,1500
+#endif
 u8 *ucOSSYSHWID                 = "AT^OSSYSHWID=1";
 u8 *ucPrefmode2                  = "AT^prefmode=2";//网络模式2G
 u8 *ucPrefmode4                  = "AT^prefmode=4";//网络模式3G
@@ -55,13 +58,12 @@ void Task_RunStart(void)
       api_disp_icoid_output( eICO_IDRXNULL, TRUE, TRUE);//GPRS无信号图标
 #if 1
       //NoUseNum=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)"AT^RXFILTER=0xF42E,0xFE3B,0xFA26,0xFC04,0xFC1C,0x4F,0x3A56",strlen((char const *)"AT^RXFILTER=0xF42E,0xFE3B,0xFA26,0xFC04,0xFC1C,0x4F,0x3A56"));//高子晨曲线1
-        NoUseNum=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)"AT^RXFILTER=0x13B,0xE4,0xFDC7,0xFF67,0x4A6,0xD62,0x1E05",strlen((char const *)"AT^RXFILTER=0x13B,0xE4,0xFDC7,0xFF67,0x4A6,0xD62,0x1E05"));//廖工曲线1
-      //NoUseNum=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)"AT^RXFILTER=0x0247,0xF3A7,0x383,0x3E,0xA68,0xE223,0x4F17",strlen((char const *)"AT^RXFILTER=0x0247,0xF3A7,0x383,0x3E,0xA68,0xE223,0x4F17"));//第一组数据，声音还可以
-       
+      //NoUseNum=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)"AT^RXFILTER=0x13B,0xE4,0xFDC7,0xFF67,0x4A6,0xD62,0x1E05",strlen((char const *)"AT^RXFILTER=0x13B,0xE4,0xFDC7,0xFF67,0x4A6,0xD62,0x1E05"));//廖工曲线1
+      //NoUseNum=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)"AT^RXFILTER=0xFE43,0xFC0C,0x006A,0x0017,0x09DC,0xE59E,0x3CBE",strlen((char const *)"AT^RXFILTER=0xFE43,0xFC0C,0x006A,0x0017,0x09DC,0xE59E,0x3CBE"));//常规平曲线2
+      //NoUseNum=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)"AT^RXFILTER=0xFF59,0x10F,0xD3,0xFDF4,0xFEC0,0x9B9,0x1909",strlen((char const *)"AT^RXFILTER=0xFF59,0x10F,0xD3,0xFDF4,0xFEC0,0x9B9,0x1909"));//去高频曲线1
+      NoUseNum=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)"AT^RXFILTER=0xFF86,0xFFD2,0xFFCD,0xFF98,0x5E,0xFFBE,0x36B2",strlen((char const *)"AT^RXFILTER=0xFF86,0xFFD2,0xFFCD,0xFF98,0x5E,0xFFBE,0x36B2"));//重合
 #else
-      
       NoUseNum=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)"AT^RXFILTER=0xDD,0x2F3,0xFC52,0x1D,0xFDF3,0xBEB,0x2CF7",strlen((char const *)"AT^RXFILTER=0xDD,0x2F3,0xFC52,0x1D,0xFDF3,0xBEB,0x2CF7"));//默认曲线
-      
 #endif
       NoUseNum=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)ucCLVL,strlen((char const *)ucCLVL));//
       NoUseNum=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)ucVGR,strlen((char const *)ucVGR));//
@@ -155,7 +157,6 @@ void Task_RunStart(void)
     }
   }
 }
-
 
 void Task_RunNormalOperation(void)
 {

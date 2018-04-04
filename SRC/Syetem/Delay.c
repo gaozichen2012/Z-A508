@@ -5,11 +5,14 @@
 #define DEL_IDLE		0x00
 #define DEL_RUN			0x01
 
+//bool UpgradeNoATReturn_Flag=FALSE;
+//bool UpgradeNoATReturn_Flag2=FALSE;
 //#define TimeoutLimit            30//240//键盘超时锁定时间10s
 u8 SignalPoorCount=0;
 u8 WriteFreqTimeCount=0;
 u8 *ucGPSSendToAtPort   ="AT+GPSFUNC=21";
 u8 *ucGPSUploadTime_5s  ="AT+GPSFUNC=1";
+
 u8 DEL_500ms_Count=0;
 u8 DEL_500ms_Count2=0;
 u16 TimeCount=0;
@@ -34,6 +37,7 @@ u8 POC_ReceivedVoiceCount=0;
 u8 LobatteryTask_StartCount=0;
 u8 PocNoOnlineMemberCount=0;
 u8 GetNoOnlineMembersCount=0;
+//u8 UpgradeNoATReturn_Count=0;
 bool LockingState_Flag=FALSE;
 u8 BacklightTimeCount;//=10;//背光灯时间(需要设置进入eeprom)
 u16 KeylockTimeCount;//=30;//键盘锁时间(需要设置进入eeprom)
@@ -264,6 +268,20 @@ static void DEL_500msProcess(void)			//delay 500ms process server
     DEL_500ms_Count2++;
     TimeCount_Light++;
     CSQTimeCount++;
+/**********若指令发出无回音则处于升级状态**********************************/
+   /* if(UpgradeNoATReturn_Flag==TRUE)
+    {
+      UpgradeNoATReturn_Count++;
+      if(UpgradeNoATReturn_Count>=4)
+      {
+        UpgradeNoATReturn_Count=0;
+        UpgradeNoATReturn_Flag2=TRUE;
+      }
+    }
+    else
+    {
+      UpgradeNoATReturn_Count=0;
+    }*/
 /*********按个呼键未获取到在线成员，超时退回组呼模式*************************/
     if(Key_PersonalCalling_Flag==1&&GettheOnlineMembersDone==FALSE)
     {
@@ -459,11 +477,18 @@ static void DEL_500msProcess(void)			//delay 500ms process server
       LandingTimeCount=0;
     }
 /*********定时5s发一次[AT+CSQ?]*************************************************/
-        if(CSQTimeCount>=2*2)
-        {
+    //if(KaiJi_Flag==TRUE)
+    //{
+      if(CSQTimeCount>=2*2)
+      {
           CSQTimeCount=0;
           if(NetworkType_2Gor3G_Flag==3)//如果是3G发送HDRCSQ，2G发送CSQ
-          ApiAtCmd_WritCommand(ATCOMM15_HDRCSQ, (void*)0, 0);
+          {
+            if(BootProcess_SIMST_Flag!=2)
+            {
+              ApiAtCmd_WritCommand(ATCOMM15_HDRCSQ, (void*)0, 0);
+            }  
+          }
           else
           {
             if(NetworkType_2Gor3G_Flag==2)
@@ -472,8 +497,9 @@ static void DEL_500msProcess(void)			//delay 500ms process server
             }
           }
           HDRCSQSignalIcons();
-          
-        }
+      }
+   // }
+
 /******************************************************************************/
     if(GetTaskId()==Task_NormalOperation)
     {
@@ -510,7 +536,6 @@ static void DEL_500msProcess(void)			//delay 500ms process server
           PowerOnCount=2*60;
         }
 #endif
-
         if(GpsReconnectionTimeCount==2*10)
         {
           //NoUseNum=ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)ucGPSSendToAtPort,strlen((char const *)ucGPSSendToAtPort));//设置GPS定位信息发送到串口
@@ -529,7 +554,6 @@ static void DEL_500msProcess(void)			//delay 500ms process server
         if(GpsReconnectionTimeCount>=25)
         {GpsReconnectionTimeCount=21;}
       }
-
     if(ApiPocCmd_Tone_Flag==TRUE)
     {
       ToneTimeCount++;
@@ -544,7 +568,7 @@ static void DEL_500msProcess(void)			//delay 500ms process server
     FILE_Read(0x247,1,ReadBufferB);//键盘锁时间【秒】
     BacklightTimeCount=5*ReadBufferA[0];
     if(ReadBufferB[0]==0)
-      KeylockTimeCount=200;//如果=200则永远不锁屏
+      KeylockTimeCount=200*2;//如果=200则永远不锁屏
     else
       KeylockTimeCount=5*ReadBufferB[0];
     if(TimeCount_Light>=2*BacklightTimeCount)//10s
@@ -567,21 +591,27 @@ static void DEL_500msProcess(void)			//delay 500ms process server
       switch(ApiGpsServerType)
       {
       case GpsServerType_BuBiao:
-        ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)"AT^CDMATIME",strlen((char const *)"AT^CDMATIME"));//发送获取CDMATIME获取时间
-        //每个5秒发送一次gpsinfo获取速度
-        ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)"AT^GPSINFO",strlen((char const *)"AT^GPSINFO"));//发送获取CDMATIME获取时间
-        ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)"AT^GPSCNO",strlen((char const *)"AT^GPSCNO"));//发送获取CDMATIME获取时间
+        if(BootProcess_SIMST_Flag!=2)
+        {
+          ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)"AT^CDMATIME",strlen((char const *)"AT^CDMATIME"));//发送获取CDMATIME获取时间
+          //每个5秒发送一次gpsinfo获取速度
+          ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)"AT^GPSINFO",strlen((char const *)"AT^GPSINFO"));//发送获取CDMATIME获取时间
+          ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)"AT^GPSCNO",strlen((char const *)"AT^GPSCNO"));//发送获取CDMATIME获取时间
+          //UpgradeNoATReturn_Flag=TRUE;
+        }  
         break;
       case GpsServerType_ZTE:
         break;
       case GpsServerType_BuBiaoAndZTE:
-        ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)"AT^CDMATIME",strlen((char const *)"AT^CDMATIME"));//发送获取CDMATIME获取时间
-        //每个5秒发送一次gpsinfo获取速度
-        ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)"AT^GPSINFO",strlen((char const *)"AT^GPSINFO"));//发送获取CDMATIME获取时间
-        ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)"AT^GPSCNO",strlen((char const *)"AT^GPSCNO"));//发送获取CDMATIME获取时间
+        if(BootProcess_SIMST_Flag!=2)
+        {
+          ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)"AT^CDMATIME",strlen((char const *)"AT^CDMATIME"));//发送获取CDMATIME获取时间
+          //每个5秒发送一次gpsinfo获取速度
+          ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)"AT^GPSINFO",strlen((char const *)"AT^GPSINFO"));//发送获取CDMATIME获取时间
+          ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)"AT^GPSCNO",strlen((char const *)"AT^GPSCNO"));//发送获取CDMATIME获取时间
+        } 
         break;
-          }
-      
+      }
       DEL_500ms_Count2=0;
     }
     

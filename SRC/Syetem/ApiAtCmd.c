@@ -8,6 +8,7 @@ u8 CSQ99Count_Flag=0;
 u8 KeyDownUpChoose_GroupOrUser_Flag=0;
 u8 HDRCSQValue=0;//HDRCSQ的值
 u8 CSQValue=0;//HDRCSQ的值
+//u8 KaiJi_Flag=FALSE;
 const u8 *ucGD83Reset  = "at^reset";
 const u8 *ucRxPASTATE1 = "PASTATE:1";
 const u8 *ucRxPASTATE0 = "PASTATE:0";
@@ -103,6 +104,7 @@ bool ApiAtCmd_WritCommand(AtCommType id, u8 *buf, u16 len)
   {
   case ATCOMM3_GD83StartupReset://1
     DrvGD83_UART_TxCommand((u8*)ucGD83Reset,strlen((char const *)ucGD83Reset));
+    //KaiJi_Flag=FALSE;
     break;
   case ATCOMM3_GD83Reset://1
     //DrvGD83_UART_TxCommand((u8*)ucGD83Reset,strlen((char const *)ucGD83Reset));
@@ -247,6 +249,7 @@ void ApiCaretCmd_10msRenew(void)
     ucRet = memcmp(pBuf, ucRxHDRCSQ, 8);
     if(ucRet == 0x00)
     {
+      //UpgradeNoATReturn_Flag=FALSE;
       if(Len > 8)//去頭
       {
         Len -= 8;
@@ -263,7 +266,13 @@ void ApiCaretCmd_10msRenew(void)
     ucRet = memcmp(pBuf, ucSIMST1, 8);//^SIMST:1
     if(ucRet == 0x00)
     {
+      api_lcd_pwr_on_hint("                ");//
+      ApiAtCmd_SetLoginState();
+      CSQ_Flag=0;
+      //KaiJi_Flag=TRUE;
+      SetTaskId(Task_Start);
       BootProcess_SIMST_Flag=1;
+      //UpgradeNoATReturn_Flag2=FALSE;
       TaskStartDeleteDelay1=1;
 #if 1//处理模块升级后，不重新写账号的问题
       CSQ_Flag=0;
@@ -281,6 +290,8 @@ void ApiCaretCmd_10msRenew(void)
     ucRet = memcmp(pBuf, ucSIMST255, 10);//^SIMST:255
     if(ucRet == 0x00)
     {
+      //KaiJi_Flag=TRUE;
+      //UpgradeNoATReturn_Flag2=FALSE;
       BootProcess_SIMST_Flag=2;
       TaskStartDeleteDelay3=1;
     }
@@ -333,6 +344,7 @@ void ApiCaretCmd_10msRenew(void)
     ucRet = memcmp(pBuf, ucCDMATIME, 10);
     if(ucRet == 0x00)
     {
+      //UpgradeNoATReturn_Flag=FALSE;
       if(Len > 10)//去頭
       {
         Len -= 10;
@@ -347,6 +359,7 @@ void ApiCaretCmd_10msRenew(void)
     ucRet = memcmp(pBuf, ucGPSINFO, 9);
     if(ucRet == 0x00)
     {
+      //UpgradeNoATReturn_Flag=FALSE;
       if(Len > 9)//去頭
       {
         Len -= 9;
@@ -361,6 +374,7 @@ void ApiCaretCmd_10msRenew(void)
     ucRet = memcmp(pBuf, ucGPSCNO, 8);
     if(ucRet == 0x00)
     {
+      //UpgradeNoATReturn_Flag=FALSE;
       if(Len > 8)//去頭
       {
         Len -= 8;
