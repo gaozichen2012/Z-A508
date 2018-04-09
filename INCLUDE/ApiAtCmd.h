@@ -55,5 +55,5 @@ extern u8 Data_Time2(void);//Ãë
 extern u8 Data_Date0(void);//Äê
 extern u8 Data_Date1(void);//ÔÂ
 extern u8 Data_Date2(void);//ÈÕ
-extern u8 Data_Speed(void);//Speed
+extern u16 Data_Speed(void);//Speed
 #endif

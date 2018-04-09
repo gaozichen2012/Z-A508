@@ -83,7 +83,7 @@ typedef struct{
                 u8 GpsCnoBufLen;//接收Cno的数据长度
                 u8 ucDate[3];//年月日
                 u8 ucTime[3];//时分秒
-                u8 ucSpeed;
+                u16 ucSpeed;
 		u8 Buf[30];
 		u8 Len;
                 u8 HDRCSQBuf[2];
@@ -461,7 +461,6 @@ void ApiAtCmd_Get_location_Information(void)
   u8 cHead2=0;
   u8 cInfoCount1=0;
   u8 cInfoCount2=0;
-  
 /*****获取GPSCNO搜星数******************************************************************************************************************************/
   pBuf=AtCmdDrvobj.NetState.GpsCnoBuf;
   for(i=0;i<AtCmdDrvobj.NetState.GpsCnoBufLen;i++)
@@ -478,7 +477,6 @@ void ApiAtCmd_Get_location_Information(void)
   {
     if(','==pBuf[i])
     {
-      
       switch(cInfoCount1)
       {
       case 0:
@@ -491,7 +489,7 @@ void ApiAtCmd_Get_location_Information(void)
         break;
       case 3:
         AtCmdDrvobj.NetState.Position.Latitude_Second = CHAR_TO_Digital(&pBuf[cHead2],i-cHead2);//纬度小数位
-#if 0//test,CHAR_TO_Digital速度异常
+#if 1//test,CHAR_TO_Digital速度异常
         AtCmdDrvobj.NetState.ucSpeed = CHAR_TO_Digital(&pBuf[i+1],AtCmdDrvobj.NetState.GpsInfoBufLen-i-1);//speed
 #else
         AtCmdDrvobj.NetState.ucSpeed = COML_AscToHex(&pBuf[i+1],AtCmdDrvobj.NetState.GpsInfoBufLen-i-1);//speed
@@ -733,7 +731,7 @@ u8 Data_Date2(void)
 {
   return AtCmdDrvobj.NetState.ucDate[2];
 }
-u8 Data_Speed(void)
+u16 Data_Speed(void)
 {
   return AtCmdDrvobj.NetState.ucSpeed;
 }
