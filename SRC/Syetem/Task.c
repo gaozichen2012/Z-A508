@@ -30,10 +30,11 @@ u8 *ucEndPTT                    = "0C0000";
 u8 *ucRequestUserListInfo       = "0E000000000064";
 u8 *ucCLVL                       = "AT+CLVL=7";//音量增益7
 u8 *ucVGR                       = "AT+VGR=7";//音量增益7
-#if 1
+#if 0
 u8 *ucCODECCTL                  = "at^codecctl=3000,FFFE,0";//音量增益4000 3c00
 #else
-u8 *ucCODECCTL                  = "at^codecctl=6000,2000,1500";//联想音量增益6000,2000,1500
+u8 *ucCODECCTL                  = "at^codecctl=9000,1c00,0";//默认量产增益9000,1c00
+//u8 *ucCODECCTL                  = "at^codecctl=6000,2000,1500";//联想音量增益6000,2000,1500
 #endif
 u8 *ucOSSYSHWID                 = "AT^OSSYSHWID=1";
 u8 *ucPrefmode2                  = "AT^prefmode=2";//网络模式2G
@@ -56,8 +57,8 @@ void Task_RunStart(void)
     if(TaskStartDeleteDelay1==1)
     {
       api_disp_icoid_output( eICO_IDRXNULL, TRUE, TRUE);//GPRS无信号图标
-#if 0
-      NoUseNum=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)"AT^RXFILTER=0xFFAE,0x66,0x106,0xEF,0xFF83,0xFF22,0x7FFF",strlen((char const *)"AT^RXFILTER=0xFFAE,0x66,0x106,0xEF,0xFF83,0xFF22,0x7FFF"));//原曲线全体拉高
+#if 1
+      NoUseNum=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)"AT^RXFILTER=0xFFAE,0x66,0x106,0xEF,0xFF83,0xFF22,0x7FFF",strlen((char const *)"AT^RXFILTER=0xFFAE,0x66,0x106,0xEF,0xFF83,0xFF22,0x7FFF"));//高子晨曲线4 原曲线全体拉高
       //NoUseNum=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)"AT^RXFILTER=0xFEC5,0xFFA7,0x3A,0x3AE,0x4CD,0x207,0x1E9C",strlen((char const *)"AT^RXFILTER=0xFEC5,0xFFA7,0x3A,0x3AE,0x4CD,0x207,0x1E9C"));//高子晨曲线3
       //NoUseNum=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)"AT^RXFILTER=0xF42E,0xFE3B,0xFA26,0xFC04,0xFC1C,0x4F,0x3A56",strlen((char const *)"AT^RXFILTER=0xF42E,0xFE3B,0xFA26,0xFC04,0xFC1C,0x4F,0x3A56"));//高子晨曲线1
       //NoUseNum=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)"AT^RXFILTER=0x13B,0xE4,0xFDC7,0xFF67,0x4A6,0xD62,0x1E05",strlen((char const *)"AT^RXFILTER=0x13B,0xE4,0xFDC7,0xFF67,0x4A6,0xD62,0x1E05"));//廖工曲线1
