@@ -31,7 +31,7 @@ u8 *ucRequestUserListInfo       = "0E000000000064";
 u8 *ucCLVL                       = "AT+CLVL=7";//音量增益7
 u8 *ucVGR                       = "AT+VGR=7";//音量增益7
 #if 1
-u8 *ucCODECCTL                  = "at^codecctl=3000,5000,0";//音量增益4000 3c00
+u8 *ucCODECCTL                  = "at^codecctl=6000,5000,0";//音量增益4000 3c00
 #else
 u8 *ucCODECCTL                  = "at^codecctl=9000,1c00,0";//默认量产增益9000,1c00
 //u8 *ucCODECCTL                  = "at^codecctl=6000,2000,1500";//联想音量增益6000,2000,1500
