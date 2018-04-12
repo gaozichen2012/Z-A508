@@ -3,8 +3,10 @@
 #define DrvMC8332_UseId_Len			100			//define UART Tx buffer length value
 #define APIPOC_UserList_Len			16
 #define APIPOC_UserLoad_Len			8
-#define APIPOC_UserName_Len			39//30 in20180303 群组名最多7位，群组数最大40个
-//u8 TestReadBuffer[250];
+#define APIPOC_UserName_Len			44//39 in20180303 群组名最多7位，群组数最大40个
+#define APIPOC_CalledUserName_Len	        44//被呼成员名长度
+
+
 u8 ReadBuffer[80];//Test 存EEPROM读取的数据使用
 
 u8 ASCII_ActiveUserID[22];//Test 存EEPROM读取的数据使用
@@ -89,7 +91,7 @@ typedef struct{
       }Msg;
                         struct{
                                 u8 PresentUserId;
-				u8 Name[APIPOC_UserName_Len];
+				u8 Name[APIPOC_CalledUserName_Len];
 				u8 NameLen;
 			}SpeakerRightnow;
 			struct{
@@ -377,22 +379,30 @@ void ApiPocCmd_10msRenew(void)
       ucId = COML_AscToHex(pBuf+2, 0x02);
       if(ucId == 0x00)
       {
-        //83000000000107592875268df7533100f7530000
+        //830000000001 07592875268df7533100f7530000
+        //830000000001 310039003800300030003300300037003400370035000000
+        //830000000001 310039003800300030003300300037003400370035000000
+
         if(Len >= 12)
         {
           PocCmdDrvobj.WorkState.UseState.SpeakerRightnow.NameLen = Len - 12;
-          if(PocCmdDrvobj.WorkState.UseState.SpeakerRightnow.NameLen > APIPOC_UserName_Len)
+#if 1//尝试解决群组内被呼显示只有8位的问题
+          if(PocCmdDrvobj.WorkState.UseState.SpeakerRightnow.NameLen > APIPOC_CalledUserName_Len)
           {
-            //PocCmdDrvobj.WorkState.UseState.SpeakerRightnow.NameLen = APIPOC_UserName_Len;
+            //PocCmdDrvobj.WorkState.UseState.SpeakerRightnow.NameLen = APIPOC_CalledUserName_Len;
             //解决切换群组出现话权下发指令，导致禁发 
             PocCmdDrvobj.WorkState.UseState.SpeakerRightnow.NameLen = 0;
-            //SwitchGroupBUG=TRUE;
-            //解决进入个呼模式，按住PTT键不送，被呼方第一次不亮绿灯却能接收到语音的问题
-            //POC_ReceivedNoVoice_Flag=TRUE;
-            //解决解决进入个呼模式，按住PTT键不送，被呼方第一次亮绿灯能接收到语音，但此时按下PTT亮红灯的BUG
-            //POC_ReceivedVoice_Flag=TRUE;
-            //EnterPttMoment_Flag=TRUE;
-            //可能会导致个呼指示灯异常
+          }
+          POC_ReceivedVoice_Flag=TRUE;
+          POC_ReceivedVoiceStart_Flag=2;//0:正常 1：收到语音 2：刚开始语音
+          POC_ReceivedVoiceEnd_Flag=1;//0:正常 1：收到语音 2：刚结束语音
+          POC_ReceivedVoiceEndForXTSF_Flag=1;
+#else
+          if(PocCmdDrvobj.WorkState.UseState.SpeakerRightnow.NameLen > APIPOC_CalledUserName_Len)
+          {
+            //PocCmdDrvobj.WorkState.UseState.SpeakerRightnow.NameLen = APIPOC_CalledUserName_Len;
+            //解决切换群组出现话权下发指令，导致禁发 
+            PocCmdDrvobj.WorkState.UseState.SpeakerRightnow.NameLen = 0;
           }
           else
           {
@@ -401,6 +411,7 @@ void ApiPocCmd_10msRenew(void)
             POC_ReceivedVoiceEnd_Flag=1;//0:正常 1：收到语音 2：刚结束语音
             POC_ReceivedVoiceEndForXTSF_Flag=1;
           }
+#endif
         }
         for(i = 0x00; i < PocCmdDrvobj.WorkState.UseState.SpeakerRightnow.NameLen; i++)
         {
@@ -827,7 +838,7 @@ u8 *UnicodeForGbk_MainUserName(void)
 //显示屏显示组呼模式下当前说话人的昵称
 u8 *UnicodeForGbk_SpeakerRightnowName(void)
 {
-  u8 Buf2[APIPOC_UserName_Len];
+  u8 Buf2[APIPOC_CalledUserName_Len];
   u8 i=0;
   while(1)
   {
