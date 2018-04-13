@@ -10,8 +10,8 @@ typedef struct {							//mcu version information data struct
 
 static const MCU_VERSION Mcu_Version = {	//mcu vwersion information
 	{"A508"},				//product version
-	{0x10,0x10,0x20,0x20},
-	{0x20,0x18,0x04,0x12},
+	{0x10,0x10,0x20,0x21},
+	{0x20,0x18,0x04,0x13},
 	{"res"},				//4//4byte eeprom version
 	{"res"}
 };

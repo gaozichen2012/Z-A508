@@ -565,6 +565,7 @@ else
   {
     api_lcd_pwr_on_hint("                ");//清屏
     api_lcd_pwr_on_hint4(UnicodeForGbk_SpeakerRightnowName());//显示当前说话人的昵称
+    //api_lcd_pwr_on_hint4("1234567890123");//显示当前说话人的昵称
     POC_ReceivedVoiceStart_Flag=1;//接收语音状态
     //修复BUG： A机换组状态，B机呼A机后，A机按PTT却是换组（被呼后A机应该返回默认状态：）
     KeyDownUpChoose_GroupOrUser_Flag=0;

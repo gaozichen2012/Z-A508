@@ -225,7 +225,7 @@ void api_lcd_pwr_on_hint4(u8 *CharData)//UNICODE显示
 	stCharInfo.DispType  = DISP_IDCNASC816;
 	//stCharInfo.DispAddX  = 0;
 	stCharInfo.DispAddY  = 0x02;//左上角显示汉字
-	stCharInfo.DispAddX  = 3;//一行16个英文字符
+	stCharInfo.DispAddX  = 0;//一行16个英文字符
         stCharInfo.DispLenth = LCD_DISP_LEN_MAX;
         
 	api_disp_char_output2(stCharInfo,CharData);//UNICODE显示，群组信息显示屏显示使用
