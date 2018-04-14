@@ -31,10 +31,12 @@ u8 *ucRequestUserListInfo       = "0E000000000064";
 u8 *ucCLVL                       = "AT+CLVL=7";//音量增益7
 u8 *ucVGR                       = "AT+VGR=7";//音量增益7
 #if 1
-u8 *ucCODECCTL                  = "at^codecctl=2870,8000,0";//AT^codecctl=2870,8000,0中兴余工调试
+//u8 *ucCODECCTL                  = "at^codecctl=2870,8000,0";//AT^codecctl=2870,8000,0中兴余工调试,只修改音量增益，增大音量
+//u8 *ucCODECCTL                  = "at^codecctl=2870,8000,0";//AT^codecctl=2870,8000,0中兴余工调试
+u8 *ucCODECCTL                  = "at^codecctl=2000,6000,0";//AT^codecctl=2000,6000,0中兴余工调试第二次
 //u8 *ucCODECCTL                  = "at^codecctl=d200,3500,0";//力声
 #else
-u8 *ucCODECCTL                  = "at^codecctl=9000,1c00,0";//默认量产增益9000,1c00
+u8 *ucCODECCTL                  = "at^codecctl=a000,1c00,0";//默认量产增益9000,1c00
 #endif
 u8 *ucOSSYSHWID                 = "AT^OSSYSHWID=1";
 u8 *ucPrefmode2                  = "AT^prefmode=2";//网络模式2G
@@ -58,7 +60,8 @@ void Task_RunStart(void)
     {
       api_disp_icoid_output( eICO_IDRXNULL, TRUE, TRUE);//GPRS无信号图标
 #if 1
-      NoUseNum=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)"AT^rxfilter=0xFBA8,0xF9DD,0xFD4F,0xFE10,0xFC7A,0x1071,0x2D8D",strlen((char const *)"AT^rxfilter=0xFBA8,0xF9DD,0xFD4F,0xFE10,0xFC7A,0x1071,0x2D8D"));//中兴余工调试曲线
+      NoUseNum=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)"AT^rxfilter=0x27F,0xAB,0xFD08,0xFADC,0xFC19,0xD74,0x27DA",strlen((char const *)"AT^rxfilter=0x27F,0xAB,0xFD08,0xFADC,0xFC19,0xD74,0x27DA"));//中兴余工调试曲线第二次
+      //NoUseNum=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)"AT^rxfilter=0xFBA8,0xF9DD,0xFD4F,0xFE10,0xFC7A,0x1071,0x2D8D",strlen((char const *)"AT^rxfilter=0xFBA8,0xF9DD,0xFD4F,0xFE10,0xFC7A,0x1071,0x2D8D"));//中兴余工调试曲线
       //NoUseNum=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)"AT^rxfilter=0xF630,0xF745,0x238,0xE52,0xBEA,0xFC69,0xE1A",strlen((char const *)"AT^rxfilter=0xF630,0xF745,0x238,0xE52,0xBEA,0xFC69,0xE1A"));//力声曲线
       //NoUseNum=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)"AT^RXFILTER=0xFFAE,0x66,0x106,0xEF,0xFF83,0xFF22,0x7FFF",strlen((char const *)"AT^RXFILTER=0xFFAE,0x66,0x106,0xEF,0xFF83,0xFF22,0x7FFF"));//高子晨曲线4 原曲线全体拉高
       //NoUseNum=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)"AT^RXFILTER=0xFEC5,0xFFA7,0x3A,0x3AE,0x4CD,0x207,0x1E9C",strlen((char const *)"AT^RXFILTER=0xFEC5,0xFFA7,0x3A,0x3AE,0x4CD,0x207,0x1E9C"));//高子晨曲线3
