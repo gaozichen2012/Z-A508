@@ -291,7 +291,7 @@ static void DEL_500msProcess(void)			//delay 500ms process server
         GetNoOnlineMembersCount=0;
         Key_PersonalCalling_Flag=0;//进入组呼标志位
         api_lcd_pwr_on_hint("                ");//清屏
-        api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
+        //api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
         api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
         MenuMode_Flag=0;
         //用于PTT键及上下键返回默认状态
@@ -641,7 +641,7 @@ static void DEL_500msProcess(void)			//delay 500ms process server
             if(PersonCallIco_Flag==0)
             {
               api_lcd_pwr_on_hint("                ");//清屏
-              api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
+              //api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
               api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
               api_disp_all_screen_refresh();// 全屏统一刷新
             }
@@ -649,7 +649,7 @@ static void DEL_500msProcess(void)			//delay 500ms process server
             {
               api_lcd_pwr_on_hint("                ");//清屏
               //api_lcd_pwr_on_hint(HexToChar_MainUserId());//显示当前用户ID
-              api_lcd_pwr_on_hint(HexToChar_PersonalCallingNum());//显示当前用户ID
+              //api_lcd_pwr_on_hint(HexToChar_PersonalCallingNum());//显示当前用户ID
               api_lcd_pwr_on_hint4(UnicodeForGbk_MainUserName());//显示当前用户昵称
               api_disp_all_screen_refresh();// 全屏统一刷新
             }

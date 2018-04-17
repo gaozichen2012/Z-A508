@@ -10,12 +10,12 @@ typedef struct{
 			u16 bCardError		: 1;
 			u16 bSingalError	: 1;
 			u16 bCheckNet		: 1;
-			u16 bLanding			: 1;
+			u16 bLanding		: 1;
 			u16 bLandSuccess	: 1;
 			u16 bLowAlarm		: 1;
 			u16 bLowPowOff		: 1;
-			u16 bBattery			: 1;
-			u16						: 7;
+			u16 bBattery		: 1;
+			u16			: 7;
 		}Bits;
 		u16 Byte;
 	}Msg;

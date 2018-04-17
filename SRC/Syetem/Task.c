@@ -263,7 +263,7 @@ void Task_RunNormalOperation(void)
       {
         MenuDisplay(Menu_RefreshAllIco);
         api_lcd_pwr_on_hint("                ");//清屏
-        api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
+        //api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
         api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
         MenuModeCount=1;
         TheMenuLayer_Flag=0;
@@ -398,6 +398,7 @@ void Task_RunNormalOperation(void)
           ApiMenu_NativeInfo_Flag=0;
           ApiMenu_BeiDouOrWritingFrequency_Flag=0;
       }
+      api_disp_icoid_output( eICO_IDLOCKED, TRUE, TRUE);//选
       api_lcd_pwr_on_hint("对象:   个呼选择");
       api_lcd_pwr_on_hint2(HexToChar_MainUserId());
       PersonalCallingNum=0;//解决按单呼键直接选中，单呼用户并不是播报的用户
@@ -455,8 +456,8 @@ void Task_RunNormalOperation(void)
   {
     MenuDisplay(Menu_RefreshAllIco);
     api_lcd_pwr_on_hint("                ");//清屏
-    //api_lcd_pwr_on_hint(HexToChar_MainUserId());//显示当前群组ID
-    api_lcd_pwr_on_hint(HexToChar_PersonalCallingNum());//显示当前用户ID
+    api_disp_icoid_output( eICO_IDMESSAGEOff, TRUE, TRUE);//空图标-与选对应
+    //api_lcd_pwr_on_hint(HexToChar_PersonalCallingNum());//显示当前用户ID
     api_lcd_pwr_on_hint4(UnicodeForGbk_MainUserName());//显示当前用户昵称
     api_disp_icoid_output( eICO_IDPOWERH, TRUE, TRUE);//显示个呼图标
     PersonCallIco_Flag=1;
@@ -484,7 +485,8 @@ void Task_RunNormalOperation(void)
         api_lcd_pwr_on_hint("                ");//清屏
         api_disp_icoid_output( eICO_IDPOWERM, TRUE, TRUE);//显示组呼图标
         api_disp_icoid_output( BatteryLevel, TRUE, TRUE);
-        api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
+        api_disp_icoid_output( eICO_IDMESSAGEOff, TRUE, TRUE);//空图标-与选对应
+        //api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
         api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称--2
         PersonCallIco_Flag=0;
         api_disp_all_screen_refresh();// 全屏统一刷新//可能会对POC开机PoC指令识别有影响
@@ -498,8 +500,9 @@ void Task_RunNormalOperation(void)
         MenuDisplay(Menu_RefreshAllIco);
         api_lcd_pwr_on_hint("                ");//清屏
         api_disp_icoid_output( eICO_IDPOWERH, TRUE, TRUE);//显示个呼图标
+        api_disp_icoid_output( eICO_IDMESSAGEOff, TRUE, TRUE);//空图标-与选对应
         //api_lcd_pwr_on_hint(HexToChar_MainUserId());//显示当前用户ID
-        api_lcd_pwr_on_hint(HexToChar_PersonalCallingNum());//显示当前用户ID
+        //api_lcd_pwr_on_hint(HexToChar_PersonalCallingNum());//显示当前用户ID
         api_lcd_pwr_on_hint4(UnicodeForGbk_MainUserName());//显示当前用户昵称
         PersonCallIco_Flag=1;
         api_disp_all_screen_refresh();// 全屏统一刷新//可能会对POC开机PoC指令识别有影响
@@ -598,7 +601,7 @@ else
     {
     api_disp_icoid_output( eICO_IDTALKAR, TRUE, TRUE);//默认无发射无接收信号图标
     api_lcd_pwr_on_hint("                ");//清屏
-    api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
+    //api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
     api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称--3
     api_disp_all_screen_refresh();// 全屏统一刷新
     POC_ReceivedVoiceStart_Flag=0;//不在收到ff处清零，在收到endFLAG处理后清零
@@ -639,7 +642,7 @@ if(PocNoOnlineMember_Flag2==TRUE)
   PocNoOnlineMember_Flag2=FALSE;
   MenuMode_Flag=0;
   api_lcd_pwr_on_hint("                ");//清屏
-  api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
+  //api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
   api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
   //用于PTT键及上下键返回默认状态
   KeyDownUpChoose_GroupOrUser_Flag=0;
@@ -692,7 +695,7 @@ void Key3_PlayVoice(void)
     while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
     //当前群组
     api_lcd_pwr_on_hint("                ");//显示当前群组昵称
-    api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
+    //api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
     api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
     VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetMainWorkName(),strlen((char const *)ApiAtCmd_GetMainWorkName()));
     DEL_SetTimer(0,200);
@@ -711,7 +714,7 @@ void Key3_PlayVoice(void)
     while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
     //当前群组
     api_lcd_pwr_on_hint("                ");//显示当前群组昵称
-    api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
+    //api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
     api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
     //电量播报
     KeyBatteryReport();
@@ -727,13 +730,13 @@ void Key3_PlayVoice(void)
     while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
     //当前群组
     api_lcd_pwr_on_hint("                ");//显示当前群组昵称
-    api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
+    //api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
     api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
     break;
   case Key3_OptionThree://播报当前群组
     //当前群组
     api_lcd_pwr_on_hint("                ");//显示当前群组昵称
-    api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
+    //api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
     api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
     VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetMainWorkName(),strlen((char const *)ApiAtCmd_GetMainWorkName()));
     DEL_SetTimer(0,200);

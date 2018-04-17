@@ -96,7 +96,7 @@ void MenuDisplay(MenuDisplayType id)
       //api_lcd_pwr_on_hint3("                ");//清屏//进入菜单界面锁屏，会对显示有影响
       MenuDisplay(Menu_RefreshAllIco);
       api_lcd_pwr_on_hint("                ");//清屏
-      api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
+      //api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
       api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
     }
     else
@@ -105,7 +105,7 @@ void MenuDisplay(MenuDisplayType id)
       MenuDisplay(Menu_RefreshAllIco);
       api_lcd_pwr_on_hint("                ");//清屏
       //api_lcd_pwr_on_hint(HexToChar_MainUserId());//显示当前用户ID
-      api_lcd_pwr_on_hint(HexToChar_PersonalCallingNum());//显示当前用户ID
+      //api_lcd_pwr_on_hint(HexToChar_PersonalCallingNum());//显示当前用户ID
       api_lcd_pwr_on_hint4(UnicodeForGbk_MainUserName());//显示当前用户昵称
     }
     
@@ -116,7 +116,7 @@ void MenuDisplay(MenuDisplayType id)
       api_lcd_pwr_on_hint3("                ");//清屏
       MenuDisplay(Menu_RefreshAllIco);
       api_lcd_pwr_on_hint("                ");//清屏
-      api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
+      //api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
       api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
     }
     else
@@ -125,7 +125,7 @@ void MenuDisplay(MenuDisplayType id)
       MenuDisplay(Menu_RefreshAllIco);
       api_lcd_pwr_on_hint("                ");//清屏
       //api_lcd_pwr_on_hint(HexToChar_MainUserId());//显示当前用户ID
-      api_lcd_pwr_on_hint(HexToChar_PersonalCallingNum());//显示当前用户ID
+      //api_lcd_pwr_on_hint(HexToChar_PersonalCallingNum());//显示当前用户ID
       api_lcd_pwr_on_hint4(UnicodeForGbk_MainUserName());//显示当前用户昵称
     }
     break;
@@ -195,7 +195,7 @@ void SubmenuMenuDisplay(SubmenuMenuDisplayType id)
   case GroupSwitch: 
     MenuDisplay(Menu_RefreshAllIco);
     api_lcd_pwr_on_hint("                ");//清屏
-    api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
+    //api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
     api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
     break;
   case GpsInfoMenu:

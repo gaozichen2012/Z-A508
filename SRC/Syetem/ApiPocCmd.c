@@ -8,7 +8,7 @@
 
 
 u8 ReadBuffer[80];//Test 存EEPROM读取的数据使用
-
+u8 InvalidCallCount=0;
 u8 ASCII_ActiveUserID[22];//Test 存EEPROM读取的数据使用
 u8 Get_Unicode_ActiveUserIDBuf[45];//
 u8 Get_0X_ActiveUserIDBuf[11];//
@@ -386,7 +386,13 @@ void ApiPocCmd_10msRenew(void)
         {
           PocCmdDrvobj.WorkState.UseState.SpeakerRightnow.NameLen = Len - 12;
 #if 1//尝试解决群组内被呼显示只有8位的问题
-          if(PocCmdDrvobj.WorkState.UseState.SpeakerRightnow.NameLen > APIPOC_CalledUserName_Len)
+          if(InvalidCallCount==1)
+          {
+            InvalidCallCount=0;
+          }
+          else
+          {
+            if(PocCmdDrvobj.WorkState.UseState.SpeakerRightnow.NameLen > APIPOC_CalledUserName_Len)
           {
             PocCmdDrvobj.WorkState.UseState.SpeakerRightnow.NameLen = APIPOC_CalledUserName_Len;
             //解决切换群组出现话权下发指令，导致禁发 
@@ -396,6 +402,8 @@ void ApiPocCmd_10msRenew(void)
           POC_ReceivedVoiceStart_Flag=2;//0:正常 1：收到语音 2：刚开始语音
           POC_ReceivedVoiceEnd_Flag=1;//0:正常 1：收到语音 2：刚结束语音
           POC_ReceivedVoiceEndForXTSF_Flag=1;
+          }
+
 #else
           if(PocCmdDrvobj.WorkState.UseState.SpeakerRightnow.NameLen > APIPOC_CalledUserName_Len)
           {
@@ -451,6 +459,7 @@ void ApiPocCmd_10msRenew(void)
       }
       break;
     case 0x86:
+      InvalidCallCount=1;
       POC_Receive86_Flag=TRUE;
 /****************判断接入单呼**************************************************************/
       ucId = COML_AscToHex(pBuf+4, 0x02);

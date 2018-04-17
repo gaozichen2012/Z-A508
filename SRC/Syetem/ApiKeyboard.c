@@ -134,6 +134,7 @@ void Keyboard_Test(void)
           PersonalCallingNum=ApiAtCmd_GetUserNum()-1;
           KeyPersonalCallingCount=ApiAtCmd_GetUserNum()-1;
         }
+        api_disp_icoid_output( eICO_IDLOCKED, TRUE, TRUE);//选
         VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(PersonalCallingNum),ApiAtCmd_GetUserNameLen(PersonalCallingNum));//播报按上键之后对应的用户名
         UpDownSwitching_Flag=TRUE;
         UpDownSwitchingCount=0;
@@ -151,6 +152,7 @@ void Keyboard_Test(void)
         GroupCallingNum=ApiAtCmd_GetGroupNum();
         KeyUpDownCount=ApiAtCmd_GetGroupNum()-ApiAtCmd_GetMainGroupId();//
       }
+      api_disp_icoid_output( eICO_IDLOCKED, TRUE, TRUE);//选
       VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetGroupName( GroupCallingNum),ApiAtCmd_GetGroupNameLen(GroupCallingNum));
       UpDownSwitching_Flag=TRUE;
       UpDownSwitchingCount=0;
@@ -231,6 +233,7 @@ void Keyboard_Test(void)
             MenuMode_Flag=0;
             break;
           }
+
           break;
         case 2://成员选择
           switch(ApiMenu_SwitchCallUser_Flag)
@@ -252,12 +255,13 @@ void Keyboard_Test(void)
               DEL_SetTimer(0,50);
               while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
               api_lcd_pwr_on_hint("                ");//清屏
-              api_lcd_pwr_on_hint(HexToChar_PersonalCallingNum());//显示当前用户ID
+              //api_lcd_pwr_on_hint(HexToChar_PersonalCallingNum());//显示当前用户ID
               api_lcd_pwr_on_hint4(UnicodeForGbk_MainUserName());//显示当前用户昵称
             }
             else
             {
               GettheOnlineMembersDone=FALSE;//解决个呼按键与上下键逻辑混乱问题，个呼键按下直到播报第一个成员后才可以按上下键切换个呼成员
+              api_disp_icoid_output( eICO_IDLOCKED, TRUE, TRUE);//选
               api_lcd_pwr_on_hint("对象:   选择个呼");
               api_lcd_pwr_on_hint2(HexToChar_MainUserId());
               PersonalCallingNum=0;//解决按单呼键直接选中，单呼用户并不是播报的用户
@@ -514,6 +518,7 @@ void Keyboard_Test(void)
               KeyPersonalCallingCount=0;
               PersonalCallingNum=0;
             }
+            api_disp_icoid_output( eICO_IDLOCKED, TRUE, TRUE);//选
             VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(PersonalCallingNum),ApiAtCmd_GetUserNameLen(PersonalCallingNum));//播报按上键之后对应的用户名
             UpDownSwitching_Flag=TRUE;
             UpDownSwitchingCount=0;
@@ -531,6 +536,7 @@ void Keyboard_Test(void)
             GroupCallingNum=1;
             KeyUpDownCount=1-ApiAtCmd_GetMainGroupId();
           }
+          api_disp_icoid_output( eICO_IDLOCKED, TRUE, TRUE);//选
           VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetGroupName(GroupCallingNum),ApiAtCmd_GetGroupNameLen(GroupCallingNum));
           UpDownSwitching_Flag=TRUE;
           UpDownSwitchingCount=0;
@@ -596,7 +602,7 @@ void Keyboard_Test(void)
 #if 1
           MenuDisplay(Menu_RefreshAllIco);
           api_lcd_pwr_on_hint("                ");//清屏
-          api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
+          //api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
           api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
           MenuModeCount=1;
           TheMenuLayer_Flag=0;
@@ -714,8 +720,9 @@ void Keyboard_Test(void)
         else//如果处于组呼模式则应该无变化
         {
           MenuMode_Flag=0;
+          api_disp_icoid_output(eICO_IDMESSAGEOff, TRUE, TRUE);//空图标-与选对应
           api_lcd_pwr_on_hint("                ");//清屏
-          api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
+          //api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
           api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
           Key_Flag_1=1;//按键延时标志位
           //用于PTT键及上下键返回默认状态
