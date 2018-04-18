@@ -73,6 +73,8 @@ extern u8 *HexToChar_GroupCallingNum(void);//16½øÖÆ×ª×Ö·û´® °´¼ü²¥±¨µ±Ç°Èº×éID Ï
 extern u8 *HexToChar_MainUserId(void);//16½øÖÆ×ª×Ö·û´® µ±Ç°ÓÃ»§ID ÏÔÊ¾ÆÁÊı¾İÊ¹ÓÃ
 extern u8 *HexToChar_PersonalCallingNum(void);//16½øÖÆ×ª×Ö·û´® °´¼ü²¥±¨µ±Ç°ÓÃ»§ID ÏÔÊ¾ÆÁÊı¾İÊ¹ÓÃ
 
+extern u8 *UnicodeForGbk_AllUserName(u8 n);
+extern u8 *UnicodeForGbk_AllGrounpName(u8 n);
 extern u8 *UnicodeForGbk_MainWorkName(void);
 extern u8 *UnicodeForGbk_MainUserName(void);
 extern u8 *UnicodeForGbk_SpeakerRightnowName(void);

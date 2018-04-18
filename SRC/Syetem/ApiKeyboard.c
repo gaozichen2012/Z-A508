@@ -136,10 +136,12 @@ void Keyboard_Test(void)
         }
         api_disp_icoid_output( eICO_IDLOCKED, TRUE, TRUE);//选
         VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(PersonalCallingNum),ApiAtCmd_GetUserNameLen(PersonalCallingNum));//播报按上键之后对应的用户名
+        api_lcd_pwr_on_hint4("                ");//清屏
+        api_lcd_pwr_on_hint4(UnicodeForGbk_AllUserName(PersonalCallingNum));//显示当前选中的群组名
         UpDownSwitching_Flag=TRUE;
         UpDownSwitchingCount=0;
-        api_lcd_pwr_on_hint("对象:   个呼选择");
-        api_lcd_pwr_on_hint2(HexToChar_PersonalCallingNum());
+        /*api_lcd_pwr_on_hint("对象:   个呼选择");
+        api_lcd_pwr_on_hint2(HexToChar_PersonalCallingNum());*/
         KeyDownUpChoose_GroupOrUser_Flag=2;
       }
     }
@@ -154,10 +156,13 @@ void Keyboard_Test(void)
       }
       api_disp_icoid_output( eICO_IDLOCKED, TRUE, TRUE);//选
       VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetGroupName( GroupCallingNum),ApiAtCmd_GetGroupNameLen(GroupCallingNum));
+      api_lcd_pwr_on_hint4("                ");//清屏
+      api_lcd_pwr_on_hint4(UnicodeForGbk_AllGrounpName(GroupCallingNum));//显示当前选中的群组名
+      
       UpDownSwitching_Flag=TRUE;
       UpDownSwitchingCount=0;
-      api_lcd_pwr_on_hint("群组:   选择群组");//显示汉字
-      api_lcd_pwr_on_hint2(HexToChar_GroupCallingNum());//显示数据
+      //api_lcd_pwr_on_hint("群组:   选择群组");//显示汉字
+      //api_lcd_pwr_on_hint2(HexToChar_GroupCallingNum());//显示数据
       KeyDownUpChoose_GroupOrUser_Flag=1;
     }
     }
@@ -520,10 +525,12 @@ void Keyboard_Test(void)
             }
             api_disp_icoid_output( eICO_IDLOCKED, TRUE, TRUE);//选
             VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(PersonalCallingNum),ApiAtCmd_GetUserNameLen(PersonalCallingNum));//播报按上键之后对应的用户名
+            api_lcd_pwr_on_hint4("                ");//清屏
+            api_lcd_pwr_on_hint4(UnicodeForGbk_AllUserName(PersonalCallingNum));//显示当前选中的群组名
             UpDownSwitching_Flag=TRUE;
             UpDownSwitchingCount=0;
-            api_lcd_pwr_on_hint("对象:   个呼选择");
-            api_lcd_pwr_on_hint2(HexToChar_PersonalCallingNum());
+            /*api_lcd_pwr_on_hint("对象:   个呼选择");
+            api_lcd_pwr_on_hint2(HexToChar_PersonalCallingNum());*/
             KeyDownUpChoose_GroupOrUser_Flag=2;
           }
         }
@@ -538,10 +545,12 @@ void Keyboard_Test(void)
           }
           api_disp_icoid_output( eICO_IDLOCKED, TRUE, TRUE);//选
           VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetGroupName(GroupCallingNum),ApiAtCmd_GetGroupNameLen(GroupCallingNum));
+          api_lcd_pwr_on_hint4("                ");//清屏
+          api_lcd_pwr_on_hint4(UnicodeForGbk_AllGrounpName(GroupCallingNum));//显示当前选中的群组名
           UpDownSwitching_Flag=TRUE;
           UpDownSwitchingCount=0;
-          api_lcd_pwr_on_hint("群组:   群组选择");//显示汉字
-          api_lcd_pwr_on_hint2(HexToChar_GroupCallingNum());//显示数据
+          //api_lcd_pwr_on_hint("群组:   群组选择");//显示汉字
+          //api_lcd_pwr_on_hint2(HexToChar_GroupCallingNum());//显示数据
           KeyDownUpChoose_GroupOrUser_Flag=1;
         }
       }

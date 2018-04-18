@@ -12,6 +12,8 @@ u8 InvalidCallCount=0;
 u8 ASCII_ActiveUserID[22];//Test 存EEPROM读取的数据使用
 u8 Get_Unicode_ActiveUserIDBuf[45];//
 u8 Get_0X_ActiveUserIDBuf[11];//
+u8 UnicodeForGbk_AllUserNameBuf[25];
+u8 UnicodeForGbk_AllGrounpNameBuf[25];
 u8 UnicodeForGbk_MainWorkNameBuf[15];
 u8 UnicodeForGbk_MainUserNameBuf[25];
 u8 UnicodeForGbk_SpeakerRightnowNameBuf[25];
@@ -58,7 +60,7 @@ typedef struct{
       }Bits;
       u16 Byte;
     }Msg;
-    u8 Buf[10];
+    //u8 Buf[10];
     u8 Buf2[10];
     u8 Buf3[3];
     u8 Buf4[3];
@@ -147,6 +149,8 @@ void ApiPocCmd_PowerOnInitial(void)
 
 void ApiPocCmd_WritCommand(PocCommType id, u8 *buf, u16 len)
 {
+  u8 NetStateBuf[5]={0,0,0,0,0};
+  u8 testData=0;
   DrvMC8332_TxPort_SetValidable(ON);
   DrvGD83_UART_TxCommand((u8 *)ucAtPocHead,strlen((char const *)ucAtPocHead));
   switch(id)
@@ -173,9 +177,25 @@ void ApiPocCmd_WritCommand(PocCommType id, u8 *buf, u16 len)
     break;
   case PocComm_EnterGroup:
     DrvGD83_UART_TxCommand("090000000000", 12);
-    PocCmdDrvobj.NetState.Buf[0] = ((GroupCallingNum&0xf0)>>4)+0x30;	// 0x03+0x30
-    PocCmdDrvobj.NetState.Buf[1] = (GroupCallingNum&0x0f)+0x30;
+#if 0//解决群组超过10个的换组异常的BUG
+    PocCmdDrvobj.NetState.Buf[0] = (GroupCallingNum/10)+0x30;	// 0x03+0x30
+    PocCmdDrvobj.NetState.Buf[1] = (GroupCallingNum%10)+0x30;
     DrvGD83_UART_TxCommand(PocCmdDrvobj.NetState.Buf, 2);
+#else
+    COML_HexToAsc(GroupCallingNum, NetStateBuf);
+    if(strlen((char const*)NetStateBuf)==1)
+    {
+      NetStateBuf[1]=NetStateBuf[0];
+      NetStateBuf[0]=0x30;
+    }
+    else
+    {
+      testData          =NetStateBuf[0];
+      NetStateBuf[0]    =NetStateBuf[1];
+      NetStateBuf[1]    =testData;
+    }
+    DrvGD83_UART_TxCommand(NetStateBuf, 2);
+#endif
     break;
   case PocComm_Invite:
     DrvGD83_UART_TxCommand("0A0000000000", 12);
@@ -459,7 +479,7 @@ void ApiPocCmd_10msRenew(void)
       }
       break;
     case 0x86:
-      InvalidCallCount=1;
+      //InvalidCallCount=1;
       POC_Receive86_Flag=TRUE;
 /****************判断接入单呼**************************************************************/
       ucId = COML_AscToHex(pBuf+4, 0x02);
@@ -670,6 +690,42 @@ u8 ApiAtCmd_GetGroupNameLen(u8 n)
 {
   return PocCmdDrvobj.WorkState.UseState.Group[n].NameLen;
 }
+/*********************************/
+//换组换呼上下键显示屏显示选中群组名
+u8 *UnicodeForGbk_AllGrounpName(u8 n)
+{
+  u8 *GrounpBuf1;
+  u8 Buf2[APIPOC_UserName_Len];
+
+  u8 GrounpLen=0;
+  u8 i=0;
+  GrounpBuf1=PocCmdDrvobj.WorkState.UseState.Group[n].Name;
+  GrounpLen=PocCmdDrvobj.WorkState.UseState.Group[n].NameLen;
+  while(1)
+  {
+    if(4*i<=GrounpLen)
+    {
+      Buf2[4*i+0]=GrounpBuf1[4*i+2];
+      Buf2[4*i+1]=GrounpBuf1[4*i+3];
+      Buf2[4*i+2]=GrounpBuf1[4*i+0];
+      Buf2[4*i+3]=GrounpBuf1[4*i+1];
+      UnicodeForGbk_AllGrounpNameBuf[2*i+0]=COML_AscToHex(Buf2+(4*i), 0x02);
+      UnicodeForGbk_AllGrounpNameBuf[2*i+1]=COML_AscToHex(Buf2+(4*i)+2, 0x02);
+      i++;
+    }
+    else
+    {
+      Buf2[GrounpLen]='\0';
+
+      return UnicodeForGbk_AllGrounpNameBuf;
+    }
+      
+  }
+}
+/********************************/
+
+
+
 
 u8 *ApiAtCmd_GetUserName(u8 n)//获取所有在线用户名（个呼）
 {
@@ -679,6 +735,41 @@ u8 ApiAtCmd_GetUserNameLen(u8 n)
 {
   return PocCmdDrvobj.WorkState.UseState.UserName[n].NameLen;
 }
+
+/*********************************/
+//换组换呼上下键显示屏显示选中群组名
+u8 *UnicodeForGbk_AllUserName(u8 n)
+{
+  u8 *UserBuf1;
+  u8 Buf3[APIPOC_CalledUserName_Len];
+
+  u8 UserLen=0;
+  u8 i=0;
+  UserBuf1=PocCmdDrvobj.WorkState.UseState.UserName[n].Name;
+  UserLen=PocCmdDrvobj.WorkState.UseState.UserName[n].NameLen;
+  while(1)
+  {
+    if(4*i<=UserLen)
+    {
+      Buf3[4*i+0]=UserBuf1[4*i+2];
+      Buf3[4*i+1]=UserBuf1[4*i+3];
+      Buf3[4*i+2]=UserBuf1[4*i+0];
+      Buf3[4*i+3]=UserBuf1[4*i+1];
+      UnicodeForGbk_AllUserNameBuf[2*i+0]=COML_AscToHex(Buf3+(4*i), 0x02);
+      UnicodeForGbk_AllUserNameBuf[2*i+1]=COML_AscToHex(Buf3+(4*i)+2, 0x02);
+      i++;
+    }
+    else
+    {
+      Buf3[UserLen]='\0';
+
+      return UnicodeForGbk_AllUserNameBuf;
+    }
+      
+  }
+}
+/********************************/
+
 
 u8 *ApiAtCmd_GetMainWorkName(void)//获取工作群组名
 {
@@ -798,15 +889,15 @@ u8 *UnicodeForGbk_MainWorkName(void)
       Buf2[4*i+1]=Buf1[4*i+3];
       Buf2[4*i+2]=Buf1[4*i+0];
       Buf2[4*i+3]=Buf1[4*i+1];
-      UnicodeForGbk_MainWorkNameBuf[2*i+0]=COML_AscToHex(Buf2+(4*i), 0x02);
-      UnicodeForGbk_MainWorkNameBuf[2*i+1]=COML_AscToHex(Buf2+(4*i)+2, 0x02);
+      UnicodeForGbk_AllGrounpNameBuf[2*i+0]=COML_AscToHex(Buf2+(4*i), 0x02);
+      UnicodeForGbk_AllGrounpNameBuf[2*i+1]=COML_AscToHex(Buf2+(4*i)+2, 0x02);
       i++;
     }
     else
     {
       Buf2[Len]='\0';
 
-      return UnicodeForGbk_MainWorkNameBuf;
+      return UnicodeForGbk_AllGrounpNameBuf;
     }
       
   }
