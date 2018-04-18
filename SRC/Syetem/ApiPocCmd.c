@@ -116,7 +116,7 @@ typedef struct{
                                 u8 Id[8];
 				u8 Name[APIPOC_UserName_Len];
 				u8 NameLen;
-			}Group[20];//原50，内存测试改为40---------------------------------------test----------------------------------------------------------
+			}Group[30];//当群组大于30时会导致个呼后，最后一个群组异常
                         struct{
                                 u8 Id[8];
 				u8 Name[APIPOC_CalledUserName_Len];
