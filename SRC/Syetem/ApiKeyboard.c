@@ -267,8 +267,8 @@ void Keyboard_Test(void)
             {
               GettheOnlineMembersDone=FALSE;//解决个呼按键与上下键逻辑混乱问题，个呼键按下直到播报第一个成员后才可以按上下键切换个呼成员
               api_disp_icoid_output( eICO_IDLOCKED, TRUE, TRUE);//选
-              api_lcd_pwr_on_hint("对象:   选择个呼");
-              api_lcd_pwr_on_hint2(HexToChar_MainUserId());
+              api_lcd_pwr_on_hint("  个呼成员选择  ");
+              //api_lcd_pwr_on_hint2(HexToChar_MainUserId());
               PersonalCallingNum=0;//解决按单呼键直接选中，单呼用户并不是播报的用户
               Key_PersonalCalling_Flag=1;
               VOICE_SetOutput(ATVOICE_FreePlay,"2a4e7c542000106258540990e962",28);//个呼成员选择

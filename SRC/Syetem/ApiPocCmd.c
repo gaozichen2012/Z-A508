@@ -119,7 +119,7 @@ typedef struct{
 			}Group[20];//原50，内存测试改为40---------------------------------------test----------------------------------------------------------
                         struct{
                                 u8 Id[8];
-				u8 Name[APIPOC_UserName_Len];
+				u8 Name[APIPOC_CalledUserName_Len];
 				u8 NameLen;
 			}UserName[20];
 #endif
@@ -309,8 +309,9 @@ void ApiPocCmd_10msRenew(void)
         KeyPttState=3;//KeyPttState 0：未按PTT 1:按下ptt瞬间  2：按住PTT状态 3：松开PTT瞬间
       }
       break;  
-    case 0x0E://在线用户个数
+    case 0x0e://在线用户个数
       ucId = COML_AscToHex(pBuf+8, 0x04);
+      //0e0000000007
       PocCmdDrvobj.WorkState.UseState.PttUserName.UserNum = ucId;
       if(Len==12)
       {
@@ -369,6 +370,8 @@ void ApiPocCmd_10msRenew(void)
       {
         OnlineMembership=0;
         VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(0),ApiAtCmd_GetUserNameLen(0));//首次获取组内成员播报第一个成员
+        api_lcd_pwr_on_hint4("                ");//清屏
+        api_lcd_pwr_on_hint4(UnicodeForGbk_AllUserName(0));//显示当前选中的群组名
         GettheOnlineMembersDone=TRUE;
       }
       break;
@@ -724,9 +727,6 @@ u8 *UnicodeForGbk_AllGrounpName(u8 n)
 }
 /********************************/
 
-
-
-
 u8 *ApiAtCmd_GetUserName(u8 n)//获取所有在线用户名（个呼）
 {
   return PocCmdDrvobj.WorkState.UseState.UserName[n].Name;
@@ -737,20 +737,28 @@ u8 ApiAtCmd_GetUserNameLen(u8 n)
 }
 
 /*********************************/
-//换组换呼上下键显示屏显示选中群组名
+//换组换呼上下键显示屏显示选中用户名
 u8 *UnicodeForGbk_AllUserName(u8 n)
 {
   u8 *UserBuf1;
   u8 Buf3[APIPOC_CalledUserName_Len];
 
-  u8 UserLen=0;
+  u8 UserLen2=0;
   u8 i=0;
+  u8 j=0;
+  u8 NumCount=0;
   UserBuf1=PocCmdDrvobj.WorkState.UseState.UserName[n].Name;
-  UserLen=PocCmdDrvobj.WorkState.UseState.UserName[n].NameLen;
+  UserLen2=strlen((char const *)PocCmdDrvobj.WorkState.UseState.UserName[n].Name);
   while(1)
   {
-    if(4*i<=UserLen)
+    if(4*i<=UserLen2)
     {
+/****解决用户名为纯数字时，显示位数只有8位的问题****************/
+      if(UserBuf1[4*i+2]==0x30&&UserBuf1[4*i+3]==0x30)
+      {
+        NumCount++;
+      }
+/**************************************************************/
       Buf3[4*i+0]=UserBuf1[4*i+2];
       Buf3[4*i+1]=UserBuf1[4*i+3];
       Buf3[4*i+2]=UserBuf1[4*i+0];
@@ -761,9 +769,19 @@ u8 *UnicodeForGbk_AllUserName(u8 n)
     }
     else
     {
-      Buf3[UserLen]='\0';
-
-      return UnicodeForGbk_AllUserNameBuf;
+      Buf3[UserLen2]='\0';
+      if(NumCount*4>=UserLen2)
+      {
+        for(j=0;4*j<=UserLen2;j++)
+        {
+          UnicodeForGbk_AllUserNameBuf[j]=COML_AscToHex(UserBuf1+(4*j), 0x02);
+        }
+        return UnicodeForGbk_AllUserNameBuf;
+      }
+      else
+      {
+        return UnicodeForGbk_AllUserNameBuf;
+      }
     }
       
   }
@@ -907,29 +925,28 @@ u8 *UnicodeForGbk_MainWorkName(void)
 //显示屏显示当前用户昵称
 u8 *UnicodeForGbk_MainUserName(void)
 {
-  u8 *Buf1;
+  u8 *Buf0;
   u8 Buf2[APIPOC_CalledUserName_Len];
 
   u8 Len=0,i=0;
   u8 j=0;
   u8 NumCount=0;
-  Buf1=ApiAtCmd_GetMainUserName();
-  Len=strlen((char const *)ApiAtCmd_GetMainUserName());
+  Buf0=PocCmdDrvobj.WorkState.UseState.PttUserName.Name;
+  Len=PocCmdDrvobj.WorkState.UseState.PttUserName.NameLen;
   while(1)
   {
     if(4*i<=Len)
     {
 /****解决用户名为纯数字时，显示位数只有8位的问题****************/
-      if(PocCmdDrvobj.WorkState.UseState.SpeakerRightnow.Name[4*i+2]==0x30&&
-         PocCmdDrvobj.WorkState.UseState.SpeakerRightnow.Name[4*i+3]==0x30)
+      if(Buf0[4*i+2]==0x30&&Buf0[4*i+3]==0x30)
       {
         NumCount++;
       }
 /**************************************************************/
-      Buf2[4*i+0]=Buf1[4*i+2];
-      Buf2[4*i+1]=Buf1[4*i+3];
-      Buf2[4*i+2]=Buf1[4*i+0];
-      Buf2[4*i+3]=Buf1[4*i+1];
+      Buf2[4*i+0]=Buf0[4*i+2];
+      Buf2[4*i+1]=Buf0[4*i+3];
+      Buf2[4*i+2]=Buf0[4*i+0];
+      Buf2[4*i+3]=Buf0[4*i+1];
       UnicodeForGbk_MainUserNameBuf[2*i+0]=COML_AscToHex(Buf2+(4*i), 0x02);
       UnicodeForGbk_MainUserNameBuf[2*i+1]=COML_AscToHex(Buf2+(4*i)+2, 0x02);
       i++;
@@ -937,11 +954,11 @@ u8 *UnicodeForGbk_MainUserName(void)
     else
     {
       Buf2[Len]='\0';
-      if(NumCount*4>=PocCmdDrvobj.WorkState.UseState.SpeakerRightnow.NameLen)
+      if(NumCount*4>=Len)
       {
-        for(j=0;4*j<=PocCmdDrvobj.WorkState.UseState.SpeakerRightnow.NameLen;j++)
+        for(j=0;4*j<=Len;j++)
         {
-          UnicodeForGbk_MainUserNameBuf[j]=COML_AscToHex(PocCmdDrvobj.WorkState.UseState.SpeakerRightnow.Name+(4*j), 0x02);
+          UnicodeForGbk_MainUserNameBuf[j]=COML_AscToHex(Buf0+(4*j), 0x02);
         }
         return UnicodeForGbk_MainUserNameBuf;
       }

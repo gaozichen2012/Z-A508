@@ -32,7 +32,7 @@ u8 *ucCLVL                       = "AT+CLVL=7";//音量增益7
 u8 *ucVGR                       = "AT+VGR=7";//音量增益7
 #if 1
 //u8 *ucCODECCTL                  = "at^codecctl=5000,8000,0";//AT^codecctl=2870,8000,0中兴余工调试,只修改音量增益，增大音量
-u8 *ucCODECCTL                  = "at^codecctl=2870,8000,0";//AT^codecctl=2870,8000,0中兴余工调试
+u8 *ucCODECCTL                  = "at^codecctl=2000,1800,0";//AT^codecctl=2870,8000,0中兴余工调试
 //u8 *ucCODECCTL                  = "at^codecctl=5000,6000,0";//AT^codecctl=2000,6000,0中兴余工调试第二次
 //u8 *ucCODECCTL                  = "at^codecctl=d200,3500,0";//力声
 #else
@@ -60,8 +60,9 @@ void Task_RunStart(void)
     {
       api_disp_icoid_output( eICO_IDRXNULL, TRUE, TRUE);//GPRS无信号图标
 #if 1
+      NoUseNum=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)"AT^rxfilter=0x310,0xf9f0,0xf8e5,0xfc37,0xfeff,0x106b,0x2D15",strlen((char const *)"AT^rxfilter=0x310,0xf9f0,0xf8e5,0xfc37,0xfeff,0x106b,0x2D15"));//中兴余工调试曲线第三次（在中兴调试的）
       //NoUseNum=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)"AT^rxfilter=0x27F,0xAB,0xFD08,0xFADC,0xFC19,0xD74,0x27DA",strlen((char const *)"AT^rxfilter=0x27F,0xAB,0xFD08,0xFADC,0xFC19,0xD74,0x27DA"));//中兴余工调试曲线第二次
-      NoUseNum=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)"AT^rxfilter=0xFBA8,0xF9DD,0xFD4F,0xFE10,0xFC7A,0x1071,0x2D8D",strlen((char const *)"AT^rxfilter=0xFBA8,0xF9DD,0xFD4F,0xFE10,0xFC7A,0x1071,0x2D8D"));//中兴余工调试曲线
+      //NoUseNum=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)"AT^rxfilter=0xFBA8,0xF9DD,0xFD4F,0xFE10,0xFC7A,0x1071,0x2D8D",strlen((char const *)"AT^rxfilter=0xFBA8,0xF9DD,0xFD4F,0xFE10,0xFC7A,0x1071,0x2D8D"));//中兴余工调试曲线
       //NoUseNum=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)"AT^rxfilter=0xF630,0xF745,0x238,0xE52,0xBEA,0xFC69,0xE1A",strlen((char const *)"AT^rxfilter=0xF630,0xF745,0x238,0xE52,0xBEA,0xFC69,0xE1A"));//力声曲线
       //NoUseNum=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)"AT^RXFILTER=0xFFAE,0x66,0x106,0xEF,0xFF83,0xFF22,0x7FFF",strlen((char const *)"AT^RXFILTER=0xFFAE,0x66,0x106,0xEF,0xFF83,0xFF22,0x7FFF"));//高子晨曲线4 原曲线全体拉高
       //NoUseNum=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)"AT^RXFILTER=0xFEC5,0xFFA7,0x3A,0x3AE,0x4CD,0x207,0x1E9C",strlen((char const *)"AT^RXFILTER=0xFEC5,0xFFA7,0x3A,0x3AE,0x4CD,0x207,0x1E9C"));//高子晨曲线3
@@ -174,7 +175,7 @@ void Task_RunNormalOperation(void)
 /***********PTT状态检测*************************************************************************************************************************/
   if(ReadInput_KEY_PTT==0)//判断按下PTT的瞬间
   {
-    AUDIO_IOAFPOW(ON);//打开功放，解决DIDI提示音听不见
+    //AUDIO_IOAFPOW(ON);//打开功放，解决DIDI提示音听不见
     EnterPttMomentCount++;
     if(EnterPttMomentCount==1)
       EnterPttMoment_Flag=TRUE;
@@ -213,6 +214,21 @@ void Task_RunNormalOperation(void)
   {
   case 0://未按PTT
     POC_ReceivedVoiceEndForXTSF_Flag=0;
+#if 1
+    if(KeyDownUpChoose_GroupOrUser_Flag==0)
+    {
+      //if(POC_ReceivedVoice_Flag==FALSE)
+      {
+        if(WriteFreq_Flag==FALSE)//解决写频时，群组内其他机器一直有滴滴滴的声音
+        {
+          if(EnterPttMoment_Flag==TRUE)
+          {
+            ApiPocCmd_WritCommand(PocComm_StartPTT,ucStartPTT,strlen((char const *)ucStartPTT));
+          }
+        }
+      }
+    }
+#else
     if(KeyDownUpChoose_GroupOrUser_Flag==0)
     {
       if(POC_ReceivedVoice_Flag==TRUE)//解决对方说话时按PTT接收语音异常的问题
@@ -233,7 +249,7 @@ void Task_RunNormalOperation(void)
         }
       }
     }
-
+#endif
     break;
   case 1://1:按下ptt瞬间
     KeyPttState=2;
@@ -283,6 +299,7 @@ void Task_RunNormalOperation(void)
     if(LoosenPttMoment_Flag==TRUE)//如果松开PTT瞬间，发送endPTT指令
     {
       ApiPocCmd_WritCommand(PocComm_EndPTT,ucEndPTT,strlen((char const *)ucEndPTT));
+      
       Set_RedLed(LED_OFF);
     }
     break;
@@ -399,8 +416,8 @@ void Task_RunNormalOperation(void)
           ApiMenu_BeiDouOrWritingFrequency_Flag=0;
       }
       api_disp_icoid_output( eICO_IDLOCKED, TRUE, TRUE);//选
-      api_lcd_pwr_on_hint("对象:   个呼选择");
-      api_lcd_pwr_on_hint2(HexToChar_MainUserId());
+      api_lcd_pwr_on_hint("  个呼成员选择  ");
+      //api_lcd_pwr_on_hint2(HexToChar_MainUserId());
       PersonalCallingNum=0;//解决按单呼键直接选中，单呼用户并不是播报的用户
       Key_PersonalCalling_Flag=1;
       VOICE_SetOutput(ATVOICE_FreePlay,"2a4e7c542000106258540990e962",28);//个呼成员选择
@@ -616,26 +633,33 @@ else
   }
 }
 
-
 /********控制功放喇叭*************************************/
-if(ApiPocCmd_Tone_Flag==TRUE)//8b0003 解决按PTT无提示音的问题
+if(KeyPttState==2)//暂时解决按ptt，功放打开的问题
 {
-  AUDIO_IOAFPOW(ON);
+  AUDIO_IOAFPOW(OFF);
 }
 else
 {
-  if(UpDownSwitching_Flag==TRUE)//按上下键换组换人状态
+  if(ApiPocCmd_Tone_Flag==TRUE)//8b0003 解决按PTT无提示音的问题
   {
     AUDIO_IOAFPOW(ON);
   }
   else
   {
-    if(ApiAtCmd_TrumpetVoicePlay_Flag==1)
+    if(UpDownSwitching_Flag==TRUE)//按上下键换组换人状态
     {
-      AUDIO_IOAFPOW(ON);//在VOICE_SetOutput()加了打开，在识别POC:91加了功放打开;PTT键
+      AUDIO_IOAFPOW(ON);
+    }
+    else
+    {
+      if(ApiAtCmd_TrumpetVoicePlay_Flag==1)
+      {
+        AUDIO_IOAFPOW(ON);//在VOICE_SetOutput()加了打开，在识别POC:91加了功放打开;PTT键
+      }
     }
   }
 }
+
 /*****如果没有在线成员******************************************/
 if(PocNoOnlineMember_Flag2==TRUE)
 {
