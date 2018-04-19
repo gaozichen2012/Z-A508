@@ -22,6 +22,7 @@ const u8 *ucTingEnd   = "0B0000";
 const u8 *ucTingStart   = "0B0001";
 const u8 *ucSetIPAndID    = "010000";
 
+u8 POC_GetAllGroupNameDone_Flag=FALSE; 
 u8 POC_EnterPersonalCalling_Flag=0;
 u8 POC_QuitPersonalCalling_Flag=0;
 u8 POC_AtEnterPersonalCalling_Flag=0;
@@ -346,6 +347,10 @@ void ApiPocCmd_10msRenew(void)
           PocCmdDrvobj.WorkState.UseState.WorkGroup.Name[i];
       }
       PocCmdDrvobj.WorkState.UseState.Group[ucId].NameLen = PocCmdDrvobj.WorkState.UseState.WorkGroup.NameLen;
+      if(ucId==PocCmdDrvobj.WorkState.UseState.MainWorkGroup.GroupNum)
+      {
+       POC_GetAllGroupNameDone_Flag=TRUE; 
+      }
       break;
     case 0x81://获取组内成员列表
       ucId = COML_AscToHex(pBuf+10, 0x02);//

@@ -19,6 +19,7 @@ typedef enum{
   PocComm_UserListInfo          = 0x0E,
   PocComm_Key			= 0x10
 }PocCommType;
+extern u8 POC_GetAllGroupNameDone_Flag; 
 extern bool PocNoOnlineMember_Flag;
 extern bool PocNoOnlineMember_Flag2;
 extern u8 ApiAtCmd_TrumpetVoicePlayCount;

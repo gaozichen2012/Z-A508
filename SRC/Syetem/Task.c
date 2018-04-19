@@ -170,7 +170,11 @@ void Task_RunStart(void)
 
 void Task_RunNormalOperation(void)
 {
-  Keyboard_Test();
+  if(POC_GetAllGroupNameDone_Flag==TRUE)
+  {
+    Keyboard_Test();
+  }
+  
   UART3_ToMcuMain();
 /***********PTT×´Ì¬¼ì²â*************************************************************************************************************************/
   if(ReadInput_KEY_PTT==0)//ÅÐ¶Ï°´ÏÂPTTµÄË²¼ä

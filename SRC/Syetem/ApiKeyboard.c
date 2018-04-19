@@ -749,7 +749,7 @@ void Keyboard_Test(void)
   GeHuTest(ulAllKeyID);
   if(Key_Flag_1==1)//°´ÏÂ°´¼üÑÓ³Ù1Ãë
   {
-    DEL_SetTimer(1,30);
+    DEL_SetTimer(1,30);//influence get group name
     while(1)
     {
       Key_Flag_1=0;
