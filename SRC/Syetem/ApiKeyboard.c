@@ -117,7 +117,7 @@ void Keyboard_Test(void)
       else
       {
         MenuModeCount=MenuModeCount-1;
-        if(MenuModeCount<1) {MenuModeCount=7;}
+        if(MenuModeCount<1) {MenuModeCount=8;}
         MenuDisplay(MenuModeCount);
       }
     }
@@ -265,7 +265,7 @@ void Keyboard_Test(void)
             }
             else
             {
-              GettheOnlineMembersDone=FALSE;//解决个呼按键与上下键逻辑混乱问题，个呼键按下直到播报第一个成员后才可以按上下键切换个呼成员
+              //GettheOnlineMembersDone=FALSE;//解决个呼按键与上下键逻辑混乱问题，个呼键按下直到播报第一个成员后才可以按上下键切换个呼成员
               api_disp_icoid_output( eICO_IDLOCKED, TRUE, TRUE);//选
               api_lcd_pwr_on_hint("  个呼成员选择  ");
               //api_lcd_pwr_on_hint2(HexToChar_MainUserId());
@@ -274,17 +274,21 @@ void Keyboard_Test(void)
               VOICE_SetOutput(ATVOICE_FreePlay,"2a4e7c542000106258540990e962",28);//个呼成员选择
               DEL_SetTimer(0,200);
               while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
-              ApiPocCmd_WritCommand(PocComm_UserListInfo,"0E000000000064",strlen((char const *)"0E000000000064"));
+              VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(0),ApiAtCmd_GetUserNameLen(0));//首次获取组内成员播报第一个成员
+              api_lcd_pwr_on_hint4("                ");//清屏
+              api_lcd_pwr_on_hint4(UnicodeForGbk_AllUserName(0));//显示当前选中的群组名
+              ApiPocCmd_WritCommand(PocComm_UserListInfo,"0E000000000001",strlen((char const *)"0E000000000001"));
               KeyDownUpChoose_GroupOrUser_Flag=2;
               TheMenuLayer_Flag=0;//处于0级菜单，进入单呼模式为菜单外功能
               KeyPersonalCallingCount=0;//解决单呼模式，上下键成员非正常顺序，第一个成员在切换时会第二、第三个碰到
             }
-            
-
             break;
           }
           break;
-        case 3://GPS设置
+        case 3://在线成员列表
+          api_lcd_pwr_on_hint("在线成员数:");//-------------------------------------------------------------------------------------
+          break;
+        case 4://GPS设置
               switch(ApiMenu_GpsInfo_Flag)
               {
                //客户要求GPS经纬度及本机信息界面按上下键和OK键无效，只有按退出键退出，故屏蔽以下
@@ -301,7 +305,7 @@ void Keyboard_Test(void)
                 break;
               }
           break;
-        case 4://背光灯设置
+        case 5://背光灯设置
               switch(ApiMenu_BacklightTimeSet_Flag)
               {
               case 2:
@@ -322,7 +326,7 @@ void Keyboard_Test(void)
                 break;
               }
           break;
-        case 5://键盘锁定
+        case 6://键盘锁定
               switch(ApiMenu_KeylockTimeSet_Flag)
               {
               case 2://默认状态按OK键进入一级菜单
@@ -343,7 +347,7 @@ void Keyboard_Test(void)
                 break;
               }
           break;
-        case 6://本机信息
+        case 7://本机信息
               switch(ApiMenu_NativeInfo_Flag)
               {
                 //客户要求GPS经纬度及本机信息界面按上下键和OK键无效，只有按退出键退出，故屏蔽以下
@@ -360,7 +364,7 @@ void Keyboard_Test(void)
                 break;
               }
           break;
-        case 7://北斗/写频切换
+        case 8://北斗/写频切换
           switch(ApiMenu_BeiDouOrWritingFrequency_Flag)
           {
             //客户要求GPS经纬度及本机信息界面按上下键和OK键无效，只有按退出键退出，故屏蔽以下
@@ -505,7 +509,7 @@ void Keyboard_Test(void)
         else
         {
           MenuModeCount=MenuModeCount+1;
-          if(MenuModeCount>7) {MenuModeCount=1;}
+          if(MenuModeCount>8) {MenuModeCount=1;}
           MenuDisplay(MenuModeCount);
         }
       }

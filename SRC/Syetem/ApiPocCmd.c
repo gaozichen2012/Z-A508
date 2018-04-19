@@ -369,16 +369,9 @@ void ApiPocCmd_10msRenew(void)
           PocCmdDrvobj.WorkState.UseState.WorkUserName.Name[i];
       }
       PocCmdDrvobj.WorkState.UseState.UserName[ucId].NameLen = PocCmdDrvobj.WorkState.UseState.WorkUserName.NameLen;
-      
-      OnlineMembership++;
-      if(OnlineMembership>=PocCmdDrvobj.WorkState.UseState.PttUserName.UserNum)
-      {
-        OnlineMembership=0;
-        VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(0),ApiAtCmd_GetUserNameLen(0));//首次获取组内成员播报第一个成员
-        api_lcd_pwr_on_hint4("                ");//清屏
-        api_lcd_pwr_on_hint4(UnicodeForGbk_AllUserName(0));//显示当前选中的群组名
-        GettheOnlineMembersDone=TRUE;
-      }
+#if 1
+          GettheOnlineMembersDone=TRUE;
+#endif
       break;
     case 0x82://判断是否登录成功
       ucId = COML_AscToHex(pBuf+3, 0x01);

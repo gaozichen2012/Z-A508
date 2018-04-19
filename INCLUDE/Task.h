@@ -33,6 +33,7 @@ typedef enum{
   Key3_OptionFour       =       0x04,
   Key3_OptionFive       =       0x05
 }Key3_OptionType;
+
 TASKAPI Key3_OptionType Key3Option;
 TASKAPI bool EnterPttMoment_Flag;
 TASKAPI bool NoUseNum;

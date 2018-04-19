@@ -2,7 +2,6 @@
 #include "AllHead.h"
 u8 SSWLCount=0;
 u8 StartingUpStep=0;
-
 Key3_OptionType Key3Option;
 bool NoUseNum=FALSE;
 u8 AlarmCount=4;//2G3G切换计数,默认为3G模式
@@ -27,7 +26,7 @@ u8 TaskStartDeleteDelay6=0;
 
 u8 *ucStartPTT                  = "0B0000";
 u8 *ucEndPTT                    = "0C0000";
-u8 *ucRequestUserListInfo       = "0E000000000064";
+
 u8 *ucCLVL                       = "AT+CLVL=7";//音量增益7
 u8 *ucVGR                       = "AT+VGR=7";//音量增益7
 #if 1
@@ -404,7 +403,7 @@ void Task_RunNormalOperation(void)
     }
     else
     {
-      GettheOnlineMembersDone=FALSE;//解决个呼按键与上下键逻辑混乱问题，个呼键按下直到播报第一个成员后才可以按上下键切换个呼成员
+      //GettheOnlineMembersDone=FALSE;//解决个呼按键与上下键逻辑混乱问题，个呼键按下直到播报第一个成员后才可以按上下键切换个呼成员
       if(TheMenuLayer_Flag!=0)//解决个呼键影响菜单界面信息显示，现在只要按个呼键就会退出菜单
       {
           MenuDisplay(Menu_RefreshAllIco);
@@ -427,7 +426,10 @@ void Task_RunNormalOperation(void)
       VOICE_SetOutput(ATVOICE_FreePlay,"2a4e7c542000106258540990e962",28);//个呼成员选择
       DEL_SetTimer(0,200);
       while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
-      ApiPocCmd_WritCommand(PocComm_UserListInfo,ucRequestUserListInfo,strlen((char const *)ucRequestUserListInfo));
+      VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(0),ApiAtCmd_GetUserNameLen(0));//首次获取组内成员播报第一个成员
+      api_lcd_pwr_on_hint4("                ");//清屏
+      api_lcd_pwr_on_hint4(UnicodeForGbk_AllUserName(0));//显示当前选中的群组名
+      ApiPocCmd_WritCommand(PocComm_UserListInfo,"0E000000000001",strlen((char const *)"0E000000000001"));
       KeyDownUpChoose_GroupOrUser_Flag=2;
       KeyPersonalCallingCount=0;//解决单呼模式，上下键成员非正常顺序，第一个成员在切换时会第二、第三个碰到
     }

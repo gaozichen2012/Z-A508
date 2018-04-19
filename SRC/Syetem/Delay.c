@@ -12,6 +12,7 @@ u8 SignalPoorCount=0;
 u8 WriteFreqTimeCount=0;
 u8 *ucGPSSendToAtPort   ="AT+GPSFUNC=21";
 u8 *ucGPSUploadTime_5s  ="AT+GPSFUNC=1";
+u8 *ucRequestUserListInfo       = "0E000000000001";
 
 u8 DEL_500ms_Count=0;
 u8 DEL_500ms_Count2=0;
@@ -41,6 +42,8 @@ u8 GetNoOnlineMembersCount=0;
 bool LockingState_Flag=FALSE;
 u8 BacklightTimeCount;//=10;//背光灯时间(需要设置进入eeprom)
 u16 KeylockTimeCount;//=30;//键盘锁时间(需要设置进入eeprom)
+u8 GetAllGroupMemberNameCount=0;
+
 u8 ReadBufferA[1];//背光灯时间(需要设置进入eeprom)
 u8 ReadBufferB[1];//键盘锁时间(需要设置进入eeprom)
 typedef struct {
@@ -268,6 +271,13 @@ static void DEL_500msProcess(void)			//delay 500ms process server
     DEL_500ms_Count2++;
     TimeCount_Light++;
     CSQTimeCount++;
+    GetAllGroupMemberNameCount++;
+/*******1分钟获取一次群组成员**********************************************/
+    if(GetAllGroupMemberNameCount>2*60)
+    {
+      ApiPocCmd_WritCommand(PocComm_UserListInfo,ucRequestUserListInfo,strlen((char const *)ucRequestUserListInfo));
+      GetAllGroupMemberNameCount=0;
+    }
 /**********若指令发出无回音则处于升级状态**********************************/
    /* if(UpgradeNoATReturn_Flag==TRUE)
     {
@@ -538,7 +548,7 @@ static void DEL_500msProcess(void)			//delay 500ms process server
 #endif
         if(GpsReconnectionTimeCount==2*10)
         {
-          //NoUseNum=ApiAtCmd_WritCommand(ATCOMM5_CODECCTL,(u8 *)ucGPSSendToAtPort,strlen((char const *)ucGPSSendToAtPort));//设置GPS定位信息发送到串口
+          ApiPocCmd_WritCommand(PocComm_UserListInfo,ucRequestUserListInfo,strlen((char const *)ucRequestUserListInfo));
           switch(ApiGpsServerType)
           {
           case GpsServerType_BuBiao:
