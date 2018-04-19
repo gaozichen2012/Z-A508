@@ -669,6 +669,7 @@ static void DEL_500msProcess(void)			//delay 500ms process server
             MenuMode_Flag=0;
             ApiMenu_SwitchGroup_Flag=0;
             ApiMenu_SwitchCallUser_Flag=0;
+            ApiMenu_SwitchOnlineUser_Flag=0;
             ApiMenu_GpsInfo_Flag=0;
             ApiMenu_BacklightTimeSet_Flag=0;
             ApiMenu_KeylockTimeSet_Flag=0;

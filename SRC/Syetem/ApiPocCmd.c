@@ -67,6 +67,8 @@ typedef struct{
     u8 Buf4[3];
     u8 Buf5[3];
     u8 Buf6[3];
+    u8 Buf7[3];
+    u8 Buf8[9];
     struct{
       struct{
         u8 bSet	: 1;
@@ -885,6 +887,30 @@ u8 *HexToChar_PersonalCallingNum(void)//16进制转字符串 按键播报当前用户ID 显示屏
   PocCmdDrvobj.NetState.Buf6[1]=(i&0x0f)+0x30;
   PocCmdDrvobj.NetState.Buf6[2]='\0';
   return PocCmdDrvobj.NetState.Buf6;
+}
+
+u8 *HexToChar_AllOnlineMemberNum(void)//16进制转字符串 显示屏显示在线成员个数
+{
+  u8 i;
+  i=PocCmdDrvobj.WorkState.UseState.PttUserName.UserNum;
+  PocCmdDrvobj.NetState.Buf7[0]=((i&0xf0)>>4)+0x30;
+  PocCmdDrvobj.NetState.Buf7[1]=(i&0x0f)+0x30;
+  PocCmdDrvobj.NetState.Buf7[2]='\0';
+  return PocCmdDrvobj.NetState.Buf7;
+}
+
+u8 *VoiceAllOnlineMemberNum(void)// 语音播报在线成员个数
+{
+  PocCmdDrvobj.NetState.Buf8[0]='3';
+  PocCmdDrvobj.NetState.Buf8[1]=PocCmdDrvobj.NetState.Buf7[0];
+  PocCmdDrvobj.NetState.Buf8[2]='0';
+  PocCmdDrvobj.NetState.Buf8[3]='0';
+  PocCmdDrvobj.NetState.Buf8[4]='3';
+  PocCmdDrvobj.NetState.Buf8[5]=PocCmdDrvobj.NetState.Buf7[1];
+  PocCmdDrvobj.NetState.Buf8[6]='0';
+  PocCmdDrvobj.NetState.Buf8[7]='0';
+  PocCmdDrvobj.NetState.Buf8[8]='\0';
+  return PocCmdDrvobj.NetState.Buf8;
 }
 
 //显示屏显示当前群组名

@@ -112,6 +112,21 @@ void Keyboard_Test(void)
         if(KeylockTimeSetCount<0x10) {KeylockTimeSetCount=0x16;}
         Level3MenuDisplay(KeylockTimeSetCount);
       }
+      else if(ApiMenu_SwitchOnlineUser_Flag==1)//如果是显示在线用户名二级菜单---------------------------------------------------------------
+      {
+        KeyPersonalCallingCount--;
+        PersonalCallingNum=KeyPersonalCallingCount;//个呼计数从零开始
+        if(PersonalCallingNum<0)
+        {
+          PersonalCallingNum=ApiAtCmd_GetUserNum()-1;
+          KeyPersonalCallingCount=ApiAtCmd_GetUserNum()-1;
+        }
+        VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(PersonalCallingNum),ApiAtCmd_GetUserNameLen(PersonalCallingNum));//播报按上键之后对应的用户名
+        api_lcd_pwr_on_hint4("                ");//清屏
+        api_lcd_pwr_on_hint4(UnicodeForGbk_AllUserName(PersonalCallingNum));//显示当前选中的群组名
+        UpDownSwitching_Flag=TRUE;
+        UpDownSwitchingCount=0;
+      }
       else if(ApiMenu_GpsInfo_Flag==1||ApiMenu_NativeInfo_Flag==1||ApiMenu_BeiDouOrWritingFrequency_Flag==1)//如果是GPS信息、本机信息、北斗写频切换二级菜单
       {}
       else
@@ -286,7 +301,46 @@ void Keyboard_Test(void)
           }
           break;
         case 3://在线成员列表
-          api_lcd_pwr_on_hint("在线成员数:");//-------------------------------------------------------------------------------------
+          switch(ApiMenu_SwitchOnlineUser_Flag)
+          {
+          case 2:
+            ApiMenu_SwitchOnlineUser_Flag=0;
+            MenuDisplay(MenuModeCount);
+            MenuMode_Flag=1;
+            break;
+          case 1://默认菜单按OK键进入一级菜单
+            MenuDisplay(MenuModeCount);
+            MenuMode_Flag=1;
+            ApiMenu_SwitchOnlineUser_Flag=2;
+            TheMenuLayer_Flag=1;//处于一级菜单
+            break;
+          case 0://一级菜单按ok键进入单呼模式
+            MenuDisplay(Menu_RefreshAllIco);
+            ApiMenu_SwitchOnlineUser_Flag=1;
+            MenuMode_Flag==1;
+            /*******直接搬个呼键状态检测的程序***************************************************************************************************************************************/
+            api_lcd_pwr_on_hint3("在线成员数:   ");
+            api_lcd_pwr_on_hint("                ");
+            //api_lcd_pwr_on_hint("33");
+            api_lcd_pwr_on_hint2(HexToChar_AllOnlineMemberNum());
+              PersonalCallingNum=0;//解决按单呼键直接选中，单呼用户并不是播报的用户
+              //Key_PersonalCalling_Flag=1;
+              VOICE_SetOutput(ATVOICE_FreePlay,"2857bf7e106258547065",20);//在线成员数
+              DEL_SetTimer(0,150);
+              while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+              VOICE_SetOutput(ATVOICE_FreePlay,VoiceAllOnlineMemberNum(),8);//在线成员数
+              DEL_SetTimer(0,100);
+              while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+              VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(0),ApiAtCmd_GetUserNameLen(0));//首次获取组内成员播报第一个成员
+              api_lcd_pwr_on_hint3("在线成员列表    ");
+              api_lcd_pwr_on_hint4("                ");//清屏
+              api_lcd_pwr_on_hint4(UnicodeForGbk_AllUserName(0));//显示当前选中的群组名
+              ApiPocCmd_WritCommand(PocComm_UserListInfo,"0E000000000001",strlen((char const *)"0E000000000001"));
+              //KeyDownUpChoose_GroupOrUser_Flag=2;
+              TheMenuLayer_Flag=2;
+              KeyPersonalCallingCount=0;//解决单呼模式，上下键成员非正常顺序，第一个成员在切换时会第二、第三个碰到
+            break;
+          }
           break;
         case 4://GPS设置
               switch(ApiMenu_GpsInfo_Flag)
@@ -504,6 +558,21 @@ void Keyboard_Test(void)
           if(KeylockTimeSetCount>0x16) {KeylockTimeSetCount=0x10;}
           Level3MenuDisplay(KeylockTimeSetCount);
         }
+        else if(ApiMenu_SwitchOnlineUser_Flag==1)//如果是显示在线用户名二级菜单---------------------------------------------------------------
+        {
+          KeyPersonalCallingCount++;
+          PersonalCallingNum=KeyPersonalCallingCount;//个呼计数从零开始
+          if(PersonalCallingNum>ApiAtCmd_GetUserNum()-1)
+          {
+            KeyPersonalCallingCount=0;
+            PersonalCallingNum=0;
+          }
+          VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(PersonalCallingNum),ApiAtCmd_GetUserNameLen(PersonalCallingNum));//播报按上键之后对应的用户名
+          api_lcd_pwr_on_hint4("                ");//清屏
+          api_lcd_pwr_on_hint4(UnicodeForGbk_AllUserName(PersonalCallingNum));//显示当前选中的群组名
+          UpDownSwitching_Flag=TRUE;
+          UpDownSwitchingCount=0;
+        }
         else if(ApiMenu_GpsInfo_Flag==1||ApiMenu_NativeInfo_Flag==1||ApiMenu_BeiDouOrWritingFrequency_Flag==1)//如果是GPS信息、本机信息、北斗写频切换二级菜单
         {}
         else
@@ -579,6 +648,13 @@ void Keyboard_Test(void)
             ApiMenu_GpsInfo_Flag=0;
             TheMenuLayer_Flag=1;//处于一级菜单
           }
+          else if(ApiMenu_SwitchOnlineUser_Flag==1)
+          {
+            MenuDisplay(MenuModeCount);
+            MenuMode_Flag=1;
+            ApiMenu_SwitchOnlineUser_Flag=0;
+            TheMenuLayer_Flag=1;//处于一级菜单
+          }
           else if(ApiMenu_NativeInfo_Flag==1)
           {
             MenuDisplay(MenuModeCount);
@@ -622,6 +698,7 @@ void Keyboard_Test(void)
           MenuMode_Flag=0;
           ApiMenu_SwitchGroup_Flag=0;
           ApiMenu_SwitchCallUser_Flag=0;
+          ApiMenu_SwitchOnlineUser_Flag=0;
           ApiMenu_GpsInfo_Flag=0;
           ApiMenu_BacklightTimeSet_Flag=0;
           ApiMenu_KeylockTimeSet_Flag=0;

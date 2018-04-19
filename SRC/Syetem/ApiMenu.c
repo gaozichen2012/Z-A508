@@ -3,6 +3,7 @@
 #if 1
 u8 ApiMenu_SwitchGroup_Flag=0;
 u8 ApiMenu_SwitchCallUser_Flag=0;
+u8 ApiMenu_SwitchOnlineUser_Flag=0;
 u8 ApiMenu_GpsInfo_Flag=0;
 u8 ApiMenu_NativeInfo_Flag=0;
 u8 ApiMenu_BacklightTimeSet_Flag=0;
@@ -32,7 +33,7 @@ void MenuDisplay(MenuDisplayType id)
   case Menu3:
     api_lcd_pwr_on_hint3("菜单            ");
     api_lcd_pwr_on_hint5("3/8");
-     api_lcd_pwr_on_hint("在线成员列表");
+     api_lcd_pwr_on_hint("在线成员列表    ");
     break;
   case Menu4:
     api_lcd_pwr_on_hint3("菜单            ");

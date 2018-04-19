@@ -45,6 +45,7 @@ typedef enum{
 
 extern u8 ApiMenu_SwitchGroup_Flag;
 extern u8 ApiMenu_SwitchCallUser_Flag;
+extern u8 ApiMenu_SwitchOnlineUser_Flag;
 extern u8 ApiMenu_GpsInfo_Flag;
 extern u8 ApiMenu_NativeInfo_Flag;
 extern u8 ApiMenu_BacklightTimeSet_Flag;

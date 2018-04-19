@@ -289,6 +289,7 @@ void Task_RunNormalOperation(void)
         MenuMode_Flag=0;
         ApiMenu_SwitchGroup_Flag=0;
         ApiMenu_SwitchCallUser_Flag=0;
+        ApiMenu_SwitchOnlineUser_Flag=0;
         ApiMenu_GpsInfo_Flag=0;
         ApiMenu_BacklightTimeSet_Flag=0;
         ApiMenu_KeylockTimeSet_Flag=0;
@@ -383,6 +384,7 @@ void Task_RunNormalOperation(void)
         MenuMode_Flag=0;
         ApiMenu_SwitchGroup_Flag=0;
         ApiMenu_SwitchCallUser_Flag=0;
+        ApiMenu_SwitchOnlineUser_Flag=0;
         ApiMenu_GpsInfo_Flag=0;
         ApiMenu_BacklightTimeSet_Flag=0;
         ApiMenu_KeylockTimeSet_Flag=0;
@@ -412,6 +414,7 @@ void Task_RunNormalOperation(void)
           MenuMode_Flag=0;
           ApiMenu_SwitchGroup_Flag=0;
           ApiMenu_SwitchCallUser_Flag=0;
+          ApiMenu_SwitchOnlineUser_Flag=0;
           ApiMenu_GpsInfo_Flag=0;
           ApiMenu_BacklightTimeSet_Flag=0;
           ApiMenu_KeylockTimeSet_Flag=0;
@@ -608,6 +611,7 @@ else
       MenuMode_Flag=0;
       ApiMenu_SwitchGroup_Flag=0;
       ApiMenu_SwitchCallUser_Flag=0;
+      ApiMenu_SwitchOnlineUser_Flag=0;
       ApiMenu_GpsInfo_Flag=0;
       ApiMenu_BacklightTimeSet_Flag=0;
       ApiMenu_KeylockTimeSet_Flag=0;
