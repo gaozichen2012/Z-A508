@@ -19,6 +19,8 @@ typedef enum{
   PocComm_UserListInfo          = 0x0E,
   PocComm_Key			= 0x10
 }PocCommType;
+extern bool ApiPocCmd_PlayReceivedVoice_Flag;
+extern u8 POC_GetAllGroupNameStart_Flag;
 extern u8 POC_GetAllGroupNameDone_Flag; 
 extern bool PocNoOnlineMember_Flag;
 extern bool PocNoOnlineMember_Flag2;
@@ -34,6 +36,7 @@ extern u8 POC_AtQuitPersonalCalling_Flag;
 
 extern u8 POC_EnterGroupCalling_Flag;
 extern u8 POC_QuitGroupCalling_Flag;
+
 
 extern u8 POC_ReceivedVoiceStart_Flag;
 extern u8 POC_ReceivedVoiceEnd_Flag;

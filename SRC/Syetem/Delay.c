@@ -38,12 +38,14 @@ u8 POC_ReceivedVoiceCount=0;
 u8 LobatteryTask_StartCount=0;
 u8 PocNoOnlineMemberCount=0;
 u8 GetNoOnlineMembersCount=0;
+u8 POC_GetAllGroupNameDoneCount=0;
+u8 ApiAtCmd_ZTTSCount=0;
 //u8 UpgradeNoATReturn_Count=0;
 bool LockingState_Flag=FALSE;
 u8 BacklightTimeCount;//=10;//背光灯时间(需要设置进入eeprom)
 u16 KeylockTimeCount;//=30;//键盘锁时间(需要设置进入eeprom)
 u8 GetAllGroupMemberNameCount=0;
-
+u8 PersonalCallingCount=0;
 u8 ReadBufferA[1];//背光灯时间(需要设置进入eeprom)
 u8 ReadBufferB[1];//键盘锁时间(需要设置进入eeprom)
 typedef struct {
@@ -272,6 +274,41 @@ static void DEL_500msProcess(void)			//delay 500ms process server
     TimeCount_Light++;
     CSQTimeCount++;
     GetAllGroupMemberNameCount++;
+    
+/*****5秒喇叭开启则关闭喇叭**************/
+    if(ApiAtCmd_ZTTS_Flag==TRUE)
+    {
+      ApiAtCmd_ZTTSCount++;
+      if(ApiAtCmd_ZTTSCount>2*5)
+      {
+        ApiAtCmd_ZTTS_Flag=FALSE;
+        ApiAtCmd_ZTTSCount=0;
+      }
+    }
+    else
+    {
+      ApiAtCmd_ZTTSCount=0;
+    }
+/*****解决进入单呼模式但未按PTT的异常状态问题，进入单呼计时30s，则退出***************/
+    /*if(POC_AtEnterPersonalCalling_Flag==1&&POC_AtQuitPersonalCalling_Flag==1)
+    {
+      PersonalCallingCount++;
+      if(PersonalCallingCount>30*2)
+      {
+        PersonalCallingCount=0;
+      }
+    }*/
+/******开机获取群组信息后2s按键生效***************/
+    if(POC_GetAllGroupNameStart_Flag==TRUE)
+    {
+      POC_GetAllGroupNameDoneCount++;
+      if(POC_GetAllGroupNameDoneCount>4)
+      {
+        POC_GetAllGroupNameStart_Flag=FALSE;
+        POC_GetAllGroupNameDoneCount=0;
+        POC_GetAllGroupNameDone_Flag=TRUE;
+      }
+    }
 /*******1分钟获取一次群组成员**********************************************/
     if(GetAllGroupMemberNameCount>2*60)
     {
@@ -359,12 +396,13 @@ static void DEL_500msProcess(void)			//delay 500ms process server
       POC_ReceivedVoiceCount=0;
     }
 /*********受到关喇叭指令延迟两秒关闭******************************************/
+#if 0
     //if(GetTaskId()==Task_NormalOperation)
     {
       if(ApiAtCmd_TrumpetVoicePlay_Flag==2)
       {
         ApiAtCmd_TrumpetVoicePlayCount++;
-        if(ApiAtCmd_TrumpetVoicePlayCount>1)//原来2s，现在改为0.5s
+        if(ApiAtCmd_TrumpetVoicePlayCount>2*2)//原来2s，现在改为0.5s
         {
           ApiAtCmd_TrumpetVoicePlay_Flag=0;
           ApiAtCmd_TrumpetVoicePlayCount=0;
@@ -372,7 +410,7 @@ static void DEL_500msProcess(void)			//delay 500ms process server
         }
       }
     }
-
+#endif
 /*******初始化去延时用定时**************************/
     if(TaskStartDeleteDelay1==2)//中兴易洽广域对讲
     {
@@ -429,6 +467,7 @@ static void DEL_500msProcess(void)			//delay 500ms process server
     }
 #endif
 /*****************************************************/
+#if 0
     if(UpDownSwitching_Flag==TRUE)
     {
       UpDownSwitchingCount++;
@@ -439,6 +478,7 @@ static void DEL_500msProcess(void)			//delay 500ms process server
         AUDIO_IOAFPOW(OFF);
       }
     }
+#endif
 /*****进入写频状态5s后将写频标志位清零****************/
     if(WriteFreq_Flag==TRUE)
     {
@@ -567,11 +607,15 @@ static void DEL_500msProcess(void)			//delay 500ms process server
     if(ApiPocCmd_Tone_Flag==TRUE)
     {
       ToneTimeCount++;
-      if(ToneTimeCount>=4)
+      if(ToneTimeCount>1)
       {
         ApiPocCmd_Tone_Flag=FALSE;
         ToneTimeCount=0;
       }
+    }
+    else
+    {
+      ToneTimeCount=0;
     }
     
     FILE_Read(0x236,1,ReadBufferA);//背光时间【秒】

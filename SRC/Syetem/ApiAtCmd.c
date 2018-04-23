@@ -2,7 +2,7 @@
 u8 BootProcess_SIMST_Flag=0;
 u8 BootProcess_PPPCFG_Flag=0;
 u8 ApiAtCmd_TrumpetVoicePlay_Flag=0;//功放控制标志位
-bool ApiAtCmd_ZTTS0_Flag=FALSE;
+bool ApiAtCmd_ZTTS_Flag=FALSE;
 u8 CSQ_Flag=0;
 u8 CSQ99Count_Flag=0;
 u8 KeyDownUpChoose_GroupOrUser_Flag=0;
@@ -394,22 +394,22 @@ void ApiAtCmd_10msRenew(void)
   u8 * pBuf, ucRet, Len, i;
   while((Len = DrvMC8332_AtNotify_Queue_front(&pBuf)) != 0)
   {
-    ucRet = memcmp(pBuf, ucRxPASTATE1, 9);// +PASTATE:1
-    if(ucRet == 0x00)
-    {
-      ApiAtCmd_TrumpetVoicePlay_Flag=1;
-      UpDownSwitchingCount=0;//解决选中单呼后切换群组，语音中断的问题
-      ApiAtCmd_TrumpetVoicePlayCount=0;
-    }
+#if 0//暂时屏蔽
     ucRet = memcmp(pBuf, ucRxPASTATE0, 9);// +PASTATE:0
     if(ucRet == 0x00)
     {
       ApiAtCmd_TrumpetVoicePlay_Flag=2;
     }
+#endif
+    ucRet = memcmp(pBuf, ucRxPASTATE1, 9);// +PASTATE:1
+    if(ucRet == 0x00)
+    {
+      ApiAtCmd_ZTTS_Flag=TRUE;
+    }
     ucRet = memcmp(pBuf, ucRxZTTS0, 6);// +PASTATE:0
     if(ucRet == 0x00)
     {
-      ApiAtCmd_ZTTS0_Flag=TRUE;
+      ApiAtCmd_ZTTS_Flag=FALSE;
     }
 /***********CSQ信号获取及判断****************************************************************/
     ucRet = memcmp(pBuf, ucRxCSQ, 4);

@@ -6,7 +6,7 @@
 #define APIPOC_UserName_Len			39//39 in20180303 群组名最多7位，群组数最大40个
 #define APIPOC_CalledUserName_Len	        44//成员名长度
 
-
+u8 POC_GetAllGroupNameStart_Flag=0;
 u8 ReadBuffer[80];//Test 存EEPROM读取的数据使用
 u8 InvalidCallCount=0;
 u8 ASCII_ActiveUserID[22];//Test 存EEPROM读取的数据使用
@@ -31,6 +31,7 @@ u8 POC_EnterGroupCalling_Flag=0;
 u8 POC_QuitGroupCalling_Flag=0;
 bool POC_ReceivedVoice_Flag=FALSE;
 bool ApiPocCmd_Tone_Flag=FALSE;
+bool ApiPocCmd_PlayReceivedVoice_Flag=FALSE;//开关喇叭使用
 bool SwitchGroupBUG=FALSE;
 //bool POC_ReceivedNoVoice_Flag=FALSE;
 bool EnterPersonalCalling=FALSE;
@@ -351,8 +352,8 @@ void ApiPocCmd_10msRenew(void)
       PocCmdDrvobj.WorkState.UseState.Group[ucId].NameLen = PocCmdDrvobj.WorkState.UseState.WorkGroup.NameLen;
       if(ucId==PocCmdDrvobj.WorkState.UseState.MainWorkGroup.GroupNum)
       {
-       POC_GetAllGroupNameDone_Flag=TRUE; 
       }
+      POC_GetAllGroupNameStart_Flag=TRUE; 
       break;
     case 0x81://获取组内成员列表
       ucId = COML_AscToHex(pBuf+10, 0x02);//
@@ -476,10 +477,22 @@ void ApiPocCmd_10msRenew(void)
 /**************************************/
     case 0x8B:
       ucId = COML_AscToHex(pBuf+4, 0x02);
-      if(ucId==0x03)
+      if(ucId==0x00)//语音通话结束
+      {
+        ApiPocCmd_PlayReceivedVoice_Flag=FALSE;
+      }
+      if(ucId==0x01)//语音通话开始
+      {
+        ApiPocCmd_PlayReceivedVoice_Flag=TRUE;
+      }
+      if(ucId==0x03)//tone音
       {
         ApiPocCmd_Tone_Flag=TRUE;
+#if 1//当收到Tone音，将ZTTS至0
+        ApiAtCmd_ZTTS_Flag=FALSE;
+#endif
       }
+
       break;
     case 0x86:
       //InvalidCallCount=1;
@@ -675,7 +688,7 @@ void ApiPocCmd_10msRenew(void)
       if(ucId == 0x03)
       {
         PocCmdDrvobj.WorkState.UseState.Msg.Bits.PersonalCallingMode = 0x00;//退出单呼 
-        AUDIO_IOAFPOW(ON);//打开功放，解决'组呼模式'播报问题
+        //AUDIO_IOAFPOW(ON);//打开功放，解决'组呼模式'播报问题
 
       }
       break;

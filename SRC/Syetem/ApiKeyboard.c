@@ -203,7 +203,7 @@ void Keyboard_Test(void)
         case 1://=1，进入某群组
           VOICE_SetOutput(ATVOICE_FreePlay,"f25d09902d4e",12);//播报已选中
           UpDownSwitchingCount=0;//解决选中单呼后切换群组，语音中断的问题
-          DEL_SetTimer(0,100);
+          DEL_SetTimer(0,40);
           while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
           ApiPocCmd_WritCommand(PocComm_EnterGroup,"0000000101",strlen((char const *)"0000000101"));
           KeyDownUpChoose_GroupOrUser_Flag=3;
@@ -216,7 +216,7 @@ void Keyboard_Test(void)
             //GettheOnlineMembersDone=FALSE;
             VOICE_SetOutput(ATVOICE_FreePlay,"f25d09902d4e",12);//播报已选中
             UpDownSwitchingCount=0;//解决选中单呼后切换群组，语音中断的问题
-            DEL_SetTimer(0,100);
+            DEL_SetTimer(0,40);
             while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
             ApiPocCmd_WritCommand(PocComm_Invite,"0000000101",strlen((char const *)"0000000101"));
             KeyDownUpChoose_GroupOrUser_Flag=3;
@@ -287,7 +287,7 @@ void Keyboard_Test(void)
               PersonalCallingNum=0;//解决按单呼键直接选中，单呼用户并不是播报的用户
               Key_PersonalCalling_Flag=1;
               VOICE_SetOutput(ATVOICE_FreePlay,"2a4e7c542000106258540990e962",28);//个呼成员选择
-              DEL_SetTimer(0,200);
+              DEL_SetTimer(0,150);
               while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
               VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(0),ApiAtCmd_GetUserNameLen(0));//首次获取组内成员播报第一个成员
               api_lcd_pwr_on_hint4("                ");//清屏
@@ -328,7 +328,7 @@ void Keyboard_Test(void)
               VOICE_SetOutput(ATVOICE_FreePlay,"2857bf7e106258547065",20);//在线成员数
               DEL_SetTimer(0,150);
               while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
-              VOICE_SetOutput(ATVOICE_FreePlay,VoiceAllOnlineMemberNum(),8);//在线成员数
+              VOICE_SetOutput(ATVOICE_FreePlay,VoiceAllOnlineMemberNum(),8);//
               DEL_SetTimer(0,100);
               while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
               VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(0),ApiAtCmd_GetUserNameLen(0));//首次获取组内成员播报第一个成员
