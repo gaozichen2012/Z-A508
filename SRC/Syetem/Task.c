@@ -30,10 +30,8 @@ u8 *ucEndPTT                    = "0C0000";
 u8 *ucCLVL                       = "AT+CLVL=7";//音量增益7
 u8 *ucVGR                       = "AT+VGR=7";//音量增益7
 #if 1
-//u8 *ucCODECCTL                  = "at^codecctl=5000,8000,0";//AT^codecctl=2870,8000,0中兴余工调试,只修改音量增益，增大音量
-u8 *ucCODECCTL                  = "at^codecctl=2000,1800,0";//AT^codecctl=2870,8000,0中兴余工调试
-//u8 *ucCODECCTL                  = "at^codecctl=5000,6000,0";//AT^codecctl=2000,6000,0中兴余工调试第二次
-//u8 *ucCODECCTL                  = "at^codecctl=d200,3500,0";//力声
+u8 *ucCODECCTL                  = "at^codecctl=3000,2500,0";//AT^codecctl=2870,8000,0中兴余工调试
+//u8 *ucCODECCTL                  = "at^codecctl=2000,1800,0";//AT^codecctl=2870,8000,0中兴余工调试
 #else
 u8 *ucCODECCTL                  = "at^codecctl=a000,1c00,0";//默认量产增益9000,1c00
 #endif
@@ -644,11 +642,11 @@ else
 }
 
 /********控制功放喇叭*************************************/
-if(KeyPttState==2)//暂时解决按ptt，功放打开的问题
+/*if(KeyPttState==2)//暂时解决按ptt，功放打开的问题
 {
   AUDIO_IOAFPOW(OFF);
 }
-else
+else*/
 {
   if(ApiPocCmd_Tone_Flag==TRUE)//8b0003 解决按PTT无提示音的问题
   {

@@ -719,10 +719,8 @@ u8 *UnicodeForGbk_AllGrounpName(u8 n)
     else
     {
       Buf2[GrounpLen]='\0';
-
       return UnicodeForGbk_AllGrounpNameBuf;
     }
-      
   }
 }
 /********************************/
@@ -941,7 +939,6 @@ u8 *UnicodeForGbk_MainWorkName(void)
 
       return UnicodeForGbk_AllGrounpNameBuf;
     }
-      
   }
 }
 

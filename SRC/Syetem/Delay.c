@@ -359,12 +359,12 @@ static void DEL_500msProcess(void)			//delay 500ms process server
       POC_ReceivedVoiceCount=0;
     }
 /*********受到关喇叭指令延迟两秒关闭******************************************/
-    if(GetTaskId()==Task_NormalOperation)
+    //if(GetTaskId()==Task_NormalOperation)
     {
       if(ApiAtCmd_TrumpetVoicePlay_Flag==2)
       {
         ApiAtCmd_TrumpetVoicePlayCount++;
-        if(ApiAtCmd_TrumpetVoicePlayCount>6)
+        if(ApiAtCmd_TrumpetVoicePlayCount>1)//原来2s，现在改为0.5s
         {
           ApiAtCmd_TrumpetVoicePlay_Flag=0;
           ApiAtCmd_TrumpetVoicePlayCount=0;
@@ -432,7 +432,7 @@ static void DEL_500msProcess(void)			//delay 500ms process server
     if(UpDownSwitching_Flag==TRUE)
     {
       UpDownSwitchingCount++;
-      if(UpDownSwitchingCount>2*8)
+      if(UpDownSwitchingCount>1)
       {
         UpDownSwitchingCount=0;
         UpDownSwitching_Flag=FALSE;
