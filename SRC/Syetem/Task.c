@@ -335,7 +335,7 @@ void Task_RunNormalOperation(void)
       {
         //GettheOnlineMembersDone=FALSE;
         VOICE_SetOutput(ATVOICE_FreePlay,"f25d09902d4e",12);//播报已选中
-        DEL_SetTimer(0,40);
+        DEL_SetTimer(0,60);
         while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
         ApiPocCmd_WritCommand(PocComm_Invite,ucPocOpenConfig,strlen((char const *)ucPocOpenConfig));
         KeyDownUpChoose_GroupOrUser_Flag=3;
