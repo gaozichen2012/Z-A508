@@ -8,12 +8,14 @@
 //bool UpgradeNoATReturn_Flag=FALSE;
 //bool UpgradeNoATReturn_Flag2=FALSE;
 //#define TimeoutLimit            30//240//键盘超时锁定时间10s
+
 u8 SignalPoorCount=0;
 u8 WriteFreqTimeCount=0;
 u8 *ucGPSSendToAtPort   ="AT+GPSFUNC=21";
 u8 *ucGPSUploadTime_5s  ="AT+GPSFUNC=1";
 u8 *ucRequestUserListInfo       = "0E000000000001";
 
+u8 ShowTime_Flag=FALSE;
 u8 DEL_500ms_Count=0;
 u8 DEL_500ms_Count2=0;
 u16 TimeCount=0;
@@ -40,12 +42,14 @@ u8 PocNoOnlineMemberCount=0;
 u8 GetNoOnlineMembersCount=0;
 u8 POC_GetAllGroupNameDoneCount=0;
 u8 ApiAtCmd_ZTTSCount=0;
+u8 ShowTimeCount=0;
 //u8 UpgradeNoATReturn_Count=0;
 bool LockingState_Flag=FALSE;
 u8 BacklightTimeCount;//=10;//背光灯时间(需要设置进入eeprom)
 u16 KeylockTimeCount;//=30;//键盘锁时间(需要设置进入eeprom)
 u8 GetAllGroupMemberNameCount=0;
 u8 PersonalCallingCount=0;
+u8 KEY_4Count=0;
 u8 ReadBufferA[1];//背光灯时间(需要设置进入eeprom)
 u8 ReadBufferB[1];//键盘锁时间(需要设置进入eeprom)
 typedef struct {
@@ -265,6 +269,7 @@ static void DEL_100msProcess(void)
 static void DEL_500msProcess(void)			//delay 500ms process server
 {
   u8 i;
+u8 ShowTimeBuf1[6]={0,0,0,0,0,0};
   if (DelDrvObj.Msg.Bit.b500ms == DEL_RUN) 
   {
     DelDrvObj.Msg.Bit.b500ms = DEL_IDLE;
@@ -274,6 +279,96 @@ static void DEL_500msProcess(void)			//delay 500ms process server
     TimeCount_Light++;
     CSQTimeCount++;
     GetAllGroupMemberNameCount++;
+/******报警键标志位，时间显示使用**********/
+    if(KEY_4_Flag==TRUE)
+    {
+      KEY_4Count++;
+      if(KEY_4Count>2*2)
+      {
+        KEY_4Count=0;
+        KEY_4_Flag=FALSE;
+      }
+    }
+    else
+    {
+      KEY_4Count=0;
+    }
+/******进入群组模式5秒显示时间*******************/
+    if(POC_GetAllGroupNameDone_Flag==TRUE&&
+       MenuMode_Flag==0&&
+       POC_EnterPersonalCalling_Flag==0&&
+       POC_QuitPersonalCalling_Flag==0&&
+       POC_AtEnterPersonalCalling_Flag==0&&
+       POC_AtQuitPersonalCalling_Flag==0&&
+       KEY_4_Flag==FALSE&&
+       KeyDownUpChoose_GroupOrUser_Flag==0)
+    {
+      ShowTimeCount++;
+      if(ShowTimeCount>2*5)
+      {
+        ShowTime_Flag=TRUE;
+        ShowTimeCount=11;
+        if(Data_Time0()<=0x09&&Data_Time1()<=0x09)
+        {
+          ShowTimeBuf1[0]='0';
+          COML_HexToAsc(Data_Time0(),ShowTimeBuf1+1);
+          ShowTimeBuf1[2]=':';
+          ShowTimeBuf1[3]='0';
+          COML_HexToAsc(Data_Time1(),ShowTimeBuf1+4);
+        }
+        else if(Data_Time0()<=0x09&&Data_Time1()>0x09)
+        {
+          ShowTimeBuf1[0]='0';
+          COML_HexToAsc(Data_Time0(),ShowTimeBuf1+1);
+          ShowTimeBuf1[2]=':';
+          COML_HexToAsc(Data_Time1(),ShowTimeBuf1+3);
+          COML_StringReverse(2,ShowTimeBuf1+3);
+        }
+        else if(Data_Time0()>0x09&&Data_Time1()<=0x09)
+        {
+          COML_HexToAsc(Data_Time0(),ShowTimeBuf1);
+          COML_StringReverse(2,ShowTimeBuf1);
+          ShowTimeBuf1[2]=':';
+          ShowTimeBuf1[3]='0';
+          COML_HexToAsc(Data_Time1(),ShowTimeBuf1+4);
+        }
+        else//
+        {
+          COML_HexToAsc(Data_Time0(),ShowTimeBuf1);
+          COML_StringReverse(2,ShowTimeBuf1);
+          ShowTimeBuf1[2]=':';
+          COML_HexToAsc(Data_Time1(),ShowTimeBuf1+3);
+          COML_StringReverse(2,ShowTimeBuf1+3);
+        }
+        ShowTimeBuf1[5]='\0';
+        api_lcd_pwr_on_hint7(ShowTimeBuf1);
+      }
+    }
+    else
+    {
+      ShowTime_Flag=FALSE;
+      ShowTimeCount=0;
+      if(MenuMode_Flag!=1)
+      {
+        if(NetworkType_2Gor3G_Flag==3)
+          api_disp_icoid_output( eICO_IDEmergency, TRUE, TRUE);//3G图标
+        else
+          api_disp_icoid_output( eICO_IDPOWERL, TRUE, TRUE);//图标：2G
+        if(VoiceType_FreehandOrHandset_Flag==0)
+          api_disp_icoid_output( eICO_IDTemper, TRUE, TRUE);//免提模式
+        else
+          api_disp_icoid_output( eICO_IDMONITER, TRUE, TRUE);//听筒模式图标
+        if(PersonCallIco_Flag==0)
+          api_disp_icoid_output( eICO_IDPOWERM, TRUE, TRUE);//显示组呼图标
+        else
+          api_disp_icoid_output( eICO_IDPOWERH, TRUE, TRUE);//显示个呼图标
+        if(KeyDownUpChoose_GroupOrUser_Flag==0)
+          api_disp_icoid_output( eICO_IDMESSAGEOff, TRUE, TRUE);//空图标-与选对应
+        else
+          api_disp_icoid_output( eICO_IDLOCKED, TRUE, TRUE);//选
+      }
+
+    }
     
 /*****5秒喇叭开启则关闭喇叭**************/
     if(ApiAtCmd_ZTTS_Flag==TRUE)
@@ -690,7 +785,7 @@ static void DEL_500msProcess(void)			//delay 500ms process server
           {
             LockingState_Flag=TRUE;//超时锁定标志位
             //解决BUG：锁屏后会影响一级二级菜单显示，现处理办法为锁屏就退回默认群组状态,所有菜单标志位初始化
-            api_lcd_pwr_on_hint3("                ");//清屏
+            //api_lcd_pwr_on_hint3("                ");//清屏
             MenuDisplay(Menu_RefreshAllIco);
             if(PersonCallIco_Flag==0)
             {

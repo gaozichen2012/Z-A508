@@ -120,7 +120,7 @@ void main_init(void)
   api_disp_icoid_output( eICO_IDBATT5, TRUE, TRUE);//显示电池满电图标
   api_disp_icoid_output( eICO_IDTemper, TRUE, TRUE);//免提模式图标
   api_lcd_pwr_on_hint2("eChat");
-
+  
   BEEP_Time(1);
   NoUseNum=ApiAtCmd_WritCommand(ATCOMM3_GD83StartupReset,(void*)0, 0);
   TaskDrvObj.NewId=Task_Start;//Task_Start

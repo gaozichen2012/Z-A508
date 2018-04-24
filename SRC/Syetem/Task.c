@@ -16,6 +16,7 @@ u8 LoosenPttMomentCount=0;
 bool EnterPttMoment_Flag=FALSE;
 bool LoosenPttMoment_Flag=FALSE;
 bool EnterKeyTime_2s_Flag=FALSE;
+bool KEY_4_Flag=FALSE;
 u8 TaskStartDeleteDelay1=0;
 u8 TaskStartDeleteDelay2=0;
 u8 TaskStartDeleteDelay3=0;
@@ -30,6 +31,7 @@ u8 *ucEndPTT                    = "0C0000";
 u8 *ucCLVL                       = "AT+CLVL=7";//音量增益7
 u8 *ucVGR                       = "AT+VGR=7";//音量增益7
 #if 1
+//u8 *ucCODECCTL                  = "at^codecctl=2000,1800,0";//AT^codecctl=2870,8000,0中兴余工调试
 u8 *ucCODECCTL                  = "at^codecctl=3000,2500,0";//AT^codecctl=2870,8000,0中兴余工调试
 //u8 *ucCODECCTL                  = "at^codecctl=2000,1800,0";//AT^codecctl=2870,8000,0中兴余工调试
 #else
@@ -58,8 +60,8 @@ void Task_RunStart(void)
       api_disp_icoid_output( eICO_IDRXNULL, TRUE, TRUE);//GPRS无信号图标
 #if 1
       
-      //NoUseNum=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)"AT^rxfilter=0x41C,0x152,0xF942,0xFDEA,0x50,0x11A4,0x2B6A",strlen((char const *)"AT^rxfilter=0x41C,0x152,0xF942,0xFDEA,0x50,0x11A4,0x2B6A"));//高子晨曲线T1
-      NoUseNum=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)"AT^rxfilter=0x310,0xf9f0,0xf8e5,0xfc37,0xfeff,0x106b,0x2D15",strlen((char const *)"AT^rxfilter=0x310,0xf9f0,0xf8e5,0xfc37,0xfeff,0x106b,0x2D15"));//中兴余工调试曲线第三次（在中兴调试的）
+      NoUseNum=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)"AT^rxfilter=0x1BA,0xFCB8,0xFAB7,0xFF11,0x9CF,0x1871,0x2C20",strlen((char const *)"AT^rxfilter=0x1BA,0xFCB8,0xFAB7,0xFF11,0x9CF,0x1871,0x2C20"));//高子晨曲线T1-挺好 无啸叫
+      //NoUseNum=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)"AT^rxfilter=0x310,0xf9f0,0xf8e5,0xfc37,0xfeff,0x106b,0x2D15",strlen((char const *)"AT^rxfilter=0x310,0xf9f0,0xf8e5,0xfc37,0xfeff,0x106b,0x2D15"));//中兴余工调试曲线第三次（在中兴调试的）
       //NoUseNum=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)"AT^rxfilter=0x27F,0xAB,0xFD08,0xFADC,0xFC19,0xD74,0x27DA",strlen((char const *)"AT^rxfilter=0x27F,0xAB,0xFD08,0xFADC,0xFC19,0xD74,0x27DA"));//中兴余工调试曲线第二次
       //NoUseNum=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)"AT^rxfilter=0xFBA8,0xF9DD,0xFD4F,0xFE10,0xFC7A,0x1071,0x2D8D",strlen((char const *)"AT^rxfilter=0xFBA8,0xF9DD,0xFD4F,0xFE10,0xFC7A,0x1071,0x2D8D"));//中兴余工调试曲线
 
@@ -413,7 +415,7 @@ void Task_RunNormalOperation(void)
           ApiMenu_NativeInfo_Flag=0;
           ApiMenu_BeiDouOrWritingFrequency_Flag=0;
       }
-      api_disp_icoid_output( eICO_IDLOCKED, TRUE, TRUE);//选
+      //api_disp_icoid_output( eICO_IDLOCKED, TRUE, TRUE);//选
       api_lcd_pwr_on_hint("  个呼成员选择  ");
       //api_lcd_pwr_on_hint2(HexToChar_MainUserId());
       PersonalCallingNum=0;//解决按单呼键直接选中，单呼用户并不是播报的用户
@@ -432,6 +434,7 @@ void Task_RunNormalOperation(void)
 /*******报警键状态检测********************************************************************************************************************************************/
   if(ReadInput_KEY_4==0)//报警键
   {
+   
     switch(AlarmCount)
     {
     case 4://切换为2G模式

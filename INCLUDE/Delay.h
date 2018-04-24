@@ -15,6 +15,7 @@
 	#define DELAPI	extern
 #endif
 
+DELAPI u8 ShowTime_Flag;
 DELAPI u8 TaskStartDeleteDelay1Count;
 DELAPI u8 TaskStartDeleteDelay3Count;
 DELAPI u8 TaskStartDeleteDelay4Count;

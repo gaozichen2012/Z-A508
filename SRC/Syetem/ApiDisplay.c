@@ -268,6 +268,20 @@ void api_lcd_pwr_on_hint6(u8 *CharData)
 	//MCU_LCD_BACKLIGTH(OFF);
 	api_disp_all_screen_refresh();// 全屏统一刷新
 }
+void api_lcd_pwr_on_hint7(u8 *CharData)
+{
+	DISP_CHAR stCharInfo;
+	stCharInfo.DispType  = DISP_IDCNASC816;
+	//stCharInfo.DispAddX  = 0;
+	stCharInfo.DispAddY  = 0x00;
+	stCharInfo.DispAddX  = 4;//一行16个英文字符
+        stCharInfo.DispLenth = LCD_DISP_LEN_MAX;
+        
+	api_disp_char_output(stCharInfo,CharData);
+
+	//MCU_LCD_BACKLIGTH(OFF);
+	api_disp_all_screen_refresh();// 全屏统一刷新
+}
 /*******************************************************************************
 * Description	: 刷新屏幕数据显示
 * Input		: void
@@ -533,16 +547,16 @@ void api_diap_ico_pos_get(DISP_ICO *pIcoInfo, u16 IcoID)
           break;
 	case eICO_IDPOWERM://图标：组呼
 	case eICO_IDPOWERH://图标：个呼
-          pIcoInfo->DispAddX = 0x0c;//0x04
+          pIcoInfo->DispAddX = 0x06;//0x04
           break;
 	case eICO_IDBANDWIDTHW://锁屏图标
 	case eICO_IDBANDWIDTHN://空图标
-          pIcoInfo->DispAddX = 0x06;
+          pIcoInfo->DispAddX = 0x0c;
           break;
 	case eICO_IDTALKAR://无发射无接收状态（无图标）
         case eICO_IDTX://发射信号图标
 	case eICO_IDVOX://图标：接收，听状态
-          pIcoInfo->DispAddX = 0x08;
+          pIcoInfo->DispAddX = 0x0a;
           break;
         
 	
@@ -556,7 +570,7 @@ void api_diap_ico_pos_get(DISP_ICO *pIcoInfo, u16 IcoID)
 	
 	case eICO_IDMESSAGEOff://空图标
         case eICO_IDLOCKED://选
-		pIcoInfo->DispAddX = 0x0a;
+		pIcoInfo->DispAddX = 0x08;
 		break;
 		
 	
