@@ -631,12 +631,23 @@ static void AtCmd_NetParamCode(void)//获取TCP IP地址
   u8 i,TcpIpLen,TcpPortLen;
   u8 *TcpIpBuf;
   u8 *TcpPortBuf;
-  TcpIpLen=strlen((char const *)ApiGps_GetTcpIpAddress());
-  TcpPortLen=strlen((char const *)ApiGps_GetTcpPortAddress());
-  TcpIpBuf=ApiGps_GetTcpIpAddress();
-  TcpPortBuf=ApiGps_GetTcpPortAddress();
   
-//  添加 TcpIpBuf[25];TcpPortBuf[25];里的值
+  TcpIpBuf=ApiGps_GetTcpIpAddress();
+  TcpIpLen=strlen((char const *)ApiGps_GetTcpIpAddress());
+  
+  
+  TcpPortBuf=ApiGps_GetTcpPortAddress();
+  TcpPortLen=strlen((char const *)ApiGps_GetTcpPortAddress());
+  
+  if(ApiGps_GetTcpPortAddress_No5()==0x00)
+  {
+  }
+  else
+  {
+    TcpPortBuf[TcpPortLen]=ApiGps_GetTcpPortAddress_No5();
+    TcpPortLen=TcpPortLen+1;
+  }
+  
   for(i=0;i<TcpIpLen;i++)
   {
     AtCmdDrvobj.NetState.Buf[i]=TcpIpBuf[i];
@@ -647,25 +658,7 @@ static void AtCmd_NetParamCode(void)//获取TCP IP地址
     AtCmdDrvobj.NetState.Buf[TcpIpLen+1+i]=TcpPortBuf[i];
   }
   AtCmdDrvobj.NetState.Len=TcpIpLen+TcpPortLen+1;
-  /*AtCmdDrvobj.NetState.Buf[0]  = '1';
-  AtCmdDrvobj.NetState.Buf[1]  = '2';
-  AtCmdDrvobj.NetState.Buf[2]  = '3';
-  AtCmdDrvobj.NetState.Buf[3]  = '.';
-  AtCmdDrvobj.NetState.Buf[4]  = '5';
-  AtCmdDrvobj.NetState.Buf[5]  = '6';
-  AtCmdDrvobj.NetState.Buf[6]  = '.';
-  AtCmdDrvobj.NetState.Buf[7]  = '8';
-  AtCmdDrvobj.NetState.Buf[8]  = '0';
-  AtCmdDrvobj.NetState.Buf[9]  = '.';
-  AtCmdDrvobj.NetState.Buf[10] = '1';
-  AtCmdDrvobj.NetState.Buf[11] = '0';
-  AtCmdDrvobj.NetState.Buf[12] = '7';
-  AtCmdDrvobj.NetState.Buf[13] = ',';
-  AtCmdDrvobj.NetState.Buf[14] = '6';
-  AtCmdDrvobj.NetState.Buf[15] = '9';
-  AtCmdDrvobj.NetState.Buf[16] = '7';
-  AtCmdDrvobj.NetState.Buf[17] = '3';
-  AtCmdDrvobj.NetState.Len=18;*/
+
   
 }
 

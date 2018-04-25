@@ -1058,3 +1058,7 @@ u8 *ApiGps_GetTcpPortAddress()
 {
   return GpsFunDrvObj.GpsPar.Gps.NetParam.Param.Port;
 }
+u8 ApiGps_GetTcpPortAddress_No5()
+{
+  return GpsFunDrvObj.GpsPar.LoginInfo.TerminalColor;//客户需求：端口5位
+}
