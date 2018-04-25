@@ -8,7 +8,7 @@
 //bool UpgradeNoATReturn_Flag=FALSE;
 //bool UpgradeNoATReturn_Flag2=FALSE;
 //#define TimeoutLimit            30//240//键盘超时锁定时间10s
-u8 ShowTimeBuf1[6]={0,0,0,0,0,0};
+
 u8 SignalPoorCount=0;
 u8 WriteFreqTimeCount=0;
 u8 *ucGPSSendToAtPort   ="AT+GPSFUNC=21";
@@ -269,6 +269,7 @@ static void DEL_100msProcess(void)
 static void DEL_500msProcess(void)			//delay 500ms process server
 {
   u8 i;
+  u8 ShowTimeBuf1[6]={0,0,0,0,0,0};
   if (DelDrvObj.Msg.Bit.b500ms == DEL_RUN) 
   {
     DelDrvObj.Msg.Bit.b500ms = DEL_IDLE;
@@ -373,7 +374,7 @@ static void DEL_500msProcess(void)			//delay 500ms process server
     if(ApiAtCmd_ZTTS_Flag==TRUE)
     {
       ApiAtCmd_ZTTSCount++;
-      if(ApiAtCmd_ZTTSCount>2*5)
+      if(ApiAtCmd_ZTTSCount>2*15)
       {
         ApiAtCmd_ZTTS_Flag=FALSE;
         ApiAtCmd_ZTTSCount=0;
