@@ -135,7 +135,7 @@ typedef struct{
 			
 			struct{
 				u8 Id[8];
-				u8 Name[APIPOC_UserName_Len];
+				u8 Name[APIPOC_CalledUserName_Len];
 				u8 NameLen;
 			}WorkUserName;
 		}UseState;
