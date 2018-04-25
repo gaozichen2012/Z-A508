@@ -38,6 +38,7 @@ void VOICE_PowerOnInitial(void)
 void VOICE_SetOutput(AtVoiceType Id, u8 *buf, u8 Len)
 {
   ApiAtCmd_ZTTS_Flag=TRUE;
+  ApiAtCmd_ZTTSCount=0;
   AUDIO_IOAFPOW(ON);
 	//DrvMC8332_TxPort_SetValidable(ON);
 	VoiceDrvObj.Msg.Byte |= Id;	

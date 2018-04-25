@@ -14,7 +14,7 @@
 #else
 	#define DELAPI	extern
 #endif
-
+DELAPI u8 ApiAtCmd_ZTTSCount;
 DELAPI u8 ShowTime_Flag;
 DELAPI u8 TaskStartDeleteDelay1Count;
 DELAPI u8 TaskStartDeleteDelay3Count;
