@@ -2,7 +2,8 @@
 #include <string.h>
 #include <stdio.h>
 #include<stdlib.h>
-//u8 ReadBufferTest[700];
+
+#define ReportTimerSET 10
 u8 Key3_PlayValue=0;
 u8 Test1=0;
 u8 SendGpsLoginInfoCount=0;
@@ -534,6 +535,7 @@ void ApiGpsCmd_100msRenew(void)//决定什么时候发送什么数据
             }
             else
             {
+              
               if(GpsFunDrvObj.PositionSystem.GbSys.State.Msg.Bits.bSpecificAck != 0x00)//如果是特殊应答
               {
                 GpsFunDrvObj.PositionSystem.GbSys.State.Msg.Bits.bSpecificAck = 0x00;
@@ -585,7 +587,7 @@ void ApiGpsCmd_100msRenew(void)//决定什么时候发送什么数据
 #else
                     GpsCmd_GbWritCommand(GPSCOMM_Login, (void*)0, 0);
 #endif
-                    GpsFunDrvObj.usReportTimer = 0x05;
+                    GpsFunDrvObj.usReportTimer = ReportTimerSET;
                   }
                   else//若收到平台发送8100，表示终端登录成功，usReportTimer=0
                   {
@@ -597,7 +599,7 @@ void ApiGpsCmd_100msRenew(void)//决定什么时候发送什么数据
                   if(GpsFunDrvObj.PositionSystem.GbSys.State.Msg.Bits.bAuthenticatied == OFF)
                   {
                     GpsCmd_GbWritCommand(GPSCOMM_Authentication, (void*)0, 0);
-                    GpsFunDrvObj.usReportTimer = 0x05;
+                    GpsFunDrvObj.usReportTimer = ReportTimerSET;
                   }
                   else
                   {
@@ -606,7 +608,7 @@ void ApiGpsCmd_100msRenew(void)//决定什么时候发送什么数据
                   }
                   break;
                 case 0x02://ucStep=2表示终端定位
-                  if(GpsFunDrvObj.CountdownTimer.LoadCount < 0x05)
+                  if(GpsFunDrvObj.CountdownTimer.LoadCount < ReportTimerSET)
                   {
                       GpsFunDrvObj.CountdownTimer.LoadCount++;
                       GpsFunDrvObj.usReportTimer =(GpsFunDrvObj.GpsPar.Acc.OnReportTime);
@@ -643,9 +645,9 @@ void ApiGpsCmd_100msRenew(void)//决定什么时候发送什么数据
           {
             if(GpsFunDrvObj.PositionSystem.GbSys.State.ucStep == 0x00)
             {
-              if(GpsFunDrvObj.usReportTimer > 0x05)
+              if(GpsFunDrvObj.usReportTimer > ReportTimerSET)
               {
-                GpsFunDrvObj.usReportTimer = 0x05;
+                GpsFunDrvObj.usReportTimer = ReportTimerSET;
               }
             }
           }
