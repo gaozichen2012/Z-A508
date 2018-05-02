@@ -488,6 +488,7 @@ void ApiPocCmd_10msRenew(void)
       if(ucId==0x03)//tone音
       {
         ApiPocCmd_Tone_Flag=TRUE;
+        AUDIO_IOAFPOW(ON);
 #if 1//当收到Tone音，将ZTTS至0
         ApiAtCmd_ZTTS_Flag=FALSE;
 #endif

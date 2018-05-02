@@ -2,8 +2,8 @@
 #include <string.h>
 #include <stdio.h>
 #include<stdlib.h>
-
-#define ReportTimerSET 10
+u8 ReportTimerRead[1];
+u8 ReportTimerSET=0;
 u8 Key3_PlayValue=0;
 u8 Test1=0;
 u8 SendGpsLoginInfoCount=0;
@@ -338,17 +338,11 @@ void ApiGpsCmd_PowerOnInitial(void)//bubiao
   u8 LicensePlateLen=0;
   u8 ucIndex0 = 0, ucIndex1 = 0;
   ADRLEN_INF	adr;
-  
   adr = CFG_GetCurAdr(ADR_IDGpsFun);//部标注册信息获取
   FILE_Read2(adr.Adr,adr.Len-16,(u8*)(&GpsFunDrvObj.GpsPar));
+  FILE_Read2(adr.Adr+87,1,ReportTimerRead);//GPS上报时间位
+  ReportTimerSET=(ReportTimerRead[0]-0x0e)*5;
   FILE_Read(0,80,ReadBuffer);//80位
-  //FILE_Read(0,100,ReadBufferTest);//80位
-  /*FILE_Read(100,100,ReadBufferTest+100);//80位
-  FILE_Read(200,100,ReadBufferTest+200);//80位
-  FILE_Read(300,100,ReadBufferTest+300);//80位
-  FILE_Read(400,100,ReadBufferTest+400);//80位
-  FILE_Read(500,100,ReadBufferTest+500);//80位
-  FILE_Read(600,100,ReadBufferTest+600);//80位*/
   FILE_Read(598,1,&Key3_PlayValue);//80位
 #if 1//侧键1播报语音类型
   switch(Key3_PlayValue)
