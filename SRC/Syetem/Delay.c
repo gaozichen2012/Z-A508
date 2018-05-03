@@ -341,6 +341,7 @@ static void DEL_500msProcess(void)			//delay 500ms process server
           COML_StringReverse(2,ShowTimeBuf1+3);
         }
         ShowTimeBuf1[5]='\0';
+        api_disp_icoid_output( eICO_IDSCANOff, TRUE, TRUE);//
         api_lcd_pwr_on_hint7(ShowTimeBuf1);
       }
     }

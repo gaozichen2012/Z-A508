@@ -341,7 +341,7 @@ void ApiGpsCmd_PowerOnInitial(void)//bubiao
   adr = CFG_GetCurAdr(ADR_IDGpsFun);//部标注册信息获取
   FILE_Read2(adr.Adr,adr.Len-16,(u8*)(&GpsFunDrvObj.GpsPar));
   FILE_Read2(adr.Adr+87,1,ReportTimerRead);//GPS上报时间位
-  ReportTimerSET=(ReportTimerRead[0]-0x0e)*5;
+  ReportTimerSET=(ReportTimerRead[0]-0x0e)*5-1;//当设置成5的时候，上报时间为6s，故减1
   FILE_Read(0,80,ReadBuffer);//80位
   FILE_Read(598,1,&Key3_PlayValue);//80位
 #if 1//侧键1播报语音类型
