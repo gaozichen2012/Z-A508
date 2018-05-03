@@ -280,18 +280,12 @@ void Keyboard_Test(void)
             }
             else
             {
-              //GettheOnlineMembersDone=FALSE;//解决个呼按键与上下键逻辑混乱问题，个呼键按下直到播报第一个成员后才可以按上下键切换个呼成员
-              //api_disp_icoid_output( eICO_IDLOCKED, TRUE, TRUE);//选
-              api_lcd_pwr_on_hint("  个呼成员选择  ");
-              //api_lcd_pwr_on_hint2(HexToChar_MainUserId());
+              api_lcd_pwr_on_hint("    单呼模式    ");
               PersonalCallingNum=0;//解决按单呼键直接选中，单呼用户并不是播报的用户
               Key_PersonalCalling_Flag=1;
-              VOICE_SetOutput(ATVOICE_FreePlay,"2a4e7c542000106258540990e962",28);//个呼成员选择
+              VOICE_SetOutput(ATVOICE_FreePlay,"C5627C54216A0F5F",16);//单呼模式
               DEL_SetTimer(0,150);
               while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
-              VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(0),ApiAtCmd_GetUserNameLen(0));//首次获取组内成员播报第一个成员
-              api_lcd_pwr_on_hint4("                ");//清屏
-              api_lcd_pwr_on_hint4(UnicodeForGbk_AllUserName(0));//显示当前选中的群组名
               ApiPocCmd_WritCommand(PocComm_UserListInfo,"0E000000000001",strlen((char const *)"0E000000000001"));
               KeyDownUpChoose_GroupOrUser_Flag=2;
               TheMenuLayer_Flag=0;//处于0级菜单，进入单呼模式为菜单外功能
@@ -317,14 +311,18 @@ void Keyboard_Test(void)
           case 0://一级菜单按ok键进入单呼模式
             MenuDisplay(Menu_RefreshAllIco);
             ApiMenu_SwitchOnlineUser_Flag=1;
-            MenuMode_Flag==1;
+            MenuMode_Flag=1;
             /*******直接搬个呼键状态检测的程序***************************************************************************************************************************************/
             api_lcd_pwr_on_hint3("在线成员数:   ");
             api_lcd_pwr_on_hint("                ");
-            //api_lcd_pwr_on_hint("33");
             api_lcd_pwr_on_hint2(HexToChar_AllOnlineMemberNum());
+            if(ApiAtCmd_GetUserNum()==0)
+            {
+              VOICE_SetOutput(ATVOICE_FreePlay,"e0652857bf7e10625854",20);//无在线成员
+            }
+            else
+            {
               PersonalCallingNum=0;//解决按单呼键直接选中，单呼用户并不是播报的用户
-              //Key_PersonalCalling_Flag=1;
               VOICE_SetOutput(ATVOICE_FreePlay,"2857bf7e106258547065",20);//在线成员数
               DEL_SetTimer(0,150);
               while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
@@ -339,6 +337,8 @@ void Keyboard_Test(void)
               //KeyDownUpChoose_GroupOrUser_Flag=2;
               TheMenuLayer_Flag=2;
               KeyPersonalCallingCount=0;//解决单呼模式，上下键成员非正常顺序，第一个成员在切换时会第二、第三个碰到
+            }
+
             break;
           }
           break;

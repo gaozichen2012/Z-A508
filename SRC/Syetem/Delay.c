@@ -394,7 +394,7 @@ static void DEL_500msProcess(void)			//delay 500ms process server
         PersonalCallingCount=0;
       }
     }*/
-/******开机获取群组信息后2s按键生效***************/
+/******开机获取群组信息后3s按键生效***************/
     if(POC_GetAllGroupNameStart_Flag==TRUE)
     {
       POC_GetAllGroupNameDoneCount++;
@@ -402,13 +402,13 @@ static void DEL_500msProcess(void)			//delay 500ms process server
       {
         POC_GetAllGroupNameStart_Flag=FALSE;
         POC_GetAllGroupNameDoneCount=0;
-        POC_GetAllGroupNameDone_Flag=TRUE;
+        //POC_GetAllGroupNameDone_Flag=TRUE;
       }
     }
 /*******1分钟获取一次群组成员**********************************************/
     if(GetAllGroupMemberNameCount>2*60)
     {
-      ApiPocCmd_WritCommand(PocComm_UserListInfo,ucRequestUserListInfo,strlen((char const *)ucRequestUserListInfo));
+      //ApiPocCmd_WritCommand(PocComm_UserListInfo,ucRequestUserListInfo,strlen((char const *)ucRequestUserListInfo));
       GetAllGroupMemberNameCount=0;
     }
 /**********若指令发出无回音则处于升级状态**********************************/
@@ -682,9 +682,9 @@ static void DEL_500msProcess(void)			//delay 500ms process server
           PowerOnCount=2*60;
         }
 #endif
-        if(GpsReconnectionTimeCount==2*10)
+        if(GpsReconnectionTimeCount==2*15)
         {
-          ApiPocCmd_WritCommand(PocComm_UserListInfo,ucRequestUserListInfo,strlen((char const *)ucRequestUserListInfo));
+          //ApiPocCmd_WritCommand(PocComm_UserListInfo,ucRequestUserListInfo,strlen((char const *)ucRequestUserListInfo));
           switch(ApiGpsServerType)
           {
           case GpsServerType_BuBiao:
@@ -695,10 +695,10 @@ static void DEL_500msProcess(void)			//delay 500ms process server
           case GpsServerType_BuBiaoAndZTE:
             break;
           }
-          GpsReconnectionTimeCount=21;
+          GpsReconnectionTimeCount=31;
         }
-        if(GpsReconnectionTimeCount>=25)
-        {GpsReconnectionTimeCount=21;}
+        if(GpsReconnectionTimeCount>=35)
+        {GpsReconnectionTimeCount=31;}
       }
     if(ApiPocCmd_Tone_Flag==TRUE)
     {

@@ -405,6 +405,7 @@ void ApiAtCmd_10msRenew(void)
     if(ucRet == 0x00)
     {
       ApiAtCmd_ZTTS_Flag=TRUE;
+      AUDIO_IOAFPOW(ON);
     }
     ucRet = memcmp(pBuf, ucRxZTTS0, 6);// +PASTATE:0
     if(ucRet == 0x00)

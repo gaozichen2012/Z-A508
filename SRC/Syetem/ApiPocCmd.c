@@ -217,7 +217,20 @@ void ApiPocCmd_WritCommand(PocCommType id, u8 *buf, u16 len)
     DrvGD83_UART_TxCommand(buf, len);
     break;
   case PocComm_UserListInfo://6
-    DrvGD83_UART_TxCommand(buf, len);
+    DrvGD83_UART_TxCommand("0E0000000000", 12);
+    COML_HexToAsc(GroupCallingNum, NetStateBuf);
+    if(strlen((char const*)NetStateBuf)==1)
+    {
+      NetStateBuf[1]=NetStateBuf[0];
+      NetStateBuf[0]=0x30;
+    }
+    else
+    {
+      testData          =NetStateBuf[0];
+      NetStateBuf[0]    =NetStateBuf[1];
+      NetStateBuf[1]    =testData;
+    }
+    DrvGD83_UART_TxCommand(NetStateBuf, 2);
     break;
   case PocComm_Key://7
     DrvGD83_UART_TxCommand(buf, len);
@@ -350,9 +363,6 @@ void ApiPocCmd_10msRenew(void)
           PocCmdDrvobj.WorkState.UseState.WorkGroup.Name[i];
       }
       PocCmdDrvobj.WorkState.UseState.Group[ucId].NameLen = PocCmdDrvobj.WorkState.UseState.WorkGroup.NameLen;
-      if(ucId==PocCmdDrvobj.WorkState.UseState.MainWorkGroup.GroupNum)
-      {
-      }
       POC_GetAllGroupNameStart_Flag=TRUE; 
       break;
     case 0x81://获取组内成员列表
@@ -496,6 +506,7 @@ void ApiPocCmd_10msRenew(void)
 
       break;
     case 0x86:
+      POC_GetAllGroupNameDone_Flag=TRUE;
       //InvalidCallCount=1;
       POC_Receive86_Flag=TRUE;
 /****************判断接入单呼**************************************************************/
