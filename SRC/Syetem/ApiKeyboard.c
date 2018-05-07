@@ -284,7 +284,7 @@ void Keyboard_Test(void)
               PersonalCallingNum=0;//解决按单呼键直接选中，单呼用户并不是播报的用户
               Key_PersonalCalling_Flag=1;
               VOICE_SetOutput(ATVOICE_FreePlay,"C5627C54216A0F5F",16);//单呼模式
-              DEL_SetTimer(0,150);
+              DEL_SetTimer(0,35);
               while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
               ApiPocCmd_WritCommand(PocComm_UserListInfo,"0E000000000001",strlen((char const *)"0E000000000001"));
               KeyDownUpChoose_GroupOrUser_Flag=2;
