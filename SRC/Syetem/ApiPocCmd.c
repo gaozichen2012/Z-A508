@@ -6,6 +6,7 @@
 #define APIPOC_UserName_Len			39//39 in20180303 群组名最多7位，群组数最大40个
 #define APIPOC_CalledUserName_Len	        44//成员名长度
 
+u8 PresentGroupNum=0;
 u8 POC_GetAllGroupNameStart_Flag=0;
 u8 ReadBuffer[80];//Test 存EEPROM读取的数据使用
 u8 InvalidCallCount=0;
@@ -218,7 +219,7 @@ void ApiPocCmd_WritCommand(PocCommType id, u8 *buf, u16 len)
     break;
   case PocComm_UserListInfo://6
     DrvGD83_UART_TxCommand("0E0000000000", 12);
-    COML_HexToAsc(GroupCallingNum, NetStateBuf);
+    COML_HexToAsc(PresentGroupNum, NetStateBuf);
     if(strlen((char const*)NetStateBuf)==1)
     {
       NetStateBuf[1]=NetStateBuf[0];
@@ -339,6 +340,7 @@ void ApiPocCmd_10msRenew(void)
         else
         { 
           PocCmdDrvobj.WorkState.UseState.PttUserName.UserNum = ucId;
+          PocNoOnlineMember_Flag=FALSE;
         }
       }
       break;
@@ -506,6 +508,14 @@ void ApiPocCmd_10msRenew(void)
 
       break;
     case 0x86:
+//8600ffffffff0000
+//86000000000c276b07684b6dd58bc47e310032000000
+//860000000000d65eae4e4e533300f7530000
+      ucId = COML_AscToHex(pBuf+10, 0x02);
+      if(ucId!=0x00&&ucId!=0xff)
+      {
+        PresentGroupNum=ucId;
+      }
       POC_GetAllGroupNameDone_Flag=TRUE;
       //InvalidCallCount=1;
       POC_Receive86_Flag=TRUE;

@@ -450,16 +450,16 @@ static void DEL_500msProcess(void)			//delay 500ms process server
       }
     }
 /*******无在线成员处理*******************/
-    if(PocNoOnlineMember_Flag==TRUE)
+   /* if(PocNoOnlineMember_Flag==TRUE)
     {
       PocNoOnlineMemberCount++;
-      if(PocNoOnlineMemberCount>2*1)
+      if(PocNoOnlineMemberCount>1)
       {
         PocNoOnlineMemberCount=0;
         PocNoOnlineMember_Flag=FALSE;
         PocNoOnlineMember_Flag2=TRUE;
       }
-    }
+    }*/
 /******登录状态下的低电报警**********************************************/
     if(LobatteryTask_StartFlag==TRUE)
     {

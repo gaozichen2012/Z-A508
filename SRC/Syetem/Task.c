@@ -421,7 +421,7 @@ void Task_RunNormalOperation(void)
       PersonalCallingNum=0;//解决按单呼键直接选中，单呼用户并不是播报的用户
       Key_PersonalCalling_Flag=1;
       VOICE_SetOutput(ATVOICE_FreePlay,"C5627C54216A0F5F",16);//单呼模式
-      DEL_SetTimer(0,100);
+      DEL_SetTimer(0,35);
       while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
       ApiPocCmd_WritCommand(PocComm_UserListInfo,"0E000000000001",strlen((char const *)"0E000000000001"));
       KeyDownUpChoose_GroupOrUser_Flag=2;
@@ -431,7 +431,6 @@ void Task_RunNormalOperation(void)
 /*******报警键状态检测********************************************************************************************************************************************/
   if(ReadInput_KEY_4==0)//报警键
   {
-   
     switch(AlarmCount)
     {
     case 4://切换为2G模式
@@ -567,7 +566,10 @@ if(PersonCallIco_Flag==1)
   if(POC_ReceivedVoiceStart_Flag==2)//刚接收语音状态
   {
     api_disp_icoid_output( eICO_IDVOX, TRUE, TRUE);//接收信号图标
-    api_disp_icoid_output( eICO_IDMESSAGEOff, TRUE, TRUE);//消除菜单内被呼，状态栏未刷新的BUG
+    if(ShowTime_Flag==FALSE)
+    {
+      api_disp_icoid_output(eICO_IDMESSAGEOff, TRUE, TRUE);//空图标-与选对应
+    }
     api_disp_all_screen_refresh();// 全屏统一刷新
     POC_ReceivedVoiceStart_Flag=1;//接收语音状态
   }
@@ -611,6 +613,7 @@ else
       ApiMenu_BeiDouOrWritingFrequency_Flag=0;
     }
     api_disp_icoid_output( eICO_IDVOX, TRUE, TRUE);//接收信号图标
+    if(ShowTime_Flag==FALSE)
     api_disp_icoid_output( eICO_IDMESSAGEOff, TRUE, TRUE);//消除菜单内被呼，状态栏未刷新的BUG--------------------
     api_disp_all_screen_refresh();// 全屏统一刷新
 
@@ -698,9 +701,9 @@ else*/
 #endif
 
 /*****如果没有在线成员******************************************/
-if(PocNoOnlineMember_Flag2==TRUE)
+if(PocNoOnlineMember_Flag==TRUE)
 {
-  PocNoOnlineMember_Flag2=FALSE;
+  PocNoOnlineMember_Flag=FALSE;
   MenuMode_Flag=0;
   api_lcd_pwr_on_hint("                ");//清屏
   api_disp_icoid_output( eICO_IDMESSAGEOff, TRUE, TRUE);//空图标-与选对应
