@@ -585,17 +585,6 @@ static void DEL_500msProcess(void)			//delay 500ms process server
       }
       WriteFreqTimeCount++;
     }
-/***************/
-    if(KeyDownUpChoose_GroupOrUser_Flag==3)
-    {
-      if(EnterKeyTimeCount>=4)
-      {
-        EnterKeyTimeCount=0;
-        EnterKeyTime_2s_Flag=TRUE;
-      }
-      EnterKeyTimeCount++;
-    }
-    
 /*********初级电量报警30s播报一次********************************/
     if(PrimaryLowPower_Flag==TRUE)
     {

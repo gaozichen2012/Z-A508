@@ -6,6 +6,8 @@
 #define APIPOC_UserName_Len			39//39 in20180303 群组名最多7位，群组数最大40个
 #define APIPOC_CalledUserName_Len	        44//成员名长度
 
+u8 GetMemberCount=0;
+bool ApiPocCmd_PersonalCallingMode=FALSE;
 u8 PresentGroupNum=0;
 u8 POC_GetAllGroupNameStart_Flag=0;
 u8 ReadBuffer[80];//Test 存EEPROM读取的数据使用
@@ -218,6 +220,7 @@ void ApiPocCmd_WritCommand(PocCommType id, u8 *buf, u16 len)
     DrvGD83_UART_TxCommand(buf, len);
     break;
   case PocComm_UserListInfo://6
+
     DrvGD83_UART_TxCommand("0E0000000000", 12);
     COML_HexToAsc(PresentGroupNum, NetStateBuf);
     if(strlen((char const*)NetStateBuf)==1)
@@ -335,6 +338,7 @@ void ApiPocCmd_10msRenew(void)
       {
         if(PocCmdDrvobj.WorkState.UseState.PttUserName.UserNum==0)
         {
+          ApiPocCmd_PersonalCallingMode=FALSE;
           PocNoOnlineMember_Flag=TRUE;
         }
         else
@@ -385,7 +389,13 @@ void ApiPocCmd_10msRenew(void)
       }
       PocCmdDrvobj.WorkState.UseState.UserName[ucId].NameLen = PocCmdDrvobj.WorkState.UseState.WorkUserName.NameLen;
 #if 1
-          GettheOnlineMembersDone=TRUE;
+      GetMemberCount++;
+      if(GetMemberCount>=PocCmdDrvobj.WorkState.UseState.PttUserName.UserNum)
+      {
+        GetMemberCount=0;
+        GettheOnlineMembersDone=TRUE;
+      }
+      
 #endif
       break;
     case 0x82://判断是否登录成功
@@ -606,6 +616,7 @@ void ApiPocCmd_10msRenew(void)
         }
         else//进组存组名
         {
+          ApiPocCmd_PersonalCallingMode=FALSE;
           POC_EnterGroupCalling_Flag=2;
           POC_QuitGroupCalling_Flag=1;
           PocCmdDrvobj.WorkState.UseState.MainWorkGroup.PresentGroupId = ucId;

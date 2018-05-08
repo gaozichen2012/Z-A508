@@ -205,16 +205,11 @@ void Task_RunNormalOperation(void)
   {
     ApiPocCmd_WritCommand(PocComm_EndPTT,ucEndPTT,strlen((char const *)ucEndPTT));
   }
-//解决换组或个呼是，按住PTT进入死循环收不到指令的问题
-  
-  if(KeyDownUpChoose_GroupOrUser_Flag==3)
-  {KeyDownUpChoose_GroupOrUser_Flag=0;}
 
   switch(KeyPttState)//KeyPttState 0：未按PTT 1:按下ptt瞬间  2：按住PTT状态 3：松开PTT瞬间
   {
   case 0://未按PTT
     POC_ReceivedVoiceEndForXTSF_Flag=0;
-#if 1
     if(KeyDownUpChoose_GroupOrUser_Flag==0)
     {
       //if(POC_ReceivedVoice_Flag==FALSE)
@@ -228,28 +223,6 @@ void Task_RunNormalOperation(void)
         }
       }
     }
-#else
-    if(KeyDownUpChoose_GroupOrUser_Flag==0)
-    {
-      if(POC_ReceivedVoice_Flag==TRUE)//解决对方说话时按PTT接收语音异常的问题
-      {
-        if(EnterPttMoment_Flag==TRUE)
-        {
-          VOICE_SetOutput(ATVOICE_FreePlay,"8179d153",8);//禁发
-        }
-      }
-      else
-      {
-        if(WriteFreq_Flag==FALSE)//解决写频时，群组内其他机器一直有滴滴滴的声音
-        {
-          if(EnterPttMoment_Flag==TRUE)
-          {
-            ApiPocCmd_WritCommand(PocComm_StartPTT,ucStartPTT,strlen((char const *)ucStartPTT));
-          }
-        }
-      }
-    }
-#endif
     break;
   case 1://1:按下ptt瞬间
     KeyPttState=2;
@@ -269,7 +242,7 @@ void Task_RunNormalOperation(void)
       if(POC_ReceivedVoiceEndForXTSF_Flag==2)
       {
         Set_RedLed(LED_OFF);
-        KeyDownUpChoose_GroupOrUser_Flag=3;
+        KeyDownUpChoose_GroupOrUser_Flag=0;
       }
       else
       {
@@ -331,7 +304,7 @@ void Task_RunNormalOperation(void)
       DEL_SetTimer(0,40);
       while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
       ApiPocCmd_WritCommand(PocComm_EnterGroup,ucPocOpenConfig,strlen((char const *)ucPocOpenConfig));
-      KeyDownUpChoose_GroupOrUser_Flag=3;
+      KeyDownUpChoose_GroupOrUser_Flag=0;
       EnterKeyTimeCount=0;
       KeyUpDownCount=0;
       break;
@@ -343,7 +316,7 @@ void Task_RunNormalOperation(void)
         DEL_SetTimer(0,60);
         while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
         ApiPocCmd_WritCommand(PocComm_Invite,ucPocOpenConfig,strlen((char const *)ucPocOpenConfig));
-        KeyDownUpChoose_GroupOrUser_Flag=3;
+        KeyDownUpChoose_GroupOrUser_Flag=0;
         TASK_Ptt_StartPersonCalling_Flag=TRUE;//判断主动单呼状态（0a）
         EnterKeyTimeCount=0;
       }
@@ -394,6 +367,7 @@ void Task_RunNormalOperation(void)
 /*******个呼键状态检测***************************************************************************************************************************************/
   if(ReadInput_KEY_2==0)//个呼键
   {
+    ApiPocCmd_PersonalCallingMode=TRUE;
     if(POC_EnterPersonalCalling_Flag==1)//解决被呼状态下，按个呼键无效（应该是被呼状态下，让个呼键失效）
     {
       VOICE_SetOutput(ATVOICE_FreePlay,"ab887c542d4e",12);//个呼中
@@ -402,6 +376,8 @@ void Task_RunNormalOperation(void)
     }
     else
     {
+      GettheOnlineMembersDone=FALSE;
+      GetMemberCount=0;
       if(TheMenuLayer_Flag!=0)//解决个呼键影响菜单界面信息显示，现在只要按个呼键就会退出菜单
       {
           MenuDisplay(Menu_RefreshAllIco);
@@ -418,11 +394,11 @@ void Task_RunNormalOperation(void)
           ApiMenu_BeiDouOrWritingFrequency_Flag=0;
       }
       api_lcd_pwr_on_hint("    单呼模式    ");
+      DEL_SetTimer(0,20);
+      while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
       PersonalCallingNum=0;//解决按单呼键直接选中，单呼用户并不是播报的用户
       Key_PersonalCalling_Flag=1;
       VOICE_SetOutput(ATVOICE_FreePlay,"C5627C54216A0F5F",16);//单呼模式
-      DEL_SetTimer(0,35);
-      while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
       ApiPocCmd_WritCommand(PocComm_UserListInfo,"0E000000000001",strlen((char const *)"0E000000000001"));
       KeyDownUpChoose_GroupOrUser_Flag=2;
       KeyPersonalCallingCount=0;//解决单呼模式，上下键成员非正常顺序，第一个成员在切换时会第二、第三个碰到
@@ -709,7 +685,6 @@ if(PocNoOnlineMember_Flag==TRUE)
   api_disp_icoid_output( eICO_IDMESSAGEOff, TRUE, TRUE);//空图标-与选对应
   api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
   //用于PTT键及上下键返回默认状态
-  KeyDownUpChoose_GroupOrUser_Flag=0;
   KeyUpDownCount=0;
   Key_PersonalCalling_Flag=0;//进入组呼标志位
   KeyDownUpChoose_GroupOrUser_Flag=0;//解决（个呼键→返回键→OK或PTT）屏幕显示错误的BUG

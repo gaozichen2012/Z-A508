@@ -35,6 +35,7 @@ bool PressButton;//测试短号功能使用
 bool KeyBoardState;//测试短号功能使用
 bool UpDownSwitching_Flag=FALSE;
 static void GeHuTest(u32 KeyID);
+
 void Keyboard_Test(void)
 {
   u8 scanvalue = 0;
@@ -193,6 +194,39 @@ void Keyboard_Test(void)
     }
     else
     { 
+      if(ApiPocCmd_PersonalCallingMode==TRUE)//解决按个呼键后同时按下键和OK出现死机情况
+      {
+        if(KeyDownUpChoose_GroupOrUser_Flag!=0)//如果处于换组或者选择个呼状态
+        {
+          switch(KeyDownUpChoose_GroupOrUser_Flag)
+          {
+          case 0://默认PTT状态
+          break;
+          case 1://=1，进入某群组
+          break;
+          case 2://=2,呼叫某用户
+            if(GettheOnlineMembersDone==TRUE)
+            {
+              //GettheOnlineMembersDone=FALSE;
+              VOICE_SetOutput(ATVOICE_FreePlay,"f25d09902d4e",12);//播报已选中
+              UpDownSwitchingCount=0;//解决选中单呼后切换群组，语音中断的问题
+              DEL_SetTimer(0,60);
+              while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+              ApiPocCmd_WritCommand(PocComm_Invite,"0000000101",strlen((char const *)"0000000101"));
+              KeyDownUpChoose_GroupOrUser_Flag=0;
+              TASK_Ptt_StartPersonCalling_Flag=TRUE;//判断主动单呼状态（0a）
+              EnterKeyTimeCount=0;
+            }
+            break;
+          case 3:
+            break;
+          default:
+            break;
+          }
+        }
+      }
+      else
+      {
       NumberKeyboardPressDown_flag=TRUE;
       if(KeyDownUpChoose_GroupOrUser_Flag!=0)//如果处于换组或者选择个呼状态
       {
@@ -206,7 +240,7 @@ void Keyboard_Test(void)
           DEL_SetTimer(0,40);
           while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
           ApiPocCmd_WritCommand(PocComm_EnterGroup,"0000000101",strlen((char const *)"0000000101"));
-          KeyDownUpChoose_GroupOrUser_Flag=3;
+          KeyDownUpChoose_GroupOrUser_Flag=0;
           EnterKeyTimeCount=0;
           KeyUpDownCount=0;
           break;
@@ -219,7 +253,7 @@ void Keyboard_Test(void)
             DEL_SetTimer(0,60);
             while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
             ApiPocCmd_WritCommand(PocComm_Invite,"0000000101",strlen((char const *)"0000000101"));
-            KeyDownUpChoose_GroupOrUser_Flag=3;
+            KeyDownUpChoose_GroupOrUser_Flag=0;
             TASK_Ptt_StartPersonCalling_Flag=TRUE;//判断主动单呼状态（0a）
             EnterKeyTimeCount=0;
             
@@ -283,9 +317,9 @@ void Keyboard_Test(void)
               api_lcd_pwr_on_hint("    单呼模式    ");
               PersonalCallingNum=0;//解决按单呼键直接选中，单呼用户并不是播报的用户
               Key_PersonalCalling_Flag=1;
-              VOICE_SetOutput(ATVOICE_FreePlay,"C5627C54216A0F5F",16);//单呼模式
-              DEL_SetTimer(0,35);
+              DEL_SetTimer(0,20);
               while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+              VOICE_SetOutput(ATVOICE_FreePlay,"C5627C54216A0F5F",16);//单呼模式
               ApiPocCmd_WritCommand(PocComm_UserListInfo,"0E000000000001",strlen((char const *)"0E000000000001"));
               KeyDownUpChoose_GroupOrUser_Flag=2;
               TheMenuLayer_Flag=0;//处于0级菜单，进入单呼模式为菜单外功能
@@ -441,6 +475,7 @@ void Keyboard_Test(void)
         }
     }
     }
+    }
     Delay_100ms(1);
     break;
   case 0x00800000://menu
@@ -589,7 +624,6 @@ void Keyboard_Test(void)
         {
           if(GettheOnlineMembersDone==TRUE)
           {
-            KeyDownUpChoose_GroupOrUser_Flag=2;
             KeyPersonalCallingCount++;
             PersonalCallingNum=KeyPersonalCallingCount;//个呼计数从零开始
             if(PersonalCallingNum>ApiAtCmd_GetUserNum()-1)
