@@ -37,7 +37,6 @@ u8 *ucVGR                       = "AT+VGR=7";//音量增益7
 u8 *ucCODECCTL                  = "at^codecctl=2300,2300,0";//T4//客户选择的增益
 //u8 *ucCODECCTL                  = "at^codecctl=2000,1800,0";//AT^codecctl=2870,8000,0中兴余工调试
 #else
-//u8 *ucCODECCTL                  = "at^codecctl=a000,1c00,0";//默认量产增益9000,1c00
 u8 *ucCODECCTL                  = "at^codecctl=5000,2300,0";//基于原硬件喇叭发送给张志明的补救版本
 #endif
 u8 *ucOSSYSHWID                 = "AT^OSSYSHWID=1";
