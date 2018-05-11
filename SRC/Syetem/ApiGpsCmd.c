@@ -20,25 +20,7 @@ typedef enum{
 	GPSREV_Photo		= 0x8801//摄像头立即拍照命令
 }GpsRevCommType;
 
-typedef enum{
-	GPSCOMM_Ack		= 0x00,
-	GPSCOMM_Puls		= 0x01,
-	GPSCOMM_Login		= 0x02,
-	GPSCOMM_Logout		= 0x03,
-	GPSCOMM_Authentication	= 0x04,
-	GPSCOMM_Position	= 0x05,
-	GPSCOMM_PositionAck     = 0x06,
-	GPSCOMM_PhotoAck	= 0x07,
-	GPSCOMM_PhotoData	= 0x08,
-	GPSCOMM_CheckTcp	= 0x09,
-	GPSCOMM_SetIp		= 0x0A,
-	GPSCOMM_CheckUdp	= 0x0B,
-	GPSCOMM_SetUpu		= 0x0C,
-	GPSCOMM_SendTcp		= 0x0D,
-	GPSCOMM_SendUdp		= 0x0E,
-	GPSCOMM_PlayZtts	= 0x0F,
-	GPSCOMM_ZGSN		= 0x10
-}GpsCommType;
+
 
 #define GPS_GB_INFO_LEN			64+20//+512
 #define GPS_GB_HEAD_LEN			12//消息头长度
@@ -133,6 +115,7 @@ typedef union{
     u32			: 18;
   }Bits;
 }_Gb_WorkState;//位置基本信息数据格式中的状态位
+
 
 typedef union{
   u8 ucData[GPS_GB_POSITION_LEN+3];//3为附加消息长度
@@ -327,7 +310,7 @@ static GpsFunDrv GpsFunDrvObj;
 
 static void GpsCmd_GbAnalytical(u8 *pBuf, u8 len);//收到的数据进行分析
 static void GpsCmd_GbDataTransave(GpsCommType GpsComm);//定位信息转换，等会要用到，POC获取GPS信息转换后发送TCP
-static bool GpsCmd_GbWritCommand(GpsCommType id, u8 *buf, u8 len);
+ 
 static void pack_data(u8 *pBuf, u16 ucLen);//消息包封装
 static u8 COMLHexArray2String(u8 * buf1,u8 Len1,u8 * buf2);//16进制数组转字符串
 void ApiGpsCmd_PowerOnInitial(void)//bubiao
@@ -843,7 +826,7 @@ static void GpsCmd_GbDataTransave(GpsCommType GpsComm)//定位信息转换，等会要用到
 }
 
 
-static bool GpsCmd_GbWritCommand(GpsCommType id, u8 *buf, u8 len)
+bool GpsCmd_GbWritCommand(GpsCommType id, u8 *buf, u8 len)
 {
   bool r = TRUE;
   u16 i = 0;

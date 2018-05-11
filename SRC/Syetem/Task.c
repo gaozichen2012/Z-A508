@@ -30,7 +30,7 @@ u8 *ucEndPTT                    = "0C0000";
 
 u8 *ucCLVL                       = "AT+CLVL=7";//音量增益7
 u8 *ucVGR                       = "AT+VGR=7";//音量增益7
-#if 0
+#if 1
 //u8 *ucCODECCTL                  = "at^codecctl=3000,2500,0";//T1默认
 //u8 *ucCODECCTL                  = "at^codecctl=2800,2300,0";//T2
 //u8 *ucCODECCTL                  = "at^codecctl=2500,2300,0";//T3

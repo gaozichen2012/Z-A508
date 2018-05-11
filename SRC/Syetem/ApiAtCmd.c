@@ -633,13 +633,16 @@ static void AtCmd_NetParamCode(void)//获取TCP IP地址
   u8 *TcpIpBuf;
   u8 *TcpPortBuf;
   
-  TcpIpBuf=ApiGps_GetTcpIpAddress();
-  TcpIpLen=strlen((char const *)ApiGps_GetTcpIpAddress());
-  
-  
   TcpPortBuf=ApiGps_GetTcpPortAddress();
   TcpPortLen=strlen((char const *)ApiGps_GetTcpPortAddress());
   
+  TcpIpBuf=ApiGps_GetTcpIpAddress();
+  TcpIpLen=strlen((char const *)ApiGps_GetTcpIpAddress());
+#if 1 //解决IP为15位时，获取IP长度出现异常的问题，因为Strlen是以\0结束的
+  if(TcpIpLen>=15)
+  {TcpIpLen=strlen((char const *)ApiGps_GetTcpIpAddress())-TcpPortLen;}
+#endif
+
   if(ApiGps_GetTcpPortAddress_No5()==0x00)
   {
   }
@@ -659,8 +662,6 @@ static void AtCmd_NetParamCode(void)//获取TCP IP地址
     AtCmdDrvobj.NetState.Buf[TcpIpLen+1+i]=TcpPortBuf[i];
   }
   AtCmdDrvobj.NetState.Len=TcpIpLen+TcpPortLen+1;
-
-  
 }
 
 u8 ApiAtCmd_tcp_state(void)
