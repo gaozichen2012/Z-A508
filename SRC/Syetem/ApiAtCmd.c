@@ -630,26 +630,20 @@ bool ApiAtCmd_PlayVoice(AtVoiceType id, u8 *buf, u8 len)
 static void AtCmd_NetParamCode(void)//获取TCP IP地址
 {
   u8 i,TcpIpLen,TcpPortLen;
-  u8 *TcpIpBuf;
-  u8 *TcpPortBuf;
+
   
-  TcpPortBuf=ApiGps_GetTcpPortAddress();
-  TcpPortLen=strlen((char const *)ApiGps_GetTcpPortAddress());
   
-  TcpIpBuf=ApiGps_GetTcpIpAddress();
-  TcpIpLen=strlen((char const *)ApiGps_GetTcpIpAddress());
-#if 1 //解决IP为15位时，获取IP长度出现异常的问题，因为Strlen是以\0结束的
-  if(TcpIpLen>=15)
-  {TcpIpLen=strlen((char const *)ApiGps_GetTcpIpAddress())-TcpPortLen;}
-#endif
+  GetIPPORT();
+  TcpPortLen=strlen((char const *)TcpPortBuf);
+  TcpIpLen=strlen((char const *)TcpIpBuf);
 
   if(ApiGps_GetTcpPortAddress_No5()==0x00)
   {
   }
   else
   {
-    TcpPortBuf[TcpPortLen]=ApiGps_GetTcpPortAddress_No5();
-    TcpPortLen=TcpPortLen+1;
+    TcpPortBuf[4]=ApiGps_GetTcpPortAddress_No5();
+    TcpPortLen=5;
   }
   
   for(i=0;i<TcpIpLen;i++)

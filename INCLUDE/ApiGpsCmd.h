@@ -8,26 +8,10 @@ typedef enum{
   GpsServerType_BuBiaoAndZTE    =       0x02
 }GpsServerType;
 
-typedef enum{
-	GPSCOMM_Ack		= 0x00,
-	GPSCOMM_Puls		= 0x01,
-	GPSCOMM_Login		= 0x02,
-	GPSCOMM_Logout		= 0x03,
-	GPSCOMM_Authentication	= 0x04,
-	GPSCOMM_Position	= 0x05,
-	GPSCOMM_PositionAck     = 0x06,
-	GPSCOMM_PhotoAck	= 0x07,
-	GPSCOMM_PhotoData	= 0x08,
-	GPSCOMM_CheckTcp	= 0x09,
-	GPSCOMM_SetIp		= 0x0A,
-	GPSCOMM_CheckUdp	= 0x0B,
-	GPSCOMM_SetUpu		= 0x0C,
-	GPSCOMM_SendTcp		= 0x0D,
-	GPSCOMM_SendUdp		= 0x0E,
-	GPSCOMM_PlayZtts	= 0x0F,
-	GPSCOMM_ZGSN		= 0x10
-}GpsCommType;
-extern bool GpsCmd_GbWritCommand(GpsCommType id, u8 *buf, u8 len);
+extern void GetIPPORT(void);
+extern u8 TcpIpBuf[15];
+extern u8 TcpPortBuf[5];
+
 extern GpsServerType ApiGpsServerType;
 extern void ApiGpsCmd_PowerOnInitial(void);
 extern void ApiGpsCmd_100msRenew(void);//决定什么时候发送什么数据;

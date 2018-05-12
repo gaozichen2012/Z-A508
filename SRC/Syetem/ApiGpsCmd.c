@@ -7,6 +7,8 @@ u8 ReportTimerSET=0;
 u8 Key3_PlayValue=0;
 u8 Test1=0;
 u8 SendGpsLoginInfoCount=0;
+u8 TcpIpBuf[15];
+u8 TcpPortBuf[5];
 GpsServerType ApiGpsServerType;
 typedef enum{
 	GPSREV_Ack		= 0x8001,//平台通用应答
@@ -20,7 +22,25 @@ typedef enum{
 	GPSREV_Photo		= 0x8801//摄像头立即拍照命令
 }GpsRevCommType;
 
-
+typedef enum{
+	GPSCOMM_Ack		= 0x00,
+	GPSCOMM_Puls		= 0x01,
+	GPSCOMM_Login		= 0x02,
+	GPSCOMM_Logout		= 0x03,
+	GPSCOMM_Authentication	= 0x04,
+	GPSCOMM_Position	= 0x05,
+	GPSCOMM_PositionAck     = 0x06,
+	GPSCOMM_PhotoAck	= 0x07,
+	GPSCOMM_PhotoData	= 0x08,
+	GPSCOMM_CheckTcp	= 0x09,
+	GPSCOMM_SetIp		= 0x0A,
+	GPSCOMM_CheckUdp	= 0x0B,
+	GPSCOMM_SetUpu		= 0x0C,
+	GPSCOMM_SendTcp		= 0x0D,
+	GPSCOMM_SendUdp		= 0x0E,
+	GPSCOMM_PlayZtts	= 0x0F,
+	GPSCOMM_ZGSN		= 0x10
+}GpsCommType;
 
 #define GPS_GB_INFO_LEN			64+20//+512
 #define GPS_GB_HEAD_LEN			12//消息头长度
@@ -307,7 +327,7 @@ typedef struct{
 }GpsFunDrv;
 
 static GpsFunDrv GpsFunDrvObj;
-
+static bool GpsCmd_GbWritCommand(GpsCommType id, u8 *buf, u8 len);
 static void GpsCmd_GbAnalytical(u8 *pBuf, u8 len);//收到的数据进行分析
 static void GpsCmd_GbDataTransave(GpsCommType GpsComm);//定位信息转换，等会要用到，POC获取GPS信息转换后发送TCP
  
@@ -826,7 +846,7 @@ static void GpsCmd_GbDataTransave(GpsCommType GpsComm)//定位信息转换，等会要用到
 }
 
 
-bool GpsCmd_GbWritCommand(GpsCommType id, u8 *buf, u8 len)
+static bool GpsCmd_GbWritCommand(GpsCommType id, u8 *buf, u8 len)
 {
   bool r = TRUE;
   u16 i = 0;
@@ -912,7 +932,7 @@ bool GpsCmd_GbWritCommand(GpsCommType id, u8 *buf, u8 len)
     break;
   case GPSCOMM_Position:
     GpsCmd_GbDataTransave(GPSCOMM_Position);
-    GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.HeadInfo.stParam.MsgProperty.Bits.Len = GPS_GB_POSITION_LEN+6+4;
+    GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.HeadInfo.stParam.MsgProperty.Bits.Len = GPS_GB_POSITION_LEN+3;//GPS_GB_POSITION_LEN+6+4;
     //COML_StringReverse(0x02,GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.HeadInfo.stParam.MsgProperty.ucData);//原消息ID反序，屏蔽看是否正序
     //pack_data(GpsFunDrvObj.PositionSystem.GbSys.MsgBody.ucData, GPS_GB_HEAD_LEN+GPS_GB_POSITION_LEN+6+4);
     pack_data(GpsFunDrvObj.PositionSystem.GbSys.MsgBody.ucData, GPS_GB_HEAD_LEN+GPS_GB_POSITION_LEN+3);
@@ -1040,4 +1060,17 @@ u8 *ApiGps_GetTcpPortAddress()
 u8 ApiGps_GetTcpPortAddress_No5()
 {
   return GpsFunDrvObj.GpsPar.LoginInfo.TerminalColor;//客户需求：端口5位
+}
+void GetIPPORT(void)
+{
+  u8 i;
+  for(i=0;i<15;i++)
+  {
+    TcpIpBuf[i]=GpsFunDrvObj.GpsPar.Gps.NetParam.Param.IP[i];
+  }
+  
+  for(i=0;i<4;i++)
+  {
+    TcpPortBuf[i]=GpsFunDrvObj.GpsPar.Gps.NetParam.Param.Port[i];
+  }
 }
