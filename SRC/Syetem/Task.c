@@ -393,11 +393,12 @@ void Task_RunNormalOperation(void)
           ApiMenu_BeiDouOrWritingFrequency_Flag=0;
       }
       api_lcd_pwr_on_hint("    单呼模式    ");
-      DEL_SetTimer(0,20);
+      VOICE_SetOutput(ATVOICE_FreePlay,"C5627C54216A0F5F",16);//单呼模式
+      DEL_SetTimer(0,65);
       while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
       PersonalCallingNum=0;//解决按单呼键直接选中，单呼用户并不是播报的用户
       Key_PersonalCalling_Flag=1;
-      VOICE_SetOutput(ATVOICE_FreePlay,"C5627C54216A0F5F",16);//单呼模式
+      
       ApiPocCmd_WritCommand(PocComm_UserListInfo,"0E000000000001",strlen((char const *)"0E000000000001"));
       KeyDownUpChoose_GroupOrUser_Flag=2;
       KeyPersonalCallingCount=0;//解决单呼模式，上下键成员非正常顺序，第一个成员在切换时会第二、第三个碰到
@@ -448,9 +449,14 @@ void Task_RunNormalOperation(void)
     MenuDisplay(Menu_RefreshAllIco);
     api_lcd_pwr_on_hint("                ");//清屏
     api_disp_icoid_output( eICO_IDMESSAGEOff, TRUE, TRUE);//空图标-与选对应
-    //api_lcd_pwr_on_hint(HexToChar_PersonalCallingNum());//显示当前用户ID
     api_lcd_pwr_on_hint4(UnicodeForGbk_MainUserName());//显示当前用户昵称
     api_disp_icoid_output( eICO_IDPOWERH, TRUE, TRUE);//显示个呼图标
+#if 1//解决被呼时，时间显示的第一个数字延迟消失，再刷新免提图标的问题
+    if(VoiceType_FreehandOrHandset_Flag==0)
+      api_disp_icoid_output( eICO_IDTemper, TRUE, TRUE);//免提模式
+    else
+      api_disp_icoid_output( eICO_IDMONITER, TRUE, TRUE);//听筒模式图标
+#endif
     PersonCallIco_Flag=1;
     api_disp_all_screen_refresh();// 全屏统一刷新
     POC_EnterPersonalCalling_Flag=1;//在单呼模式
@@ -740,8 +746,6 @@ void Key3_PlayVoice(void)
     while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
     //电量播报
     KeyBatteryReport();
-    DEL_SetTimer(0,20);
-    while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
     break;
   case Key3_OptionOne://播报本机账号、电池电量
     //当前用户：
@@ -756,8 +760,6 @@ void Key3_PlayVoice(void)
     api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
     //电量播报
     KeyBatteryReport();
-    DEL_SetTimer(0,20);
-    while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
     break;
   case Key3_OptionTwo://播报本机账号
     //当前用户：
@@ -768,13 +770,11 @@ void Key3_PlayVoice(void)
     while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
     //当前群组
     api_lcd_pwr_on_hint("                ");//显示当前群组昵称
-    //api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
     api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
     break;
   case Key3_OptionThree://播报当前群组
     //当前群组
     api_lcd_pwr_on_hint("                ");//显示当前群组昵称
-    //api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
     api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
     VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetMainWorkName(),strlen((char const *)ApiAtCmd_GetMainWorkName()));
     DEL_SetTimer(0,20);
