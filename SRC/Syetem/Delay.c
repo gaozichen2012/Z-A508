@@ -50,6 +50,8 @@ u16 KeylockTimeCount;//=30;//键盘锁时间(需要设置进入eeprom)
 u8 GetAllGroupMemberNameCount=0;
 u8 PersonalCallingCount=0;
 u8 KEY_4Count=0;
+u8 get_group_name_done_count=0;
+u8 allow_key_operation_flag=FALSE;
 u8 ReadBufferA[1];//背光灯时间(需要设置进入eeprom)
 u8 ReadBufferB[1];//键盘锁时间(需要设置进入eeprom)
 typedef struct {
@@ -266,6 +268,7 @@ static void DEL_100msProcess(void)
   return;
 }
 
+
 static void DEL_500msProcess(void)			//delay 500ms process server
 {
   u8 i;
@@ -292,6 +295,21 @@ static void DEL_500msProcess(void)			//delay 500ms process server
     else
     {
       KEY_4Count=0;
+    }
+    
+/******解决获取所有群组名时群组丢失的问题************/
+    if(POC_GetAllGroupNameDone_Flag==TRUE)
+    {
+      get_group_name_done_count++;
+      if(get_group_name_done_count>=2*5)
+      {
+        allow_key_operation_flag = TRUE;
+        get_group_name_done_count=11;
+      }
+    }
+    else
+    {
+      get_group_name_done_count=0;
     }
 /******进入群组模式5秒显示时间*******************/
     if(POC_GetAllGroupNameDone_Flag==TRUE&&

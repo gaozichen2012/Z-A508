@@ -90,4 +90,5 @@ extern u8 *UnicodeForGbk_MainUserName(void);
 extern u8 *UnicodeForGbk_SpeakerRightnowName(void);
 extern u8 *Get_Unicode_ActiveUserID(void);
 extern u8 *Get_GBK_ActiveUserID(void);
+
 #endif

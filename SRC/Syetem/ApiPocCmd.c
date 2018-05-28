@@ -220,7 +220,8 @@ void ApiPocCmd_WritCommand(PocCommType id, u8 *buf, u16 len)
     DrvGD83_UART_TxCommand(buf, len);
     break;
   case PocComm_UserListInfo://6
-
+    GettheOnlineMembersDone=FALSE;
+    get_online_user_list_num_flag=FALSE;
     DrvGD83_UART_TxCommand("0E0000000000", 12);
     COML_HexToAsc(PresentGroupNum, NetStateBuf);
     if(strlen((char const*)NetStateBuf)==1)
@@ -332,7 +333,6 @@ void ApiPocCmd_10msRenew(void)
       break;  
     case 0x0e://在线用户个数
       ucId = COML_AscToHex(pBuf+8, 0x04);
-      //0e0000000007
       PocCmdDrvobj.WorkState.UseState.PttUserName.UserNum = ucId;
       if(Len==12)
       {
@@ -394,6 +394,29 @@ void ApiPocCmd_10msRenew(void)
       {
         GetMemberCount=0;
         GettheOnlineMembersDone=TRUE;
+      }
+      
+      if(get_online_user_list_num_flag==TRUE)
+      {
+        api_lcd_pwr_on_hint2(HexToChar_AllOnlineMemberNum());
+        if(GettheOnlineMembersDone==TRUE)
+        {
+                  PersonalCallingNum=0;//解决按单呼键直接选中，单呼用户并不是播报的用户
+                  VOICE_SetOutput(ATVOICE_FreePlay,"2857bf7e106258547065",20);//在线成员数
+                  DEL_SetTimer(0,150);
+                  while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+                  VOICE_SetOutput(ATVOICE_FreePlay,VoiceAllOnlineMemberNum(),8);//
+                  DEL_SetTimer(0,100);
+                  while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+                  VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(0),ApiAtCmd_GetUserNameLen(0));//首次获取组内成员播报第一个成员
+                  api_lcd_pwr_on_hint3("在线成员列表  ");
+                  api_lcd_pwr_on_hint4("                ");//清屏
+                  api_lcd_pwr_on_hint4(UnicodeForGbk_AllUserName(0));//显示当前选中的群组名
+                  //ApiPocCmd_WritCommand(PocComm_UserListInfo,"0E000000000001",strlen((char const *)"0E000000000001"));
+                  //KeyDownUpChoose_GroupOrUser_Flag=2;
+                  TheMenuLayer_Flag=2;
+                  KeyPersonalCallingCount=0;//解决单呼模式，上下键成员非正常顺序，第一个成员在切换时会第二、第三个碰到
+        }
       }
       
 #endif

@@ -34,6 +34,7 @@ u8 TestBuf1[6];//测试显示屏短号号码使用
 bool PressButton;//测试短号功能使用
 bool KeyBoardState;//测试短号功能使用
 bool UpDownSwitching_Flag=FALSE;
+bool get_online_user_list_num_flag=FALSE;
 static void GeHuTest(u32 KeyID);
 
 void Keyboard_Test(void)
@@ -343,36 +344,15 @@ void Keyboard_Test(void)
             TheMenuLayer_Flag=1;//处于一级菜单
             break;
           case 0://一级菜单按ok键进入单呼模式
-            MenuDisplay(Menu_RefreshAllIco);
             ApiMenu_SwitchOnlineUser_Flag=1;
             MenuMode_Flag=1;
             /*******直接搬个呼键状态检测的程序***************************************************************************************************************************************/
-            api_lcd_pwr_on_hint3("在线成员数:   ");
-            api_lcd_pwr_on_hint("                ");
-            api_lcd_pwr_on_hint2(HexToChar_AllOnlineMemberNum());
-            if(ApiAtCmd_GetUserNum()==0)
-            {
-              VOICE_SetOutput(ATVOICE_FreePlay,"e0652857bf7e10625854",20);//无在线成员
-            }
-            else
-            {
-              PersonalCallingNum=0;//解决按单呼键直接选中，单呼用户并不是播报的用户
-              VOICE_SetOutput(ATVOICE_FreePlay,"2857bf7e106258547065",20);//在线成员数
-              DEL_SetTimer(0,150);
-              while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
-              VOICE_SetOutput(ATVOICE_FreePlay,VoiceAllOnlineMemberNum(),8);//
-              DEL_SetTimer(0,100);
-              while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
-              VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(0),ApiAtCmd_GetUserNameLen(0));//首次获取组内成员播报第一个成员
-              api_lcd_pwr_on_hint3("在线成员列表    ");
-              api_lcd_pwr_on_hint4("                ");//清屏
-              api_lcd_pwr_on_hint4(UnicodeForGbk_AllUserName(0));//显示当前选中的群组名
-              ApiPocCmd_WritCommand(PocComm_UserListInfo,"0E000000000001",strlen((char const *)"0E000000000001"));
-              //KeyDownUpChoose_GroupOrUser_Flag=2;
-              TheMenuLayer_Flag=2;
-              KeyPersonalCallingCount=0;//解决单呼模式，上下键成员非正常顺序，第一个成员在切换时会第二、第三个碰到
-            }
-
+            api_lcd_pwr_on_hint3("在线成员数:     ");
+             api_lcd_pwr_on_hint("                ");
+            DEL_SetTimer(0,20);
+            while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+            ApiPocCmd_WritCommand(PocComm_UserListInfo,"0E000000000001",strlen((char const *)"0E000000000001"));
+            get_online_user_list_num_flag=TRUE;
             break;
           }
           break;
@@ -489,7 +469,10 @@ void Keyboard_Test(void)
     {
       
       VOICE_SetOutput(ATVOICE_FreePlay,"2c54527b216a0f5f",16);//听筒模式
-      api_disp_icoid_output( eICO_IDMONITER, TRUE, TRUE);//听筒模式图标
+      if(MenuMode_Flag==0)
+      {
+        api_disp_icoid_output( eICO_IDMONITER, TRUE, TRUE);//听筒模式图标
+      }
       VoiceType_FreehandOrHandset_Flag=1;
       api_disp_all_screen_refresh();// 全屏统一刷新
       DEL_SetTimer(0,30);
@@ -502,7 +485,10 @@ void Keyboard_Test(void)
       if(AkeyvolumeCount==1)
       {
         VOICE_SetOutput(ATVOICE_FreePlay,"4d51d063216a0f5f",16);//免提模式
-        api_disp_icoid_output( eICO_IDTemper, TRUE, TRUE);//免提模式图标
+        if(MenuMode_Flag==0)
+        {
+          api_disp_icoid_output( eICO_IDTemper, TRUE, TRUE);//免提模式图标          
+        }
         VoiceType_FreehandOrHandset_Flag=0;
         api_disp_all_screen_refresh();// 全屏统一刷新
         DEL_SetTimer(0,30);

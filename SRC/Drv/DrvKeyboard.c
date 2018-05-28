@@ -428,3 +428,4 @@ u8 drv_keypad_scan(void)
 
 	return key;
 }
+
