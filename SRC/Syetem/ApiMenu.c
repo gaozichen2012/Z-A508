@@ -1,5 +1,6 @@
 #include "AllHead.h"
-
+  u8 BacklightTimeBuf1[1]={0};
+  u8 BacklightTimeBuf2[1]={0};
 #if 1
 u8 ApiMenu_SwitchGroup_Flag=0;
 u8 ApiMenu_SwitchCallUser_Flag=0;
@@ -14,8 +15,6 @@ u8 ApiMenu_BeiDouOrWritingFrequency_Flag=0;
 
 void MenuDisplay(MenuDisplayType id)
 {
-  u8 Buf1[1];
-  u8 Buf2[1];
   switch(id)
   {
   case Menu0:
@@ -50,13 +49,13 @@ void MenuDisplay(MenuDisplayType id)
        ApiMenu_BacklightTimeSet_Flag=0;
        if(BacklightTimeSetCount==7)
        {
-         Buf1[0]=0;
-         FILE_Write2(0x236,1,Buf1);//背光时间【秒】
+         BacklightTimeBuf1[0]=0;
+         FILE_Write2(0x236,1,BacklightTimeBuf1);//背光时间【秒】
        }
        else
        {
-         Buf1[0]=BacklightTimeSetCount;
-         FILE_Write2(0x236,1,Buf1);//背光时间【秒】
+         BacklightTimeBuf1[0]=BacklightTimeSetCount;
+         FILE_Write2(0x236,1,BacklightTimeBuf1);//背光时间【秒】
        }
      }
      break;
@@ -70,14 +69,14 @@ void MenuDisplay(MenuDisplayType id)
        if(KeylockTimeSetCount==0x10)
        {
          //KeylockTimeCount=200;//如果=200则永远不锁屏
-         Buf2[0]=KeylockTimeSetCount-0x10;
-         FILE_Write2(0x247,1,Buf2);//键盘锁时间【秒】
+         BacklightTimeBuf2[0]=KeylockTimeSetCount-0x10;
+         FILE_Write2(0x247,1,BacklightTimeBuf2);//键盘锁时间【秒】
        }
        else
        {
          //KeylockTimeCount=(KeylockTimeSetCount-0x10)*30;
-         Buf2[0]=KeylockTimeSetCount-0x10;
-         FILE_Write2(0x247,1,Buf2);//键盘锁时间【秒】
+         BacklightTimeBuf2[0]=KeylockTimeSetCount-0x10;
+         FILE_Write2(0x247,1,BacklightTimeBuf2);//键盘锁时间【秒】
        }
      }
      break;

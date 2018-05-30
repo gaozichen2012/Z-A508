@@ -83,7 +83,7 @@ bool FILE_Write2(u16 iAdr,u16 iLen,u8 *pBuf)//如不确定修改是否会对账号读写有影响
   u32 AdrSum=0x00;
   for(EEPROM_WriteCount=0x01;EEPROM_WriteCount<iLen+1;EEPROM_WriteCount++)
   {
-    AdrSum=0x4200+iAdr+EEPROM_WriteCount-1;
+    AdrSum=0x4000+iAdr+EEPROM_WriteCount-1;
     WriteEEPROMByte(AdrSum, pBuf[EEPROM_WriteCount-1]);
   }
   return TRUE;
