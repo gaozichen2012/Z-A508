@@ -19,12 +19,15 @@ typedef enum{
   PocComm_UserListInfo          = 0x0E,
   PocComm_Key			= 0x10
 }PocCommType;
+extern bool UnicodeForGbk_SpeakerRightnowName_english_flag(void);
+extern bool UnicodeForGbk_MainUserName_english_flag(void);
+extern bool UnicodeForGbk_AllUserName_english_flag(u8 a);
+
 
 extern u8 GetMemberCount;
 extern bool ApiPocCmd_PersonalCallingMode;
 extern u8 PresentGroupNum;
 extern bool ApiPocCmd_PlayReceivedVoice_Flag;
-extern u8 POC_GetAllGroupNameStart_Flag;
 extern u8 POC_GetAllGroupNameDone_Flag; 
 extern bool PocNoOnlineMember_Flag;
 extern bool PocNoOnlineMember_Flag2;

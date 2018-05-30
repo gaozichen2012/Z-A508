@@ -39,6 +39,7 @@ typedef struct
 }DISP_ICO;
 
 #define LCD_ICO_BUF_LEN 32
+
 extern void api_disp_icoid_output(u8 IcoIdIndex, bool IcoDefault,bool on_off);
 
 extern void api_disp_all_screen_refresh(void);

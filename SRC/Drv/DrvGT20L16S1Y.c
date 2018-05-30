@@ -194,7 +194,7 @@ bool drv_gt20_data_output2(DISP_TYPE cID, u16 iCode, u8 *cBuf)//Unicode使用
                 }
                 else
                 {
-                  UNICODE_16_GetData(iCode,cBuf);//获取汉字点阵数据
+                    UNICODE_16_GetData(iCode,cBuf);//获取汉字点阵数据
                 }
                 
 		break;

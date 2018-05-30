@@ -47,7 +47,6 @@ u8 ShowTimeCount=0;
 bool LockingState_Flag=FALSE;
 u8 BacklightTimeCount;//=10;//背光灯时间(需要设置进入eeprom)
 u16 KeylockTimeCount;//=30;//键盘锁时间(需要设置进入eeprom)
-u8 GetAllGroupMemberNameCount=0;
 u8 PersonalCallingCount=0;
 u8 KEY_4Count=0;
 u8 get_group_name_done_count=0;
@@ -281,7 +280,6 @@ static void DEL_500msProcess(void)			//delay 500ms process server
     DEL_500ms_Count2++;
     TimeCount_Light++;
     CSQTimeCount++;
-    GetAllGroupMemberNameCount++;
 /******报警键标志位，时间显示使用**********/
     if(KEY_4_Flag==TRUE)
     {
@@ -403,32 +401,7 @@ static void DEL_500msProcess(void)			//delay 500ms process server
     {
       ApiAtCmd_ZTTSCount=0;
     }
-/*****解决进入单呼模式但未按PTT的异常状态问题，进入单呼计时30s，则退出***************/
-    /*if(POC_AtEnterPersonalCalling_Flag==1&&POC_AtQuitPersonalCalling_Flag==1)
-    {
-      PersonalCallingCount++;
-      if(PersonalCallingCount>30*2)
-      {
-        PersonalCallingCount=0;
-      }
-    }*/
-/******开机获取群组信息后3s按键生效***************/
-    if(POC_GetAllGroupNameStart_Flag==TRUE)
-    {
-      POC_GetAllGroupNameDoneCount++;
-      if(POC_GetAllGroupNameDoneCount>4)
-      {
-        POC_GetAllGroupNameStart_Flag=FALSE;
-        POC_GetAllGroupNameDoneCount=0;
-        //POC_GetAllGroupNameDone_Flag=TRUE;
-      }
-    }
-/*******1分钟获取一次群组成员**********************************************/
-    if(GetAllGroupMemberNameCount>2*60)
-    {
-      //ApiPocCmd_WritCommand(PocComm_UserListInfo,ucRequestUserListInfo,strlen((char const *)ucRequestUserListInfo));
-      GetAllGroupMemberNameCount=0;
-    }
+
 /**********若指令发出无回音则处于升级状态**********************************/
    /* if(UpgradeNoATReturn_Flag==TRUE)
     {
@@ -806,9 +779,14 @@ static void DEL_500msProcess(void)			//delay 500ms process server
             else
             {
               api_lcd_pwr_on_hint("                ");//清屏
-              //api_lcd_pwr_on_hint(HexToChar_MainUserId());//显示当前用户ID
-              //api_lcd_pwr_on_hint(HexToChar_PersonalCallingNum());//显示当前用户ID
-              api_lcd_pwr_on_hint4(UnicodeForGbk_MainUserName());//显示当前用户昵称
+              if(UnicodeForGbk_MainUserName_english_flag()==TRUE)
+              {
+                api_lcd_pwr_on_hint(UnicodeForGbk_MainUserName());//显示当前用户昵称
+              }
+              else
+              {
+                api_lcd_pwr_on_hint4(UnicodeForGbk_MainUserName());//显示当前用户昵称
+              }
               api_disp_all_screen_refresh();// 全屏统一刷新
             }
 

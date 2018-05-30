@@ -125,7 +125,14 @@ void Keyboard_Test(void)
         }
         VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(PersonalCallingNum),ApiAtCmd_GetUserNameLen(PersonalCallingNum));//播报按上键之后对应的用户名
         api_lcd_pwr_on_hint4("                ");//清屏
-        api_lcd_pwr_on_hint4(UnicodeForGbk_AllUserName(PersonalCallingNum));//显示当前选中的群组名
+        if(UnicodeForGbk_AllUserName_english_flag(PersonalCallingNum)==TRUE)
+        {
+          api_lcd_pwr_on_hint(UnicodeForGbk_AllUserName(PersonalCallingNum));//显示当前选中的群组名
+        }
+        else
+        {
+          api_lcd_pwr_on_hint4(UnicodeForGbk_AllUserName(PersonalCallingNum));//显示当前选中的群组名
+        }
         UpDownSwitching_Flag=TRUE;
         UpDownSwitchingCount=0;
       }
@@ -154,7 +161,14 @@ void Keyboard_Test(void)
         //api_disp_icoid_output( eICO_IDLOCKED, TRUE, TRUE);//选
         VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(PersonalCallingNum),ApiAtCmd_GetUserNameLen(PersonalCallingNum));//播报按上键之后对应的用户名
         api_lcd_pwr_on_hint4("                ");//清屏
-        api_lcd_pwr_on_hint4(UnicodeForGbk_AllUserName(PersonalCallingNum));//显示当前选中的群组名
+        if(UnicodeForGbk_AllUserName_english_flag(PersonalCallingNum)==TRUE)
+        {
+          api_lcd_pwr_on_hint(UnicodeForGbk_AllUserName(PersonalCallingNum));//显示当前选中的群组名
+        }
+        else
+        {
+          api_lcd_pwr_on_hint4(UnicodeForGbk_AllUserName(PersonalCallingNum));//显示当前选中的群组名
+        }
         UpDownSwitching_Flag=TRUE;
         UpDownSwitchingCount=0;
         /*api_lcd_pwr_on_hint("对象:   个呼选择");
@@ -310,8 +324,16 @@ void Keyboard_Test(void)
               DEL_SetTimer(0,50);
               while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
               api_lcd_pwr_on_hint("                ");//清屏
-              //api_lcd_pwr_on_hint(HexToChar_PersonalCallingNum());//显示当前用户ID
-              api_lcd_pwr_on_hint4(UnicodeForGbk_MainUserName());//显示当前用户昵称
+              
+              if(UnicodeForGbk_MainUserName_english_flag()==TRUE)
+              {
+                api_lcd_pwr_on_hint(UnicodeForGbk_MainUserName());//显示当前用户昵称
+              }
+              else
+              {
+                api_lcd_pwr_on_hint4(UnicodeForGbk_MainUserName());//显示当前用户昵称
+              }
+              
             }
             else
             {
@@ -591,7 +613,14 @@ void Keyboard_Test(void)
           }
           VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(PersonalCallingNum),ApiAtCmd_GetUserNameLen(PersonalCallingNum));//播报按上键之后对应的用户名
           api_lcd_pwr_on_hint4("                ");//清屏
-          api_lcd_pwr_on_hint4(UnicodeForGbk_AllUserName(PersonalCallingNum));//显示当前选中的群组名
+          if(UnicodeForGbk_AllUserName_english_flag(PersonalCallingNum)==TRUE)
+          {
+            api_lcd_pwr_on_hint(UnicodeForGbk_AllUserName(PersonalCallingNum));//显示当前选中的群组名
+          }
+          else
+          {
+            api_lcd_pwr_on_hint4(UnicodeForGbk_AllUserName(PersonalCallingNum));//显示当前选中的群组名
+          }
           UpDownSwitching_Flag=TRUE;
           UpDownSwitchingCount=0;
         }
@@ -620,7 +649,14 @@ void Keyboard_Test(void)
             //api_disp_icoid_output( eICO_IDLOCKED, TRUE, TRUE);//选
             VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(PersonalCallingNum),ApiAtCmd_GetUserNameLen(PersonalCallingNum));//播报按上键之后对应的用户名
             api_lcd_pwr_on_hint4("                ");//清屏
-            api_lcd_pwr_on_hint4(UnicodeForGbk_AllUserName(PersonalCallingNum));//显示当前选中的群组名
+            if(UnicodeForGbk_AllUserName_english_flag(PersonalCallingNum)==TRUE)
+            {
+              api_lcd_pwr_on_hint(UnicodeForGbk_AllUserName(PersonalCallingNum));//显示当前选中的群组名
+            }
+            else
+            {
+              api_lcd_pwr_on_hint4(UnicodeForGbk_AllUserName(PersonalCallingNum));//显示当前选中的群组名
+            }
             UpDownSwitching_Flag=TRUE;
             UpDownSwitchingCount=0;
             /*api_lcd_pwr_on_hint("对象:   个呼选择");

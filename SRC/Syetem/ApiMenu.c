@@ -109,9 +109,14 @@ void MenuDisplay(MenuDisplayType id)
       api_lcd_pwr_on_hint3("                ");//清屏
       MenuDisplay(Menu_RefreshAllIco);
       api_lcd_pwr_on_hint("                ");//清屏
-      //api_lcd_pwr_on_hint(HexToChar_MainUserId());//显示当前用户ID
-      //api_lcd_pwr_on_hint(HexToChar_PersonalCallingNum());//显示当前用户ID
-      api_lcd_pwr_on_hint4(UnicodeForGbk_MainUserName());//显示当前用户昵称
+      if(UnicodeForGbk_MainUserName_english_flag()==TRUE)
+      {
+        api_lcd_pwr_on_hint(UnicodeForGbk_MainUserName());//显示当前用户昵称
+      }
+      else
+      {
+        api_lcd_pwr_on_hint4(UnicodeForGbk_MainUserName());//显示当前用户昵称
+      }
     }
     
     break;
@@ -129,9 +134,14 @@ void MenuDisplay(MenuDisplayType id)
       api_lcd_pwr_on_hint3("                ");//清屏
       MenuDisplay(Menu_RefreshAllIco);
       api_lcd_pwr_on_hint("                ");//清屏
-      //api_lcd_pwr_on_hint(HexToChar_MainUserId());//显示当前用户ID
-      //api_lcd_pwr_on_hint(HexToChar_PersonalCallingNum());//显示当前用户ID
-      api_lcd_pwr_on_hint4(UnicodeForGbk_MainUserName());//显示当前用户昵称
+      if(UnicodeForGbk_MainUserName_english_flag()==TRUE)
+      {
+        api_lcd_pwr_on_hint(UnicodeForGbk_MainUserName());//显示当前用户昵称
+      }
+      else
+      {
+        api_lcd_pwr_on_hint4(UnicodeForGbk_MainUserName());//显示当前用户昵称
+      }
     }
     break;
   case Menu_RefreshAllIco:

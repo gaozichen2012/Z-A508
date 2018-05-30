@@ -448,7 +448,14 @@ void Task_RunNormalOperation(void)
     MenuDisplay(Menu_RefreshAllIco);
     api_lcd_pwr_on_hint("                ");//清屏
     api_disp_icoid_output( eICO_IDMESSAGEOff, TRUE, TRUE);//空图标-与选对应
-    api_lcd_pwr_on_hint4(UnicodeForGbk_MainUserName());//显示当前用户昵称
+    if(UnicodeForGbk_MainUserName_english_flag()==TRUE)
+    {
+    api_lcd_pwr_on_hint(UnicodeForGbk_MainUserName());//显示当前用户昵称
+    }
+    else
+    {
+      api_lcd_pwr_on_hint4(UnicodeForGbk_MainUserName());//显示当前用户昵称
+    }
     api_disp_icoid_output( eICO_IDPOWERH, TRUE, TRUE);//显示个呼图标
 #if 1//解决被呼时，时间显示的第一个数字延迟消失，再刷新免提图标的问题
     if(VoiceType_FreehandOrHandset_Flag==0)
@@ -497,9 +504,14 @@ void Task_RunNormalOperation(void)
         api_lcd_pwr_on_hint("                ");//清屏
         api_disp_icoid_output( eICO_IDPOWERH, TRUE, TRUE);//显示个呼图标
         api_disp_icoid_output( eICO_IDMESSAGEOff, TRUE, TRUE);//空图标-与选对应
-        //api_lcd_pwr_on_hint(HexToChar_MainUserId());//显示当前用户ID
-        //api_lcd_pwr_on_hint(HexToChar_PersonalCallingNum());//显示当前用户ID
+      if(UnicodeForGbk_MainUserName_english_flag()==TRUE)
+      {
+        api_lcd_pwr_on_hint(UnicodeForGbk_MainUserName());//显示当前用户昵称
+      }
+      else
+      {
         api_lcd_pwr_on_hint4(UnicodeForGbk_MainUserName());//显示当前用户昵称
+      }
         PersonCallIco_Flag=1;
         api_disp_all_screen_refresh();// 全屏统一刷新//可能会对POC开机PoC指令识别有影响
         POC_AtEnterPersonalCalling_Flag=1;
@@ -570,7 +582,14 @@ else
   if(POC_ReceivedVoiceStart_Flag==2)//刚接收语音状态
   {
     api_lcd_pwr_on_hint("                ");//清屏
-    api_lcd_pwr_on_hint4(UnicodeForGbk_SpeakerRightnowName());//显示当前说话人的昵称
+    if(UnicodeForGbk_SpeakerRightnowName_english_flag()==TRUE)
+    {
+      api_lcd_pwr_on_hint(UnicodeForGbk_SpeakerRightnowName());//显示当前说话人的昵称
+    }
+    else
+    {
+      api_lcd_pwr_on_hint4(UnicodeForGbk_SpeakerRightnowName());//显示当前说话人的昵称
+    }
     //api_lcd_pwr_on_hint4("1234567890123");//显示当前说话人的昵称
     POC_ReceivedVoiceStart_Flag=1;//接收语音状态
     //修复BUG： A机换组状态，B机呼A机后，A机按PTT却是换组（被呼后A机应该返回默认状态：）

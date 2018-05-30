@@ -9,7 +9,7 @@ TriggerName=main
 LimitSize=0
 ByteLimit=50
 [DebugChecksum]
-Checksum=311445616
+Checksum=-808444306
 [CodeCoverage]
 Enabled=_ 0
 [CallStack]
@@ -144,7 +144,7 @@ Fmt58={W}1:POC_ReceivedVoiceCount	3	0
 Fmt59={W}1:PocCmdDrvobj.WorkState.UseState.Group[1].NameLen	3	0
 Fmt60={W}1:PocCmdDrvobj.WorkState.UseState.Group[2].NameLen	3	0
 Fmt61={W}1:PocCmdDrvobj.WorkState.UseState.Group[n].NameLen	3	0
-Fmt62={W}1:PocCmdDrvobj.WorkState.UseState.MainWorkGroup.GroupNum	4	0
+Fmt62={W}1:PocCmdDrvobj.WorkState.UseState.MainWorkGroup.GroupNum	3	0
 Fmt63={W}1:PocCmdDrvobj.WorkState.UseState.MainWorkGroup.NameLen	4	0
 Fmt64={W}1:PocCmdDrvobj.WorkState.UseState.PttUserName.NameLen	3	0
 Fmt65={W}1:PocCmdDrvobj.WorkState.UseState.PttUserName.UserNum	4	0
@@ -183,11 +183,12 @@ Fmt97={W}1:midVal	4	0
 Fmt98={W}1:pBuf[8]	4	0
 Fmt99={W}1:pBuf[9]	4	0
 Fmt100={W}1:sum	4	0
-Fmt101={W}1:ucId	4	0
-Fmt102={W}1:ucIndex0	3	0
-Fmt103={W}1:value	4	0
-Fmt104={W}1:xCol	3	0
-Fmt105={W}1:yPage	3	0
+Fmt101={W}1:test_count	3	0
+Fmt102={W}1:ucId	4	0
+Fmt103={W}1:ucIndex0	3	0
+Fmt104={W}1:value	4	0
+Fmt105={W}1:xCol	3	0
+Fmt106={W}1:yPage	3	0
 [DataSample]
 LogEnabled=0
 GraphEnabled=0
