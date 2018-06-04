@@ -228,7 +228,7 @@ void Task_RunNormalOperation(void)
     if(LoosenPttMoment_Flag==TRUE)//如果松开PTT瞬间，发送endPTT指令
     {
       ApiPocCmd_WritCommand(PocComm_EndPTT,ucEndPTT,strlen((char const *)ucEndPTT));
-      Set_RedLed(LED_OFF);
+      //Set_RedLed(LED_OFF);
     }
     break;
   case 2://2：按住PTT状态
@@ -240,12 +240,12 @@ void Task_RunNormalOperation(void)
       //解决禁发时间到时，播报“系统释放”，机器已停止发射。但显示屏发射符号不消失，红色指示灯不熄灭
       if(POC_ReceivedVoiceEndForXTSF_Flag==2)
       {
-        Set_RedLed(LED_OFF);
+        //Set_RedLed(LED_OFF);
         KeyDownUpChoose_GroupOrUser_Flag=0;
       }
       else
       {
-        Set_RedLed(LED_ON);
+        //Set_RedLed(LED_ON);
         Set_GreenLed(LED_OFF);
       if(TheMenuLayer_Flag!=0)//解决主呼时影响菜单界面信息显示，现在只要按PTT就会退出菜单
       {
@@ -273,7 +273,7 @@ void Task_RunNormalOperation(void)
     {
       ApiPocCmd_WritCommand(PocComm_EndPTT,ucEndPTT,strlen((char const *)ucEndPTT));
       
-      Set_RedLed(LED_OFF);
+      //Set_RedLed(LED_OFF);
     }
     break;
   case 3://3：松开PTT瞬间
@@ -375,7 +375,6 @@ void Task_RunNormalOperation(void)
     }
     else
     {
-      GetMemberCount=0;
       if(TheMenuLayer_Flag!=0)//解决个呼键影响菜单界面信息显示，现在只要按个呼键就会退出菜单
       {
           MenuDisplay(Menu_RefreshAllIco);
@@ -391,16 +390,15 @@ void Task_RunNormalOperation(void)
           ApiMenu_NativeInfo_Flag=0;
           ApiMenu_BeiDouOrWritingFrequency_Flag=0;
       }
-      api_lcd_pwr_on_hint("    单呼模式    ");
-      VOICE_SetOutput(ATVOICE_FreePlay,"C5627C54216A0F5F",16);//单呼模式
-      DEL_SetTimer(0,65);
-      while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
-      PersonalCallingNum=0;//解决按单呼键直接选中，单呼用户并不是播报的用户
-      Key_PersonalCalling_Flag=1;
-      
-      ApiPocCmd_WritCommand(PocComm_UserListInfo,"0E000000000001",strlen((char const *)"0E000000000001"));
-      KeyDownUpChoose_GroupOrUser_Flag=2;
-      KeyPersonalCallingCount=0;//解决单呼模式，上下键成员非正常顺序，第一个成员在切换时会第二、第三个碰到
+              api_lcd_pwr_on_hint("    单呼模式    ");
+              PersonalCallingNum=0;//解决按单呼键直接选中，单呼用户并不是播报的用户
+              Key_PersonalCalling_Flag=1;
+              VOICE_SetOutput(ATVOICE_FreePlay,"C5627C54216A0F5F",16);//单呼模式
+              DEL_SetTimer(0,65);
+              while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+              ApiPocCmd_WritCommand(PocComm_UserListInfo,0,0);
+              KeyDownUpChoose_GroupOrUser_Flag=2;
+              KeyPersonalCallingCount=0;//解决单呼模式，上下键成员非正常顺序，第一个成员在切换时会第二、第三个碰到
     }
   }
 /*******报警键状态检测********************************************************************************************************************************************/

@@ -4,7 +4,7 @@
 #define SYS_IDLE	0x00
 #define SYS_RUN		0x01
 
-//u32 T1[63];//MAX=6144
+
 
 typedef struct {
   struct{
@@ -70,6 +70,7 @@ u8 TestBuf[5];
 
 void main_init(void)
 {
+  
   disableInterrupts();
   SystemClock_Init(HSE_Clock);
   ITC_SetSoftwarePriority(ITC_IRQ_UART1_RX,ITC_PRIORITYLEVEL_3);
@@ -130,6 +131,23 @@ void main_app(void)
   main_init();
   while(1)
   {
+    
+#if 0//测试flash 0x8000的地址读写
+    file_flash_read(0x6800,100,flash_read_test_buf);
+    flash_write_test_buf[0]=11;
+    flash_write_test_buf[1]=11;
+    flash_write_test_buf[2]=11;
+    flash_write_test_buf[3]=11;
+    flash_write_test_buf[4]=11;
+    flash_write_test_buf[5]=11;
+    flash_write_test_buf[6]=11;
+    flash_write_test_buf[7]=11;
+    flash_write_test_buf[8]=11;
+    flash_write_test_buf[9]=11;
+    flash_write_test_buf[10]=11;
+    file_flash_write(0x6800,10,flash_write_test_buf);
+    
+#else
     LowVoltageDetection();
     DEL_Renew();
     switch(TaskDrvObj.NewId)
@@ -155,84 +173,8 @@ void main_app(void)
     default:
       break;
     }
-/*
-#if 1//按键控制灯亮灭   
-    Keyboard_Test();
 #endif
-
-    
-#if 1//对讲&换组
-    DEL_Renew();
-    ListenState();//接听亮绿灯
-    if(ReadInput_KEY_PTT==0)
-    {
-      Set_RedLed(LED_ON);
-      
-      r=ApiPocCmd_WritCommand(PocComm_StartPTT,ucStartPTT,strlen((char const *)ucStartPTT));
-      AUDIO_IOAFPOW(OFF);
-      while(ReadInput_KEY_PTT==0);
-      r=ApiPocCmd_WritCommand(PocComm_EndPTT,ucEndPTT,strlen((char const *)ucEndPTT));
-      AUDIO_IOAFPOW(ON);
-    }
-    else
-    {
-      if(ReadInput_KEY_4==0)
-      {
-        r=ApiPocCmd_WritCommand(PocComm_Key,ucSwitch,strlen((char const *)ucSwitch));
-        Key_Flag_0=1;
-      }
-      else
-      {
-      if(ReadInput_KEY_2==0)
-      {
-        api_lcd_pwr_on_hint("欧标按键:K2 退出单呼     ");
-        r=ApiPocCmd_WritCommand(PocComm_EndPTT,"0A0000ffffffff",strlen((char const *)"0A0000ffffffff"));
-        Key_Flag_0=1;
-      }
-      if(ReadInput_KEY_3==0)
-      {
-#if 1//1:一号机烧录  0:三号机烧录
-        api_lcd_pwr_on_hint("按键:K3 单呼       ");
-        r=ApiPocCmd_WritCommand(PocComm_EndPTT,"0E000000000001",strlen((char const *)"0E000000000001"));
-        Key_Flag_0=1;
-        DEL_SetTimer(1,100);
-        while(1)
-        {
-          if(DEL_GetTimer(1) == TRUE) {break;}
-        }
-        
-        r=ApiPocCmd_WritCommand(PocComm_EndPTT,"0A00000000006401",strlen((char const *)"0A00000000006401"));
-#else//
-        api_lcd_pwr_on_hint("按键:K3 单呼一号   ");
-        r=ApiPocCmd_WritCommand(PocComm_EndPTT,"0E000000000001",strlen((char const *)"0E000000000001"));
-        Key_Flag_0=1;
-        DEL_SetTimer(1,20);
-        while(1)
-        {
-          if(DEL_GetTimer(1) == TRUE) {break;}
-        }
-        
-        r=ApiPocCmd_WritCommand(PocComm_EndPTT,"0A00000000006401",strlen((char const *)"0A00000000006401"));
-#endif
-      }
-      }
-      if(Key_Flag_0==1)
-      {
-        DEL_SetTimer(0,200);
-        while(1)
-        {
-          Key_Flag_0=0;
-          if(DEL_GetTimer(0) == TRUE) {break;}
-        }
-      }
-     
-      Set_RedLed(LED_OFF);
-      Set_GreenLed(LED_OFF);
-    }
-
-#endif
-  }*/
-}
+  }
 }
 
 void SYS_McuReset(void)

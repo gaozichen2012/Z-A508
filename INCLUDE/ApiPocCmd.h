@@ -19,6 +19,9 @@ typedef enum{
   PocComm_UserListInfo          = 0x0E,
   PocComm_Key			= 0x10
 }PocCommType;
+#if 1//test
+extern u8 group_num_temp_count;
+#endif
 extern bool UnicodeForGbk_SpeakerRightnowName_english_flag(void);
 extern bool UnicodeForGbk_MainUserName_english_flag(void);
 extern bool UnicodeForGbk_AllUserName_english_flag(u8 a);
@@ -93,5 +96,7 @@ extern u8 *UnicodeForGbk_MainUserName(void);
 extern u8 *UnicodeForGbk_SpeakerRightnowName(void);
 extern u8 *Get_Unicode_ActiveUserID(void);
 extern u8 *Get_GBK_ActiveUserID(void);
+
+extern u8 *read_all_user_name_from_flash(u8 ucId);//从flash中读取用户名
 
 #endif

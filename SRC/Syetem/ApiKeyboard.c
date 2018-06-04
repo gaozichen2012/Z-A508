@@ -343,7 +343,7 @@ void Keyboard_Test(void)
               VOICE_SetOutput(ATVOICE_FreePlay,"C5627C54216A0F5F",16);//单呼模式
               DEL_SetTimer(0,65);
               while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
-              ApiPocCmd_WritCommand(PocComm_UserListInfo,"0E000000000001",strlen((char const *)"0E000000000001"));
+              ApiPocCmd_WritCommand(PocComm_UserListInfo,0,0);
               KeyDownUpChoose_GroupOrUser_Flag=2;
               TheMenuLayer_Flag=0;//处于0级菜单，进入单呼模式为菜单外功能
               KeyPersonalCallingCount=0;//解决单呼模式，上下键成员非正常顺序，第一个成员在切换时会第二、第三个碰到
@@ -373,7 +373,7 @@ void Keyboard_Test(void)
              api_lcd_pwr_on_hint("                ");
             DEL_SetTimer(0,20);
             while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
-            ApiPocCmd_WritCommand(PocComm_UserListInfo,"0E000000000001",strlen((char const *)"0E000000000001"));
+            ApiPocCmd_WritCommand(PocComm_UserListInfo,0,0);
             get_online_user_list_num_flag=TRUE;
             break;
           }

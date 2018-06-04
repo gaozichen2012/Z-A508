@@ -1,5 +1,26 @@
 #include "Flash_eeprom.h"
   u32 AdrSumTest=0x00;
+
+/***¹Ù·½Àý³Ì-FLASH_Config**/
+void FLASH_Config(void)
+{
+ /* Define flash programming Time*/
+  FLASH_SetProgrammingTime(FLASH_PROGRAMTIME_STANDARD);
+
+  FLASH_Unlock(FLASH_MEMTYPE_PROG);
+  /* Wait until Flash Program area unlocked flag is set*/
+  while (FLASH_GetFlagStatus(FLASH_FLAG_PUL) == RESET)
+  {}
+
+  /* Unlock flash data eeprom memory */
+  FLASH_Unlock(FLASH_MEMTYPE_DATA);
+  /* Wait until Data EEPROM area unlocked flag is set*/
+  while (FLASH_GetFlagStatus(FLASH_FLAG_DUL) == RESET)
+  {}
+}
+
+
+
 /*******************************************************************************
           Ã¿ÖÖÐÍºÅµÄEEPROMµÄ´óÐ¡²»Ò»Ñù£¬µ÷ÓÃ´Ëº¯ÊýµÄÊ±ºòÒª×¢Òâ½«ÒªÐ´½øµÄ×Ö½ÚÊý×é
          µÄ´óÐ¡ÊÇ·ñ³¬¹ý¸ÃÐÍºÅµÄEEPROMµÄµØÖ·¡£
@@ -99,6 +120,7 @@ bool FILE_Read(u16 iAdr,u16 iLen,u8 *pBuf)//Èç¹ûpBufÊÇ×Ö·û´®,Ôò×îºóÒ»Î»Îª\0
   }
   return TRUE;
 }
+
 bool FILE_Read2(u16 iAdr,u16 iLen,u8 *pBuf)//Èç²»È·¶¨ÐÞ¸ÄÊÇ·ñ»á¶ÔÕËºÅ¶ÁÐ´ÓÐÓ°Ïì£¬Ö±½ÓÐÂ½¨Ò»¸öº¯Êý
 {
   u16 i;
@@ -110,3 +132,55 @@ bool FILE_Read2(u16 iAdr,u16 iLen,u8 *pBuf)//Èç²»È·¶¨ÐÞ¸ÄÊÇ·ñ»á¶ÔÕËºÅ¶ÁÐ´ÓÐÓ°Ïì£
   }
   return TRUE;
 }
+
+#if 1//FLASH¶ÁÐ´
+bool file_flash_write(u16 iAdr,u16 iLen,u8 *pBuf)//Èç¹ûpBufÊÇ×Ö·û´®,Ôò×îºóÒ»Î»Îª\0
+{
+#if 0
+  
+  FLASH_ProgramBlock(1, FLASH_MEMTYPE_DATA, FLASH_PROGRAMMODE_STANDARD, GBuffer);
+    startadd = FLASH_PROG_START_PHYSICAL_ADDRESS + ((uint16_t)BLOCK_OPERATION * (uint16_t)FLASH_BLOCK_SIZE);
+  stopadd = startadd + (uint16_t)FLASH_BLOCK_SIZE;
+#else
+  u16 EEPROM_WriteCount;
+  u32 AdrSum=0x00;
+  for(EEPROM_WriteCount=0x00;EEPROM_WriteCount<iLen;EEPROM_WriteCount++)
+  {
+    AdrSum=0x10000+iAdr+EEPROM_WriteCount;
+    WriteFlashByte(AdrSum, pBuf[EEPROM_WriteCount]);
+  }
+#endif
+  return TRUE;
+  
+}
+bool file_flash_read(u16 iAdr,u16 iLen,u8 *pBuf)//Èç¹ûpBufÊÇ×Ö·û´®,Ôò×îºóÒ»Î»Îª\0
+{
+  u16 i;
+  u32 AdrSum=0x00;
+  for(i=0x00;i<iLen;i++)
+  {
+    AdrSum=0x10000+iAdr+i;
+    pBuf[i]=FLASH_ReadByte(AdrSum);
+  }
+  return TRUE;
+}
+void WriteFlashByte(uint32_t Address, uint8_t Data)
+{
+  
+    FLASH_SetProgrammingTime(FLASH_PROGRAMTIME_STANDARD);
+  
+  /* Unlock Data memory */
+  FLASH_Unlock(FLASH_MEMTYPE_PROG);//¿ÉÒÔ²ÁÐ´EEPROM»òFlash:FLASH_Unlock(FLASH_MemType_Program);
+  //while (FLASH_GetFlagStatus(FLASH_FLAG_DUL) == RESET);//µÈ´ý½âËø³É¹¦
+  FLASH_ProgramByte(Address,Data);//ÏòÖ¸¶¨µØÖ·Ð´ÈëÊý¾ÝData
+  
+/*
+
+  FLASH_ProgramBlock(BLOCK_OPERATION, FLASH_MEMTYPE_DATA, FLASH_PROGRAMMODE_STANDARD, GBuffer);
+  
+
+  while (FLASH_GetFlagStatus(FLASH_FLAG_HVOFF) == RESET)
+  {}
+  */
+}
+#endif

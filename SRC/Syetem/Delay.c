@@ -5,9 +5,7 @@
 #define DEL_IDLE		0x00
 #define DEL_RUN			0x01
 
-//bool UpgradeNoATReturn_Flag=FALSE;
-//bool UpgradeNoATReturn_Flag2=FALSE;
-//#define TimeoutLimit            30//240//键盘超时锁定时间10s
+
 
 u8 SignalPoorCount=0;
 u8 WriteFreqTimeCount=0;
@@ -98,8 +96,11 @@ void DEL_PowerOnInitial(void)//原瑞撒單片機多長時間進一次中斷
   return;
 }
 
+
+
 void DEL_Interrupt(void)
 {
+  
   DelDrvObj.c10msLen--;
   DelDrvObj.Msg.Bit.b1ms = DEL_RUN;
   //enableInterrupts();
@@ -133,6 +134,7 @@ void DEL_Interrupt(void)
       }
     }
   }
+  
   return;
 }
 
@@ -275,6 +277,7 @@ static void DEL_500msProcess(void)			//delay 500ms process server
   if (DelDrvObj.Msg.Bit.b500ms == DEL_RUN) 
   {
     DelDrvObj.Msg.Bit.b500ms = DEL_IDLE;
+#if 1//测试中断问题
     VOICE_1sProcess();
     DEL_500ms_Count++;
     DEL_500ms_Count2++;
@@ -420,17 +423,18 @@ static void DEL_500msProcess(void)			//delay 500ms process server
     if(Key_PersonalCalling_Flag==1&&GettheOnlineMembersDone==FALSE)
     {
       GetNoOnlineMembersCount++;
-      if(GetNoOnlineMembersCount>2*3)
+      if(GetNoOnlineMembersCount>2*5)
       {
         GetNoOnlineMembersCount=0;
         Key_PersonalCalling_Flag=0;//进入组呼标志位
+        api_disp_icoid_output( eICO_IDMESSAGEOff, TRUE, TRUE);//空图标-与选对应
         api_lcd_pwr_on_hint("                ");//清屏
-        //api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
         api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
         MenuMode_Flag=0;
         //用于PTT键及上下键返回默认状态
         KeyUpDownCount=0;
         KeyDownUpChoose_GroupOrUser_Flag=0;//解决（个呼键→返回键→OK或PTT）屏幕显示错误的BUG
+        ApiPocCmd_PersonalCallingMode=FALSE;//解决群组成员获取不全时，回到组呼状态，按ok键无效的问题
       }
     }
     else
@@ -745,17 +749,11 @@ static void DEL_500msProcess(void)			//delay 500ms process server
       }
       DEL_500ms_Count2=0;
     }
-    
-    //if(DEL_500ms_Count>1) DEL_500ms_Count=0;
-    //switch(DEL_500ms_Count)
-    //{
-   // case 1://1s
       if(GetTaskId()==Task_NormalOperation)
       {
         if(KeylockTimeCount==200*2)
         {
           TimeCount=0;
-          //NumberKeyboardPressDown_flag=TRUE;
         }
         else
         {
@@ -838,13 +836,7 @@ static void DEL_500msProcess(void)			//delay 500ms process server
         NumberKeyboardPressDown_flag=FALSE;
       }
       }
-      
-        
-       
-   //   break;
-   // default:
-   //   break;
-   // }
+#endif
   }
   return;
 }
@@ -852,9 +844,9 @@ static void DEL_500msProcess(void)			//delay 500ms process server
 
 static void DEL_1msProcess(void)
 {
-  //if (DelDrvObj.Msg.Bit.b1ms == DEL_RUN)
+  if (DelDrvObj.Msg.Bit.b1ms == DEL_RUN)
   {
-    //DelDrvObj.Msg.Bit.b1ms = DEL_IDLE;
+    DelDrvObj.Msg.Bit.b1ms = DEL_IDLE;
     //ApiPocCmd_83_1msRenew();
     ApiPocCmd_10msRenew();
     ApiCaretCmd_10msRenew();

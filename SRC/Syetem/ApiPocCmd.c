@@ -1,22 +1,18 @@
 #include "ALLHead.h"
-#if 1//修正后的赋值
+//u8 group_num_temp_count=0;
+
+
 #define poc_login_info_len  100
-#define poc_user_name_len   56  //16*4+2=66
-#define poc_group_name_len  40  //16*4+2=66
-#define poc_user_num        15
+#if 0 //测试写入数据少会不会，不会丢失群组
+#define poc_user_name_len   14*1  //16*4+2=66
+#else
+#define poc_user_name_len   14*4  //16*4+2=66
+#endif
+#define poc_group_name_len  8*4  //16*4+2=66
+#define poc_user_num        50
 #define poc_group_num       25
 
-
-#else
-#define DrvMC8332_GroupName_Len		16			//define UART Tx buffer length value
-#define DrvMC8332_UseId_Len			100			//define UART Tx buffer length value
-#define APIPOC_UserList_Len			16
-#define APIPOC_UserLoad_Len			8
-#define APIPOC_UserName_Len			39//39 in20180303 群组名最多7位，群组数最大40个
-#define APIPOC_CalledUserName_Len	        44//成员名长度
-#define APIPOC_SpeakerRightnowUserName_Len	44//成员名长度
-#endif
-
+u8 read_all_user_name_from_flash_buf[poc_user_name_len+1];
 u8 test_count=0;
 
 u8 GetMemberCount=0;
@@ -151,14 +147,13 @@ typedef struct{
       
       struct{
         u8 Id[8];
-        u8 Name[poc_user_name_len+1];
+        u8 Name[poc_user_name_len+1];//11*4+1=45
         u8 NameLen;
       }WorkUserName;//中间变量
-      
       struct{
         bool UnicodeForGbk_AllUserName_english;
         u8 Id[8];
-        u8 Name[poc_user_name_len+1];
+        //u8 Name[poc_user_name_len+1];//11*4+1=45
         u8 NameLen;
       }UserName[poc_user_num];//用户列表
       
@@ -231,6 +226,11 @@ void ApiPocCmd_WritCommand(PocCommType id, u8 *buf, u16 len)
     DrvGD83_UART_TxCommand(buf, len);
     break;
   case PocComm_UserListInfo://6
+#if 0//测试poc是否接受正常
+    //group_num_temp_count=0;
+    DrvGD83_UART_TxCommand("0D0000", 6);
+#else
+    GetMemberCount=0;
     GettheOnlineMembersDone=FALSE;
     get_online_user_list_num_flag=FALSE;
     DrvGD83_UART_TxCommand("0E0000000000", 12);
@@ -247,6 +247,7 @@ void ApiPocCmd_WritCommand(PocCommType id, u8 *buf, u16 len)
       NetStateBuf[1]    =testData;
     }
     DrvGD83_UART_TxCommand(NetStateBuf, 2);
+#endif
     break;
   case PocComm_Key://7
     DrvGD83_UART_TxCommand(buf, len);
@@ -387,6 +388,13 @@ void ApiPocCmd_10msRenew(void)
           PocCmdDrvobj.WorkState.UseState.WorkGroup.Name[i];
       }
       PocCmdDrvobj.WorkState.UseState.Group[ucId].NameLen = PocCmdDrvobj.WorkState.UseState.WorkGroup.NameLen;
+#if 0//测试poc是否接受正常
+      group_num_temp_count++;
+      if(group_num_temp_count>=PocCmdDrvobj.WorkState.UseState.MainWorkGroup.GroupNum)
+      {
+        group_num_temp_count=0;
+      }
+#endif
       break;
     case 0x81://获取组内成员列表
       ucId = COML_AscToHex(pBuf+10, 0x02);//
@@ -405,18 +413,21 @@ void ApiPocCmd_10msRenew(void)
       for(i = 0x00; i < PocCmdDrvobj.WorkState.UseState.WorkUserName.NameLen; i++)
       {
         PocCmdDrvobj.WorkState.UseState.WorkUserName.Name[i] = pBuf[i+20];//存入获取的群组名
-        PocCmdDrvobj.WorkState.UseState.UserName[ucId].Name[i] = 
-          PocCmdDrvobj.WorkState.UseState.WorkUserName.Name[i];
       }
       PocCmdDrvobj.WorkState.UseState.UserName[ucId].NameLen = PocCmdDrvobj.WorkState.UseState.WorkUserName.NameLen;
+#if 0
+     file_flash_write(0x6800+ucId*(poc_user_name_len+1),
+                       PocCmdDrvobj.WorkState.UseState.WorkUserName.NameLen,
+                       PocCmdDrvobj.WorkState.UseState.WorkUserName.Name);
+#endif
       i_count1=0;
       NumCount=0;
       while(1)
       {
           if(4*i_count1<PocCmdDrvobj.WorkState.UseState.UserName[ucId].NameLen)
           {
-            if(PocCmdDrvobj.WorkState.UseState.UserName[ucId].Name[4*i_count1+2]==0x30&&
-               PocCmdDrvobj.WorkState.UseState.UserName[ucId].Name[4*i_count1+3]==0x30)
+            if(PocCmdDrvobj.WorkState.UseState.WorkUserName.Name[4*i_count1+2]==0x30&&
+               PocCmdDrvobj.WorkState.UseState.WorkUserName.Name[4*i_count1+3]==0x30)
             {
               NumCount++;
             }
@@ -800,7 +811,7 @@ u8 *UnicodeForGbk_AllGrounpName(u8 n)
 
 u8 *ApiAtCmd_GetUserName(u8 n)//获取所有在线用户名（个呼）
 {
-  return PocCmdDrvobj.WorkState.UseState.UserName[n].Name;
+  return read_all_user_name_from_flash(n);
 }
 u8 ApiAtCmd_GetUserNameLen(u8 n)
 {
@@ -818,8 +829,8 @@ u8 *UnicodeForGbk_AllUserName(u8 n)
   u8 i=0;
   u8 j=0;
   u8 NumCount=0;
-  UserBuf1=PocCmdDrvobj.WorkState.UseState.UserName[n].Name;
-  UserLen2=strlen((char const *)PocCmdDrvobj.WorkState.UseState.UserName[n].Name);
+  UserBuf1=read_all_user_name_from_flash(n);
+  UserLen2=strlen((char const *)read_all_user_name_from_flash(n));
   while(1)
   {
     if(4*i<UserLen2)
@@ -1160,4 +1171,10 @@ bool UnicodeForGbk_MainUserName_english_flag(void)
 bool UnicodeForGbk_AllUserName_english_flag(u8 a)
 {
   return PocCmdDrvobj.WorkState.UseState.UserName[a].UnicodeForGbk_AllUserName_english;
+}
+
+u8 *read_all_user_name_from_flash(u8 ucId)//从flash中读取用户名
+{
+  file_flash_read(0x6800+ucId*(poc_user_name_len+1),poc_user_name_len+1,read_all_user_name_from_flash_buf);
+  return read_all_user_name_from_flash_buf;
 }

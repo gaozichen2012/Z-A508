@@ -33,7 +33,7 @@ void LED_IntOutputRenew(void)
         if(PositionInfoSendToATPORT_RedLed_Flag==TRUE)
 #endif
         {
-          Set_RedLed(LED_ON);
+          //Set_RedLed(LED_ON);
         }
         else
         {
@@ -45,7 +45,7 @@ void LED_IntOutputRenew(void)
       {
         PositionInfoSendToATPORT_RedLed_Flag=FALSE;
         Set_GreenLed(LED_OFF);
-        Set_RedLed(LED_OFF);
+        //Set_RedLed(LED_OFF);
         LED_Conut=0;
       }
       if(LED_Conut<=48)
@@ -53,7 +53,7 @@ void LED_IntOutputRenew(void)
         Set_GreenLed(LED_OFF);
         if(WriteFreq_Flag==TRUE)//解决读频红灯常亮的问题，应该是闪红灯
         {
-          Set_RedLed(LED_OFF);
+          //Set_RedLed(LED_OFF);
         }
         else
         {
