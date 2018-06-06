@@ -17,4 +17,5 @@ extern u8 MenuMode_Flag;
 extern u8 MenuModeCount;
 extern bool UpDownSwitching_Flag;
 extern bool get_online_user_list_num_flag;
+extern bool huo_qu_zhong_flag;
 #endif

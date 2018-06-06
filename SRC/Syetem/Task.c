@@ -31,13 +31,11 @@ u8 *ucEndPTT                    = "0C0000";
 u8 *ucCLVL                       = "AT+CLVL=7";//音量增益7
 u8 *ucVGR                       = "AT+VGR=7";//音量增益7
 #if 1
-//u8 *ucCODECCTL                  = "at^codecctl=3000,2500,0";//T1默认
-//u8 *ucCODECCTL                  = "at^codecctl=2800,2300,0";//T2
-//u8 *ucCODECCTL                  = "at^codecctl=2500,2300,0";//T3
 u8 *ucCODECCTL                  = "at^codecctl=2300,2300,0";//T4//客户选择的增益
 //u8 *ucCODECCTL                  = "at^codecctl=2000,1800,0";//AT^codecctl=2870,8000,0中兴余工调试
 #else
 u8 *ucCODECCTL                  = "at^codecctl=5000,2300,0";//基于原硬件喇叭发送给张志明的补救版本
+//u8 *ucCODECCTL                  = "at^codecctl=9000,1c00,0";//默认量产增益9000,1c00
 #endif
 u8 *ucOSSYSHWID                 = "AT^OSSYSHWID=1";
 u8 *ucPrefmode2                  = "AT^prefmode=2";//网络模式2G
@@ -167,7 +165,12 @@ void Task_RunNormalOperation(void)
 {
   if(allow_key_operation_flag==TRUE)
   {
-    Keyboard_Test();
+    if(huo_qu_zhong_flag==TRUE)
+    {}
+    else
+    {
+      Keyboard_Test();
+    }
   }
   
   UART3_ToMcuMain();
@@ -300,8 +303,8 @@ void Task_RunNormalOperation(void)
       break;
     case 1://=1，进入某群组
       VOICE_SetOutput(ATVOICE_FreePlay,"f25d09902d4e",12);//播报已选中
-      DEL_SetTimer(0,40);
-      while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+      Delay_100ms(4);//DEL_SetTimer(0,40);
+      //while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
       ApiPocCmd_WritCommand(PocComm_EnterGroup,ucPocOpenConfig,strlen((char const *)ucPocOpenConfig));
       KeyDownUpChoose_GroupOrUser_Flag=0;
       EnterKeyTimeCount=0;
@@ -312,8 +315,8 @@ void Task_RunNormalOperation(void)
       {
         //GettheOnlineMembersDone=FALSE;
         VOICE_SetOutput(ATVOICE_FreePlay,"f25d09902d4e",12);//播报已选中
-        DEL_SetTimer(0,60);
-        while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+        Delay_100ms(6);//DEL_SetTimer(0,60);
+        //while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
         ApiPocCmd_WritCommand(PocComm_Invite,ucPocOpenConfig,strlen((char const *)ucPocOpenConfig));
         KeyDownUpChoose_GroupOrUser_Flag=0;
         TASK_Ptt_StartPersonCalling_Flag=TRUE;//判断主动单呼状态（0a）
@@ -370,8 +373,8 @@ void Task_RunNormalOperation(void)
     if(POC_EnterPersonalCalling_Flag==1)//解决被呼状态下，按个呼键无效（应该是被呼状态下，让个呼键失效）
     {
       VOICE_SetOutput(ATVOICE_FreePlay,"ab887c542d4e",12);//个呼中
-      DEL_SetTimer(0,50);
-      while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+      Delay_100ms(5);//DEL_SetTimer(0,50);
+      //while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
     }
     else
     {
@@ -394,8 +397,8 @@ void Task_RunNormalOperation(void)
               PersonalCallingNum=0;//解决按单呼键直接选中，单呼用户并不是播报的用户
               Key_PersonalCalling_Flag=1;
               VOICE_SetOutput(ATVOICE_FreePlay,"C5627C54216A0F5F",16);//单呼模式
-              DEL_SetTimer(0,65);
-              while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+              Delay_100ms(6);//DEL_SetTimer(0,65);
+              //while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
               ApiPocCmd_WritCommand(PocComm_UserListInfo,0,0);
               KeyDownUpChoose_GroupOrUser_Flag=2;
               KeyPersonalCallingCount=0;//解决单呼模式，上下键成员非正常顺序，第一个成员在切换时会第二、第三个碰到
@@ -412,8 +415,8 @@ void Task_RunNormalOperation(void)
       api_disp_icoid_output( eICO_IDPOWERL, TRUE, TRUE);//图标：2G
       api_disp_icoid_output( eICO_IDMESSAGE, TRUE, TRUE);//0格信号
       api_disp_all_screen_refresh();// 全屏统一刷新
-      DEL_SetTimer(0,100);
-      while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+      Delay_100ms(10);//DEL_SetTimer(0,100);
+      //while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
       NoUseNum=ApiAtCmd_WritCommand(ATCOMM4_GD83Mode,(u8 *)ucPrefmode2,strlen((char const *)ucPrefmode2));//
       AlarmCount=8;
       break;
@@ -430,8 +433,8 @@ void Task_RunNormalOperation(void)
       api_disp_icoid_output( eICO_IDEmergency, TRUE, TRUE);//图标：3G
       api_disp_icoid_output( eICO_IDMESSAGE, TRUE, TRUE);//0格信号
       api_disp_all_screen_refresh();// 全屏统一刷新
-      DEL_SetTimer(0,100);
-      while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+      Delay_100ms(10);//DEL_SetTimer(0,100);
+      //while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
       NoUseNum=ApiAtCmd_WritCommand(ATCOMM4_GD83Mode,(u8 *)ucPrefmode4,strlen((char const *)ucPrefmode4));//
       AlarmCount=4;
       break;
@@ -702,6 +705,7 @@ if(PocNoOnlineMember_Flag==TRUE)
 {
   if(get_online_user_list_num_flag==TRUE)
   {
+    get_online_user_list_num_flag=FALSE;
     api_lcd_pwr_on_hint2(HexToChar_AllOnlineMemberNum());
     PersonalCallingNum=0;//解决按单呼键直接选中，单呼用户并不是播报的用户
     TheMenuLayer_Flag=2;
@@ -730,8 +734,7 @@ void TASK_RunLoBattery(void)
 #if 1
   api_lcd_pwr_on_hint(" 电量低  请充电  ");
   VOICE_SetOutput(ATVOICE_FreePlay,"3575606c3575cf914e4f0cfff78b73513a6745513575",44);//电量低请充电
-  DEL_SetTimer(0,1000);
-  while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+  Delay_100ms(100);//DEL_SetTimer(0,1000);
   BEEP_Time(10);
 #else
   ApiAtCmd_WritCommand(ATCOMM0_OSSYSHWID,(u8 *)"at+GPSFUNC=0",strlen((char const *)"at+GPSFUNC=0"));//
@@ -761,15 +764,12 @@ void Key3_PlayVoice(void)
     api_lcd_pwr_on_hint("                ");//显示当前群组昵称
     api_lcd_pwr_on_hint4(Get_GBK_ActiveUserID());//显示当前用户名
     VOICE_SetOutput(ATVOICE_FreePlay,Get_Unicode_ActiveUserID(),strlen((char const *)Get_Unicode_ActiveUserID()));//播报当前用户手机号
-    DEL_SetTimer(0,285);
-    while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+    Delay_100ms(28);//DEL_SetTimer(0,285);
     //当前群组
     api_lcd_pwr_on_hint("                ");//显示当前群组昵称
-    //api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
     api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
     VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetMainWorkName(),strlen((char const *)ApiAtCmd_GetMainWorkName()));
-    DEL_SetTimer(0,200);
-    while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+    Delay_100ms(20);//DEL_SetTimer(0,200);
     //电量播报
     KeyBatteryReport();
     break;
@@ -778,8 +778,7 @@ void Key3_PlayVoice(void)
     api_lcd_pwr_on_hint("                ");//显示当前群组昵称
     api_lcd_pwr_on_hint4(Get_GBK_ActiveUserID());//显示当前用户名
     VOICE_SetOutput(ATVOICE_FreePlay,Get_Unicode_ActiveUserID(),strlen((char const *)Get_Unicode_ActiveUserID()));//播报当前用户手机号
-    DEL_SetTimer(0,285);
-    while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+    Delay_100ms(28);//DEL_SetTimer(0,285);
     //当前群组
     api_lcd_pwr_on_hint("                ");//显示当前群组昵称
     //api_lcd_pwr_on_hint(HexToChar_MainGroupId());//显示当前群组ID
@@ -792,8 +791,8 @@ void Key3_PlayVoice(void)
     api_lcd_pwr_on_hint("                ");//显示当前群组昵称
     api_lcd_pwr_on_hint4(Get_GBK_ActiveUserID());//显示当前用户名
     VOICE_SetOutput(ATVOICE_FreePlay,Get_Unicode_ActiveUserID(),strlen((char const *)Get_Unicode_ActiveUserID()));//播报当前用户手机号
-    DEL_SetTimer(0,200);
-    while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+    Delay_100ms(20);//DEL_SetTimer(0,200);
+    //while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
     //当前群组
     api_lcd_pwr_on_hint("                ");//显示当前群组昵称
     api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
@@ -803,14 +802,12 @@ void Key3_PlayVoice(void)
     api_lcd_pwr_on_hint("                ");//显示当前群组昵称
     api_lcd_pwr_on_hint4(UnicodeForGbk_MainWorkName());//显示当前群组昵称
     VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetMainWorkName(),strlen((char const *)ApiAtCmd_GetMainWorkName()));
-    DEL_SetTimer(0,20);
-    while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+    Delay_100ms(20);//DEL_SetTimer(0,20);
     break;
   case Key3_OptionFour://播报电池电量
     //电量播报
     KeyBatteryReport();
-    DEL_SetTimer(0,20);
-    while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+    Delay_100ms(2);//DEL_SetTimer(0,20);
     break;
   default:
     break;

@@ -133,20 +133,10 @@ void main_app(void)
   {
     
 #if 0//≤‚ ‘flash 0x8000µƒµÿ÷∑∂¡–¥
-    file_flash_read(0x6800,100,flash_read_test_buf);
-    flash_write_test_buf[0]=11;
-    flash_write_test_buf[1]=11;
-    flash_write_test_buf[2]=11;
-    flash_write_test_buf[3]=11;
-    flash_write_test_buf[4]=11;
-    flash_write_test_buf[5]=11;
-    flash_write_test_buf[6]=11;
-    flash_write_test_buf[7]=11;
-    flash_write_test_buf[8]=11;
-    flash_write_test_buf[9]=11;
-    flash_write_test_buf[10]=11;
-    file_flash_write(0x6800,10,flash_write_test_buf);
-    
+    Delay_100ms(1);
+    Set_GreenLed(LED_OFF);
+    Delay_100ms(99);
+    Set_GreenLed(LED_ON);
 #else
     LowVoltageDetection();
     DEL_Renew();

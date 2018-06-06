@@ -31,6 +31,7 @@
 #include "stm8s_it.h"
 #include "AllHead.h"
    u8 u=0;
+u8 led_count=0;
 /** @addtogroup Template_Project
   * @{
   */
@@ -360,6 +361,17 @@ INTERRUPT_HANDLER(TIM1_CAP_COM_IRQHandler, 12)
      UART1_ClearITPendingBit(UART1_IT_RXNE);
      DrvMC8332_UART_Interrupt();
    }
+   /*
+   if(led_count==0)
+   {
+     Set_RedLed(LED_OFF);
+     led_count=1;
+   }
+   else
+   {
+     Set_RedLed(LED_ON);
+     led_count=0;
+   }*/
    //UART1_ClearITPendingBit(UART1_IT_RXNE);
  }
 

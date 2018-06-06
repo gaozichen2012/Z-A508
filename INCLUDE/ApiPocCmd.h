@@ -2,7 +2,7 @@
 #define __APIPOCCMD_H
 
 #include "AllHead.h"
-
+#define poc_get_once_group_and_user_num 5
 typedef enum{
   PocComm_OpenPOC               = 0x00,
   PocComm_SetParam		= 0x01,
@@ -97,6 +97,6 @@ extern u8 *UnicodeForGbk_SpeakerRightnowName(void);
 extern u8 *Get_Unicode_ActiveUserID(void);
 extern u8 *Get_GBK_ActiveUserID(void);
 
-extern u8 *read_all_user_name_from_flash(u8 ucId);//从flash中读取用户名
+//extern u8 *read_all_user_name_from_flash(u8 ucId);//从flash中读取用户名
 
 #endif

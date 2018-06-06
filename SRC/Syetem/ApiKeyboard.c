@@ -35,6 +35,8 @@ bool PressButton;//测试短号功能使用
 bool KeyBoardState;//测试短号功能使用
 bool UpDownSwitching_Flag=FALSE;
 bool get_online_user_list_num_flag=FALSE;
+bool get_online_user_list_num_for_key_flag=FALSE;
+bool huo_qu_zhong_flag=FALSE;
 static void GeHuTest(u32 KeyID);
 
 void Keyboard_Test(void)
@@ -123,15 +125,24 @@ void Keyboard_Test(void)
           PersonalCallingNum=ApiAtCmd_GetUserNum()-1;
           KeyPersonalCallingCount=ApiAtCmd_GetUserNum()-1;
         }
-        VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(PersonalCallingNum),ApiAtCmd_GetUserNameLen(PersonalCallingNum));//播报按上键之后对应的用户名
-        api_lcd_pwr_on_hint4("                ");//清屏
-        if(UnicodeForGbk_AllUserName_english_flag(PersonalCallingNum)==TRUE)
+        if((PersonalCallingNum==ApiAtCmd_GetUserNum()-1)||PersonalCallingNum%poc_get_once_group_and_user_num==poc_get_once_group_and_user_num-1)
         {
-          api_lcd_pwr_on_hint(UnicodeForGbk_AllUserName(PersonalCallingNum));//显示当前选中的群组名
+          //ApiPocCmd_WritCommand(PocComm_UserListInfo,0,0);
+          api_lcd_pwr_on_hint("获取中...       ");//清屏
+          huo_qu_zhong_flag=TRUE;
         }
         else
         {
-          api_lcd_pwr_on_hint4(UnicodeForGbk_AllUserName(PersonalCallingNum));//显示当前选中的群组名
+          VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(PersonalCallingNum%poc_get_once_group_and_user_num),ApiAtCmd_GetUserNameLen(PersonalCallingNum%poc_get_once_group_and_user_num));//播报按上键之后对应的用户名
+          api_lcd_pwr_on_hint4("                ");//清屏
+          if(UnicodeForGbk_AllUserName_english_flag(PersonalCallingNum%poc_get_once_group_and_user_num)==TRUE)
+          {
+            api_lcd_pwr_on_hint(UnicodeForGbk_AllUserName(PersonalCallingNum%poc_get_once_group_and_user_num));//显示当前选中的群组名
+          }
+          else
+          {
+            api_lcd_pwr_on_hint4(UnicodeForGbk_AllUserName(PersonalCallingNum%poc_get_once_group_and_user_num));//显示当前选中的群组名
+          }
         }
         UpDownSwitching_Flag=TRUE;
         UpDownSwitchingCount=0;
@@ -158,16 +169,25 @@ void Keyboard_Test(void)
           PersonalCallingNum=ApiAtCmd_GetUserNum()-1;
           KeyPersonalCallingCount=ApiAtCmd_GetUserNum()-1;
         }
-        //api_disp_icoid_output( eICO_IDLOCKED, TRUE, TRUE);//选
-        VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(PersonalCallingNum),ApiAtCmd_GetUserNameLen(PersonalCallingNum));//播报按上键之后对应的用户名
-        api_lcd_pwr_on_hint4("                ");//清屏
-        if(UnicodeForGbk_AllUserName_english_flag(PersonalCallingNum)==TRUE)
+        
+        if((PersonalCallingNum==ApiAtCmd_GetUserNum()-1)||PersonalCallingNum%poc_get_once_group_and_user_num==poc_get_once_group_and_user_num-1)
         {
-          api_lcd_pwr_on_hint(UnicodeForGbk_AllUserName(PersonalCallingNum));//显示当前选中的群组名
+          //ApiPocCmd_WritCommand(PocComm_UserListInfo,0,0);
+          api_lcd_pwr_on_hint("获取中...       ");//清屏
+          huo_qu_zhong_flag=TRUE;
         }
         else
         {
-          api_lcd_pwr_on_hint4(UnicodeForGbk_AllUserName(PersonalCallingNum));//显示当前选中的群组名
+          VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(PersonalCallingNum%poc_get_once_group_and_user_num),ApiAtCmd_GetUserNameLen(PersonalCallingNum%poc_get_once_group_and_user_num));//播报按上键之后对应的用户名
+          api_lcd_pwr_on_hint4("                ");//清屏
+          if(UnicodeForGbk_AllUserName_english_flag(PersonalCallingNum%poc_get_once_group_and_user_num)==TRUE)
+          {
+            api_lcd_pwr_on_hint(UnicodeForGbk_AllUserName(PersonalCallingNum%poc_get_once_group_and_user_num));//显示当前选中的群组名
+          }
+          else
+          {
+            api_lcd_pwr_on_hint4(UnicodeForGbk_AllUserName(PersonalCallingNum%poc_get_once_group_and_user_num));//显示当前选中的群组名
+          }
         }
         UpDownSwitching_Flag=TRUE;
         UpDownSwitchingCount=0;
@@ -225,8 +245,7 @@ void Keyboard_Test(void)
               //GettheOnlineMembersDone=FALSE;
               VOICE_SetOutput(ATVOICE_FreePlay,"f25d09902d4e",12);//播报已选中
               UpDownSwitchingCount=0;//解决选中单呼后切换群组，语音中断的问题
-              DEL_SetTimer(0,60);
-              while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+              Delay_100ms(6);//无影响
               ApiPocCmd_WritCommand(PocComm_Invite,"0000000101",strlen((char const *)"0000000101"));
               KeyDownUpChoose_GroupOrUser_Flag=0;
               TASK_Ptt_StartPersonCalling_Flag=TRUE;//判断主动单呼状态（0a）
@@ -252,8 +271,8 @@ void Keyboard_Test(void)
         case 1://=1，进入某群组
           VOICE_SetOutput(ATVOICE_FreePlay,"f25d09902d4e",12);//播报已选中
           UpDownSwitchingCount=0;//解决选中单呼后切换群组，语音中断的问题
-          DEL_SetTimer(0,40);
-          while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+          Delay_100ms(4);//DEL_SetTimer(0,40);
+          //while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
           ApiPocCmd_WritCommand(PocComm_EnterGroup,"0000000101",strlen((char const *)"0000000101"));
           KeyDownUpChoose_GroupOrUser_Flag=0;
           EnterKeyTimeCount=0;
@@ -265,8 +284,8 @@ void Keyboard_Test(void)
             //GettheOnlineMembersDone=FALSE;
             VOICE_SetOutput(ATVOICE_FreePlay,"f25d09902d4e",12);//播报已选中
             UpDownSwitchingCount=0;//解决选中单呼后切换群组，语音中断的问题
-            DEL_SetTimer(0,60);
-            while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+            Delay_100ms(6);//DEL_SetTimer(0,60);
+            //while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
             ApiPocCmd_WritCommand(PocComm_Invite,"0000000101",strlen((char const *)"0000000101"));
             KeyDownUpChoose_GroupOrUser_Flag=0;
             TASK_Ptt_StartPersonCalling_Flag=TRUE;//判断主动单呼状态（0a）
@@ -321,8 +340,7 @@ void Keyboard_Test(void)
             if(POC_EnterPersonalCalling_Flag==1)//解决被呼状态下，按个呼键无效（应该是被呼状态下，让个呼键失效）
             {
               VOICE_SetOutput(ATVOICE_FreePlay,"ab887c542d4e",12);//个呼中
-              DEL_SetTimer(0,50);
-              while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+              Delay_100ms(5);//无影响
               api_lcd_pwr_on_hint("                ");//清屏
               
               if(UnicodeForGbk_MainUserName_english_flag()==TRUE)
@@ -341,9 +359,8 @@ void Keyboard_Test(void)
               PersonalCallingNum=0;//解决按单呼键直接选中，单呼用户并不是播报的用户
               Key_PersonalCalling_Flag=1;
               VOICE_SetOutput(ATVOICE_FreePlay,"C5627C54216A0F5F",16);//单呼模式
-              DEL_SetTimer(0,65);
-              while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
-              ApiPocCmd_WritCommand(PocComm_UserListInfo,0,0);
+              Delay_100ms(6);//无影响
+              get_online_user_list_num_for_key_flag=TRUE;
               KeyDownUpChoose_GroupOrUser_Flag=2;
               TheMenuLayer_Flag=0;//处于0级菜单，进入单呼模式为菜单外功能
               KeyPersonalCallingCount=0;//解决单呼模式，上下键成员非正常顺序，第一个成员在切换时会第二、第三个碰到
@@ -370,11 +387,9 @@ void Keyboard_Test(void)
             MenuMode_Flag=1;
             /*******直接搬个呼键状态检测的程序***************************************************************************************************************************************/
             api_lcd_pwr_on_hint3("在线成员数:     ");
-             api_lcd_pwr_on_hint("                ");
-            DEL_SetTimer(0,20);
-            while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
-            ApiPocCmd_WritCommand(PocComm_UserListInfo,0,0);
+            api_lcd_pwr_on_hint("                ");
             get_online_user_list_num_flag=TRUE;
+            get_online_user_list_num_for_key_flag=TRUE;
             break;
           }
           break;
@@ -478,7 +493,7 @@ void Keyboard_Test(void)
     }
     }
     }
-    Delay_100ms(1);
+    Key_Flag_1=1;//按键延时标志位
     break;
   case 0x00800000://menu
     NumberKeyboardPressDown_flag=TRUE;
@@ -497,8 +512,8 @@ void Keyboard_Test(void)
       }
       VoiceType_FreehandOrHandset_Flag=1;
       api_disp_all_screen_refresh();// 全屏统一刷新
-      DEL_SetTimer(0,30);
-      while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+      Delay_100ms(3);//DEL_SetTimer(0,30);
+      //while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
       NoUseNum=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)ucVGR1,strlen((char const *)ucVGR1));//
       AkeyvolumeCount=1;
     }
@@ -513,8 +528,8 @@ void Keyboard_Test(void)
         }
         VoiceType_FreehandOrHandset_Flag=0;
         api_disp_all_screen_refresh();// 全屏统一刷新
-        DEL_SetTimer(0,30);
-        while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+        Delay_100ms(3);//DEL_SetTimer(0,30);
+        //while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
         NoUseNum=ApiAtCmd_WritCommand(ATCOMM7_VGR,(u8 *)ucVGR7,strlen((char const *)ucVGR7));//
         AkeyvolumeCount=7;
       }
@@ -611,16 +626,27 @@ void Keyboard_Test(void)
             KeyPersonalCallingCount=0;
             PersonalCallingNum=0;
           }
-          VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(PersonalCallingNum),ApiAtCmd_GetUserNameLen(PersonalCallingNum));//播报按上键之后对应的用户名
+          
+        if(PersonalCallingNum%poc_get_once_group_and_user_num==0)
+        {
+          //ApiPocCmd_WritCommand(PocComm_UserListInfo,0,0);
+          api_lcd_pwr_on_hint("获取中...       ");//清屏
+          huo_qu_zhong_flag=TRUE;
+        }
+        else
+        {
+          VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(PersonalCallingNum%poc_get_once_group_and_user_num),ApiAtCmd_GetUserNameLen(PersonalCallingNum%poc_get_once_group_and_user_num));//播报按上键之后对应的用户名
           api_lcd_pwr_on_hint4("                ");//清屏
-          if(UnicodeForGbk_AllUserName_english_flag(PersonalCallingNum)==TRUE)
+          if(UnicodeForGbk_AllUserName_english_flag(PersonalCallingNum%poc_get_once_group_and_user_num)==TRUE)
           {
-            api_lcd_pwr_on_hint(UnicodeForGbk_AllUserName(PersonalCallingNum));//显示当前选中的群组名
+            api_lcd_pwr_on_hint(UnicodeForGbk_AllUserName(PersonalCallingNum%poc_get_once_group_and_user_num));//显示当前选中的群组名
           }
           else
           {
-            api_lcd_pwr_on_hint4(UnicodeForGbk_AllUserName(PersonalCallingNum));//显示当前选中的群组名
+            api_lcd_pwr_on_hint4(UnicodeForGbk_AllUserName(PersonalCallingNum%poc_get_once_group_and_user_num));//显示当前选中的群组名
           }
+        }
+
           UpDownSwitching_Flag=TRUE;
           UpDownSwitchingCount=0;
         }
@@ -646,17 +672,25 @@ void Keyboard_Test(void)
               KeyPersonalCallingCount=0;
               PersonalCallingNum=0;
             }
-            //api_disp_icoid_output( eICO_IDLOCKED, TRUE, TRUE);//选
-            VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(PersonalCallingNum),ApiAtCmd_GetUserNameLen(PersonalCallingNum));//播报按上键之后对应的用户名
-            api_lcd_pwr_on_hint4("                ");//清屏
-            if(UnicodeForGbk_AllUserName_english_flag(PersonalCallingNum)==TRUE)
-            {
-              api_lcd_pwr_on_hint(UnicodeForGbk_AllUserName(PersonalCallingNum));//显示当前选中的群组名
-            }
-            else
-            {
-              api_lcd_pwr_on_hint4(UnicodeForGbk_AllUserName(PersonalCallingNum));//显示当前选中的群组名
-            }
+        if(PersonalCallingNum%poc_get_once_group_and_user_num==0)
+        {
+          //ApiPocCmd_WritCommand(PocComm_UserListInfo,0,0);
+          api_lcd_pwr_on_hint("获取中...       ");//清屏
+          huo_qu_zhong_flag=TRUE;
+        }
+        else
+        {
+          VOICE_SetOutput(ATVOICE_FreePlay,ApiAtCmd_GetUserName(PersonalCallingNum%poc_get_once_group_and_user_num),ApiAtCmd_GetUserNameLen(PersonalCallingNum%poc_get_once_group_and_user_num));//播报按上键之后对应的用户名
+          api_lcd_pwr_on_hint4("                ");//清屏
+          if(UnicodeForGbk_AllUserName_english_flag(PersonalCallingNum%poc_get_once_group_and_user_num)==TRUE)
+          {
+            api_lcd_pwr_on_hint(UnicodeForGbk_AllUserName(PersonalCallingNum%poc_get_once_group_and_user_num));//显示当前选中的群组名
+          }
+          else
+          {
+            api_lcd_pwr_on_hint4(UnicodeForGbk_AllUserName(PersonalCallingNum%poc_get_once_group_and_user_num));//显示当前选中的群组名
+          }
+        }
             UpDownSwitching_Flag=TRUE;
             UpDownSwitchingCount=0;
             /*api_lcd_pwr_on_hint("对象:   个呼选择");
@@ -863,6 +897,7 @@ void Keyboard_Test(void)
           Key_Flag_1=1;//按键延时标志位
           Key_PersonalCalling_Flag=0;//进入组呼标志位
           KeyDownUpChoose_GroupOrUser_Flag=0;//解决（个呼键→返回键→OK或PTT）屏幕显示错误的BUG
+          huo_qu_zhong_flag=FALSE;
         }
         else//如果处于组呼模式则应该无变化
         {
@@ -890,12 +925,21 @@ void Keyboard_Test(void)
   GeHuTest(ulAllKeyID);
   if(Key_Flag_1==1)//按下按键延迟1秒
   {
-    DEL_SetTimer(1,30);//influence get group name
-    while(1)
+    Delay_100ms(2);//DEL_SetTimer(1,30);//influence get group name
+    Key_Flag_1=0;
+    if(KeyDownUpChoose_GroupOrUser_Flag==2)
     {
-      Key_Flag_1=0;
-      if(DEL_GetTimer(1) == TRUE) {break;}
+      if(huo_qu_zhong_flag==TRUE)
+      {
+        ApiPocCmd_WritCommand(PocComm_UserListInfo,0,0);
+      }
     }
+    if(get_online_user_list_num_for_key_flag==TRUE)
+    {
+      ApiPocCmd_WritCommand(PocComm_UserListInfo,0,0);
+      get_online_user_list_num_for_key_flag=FALSE;
+    }
+            ;
   }
 }
 

@@ -12,7 +12,7 @@
 #define  nAddrTemp    0x4000 /* start address */
 #define  nLenTemp     16
 
-#define LCD_DISP_LEN_MAX 16
+#define LCD_DISP_LEN_MAX 16 //16
 #define CH_ALIAS_LEN_MAX 10
 
 /* PC */

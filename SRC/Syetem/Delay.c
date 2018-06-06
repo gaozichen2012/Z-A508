@@ -433,6 +433,8 @@ static void DEL_500msProcess(void)			//delay 500ms process server
         MenuMode_Flag=0;
         //用于PTT键及上下键返回默认状态
         KeyUpDownCount=0;
+        PersonalCallingNum=0;
+        huo_qu_zhong_flag=FALSE;//未查询到组成员，此标志位清零
         KeyDownUpChoose_GroupOrUser_Flag=0;//解决（个呼键→返回键→OK或PTT）屏幕显示错误的BUG
         ApiPocCmd_PersonalCallingMode=FALSE;//解决群组成员获取不全时，回到组呼状态，按ok键无效的问题
       }
