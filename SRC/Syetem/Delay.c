@@ -41,6 +41,7 @@ u8 GetNoOnlineMembersCount=0;
 u8 POC_GetAllGroupNameDoneCount=0;
 u8 ApiAtCmd_ZTTSCount=0;
 u8 ShowTimeCount=0;
+u8 huo_qu_zhong_flag_count=0;
 //u8 UpgradeNoATReturn_Count=0;
 bool LockingState_Flag=FALSE;
 u8 BacklightTimeCount;//=10;//背光灯时间(需要设置进入eeprom)
@@ -425,6 +426,10 @@ static void DEL_500msProcess(void)			//delay 500ms process server
       GetNoOnlineMembersCount++;
       if(GetNoOnlineMembersCount>2*5)
       {
+#if 1
+        ApiPocCmd_WritCommand(PocComm_UserListInfo,0,0);
+#else
+        
         GetNoOnlineMembersCount=0;
         Key_PersonalCalling_Flag=0;//进入组呼标志位
         api_disp_icoid_output( eICO_IDMESSAGEOff, TRUE, TRUE);//空图标-与选对应
@@ -437,6 +442,7 @@ static void DEL_500msProcess(void)			//delay 500ms process server
         huo_qu_zhong_flag=FALSE;//未查询到组成员，此标志位清零
         KeyDownUpChoose_GroupOrUser_Flag=0;//解决（个呼键→返回键→OK或PTT）屏幕显示错误的BUG
         ApiPocCmd_PersonalCallingMode=FALSE;//解决群组成员获取不全时，回到组呼状态，按ok键无效的问题
+#endif
       }
     }
     else
@@ -445,6 +451,20 @@ static void DEL_500msProcess(void)			//delay 500ms process server
       {
         GetNoOnlineMembersCount=0;
       }
+    }
+/*菜单在线成员列表模式下，显示查询中，未获取到完整的用户列表信息应等待再次获取*/
+    if(huo_qu_zhong_flag==TRUE||get_online_user_list_num_flag==TRUE)
+    {
+      huo_qu_zhong_flag_count++;
+      if(huo_qu_zhong_flag_count>2*3)
+      {
+        ApiPocCmd_WritCommand(PocComm_UserListInfo,0,0);
+        huo_qu_zhong_flag_count=0;
+      }
+    }
+    else
+    {
+      huo_qu_zhong_flag_count=0;
     }
 /*******无在线成员处理*******************/
    /* if(PocNoOnlineMember_Flag==TRUE)

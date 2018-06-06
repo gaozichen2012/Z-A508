@@ -361,7 +361,7 @@ INTERRUPT_HANDLER(TIM1_CAP_COM_IRQHandler, 12)
      UART1_ClearITPendingBit(UART1_IT_RXNE);
      DrvMC8332_UART_Interrupt();
    }
-   /*
+   
    if(led_count==0)
    {
      Set_RedLed(LED_OFF);
@@ -371,7 +371,7 @@ INTERRUPT_HANDLER(TIM1_CAP_COM_IRQHandler, 12)
    {
      Set_RedLed(LED_ON);
      led_count=0;
-   }*/
+   }
    //UART1_ClearITPendingBit(UART1_IT_RXNE);
  }
 

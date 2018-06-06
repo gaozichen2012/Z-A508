@@ -393,6 +393,30 @@ void ApiPocCmd_10msRenew(void)
       break;
     case 0x81://获取组内成员列表
       ucId = COML_AscToHex(pBuf+10, 0x02);//
+      if(ucId==0)
+        {
+          ucId=0;
+        }
+        if(ucId==1)
+        {
+          ucId=1;
+        }
+        if(ucId==2)
+        {
+          ucId=2;
+        }
+        if(ucId==3)
+        {
+          ucId=3;
+        }
+        if(ucId==4)
+        {
+          ucId=4;
+        }
+        if(ucId==5)
+        {
+          ucId=5;
+        }
       refresh_users_list_count=(u8)(PersonalCallingNum/poc_get_once_group_and_user_num);
       user_list_ucId=ucId-refresh_users_list_count*poc_get_once_group_and_user_num;
       if(user_list_ucId<poc_get_once_group_and_user_num)
@@ -414,8 +438,9 @@ void ApiPocCmd_10msRenew(void)
           PocCmdDrvobj.WorkState.UseState.WorkUserName.Name[i] = pBuf[i+20];//存入获取的群组名
           PocCmdDrvobj.WorkState.UseState.UserName[user_list_ucId].Name[i]=PocCmdDrvobj.WorkState.UseState.WorkUserName.Name[i];
         }
-        
         PocCmdDrvobj.WorkState.UseState.UserName[user_list_ucId].NameLen = PocCmdDrvobj.WorkState.UseState.WorkUserName.NameLen;
+
+        
         
         i_count1=0;
         NumCount=0;
@@ -444,7 +469,27 @@ void ApiPocCmd_10msRenew(void)
             }
         }
         GetMemberCount++;
-        if(refresh_users_list_count==refresh_users_list_count_max)
+        if(GetMemberCount==1)
+        {
+          GetMemberCount=1;
+        }
+        if(GetMemberCount==2)
+        {
+          GetMemberCount=2;
+        }
+        if(GetMemberCount==3)
+        {
+          GetMemberCount=3;
+        }
+        if(GetMemberCount==4)
+        {
+          GetMemberCount=4;
+        }
+        if(GetMemberCount==5)
+        {
+          GetMemberCount=5;
+        }
+        if(refresh_users_list_count==refresh_users_list_count_max)//如果是最后一列信息
         {
           if(PocCmdDrvobj.WorkState.UseState.PttUserName.UserNum!=0
              &&GetMemberCount!=0
@@ -454,7 +499,7 @@ void ApiPocCmd_10msRenew(void)
             GettheOnlineMembersDone=TRUE;
           }
         }
-        else
+        else//如果是一列完整的数据
         {
           if(GetMemberCount>=poc_get_once_group_and_user_num)
           {
@@ -482,7 +527,10 @@ void ApiPocCmd_10msRenew(void)
         if(get_online_user_list_num_flag==TRUE)
         {
           api_lcd_pwr_on_hint2(HexToChar_AllOnlineMemberNum());
-          if(GettheOnlineMembersDone==TRUE)
+          
+          if(GettheOnlineMembersDone==TRUE
+             ||GetMemberCount>=poc_get_once_group_and_user_num-1
+             ||GetMemberCount>=PocCmdDrvobj.WorkState.UseState.PttUserName.UserNum)//解决在菜单在线成员列表状态下获取第一列成员列表总是少第二组的问题
           {
             get_online_user_list_num_flag=FALSE;
                     PersonalCallingNum=0;//解决按单呼键直接选中，单呼用户并不是播报的用户
@@ -506,8 +554,6 @@ void ApiPocCmd_10msRenew(void)
           }
         }
       }
-
-
       break;
     case 0x82://判断是否登录成功
       ucId = COML_AscToHex(pBuf+3, 0x01);

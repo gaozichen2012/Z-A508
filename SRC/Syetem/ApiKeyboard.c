@@ -927,7 +927,7 @@ void Keyboard_Test(void)
   {
     Delay_100ms(2);//DEL_SetTimer(1,30);//influence get group name
     Key_Flag_1=0;
-    if(KeyDownUpChoose_GroupOrUser_Flag==2)
+    //if(KeyDownUpChoose_GroupOrUser_Flag==2)
     {
       if(huo_qu_zhong_flag==TRUE)
       {
@@ -939,7 +939,6 @@ void Keyboard_Test(void)
       ApiPocCmd_WritCommand(PocComm_UserListInfo,0,0);
       get_online_user_list_num_for_key_flag=FALSE;
     }
-            ;
   }
 }
 
