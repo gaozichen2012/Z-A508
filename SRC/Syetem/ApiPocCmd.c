@@ -393,30 +393,6 @@ void ApiPocCmd_10msRenew(void)
       break;
     case 0x81://获取组内成员列表
       ucId = COML_AscToHex(pBuf+10, 0x02);//
-      if(ucId==0)
-        {
-          ucId=0;
-        }
-        if(ucId==1)
-        {
-          ucId=1;
-        }
-        if(ucId==2)
-        {
-          ucId=2;
-        }
-        if(ucId==3)
-        {
-          ucId=3;
-        }
-        if(ucId==4)
-        {
-          ucId=4;
-        }
-        if(ucId==5)
-        {
-          ucId=5;
-        }
       refresh_users_list_count=(u8)(PersonalCallingNum/poc_get_once_group_and_user_num);
       user_list_ucId=ucId-refresh_users_list_count*poc_get_once_group_and_user_num;
       if(user_list_ucId<poc_get_once_group_and_user_num)
@@ -469,26 +445,6 @@ void ApiPocCmd_10msRenew(void)
             }
         }
         GetMemberCount++;
-        if(GetMemberCount==1)
-        {
-          GetMemberCount=1;
-        }
-        if(GetMemberCount==2)
-        {
-          GetMemberCount=2;
-        }
-        if(GetMemberCount==3)
-        {
-          GetMemberCount=3;
-        }
-        if(GetMemberCount==4)
-        {
-          GetMemberCount=4;
-        }
-        if(GetMemberCount==5)
-        {
-          GetMemberCount=5;
-        }
         if(refresh_users_list_count==refresh_users_list_count_max)//如果是最后一列信息
         {
           if(PocCmdDrvobj.WorkState.UseState.PttUserName.UserNum!=0

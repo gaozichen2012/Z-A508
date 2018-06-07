@@ -231,7 +231,7 @@ void Task_RunNormalOperation(void)
     if(LoosenPttMoment_Flag==TRUE)//如果松开PTT瞬间，发送endPTT指令
     {
       ApiPocCmd_WritCommand(PocComm_EndPTT,ucEndPTT,strlen((char const *)ucEndPTT));
-      //Set_RedLed(LED_OFF);
+      Set_RedLed(LED_OFF);
     }
     break;
   case 2://2：按住PTT状态
@@ -248,7 +248,7 @@ void Task_RunNormalOperation(void)
       }
       else
       {
-        //Set_RedLed(LED_ON);
+        Set_RedLed(LED_ON);
         Set_GreenLed(LED_OFF);
       if(TheMenuLayer_Flag!=0)//解决主呼时影响菜单界面信息显示，现在只要按PTT就会退出菜单
       {
@@ -276,7 +276,7 @@ void Task_RunNormalOperation(void)
     {
       ApiPocCmd_WritCommand(PocComm_EndPTT,ucEndPTT,strlen((char const *)ucEndPTT));
       
-      //Set_RedLed(LED_OFF);
+      Set_RedLed(LED_OFF);
     }
     break;
   case 3://3：松开PTT瞬间
