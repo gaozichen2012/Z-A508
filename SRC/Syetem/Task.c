@@ -24,7 +24,6 @@ u8 TaskStartDeleteDelay4=1;
 u8 TaskStartDeleteDelay5=0;
 u8 TaskStartDeleteDelay6=0;
 #endif
-
 u8 *ucStartPTT                  = "0B0000";
 u8 *ucEndPTT                    = "0C0000";
 
