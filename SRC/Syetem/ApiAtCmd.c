@@ -44,54 +44,55 @@ bool PositionInfoSendToATPORT_SetPPP_Flag=FALSE;
 bool PositionInfoSendToATPORT_InfoDisplay_Flag=FALSE;
 //#define DrvMC8332_IccId_Len 30
 typedef struct{
-	struct{
-		union{
-			struct{
-				u16 bFunOff	: 1;
-				u16 bFun	: 1;
-				u16 bEsn	: 1;
-				u16 bCard	: 1;
-				u16 bRssi	: 1;
-				u16 bPppStep	: 2;
-				u16 bPppOk	: 1;
-				u16 bTcp	: 1;
-				u16 bTcpOk	: 1;
-				u16 bUdp	: 1;
-				u16 bUdpOk	: 1;
-				u16 bFirstPlay  : 1;
-				u16		: 3;
-			}Bits;
-			u16 Byte;
-		}Msg;
+  struct{
+    union{
+      struct{
+        //u16 bFunOff	: 1;
+        //u16 bFun	: 1;
+        //u16 bEsn	: 1;
+        //u16 bCard	: 1;
+        //u16 bRssi	: 1;
+        //u16 bPppStep	: 2;
+        u16 bPppOk	: 1;
+        u16 bTcp	: 1;
+        u16 bTcpOk	: 1;
+        u16 bUdp	: 1;
+        u16 bUdpOk	: 1;
+        u16 bFirstPlay  : 1;
+      u16		: 10;
+      }Bits;
+      u16 Byte;
+    }Msg;
 
-                struct{
-                  u8 Buf[21];//存放AT收到的经纬度信息
-                  u8 BufLen;//接收经纬度信息的数据长度
-                  u8 Longitude_Minute;//小数点前的数
-                  u32 Longitude_Second;//小数点后的数
-                  u8 Latitude_Minute;
-                  u32 Latitude_Second;
-                }Position;
-                u8 SouXingConut;
-                u16 SignalToNoiseMax;//最大信号值
-                bool EffectiveLocation;//是否收到经纬度信息
-                u8 TimeBuf[20];//存放AT收到的时间信息
-                u8 TimeBufLen;//接收时间信息的数据长度
-                u8 GpsInfoBuf[30];//存放AT收到的速度数据
-                u8 GpsInfoBufLen;//接收速度的数据长度
-                u8 GpsCnoBuf[10];//存放CNO收到的速度数据
-                u8 GpsCnoBufLen;//接收Cno的数据长度
-                u8 ucDate[3];//年月日
-                u8 ucTime[3];//时分秒
-                u16 ucSpeed;
-		u8 Buf[30];
-		u8 Len;
-                u8 HDRCSQBuf[2];
-                u8 HDRCSQLen;
-                u8 CSQBuf[2];
-                u8 CSQLen;
-	}NetState;
+    struct{
+      u8 Buf[21];//存放AT收到的经纬度信息
+      u8 BufLen;//接收经纬度信息的数据长度
+      u8 Longitude_Minute;//小数点前的数
+      u32 Longitude_Second;//小数点后的数
+      u8 Latitude_Minute;
+      u32 Latitude_Second;
+    }Position;
+    u8 SouXingConut;
+    u16 SignalToNoiseMax;//最大信号值
+    bool EffectiveLocation;//是否收到经纬度信息
+    u8 TimeBuf[20];//存放AT收到的时间信息
+    u8 TimeBufLen;//接收时间信息的数据长度
+    u8 GpsInfoBuf[30];//存放AT收到的速度数据
+    u8 GpsInfoBufLen;//接收速度的数据长度
+    u8 GpsCnoBuf[10];//存放CNO收到的速度数据
+    u8 GpsCnoBufLen;//接收Cno的数据长度
+    u8 ucDate[3];//年月日
+    u8 ucTime[3];//时分秒
+    u16 ucSpeed;
+    u8 Buf[30];
+    u8 Len;
+    u8 HDRCSQBuf[2];
+    u8 HDRCSQLen;
+    u8 CSQBuf[2];
+    u8 CSQLen;
+  }NetState;
 }AtCmdDrv;
+
 static AtCmdDrv AtCmdDrvobj;
 static void AtCmd_NetParamCode(void);//获取TCP IP地址
 
@@ -658,12 +659,12 @@ static void AtCmd_NetParamCode(void)//获取TCP IP地址
   AtCmdDrvobj.NetState.Len=TcpIpLen+TcpPortLen+1;
 }
 
-u8 ApiAtCmd_tcp_state(void)
+u16 ApiAtCmd_tcp_state(void)
 {
 	return AtCmdDrvobj.NetState.Msg.Bits.bTcpOk;
 }
 
-u8 ApiAtCmd_Ppp_state(void)
+u16 ApiAtCmd_Ppp_state(void)
 {
 	return AtCmdDrvobj.NetState.Msg.Bits.bPppOk;
 }

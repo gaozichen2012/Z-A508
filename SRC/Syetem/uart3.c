@@ -183,14 +183,14 @@ void UART3_ToMcuMain(void)
                                                                 else
                                                                 {
                                                                   Set_GreenLed(LED_ON);
-                                                                  //Set_RedLed(LED_OFF);
+                                                                  Set_RedLed(LED_OFF);
                                                                   
                                                                 }
 							}
                                                         else
                                                         {
                                                           Set_GreenLed(LED_OFF);
-                                                          //Set_RedLed(LED_ON);
+                                                          Set_RedLed(LED_ON);
                                                         }
 						}
 					}

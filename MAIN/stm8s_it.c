@@ -32,6 +32,7 @@
 #include "AllHead.h"
    u8 u=0;
 u8 led_count=0;
+u8 tone_count=0;
 /** @addtogroup Template_Project
   * @{
   */
@@ -228,11 +229,23 @@ INTERRUPT_HANDLER(SPI_IRQHandler, 10)
   */
 INTERRUPT_HANDLER(TIM1_UPD_OVF_TRG_BRK_IRQHandler, 11)
 {
-  /* In order to detect unexpected events during development,
-     it is recommended to set a breakpoint on the following instruction.
-  */
-  //TONE_Interrupt(); 
-   //  TIM1_ClearITPendingBit(TIM1_IT_UPDATE);  
+  if(key_warning_flag==TRUE)
+  {
+    tone_count++;
+    if(tone_count>=7)
+    {
+      tone_count=0;
+      Test_PWM_LED();
+    }
+  }
+  else
+  {
+    tone_count=0;
+    BEEP_SetOutput(BEEP_IDPowerOff,OFF,0x00,TRUE);
+  }
+
+    TIM1_ClearITPendingBit (TIM1_IT_UPDATE);	//必须要清除中断标志位
+ 
 }
 
 /**

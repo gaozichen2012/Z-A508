@@ -11,7 +11,8 @@
 
 u8 refresh_users_list_count=0;
 u8 refresh_users_list_count_max=0;
-
+u8 group_num_count=0;
+u8 get_group_list_loss_flag=FALSE;
 u8 GetMemberCount=0;
 bool ApiPocCmd_PersonalCallingMode=FALSE;
 u8 PresentGroupNum=0;
@@ -221,7 +222,7 @@ void ApiPocCmd_WritCommand(PocCommType id, u8 *buf, u16 len)
     DrvGD83_UART_TxCommand(buf, len);
     break;
   case PocComm_GroupListInfo://5
-    DrvGD83_UART_TxCommand(buf, len);
+    DrvGD83_UART_TxCommand("0D0000", 6);
     break;
   case PocComm_UserListInfo://6
     for(i=0;i<=20;i++)
@@ -365,31 +366,47 @@ void ApiPocCmd_10msRenew(void)
       }
       break;
     case 0x0d://群组个数
+      group_num_count=0;
       ucId = COML_AscToHex(pBuf+10, 0x02);
       PocCmdDrvobj.WorkState.UseState.MainWorkGroup.GroupNum = ucId;
+      if(PocCmdDrvobj.WorkState.UseState.MainWorkGroup.GroupNum>=poc_group_num)
+      {
+        PocCmdDrvobj.WorkState.UseState.MainWorkGroup.GroupNum=poc_group_num;
+      }
       break;
     case 0x80://获取工作组列表
       ucId = COML_AscToHex(pBuf+10, 0x02);
-      //test_count++;
-      if(Len >= 24)//如果群组id后面还有群组名
+      if(ucId<=PocCmdDrvobj.WorkState.UseState.MainWorkGroup.GroupNum)//群组数大于最大群组数则不存
       {
-        PocCmdDrvobj.WorkState.UseState.WorkGroup.NameLen = Len - 24;
-        if(PocCmdDrvobj.WorkState.UseState.WorkGroup.NameLen>=poc_group_name_len)
+        if(Len >= 24)//如果群组id后面还有群组名
         {
-          PocCmdDrvobj.WorkState.UseState.WorkGroup.NameLen=poc_group_name_len;
+          PocCmdDrvobj.WorkState.UseState.WorkGroup.NameLen = Len - 24;
+          if(PocCmdDrvobj.WorkState.UseState.WorkGroup.NameLen>=poc_group_name_len)
+          {
+            PocCmdDrvobj.WorkState.UseState.WorkGroup.NameLen=poc_group_name_len;
+          }
+        }
+        else//无群组名
+        {
+          PocCmdDrvobj.WorkState.UseState.WorkGroup.NameLen = 0x00;
+        }
+        for(i = 0x00; i < PocCmdDrvobj.WorkState.UseState.WorkGroup.NameLen; i++)
+        {
+          PocCmdDrvobj.WorkState.UseState.WorkGroup.Name[i] = pBuf[i+24];//存入获取的群组名
+          PocCmdDrvobj.WorkState.UseState.Group[ucId].Name[i] = 
+            PocCmdDrvobj.WorkState.UseState.WorkGroup.Name[i];
+        }
+        PocCmdDrvobj.WorkState.UseState.Group[ucId].NameLen = PocCmdDrvobj.WorkState.UseState.WorkGroup.NameLen;
+        group_num_count++;
+        if(group_num_count<PocCmdDrvobj.WorkState.UseState.MainWorkGroup.GroupNum)
+        {
+          get_group_list_loss_flag=TRUE;
+        }
+        else
+        {
+          get_group_list_loss_flag=FALSE;
         }
       }
-      else//无群组名
-      {
-        PocCmdDrvobj.WorkState.UseState.WorkGroup.NameLen = 0x00;
-      }
-      for(i = 0x00; i < PocCmdDrvobj.WorkState.UseState.WorkGroup.NameLen; i++)
-      {
-        PocCmdDrvobj.WorkState.UseState.WorkGroup.Name[i] = pBuf[i+24];//存入获取的群组名
-        PocCmdDrvobj.WorkState.UseState.Group[ucId].Name[i] = 
-          PocCmdDrvobj.WorkState.UseState.WorkGroup.Name[i];
-      }
-      PocCmdDrvobj.WorkState.UseState.Group[ucId].NameLen = PocCmdDrvobj.WorkState.UseState.WorkGroup.NameLen;
       break;
     case 0x81://获取组内成员列表
       ucId = COML_AscToHex(pBuf+10, 0x02);//

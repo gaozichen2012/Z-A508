@@ -116,6 +116,18 @@ void Keyboard_Test(void)
         if(KeylockTimeSetCount<0x10) {KeylockTimeSetCount=0x16;}
         Level3MenuDisplay(KeylockTimeSetCount);
       }
+      else if(ApiMenu_BeiDouOrWritingFrequency_Flag==1)//如果是设置网络模式
+      {
+        if(network_mode_2gor3g_SetCount=0x17)
+        {
+          network_mode_2gor3g_SetCount=0x18;
+        }
+        else
+        {
+          network_mode_2gor3g_SetCount=0x17;
+        }
+        Level3MenuDisplay(network_mode_2gor3g_SetCount);
+      }
       else if(ApiMenu_SwitchOnlineUser_Flag==1)//如果是显示在线用户名二级菜单---------------------------------------------------------------
       {
         KeyPersonalCallingCount--;
@@ -147,7 +159,7 @@ void Keyboard_Test(void)
         UpDownSwitching_Flag=TRUE;
         UpDownSwitchingCount=0;
       }
-      else if(ApiMenu_GpsInfo_Flag==1||ApiMenu_NativeInfo_Flag==1||ApiMenu_BeiDouOrWritingFrequency_Flag==1)//如果是GPS信息、本机信息、北斗写频切换二级菜单
+      else if(ApiMenu_GpsInfo_Flag==1||ApiMenu_NativeInfo_Flag==1)//如果是GPS信息、本机信息、北斗写频切换二级菜单
       {}
       else
       {
@@ -472,18 +484,21 @@ void Keyboard_Test(void)
         case 8://北斗/写频切换
           switch(ApiMenu_BeiDouOrWritingFrequency_Flag)
           {
-            //客户要求GPS经纬度及本机信息界面按上下键和OK键无效，只有按退出键退出，故屏蔽以下
-          /*case 1://二级菜单按OK键进入一级菜单
+          case 2://默认状态按OK键进入一级菜单
+            ApiMenu_BeiDouOrWritingFrequency_Flag=0;
             MenuDisplay(MenuModeCount);
             MenuMode_Flag=1;
-            ApiMenu_BeiDouOrWritingFrequency_Flag=0;
-            TheMenuLayer_Flag=1;//处于一级菜单
-            break;*/
-          case 0://一级菜单按ok键进入二级菜单
+            break;
+          case 0://在一级菜单按ok键进入二级菜单
+            ApiMenu_BeiDouOrWritingFrequency_Flag=1;//在上下键中处理
             SubmenuMenuDisplay(BeiDouOrWritingFrequencySwitch);
-            ApiMenu_BeiDouOrWritingFrequency_Flag=1;
-            MenuMode_Flag=1;
             TheMenuLayer_Flag=2;//处于二级菜单
+            break;
+          case 1://二级菜单确认返回一级菜单
+            ApiMenu_BeiDouOrWritingFrequency_Flag=2;
+            MenuDisplay(MenuModeCount);
+            MenuMode_Flag=1;
+            TheMenuLayer_Flag=1;//处于一级菜单
             break;
           }
           break;
@@ -617,6 +632,18 @@ void Keyboard_Test(void)
           if(KeylockTimeSetCount>0x16) {KeylockTimeSetCount=0x10;}
           Level3MenuDisplay(KeylockTimeSetCount);
         }
+        else if(ApiMenu_BeiDouOrWritingFrequency_Flag==1)//如果是设置网络模式
+        {
+          if(network_mode_2gor3g_SetCount==0x17)
+          {
+            network_mode_2gor3g_SetCount=0x18;
+          }
+          else
+          {
+            network_mode_2gor3g_SetCount=0x17;
+          }
+          Level3MenuDisplay(network_mode_2gor3g_SetCount);
+        }
         else if(ApiMenu_SwitchOnlineUser_Flag==1)//如果是显示在线用户名二级菜单---------------------------------------------------------------
         {
           KeyPersonalCallingCount++;
@@ -650,7 +677,7 @@ void Keyboard_Test(void)
           UpDownSwitching_Flag=TRUE;
           UpDownSwitchingCount=0;
         }
-        else if(ApiMenu_GpsInfo_Flag==1||ApiMenu_NativeInfo_Flag==1||ApiMenu_BeiDouOrWritingFrequency_Flag==1)//如果是GPS信息、本机信息、北斗写频切换二级菜单
+        else if(ApiMenu_GpsInfo_Flag==1||ApiMenu_NativeInfo_Flag==1)//如果是GPS信息、本机信息、北斗写频切换二级菜单
         {}
         else
         {
@@ -914,7 +941,7 @@ void Keyboard_Test(void)
           KeyDownUpChoose_GroupOrUser_Flag=0;
           KeyUpDownCount=0;
         }
-
+        key_warning_flag=FALSE;//按返回键报警标志位清零
       }
 
     }

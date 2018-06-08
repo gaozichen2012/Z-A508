@@ -3,6 +3,7 @@
 
 #include "AllHead.h"
 
+
 typedef enum{
   ATCOMM0_OSSYSHWID             = 0x00,
   ATCOMM1_PPPCFG                = 0x01,
@@ -40,8 +41,8 @@ extern void ApiCaretCmd_10msRenew(void);
 extern void ApiAtCmd_10msRenew(void);
 extern u8 ApiAtCmd_GetIccId(u8 **pBuf);
 extern void ApiGetIccidBuf(void);
-extern u8 ApiAtCmd_tcp_state(void);
-extern u8 ApiAtCmd_Ppp_state(void);
+extern u16 ApiAtCmd_tcp_state(void);
+extern u16 ApiAtCmd_Ppp_state(void);
 extern u32  CHAR_TO_Digital(u8 * pBuf, u8 Len);
 extern void ApiAtCmd_Get_location_Information(void);
 extern void ApiAtCmd_Get_DateTime_Information(void);

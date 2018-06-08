@@ -1,4 +1,7 @@
 #include "AllHead.h"
+u8 *ucNetworkMode2                  = "AT^prefmode=2";//网络模式2G
+u8 *ucNetworkMode3                  = "AT^prefmode=4";//网络模式3G
+u8 network_mode_2gor3g_SetCount=0x18;
   u8 BacklightTimeBuf1[1]={0};
   u8 BacklightTimeBuf2[1]={0};
 #if 1
@@ -88,13 +91,28 @@ void MenuDisplay(MenuDisplayType id)
   case Menu8:
     api_lcd_pwr_on_hint3("菜单            ");
     api_lcd_pwr_on_hint5("8/8");
-     api_lcd_pwr_on_hint("北斗/写频切换   ");
+     api_lcd_pwr_on_hint("切换网络模式    ");
+    if(ApiMenu_BeiDouOrWritingFrequency_Flag==2)
+    {
+      ApiMenu_BeiDouOrWritingFrequency_Flag=0;
+      if(network_mode_2gor3g_SetCount==0x18)
+      {
+        VOICE_SetOutput(ATVOICE_FreePlay,"517fdc7e075262633a4e33004700216a0f5f",36);//网络切换为3G模式
+        NoUseNum=ApiAtCmd_WritCommand(ATCOMM4_GD83Mode,(u8 *)ucNetworkMode3,strlen((char const *)ucNetworkMode3));//
+        NetworkType_2Gor3G_Flag=3;
+      }
+      else if(network_mode_2gor3g_SetCount==0x17)
+      {
+        VOICE_SetOutput(ATVOICE_FreePlay,"517fdc7e075262633a4e32004700216a0f5f",36);//网络切换为2G模式
+        NoUseNum=ApiAtCmd_WritCommand(ATCOMM4_GD83Mode,(u8 *)ucNetworkMode2,strlen((char const *)ucNetworkMode2));//
+        NetworkType_2Gor3G_Flag=2;
+      }
+      else
+      {
+        
+      }
+    }
      break;
-/*  case Menu8:
-    api_lcd_pwr_on_hint3("菜单            ");
-    api_lcd_pwr_on_hint5("8/8");
-     api_lcd_pwr_on_hint("语音播报        ");
-    break;*/
   case Menu_Locking_NoOperation:
     if(PersonCallIco_Flag==0)
     {
@@ -270,8 +288,15 @@ void SubmenuMenuDisplay(SubmenuMenuDisplayType id)
     Level3MenuDisplay(KeylockTimeSetCount);
     break;
   case BeiDouOrWritingFrequencySwitch:
-    api_lcd_pwr_on_hint3("                ");//清屏
-     api_lcd_pwr_on_hint("  非此版本功能  ");
+    if(NetworkType_2Gor3G_Flag==2)
+    {
+      network_mode_2gor3g_SetCount=0x17;
+    }
+    else
+    {
+      network_mode_2gor3g_SetCount=0x18;
+    }
+    Level3MenuDisplay(network_mode_2gor3g_SetCount);
     break;
   }
 }
@@ -349,6 +374,18 @@ void Level3MenuDisplay(Level3MenuDisplayType id)
     api_lcd_pwr_on_hint3("键盘锁          ");
     api_lcd_pwr_on_hint5("6/7");
      api_lcd_pwr_on_hint("30秒           ");
+    break;
+  case network_mode_2g:
+    api_lcd_pwr_on_hint3("网络模式        ");
+    api_lcd_pwr_on_hint5("2/2");
+     api_lcd_pwr_on_hint("2G网络          ");
+
+    break;
+  case network_mode_3g:
+    api_lcd_pwr_on_hint3("网络模式        ");
+    api_lcd_pwr_on_hint5("1/2");
+     api_lcd_pwr_on_hint("3G网络          ");
+
     break;
   default:
     break;

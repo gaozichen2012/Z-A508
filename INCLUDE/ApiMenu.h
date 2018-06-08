@@ -41,8 +41,12 @@ typedef enum{
   KeylockTimeSet_120s           =0x14,
   KeylockTimeSet_150s           =0x15,
   KeylockTimeSet_180s           =0x16,
+  network_mode_2g               =0x17,
+  network_mode_3g               =0x18
 }Level3MenuDisplayType;
 
+
+extern u8 network_mode_2gor3g_SetCount;
 extern u8 ApiMenu_SwitchGroup_Flag;
 extern u8 ApiMenu_SwitchCallUser_Flag;
 extern u8 ApiMenu_SwitchOnlineUser_Flag;

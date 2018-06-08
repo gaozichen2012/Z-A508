@@ -56,4 +56,5 @@ TASKAPI u8 TaskStartDeleteDelay3;
 TASKAPI u8 TaskStartDeleteDelay4;
 TASKAPI u8 TaskStartDeleteDelay5;
 TASKAPI u8 TaskStartDeleteDelay6;
+extern u8 key_warning_flag;
 #endif

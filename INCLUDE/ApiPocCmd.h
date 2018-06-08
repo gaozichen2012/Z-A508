@@ -26,7 +26,7 @@ extern bool UnicodeForGbk_SpeakerRightnowName_english_flag(void);
 extern bool UnicodeForGbk_MainUserName_english_flag(void);
 extern bool UnicodeForGbk_AllUserName_english_flag(u8 a);
 
-
+extern u8 get_group_list_loss_flag;
 extern u8 GetMemberCount;
 extern bool ApiPocCmd_PersonalCallingMode;
 extern u8 PresentGroupNum;

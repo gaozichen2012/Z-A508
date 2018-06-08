@@ -788,7 +788,14 @@ static void GpsCmd_GbDataTransave(GpsCommType GpsComm)//定位信息转换，等会要用到
     break;
   }
   //COML_StringReverse(0x02,GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.HeadInfo.stParam.ucMsgID.ucData);//原消息ID反序，屏蔽看是否正序
-  pPositInfo->stParam.Warning.ucData = 0;
+  if(key_warning_flag==TRUE)
+  {
+    pPositInfo->stParam.Warning.ucData = 1;//报警标志位
+  }
+  else
+  {
+    pPositInfo->stParam.Warning.ucData = 0;//报警标志位
+  }
   pPositInfo->stParam.WorkStatus.ucData = 0;
   pPositInfo->stParam.WorkStatus.Bits.bAcc = 1;//=GpsFunDrvObj.InfoRecord.Msg.bAcc;
   pPositInfo->stParam.WorkStatus.Bits.bLock= 1;//=1车门加锁
@@ -828,7 +835,7 @@ static void GpsCmd_GbDataTransave(GpsCommType GpsComm)//定位信息转换，等会要用到
     pPositInfo->stParam.Time.ucData[i] = GpsFunDrvObj.InfoRecord.Position.ucTime[i];
     pPositInfo->stParam.Date.ucData[i] = GpsFunDrvObj.InfoRecord.Position.ucDate[i];
   }
-  COML_StringReverse(0x04, (u8 *)(&pPositInfo->stParam.Warning));
+  //COML_StringReverse(0x04, (u8 *)(&pPositInfo->stParam.Warning));
   //COML_StringReverse(0x04, (u8 *)(&pPositInfo->stParam.WorkStatus));
   //COML_StringReverse(0x04, (u8 *)(&pPositInfo->stParam.ulLatitude));
   //COML_StringReverse(0x04, (u8 *)(&pPositInfo->stParam.ulLongitude));

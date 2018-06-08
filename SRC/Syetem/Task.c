@@ -24,6 +24,7 @@ u8 TaskStartDeleteDelay4=1;
 u8 TaskStartDeleteDelay5=0;
 u8 TaskStartDeleteDelay6=0;
 #endif
+u8 key_warning_flag=FALSE;
 u8 *ucStartPTT                  = "0B0000";
 u8 *ucEndPTT                    = "0C0000";
 
@@ -406,6 +407,9 @@ void Task_RunNormalOperation(void)
 /*******报警键状态检测********************************************************************************************************************************************/
   if(ReadInput_KEY_4==0)//报警键
   {
+#if 1//测试部标报警功能
+    key_warning_flag=TRUE;
+#else
     switch(AlarmCount)
     {
     case 4://切换为2G模式
@@ -419,13 +423,6 @@ void Task_RunNormalOperation(void)
       NoUseNum=ApiAtCmd_WritCommand(ATCOMM4_GD83Mode,(u8 *)ucPrefmode2,strlen((char const *)ucPrefmode2));//
       AlarmCount=8;
       break;
-    /*case 2://切换为自动模式
-      VOICE_SetOutput(ATVOICE_FreePlay,"517fdc7e075262633a4eea81a852216a0f5f",36);//网络切换为自动模式
-      DEL_SetTimer(0,200);
-      while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
-      NoUseNum=ApiAtCmd_WritCommand(ATCOMM4_GD83Mode,(u8 *)ucPrefmode8,strlen((char const *)ucPrefmode8));//
-      AlarmCount=8;
-      break;*/
     case 8://切换为3G模式
       NetworkType_2Gor3G_Flag=3;
       VOICE_SetOutput(ATVOICE_FreePlay,"517fdc7e075262633a4e33004700216a0f5f",36);//网络切换为3G模式
@@ -440,6 +437,7 @@ void Task_RunNormalOperation(void)
     default:
       break;
     }
+#endif
   }
   
 /***********判断正常进组；正常退出组;被单呼模式；退出单呼模式；主动开始单呼；单呼；主动退出单呼*************/
@@ -646,47 +644,19 @@ if(ApiPocCmd_PlayReceivedVoice_Flag==TRUE)
 }
 else
 {
-  if(ApiAtCmd_ZTTS_Flag==TRUE)
+  if(key_warning_flag==TRUE)
   {
-    AUDIO_IOAFPOW(ON);
+     AUDIO_IOAFPOW(ON);
   }
   else
   {
-    if(ApiPocCmd_Tone_Flag==TRUE)
+    if(ApiAtCmd_ZTTS_Flag==TRUE)
     {
       AUDIO_IOAFPOW(ON);
     }
     else
     {
-      AUDIO_IOAFPOW(OFF);
-    }
-  }
-}
-
-#else
-/*if(KeyPttState==2)//暂时解决按ptt，功放打开的问题
-{
-  AUDIO_IOAFPOW(OFF);
-}
-else*/
-{
-  if(ApiPocCmd_Tone_Flag==TRUE)//8b0003 解决按PTT无提示音的问题
-  {
-    AUDIO_IOAFPOW(ON);
-  }
-  else
-  {
-    if(UpDownSwitching_Flag==TRUE)//按上下键换组换人状态
-    {
-      AUDIO_IOAFPOW(ON);
-    }
-    else
-    {
-      if(ApiAtCmd_TrumpetVoicePlay_Flag==1)
-      {
-        AUDIO_IOAFPOW(ON);//在VOICE_SetOutput()加了打开，在识别POC:91加了功放打开;PTT键
-      }
-      else if(ApiAtCmd_TrumpetVoicePlay_Flag==2)
+      if(ApiPocCmd_Tone_Flag==TRUE)
       {
         AUDIO_IOAFPOW(ON);
       }
@@ -697,6 +667,9 @@ else*/
     }
   }
 }
+
+#else
+AUDIO_IOAFPOW(ON);
 #endif
 
 /*****如果没有在线成员******************************************/

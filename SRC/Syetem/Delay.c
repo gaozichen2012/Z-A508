@@ -42,6 +42,7 @@ u8 POC_GetAllGroupNameDoneCount=0;
 u8 ApiAtCmd_ZTTSCount=0;
 u8 ShowTimeCount=0;
 u8 huo_qu_zhong_flag_count=0;
+u8 key_warning_flag_count=0;
 //u8 UpgradeNoATReturn_Count=0;
 bool LockingState_Flag=FALSE;
 u8 BacklightTimeCount;//=10;//背光灯时间(需要设置进入eeprom)
@@ -49,6 +50,7 @@ u16 KeylockTimeCount;//=30;//键盘锁时间(需要设置进入eeprom)
 u8 PersonalCallingCount=0;
 u8 KEY_4Count=0;
 u8 get_group_name_done_count=0;
+u8 get_group_list_loss_flag_count=0;
 u8 allow_key_operation_flag=FALSE;
 u8 ReadBufferA[1];//背光灯时间(需要设置进入eeprom)
 u8 ReadBufferB[1];//键盘锁时间(需要设置进入eeprom)
@@ -298,7 +300,20 @@ static void DEL_500msProcess(void)			//delay 500ms process server
     {
       KEY_4Count=0;
     }
-    
+/*******获取群组数丢失处理*******************/
+    if(POC_GetAllGroupNameDone_Flag==TRUE&&get_group_list_loss_flag==TRUE)
+    {
+     get_group_list_loss_flag_count++;
+     if(get_group_list_loss_flag_count>=2*3)//获取群组丢失标志位超过2s
+     {
+       get_group_list_loss_flag_count=0;
+       ApiPocCmd_WritCommand(PocComm_GroupListInfo,0,0);
+     }
+    }
+    else
+    {
+      get_group_list_loss_flag_count=0;
+    }
 /******解决获取所有群组名时群组丢失的问题************/
     if(POC_GetAllGroupNameDone_Flag==TRUE)
     {
@@ -406,20 +421,21 @@ static void DEL_500msProcess(void)			//delay 500ms process server
       ApiAtCmd_ZTTSCount=0;
     }
 
-/**********若指令发出无回音则处于升级状态**********************************/
-   /* if(UpgradeNoATReturn_Flag==TRUE)
+/**********报警键报警响10秒取消标志位**********************************/
+    if(key_warning_flag==TRUE)
     {
-      UpgradeNoATReturn_Count++;
-      if(UpgradeNoATReturn_Count>=4)
+      key_warning_flag_count++;
+      if(key_warning_flag_count>=2*10)
       {
-        UpgradeNoATReturn_Count=0;
-        UpgradeNoATReturn_Flag2=TRUE;
+        key_warning_flag_count=0;
+        key_warning_flag=FALSE;
       }
     }
     else
     {
-      UpgradeNoATReturn_Count=0;
-    }*/
+      key_warning_flag_count=0;
+    }
+
 /*********按个呼键未获取到在线成员，超时退回组呼模式*************************/
     if(Key_PersonalCalling_Flag==1&&GettheOnlineMembersDone==FALSE)
     {
@@ -466,17 +482,7 @@ static void DEL_500msProcess(void)			//delay 500ms process server
     {
       huo_qu_zhong_flag_count=0;
     }
-/*******无在线成员处理*******************/
-   /* if(PocNoOnlineMember_Flag==TRUE)
-    {
-      PocNoOnlineMemberCount++;
-      if(PocNoOnlineMemberCount>1)
-      {
-        PocNoOnlineMemberCount=0;
-        PocNoOnlineMember_Flag=FALSE;
-        PocNoOnlineMember_Flag2=TRUE;
-      }
-    }*/
+
 /******登录状态下的低电报警**********************************************/
     if(LobatteryTask_StartFlag==TRUE)
     {
