@@ -393,10 +393,10 @@ void ApiPocCmd_10msRenew(void)
         for(i = 0x00; i < PocCmdDrvobj.WorkState.UseState.WorkGroup.NameLen; i++)
         {
           PocCmdDrvobj.WorkState.UseState.WorkGroup.Name[i] = pBuf[i+24];//存入获取的群组名
-          PocCmdDrvobj.WorkState.UseState.Group[ucId].Name[i] = 
+          PocCmdDrvobj.WorkState.UseState.Group[ucId-1].Name[i] = 
             PocCmdDrvobj.WorkState.UseState.WorkGroup.Name[i];
         }
-        PocCmdDrvobj.WorkState.UseState.Group[ucId].NameLen = PocCmdDrvobj.WorkState.UseState.WorkGroup.NameLen;
+        PocCmdDrvobj.WorkState.UseState.Group[ucId-1].NameLen = PocCmdDrvobj.WorkState.UseState.WorkGroup.NameLen;
         group_num_count++;
         if(group_num_count<PocCmdDrvobj.WorkState.UseState.MainWorkGroup.GroupNum)
         {
@@ -818,11 +818,11 @@ void ApiPocCmd_10msRenew(void)
 
 u8 *ApiAtCmd_GetGroupName(u8 n)//获取所有群组名
 {
-  return PocCmdDrvobj.WorkState.UseState.Group[n].Name;
+  return PocCmdDrvobj.WorkState.UseState.Group[n-1].Name;
 }
 u8 ApiAtCmd_GetGroupNameLen(u8 n)
 {
-  return PocCmdDrvobj.WorkState.UseState.Group[n].NameLen;
+  return PocCmdDrvobj.WorkState.UseState.Group[n-1].NameLen;
 }
 /*********************************/
 //换组换呼上下键显示屏显示选中群组名
@@ -833,8 +833,8 @@ u8 *UnicodeForGbk_AllGrounpName(u8 n)
 
   u8 GrounpLen=0;
   u8 i=0;
-  GrounpBuf1=PocCmdDrvobj.WorkState.UseState.Group[n].Name;
-  GrounpLen=PocCmdDrvobj.WorkState.UseState.Group[n].NameLen;
+  GrounpBuf1=PocCmdDrvobj.WorkState.UseState.Group[n-1].Name;
+  GrounpLen=PocCmdDrvobj.WorkState.UseState.Group[n-1].NameLen;
   while(1)
   {
     if(4*i<=GrounpLen)
