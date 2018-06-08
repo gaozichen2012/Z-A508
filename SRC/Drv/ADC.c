@@ -101,6 +101,8 @@ void LowVoltageDetection(void)
         LowVoltageDetection_Flag=TRUE;
         Count=0;
       }
+      PrimaryLowPower_Flag=FALSE;
+      Count2=0;
     }
     else if(ADValue<355&&ADValue>345)
     {
@@ -111,11 +113,12 @@ void LowVoltageDetection(void)
         SetTaskId(Task_NormalOperation);
         PrimaryLowPower_Flag=TRUE;
         Count2=0;
-        
       }
     }
     else
     {
+      PrimaryLowPower_Flag=FALSE;
+      Count2=0;
       SetTaskId(Task_NormalOperation); 
       if(ADValue<=350&&ADValue>=200)
       {
