@@ -118,7 +118,7 @@ void Keyboard_Test(void)
       }
       else if(ApiMenu_BeiDouOrWritingFrequency_Flag==1)//如果是设置网络模式
       {
-        if(network_mode_2gor3g_SetCount=0x17)
+        if(network_mode_2gor3g_SetCount==0x17)
         {
           network_mode_2gor3g_SetCount=0x18;
         }
@@ -952,7 +952,7 @@ void Keyboard_Test(void)
   GeHuTest(ulAllKeyID);
   if(Key_Flag_1==1)//按下按键延迟1秒
   {
-    Delay_100ms(2);//DEL_SetTimer(1,30);//influence get group name
+    Delay_100ms(1);//DEL_SetTimer(1,30);//influence get group name
     Key_Flag_1=0;
     //if(KeyDownUpChoose_GroupOrUser_Flag==2)
     {

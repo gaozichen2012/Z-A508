@@ -300,34 +300,6 @@ static void DEL_500msProcess(void)			//delay 500ms process server
     {
       KEY_4Count=0;
     }
-/*******获取群组数丢失处理*******************/
-    if(POC_GetAllGroupNameDone_Flag==TRUE&&get_group_list_loss_flag==TRUE)
-    {
-     get_group_list_loss_flag_count++;
-     if(get_group_list_loss_flag_count>=2*3)//获取群组丢失标志位超过2s
-     {
-       get_group_list_loss_flag_count=0;
-       ApiPocCmd_WritCommand(PocComm_GroupListInfo,0,0);
-     }
-    }
-    else
-    {
-      get_group_list_loss_flag_count=0;
-    }
-/******解决获取所有群组名时群组丢失的问题************/
-    if(POC_GetAllGroupNameDone_Flag==TRUE)
-    {
-      get_group_name_done_count++;
-      if(get_group_name_done_count>=2*5)
-      {
-        allow_key_operation_flag = TRUE;
-        get_group_name_done_count=11;
-      }
-    }
-    else
-    {
-      get_group_name_done_count=0;
-    }
 /******进入群组模式5秒显示时间*******************/
     if(POC_GetAllGroupNameDone_Flag==TRUE&&
        MenuMode_Flag==0&&
@@ -435,12 +407,39 @@ static void DEL_500msProcess(void)			//delay 500ms process server
     {
       key_warning_flag_count=0;
     }
-
+/*******获取群组数丢失处理*******************/
+    if(POC_GetAllGroupNameDone_Flag==TRUE&&get_group_list_loss_flag==TRUE)
+    {
+     get_group_list_loss_flag_count++;
+     if(get_group_list_loss_flag_count>=2*3)//获取群组丢失标志位超过2s
+     {
+       get_group_list_loss_flag_count=0;
+       ApiPocCmd_WritCommand(PocComm_GroupListInfo,0,0);
+     }
+    }
+    else
+    {
+      get_group_list_loss_flag_count=0;
+    }
+/******解决获取所有群组名时群组丢失的问题************/
+    if(POC_GetAllGroupNameDone_Flag==TRUE)
+    {
+      get_group_name_done_count++;
+      if(get_group_name_done_count>=2*5)
+      {
+        allow_key_operation_flag = TRUE;
+        get_group_name_done_count=11;
+      }
+    }
+    else
+    {
+      get_group_name_done_count=0;
+    }
 /*********按个呼键未获取到在线成员，超时退回组呼模式*************************/
     if(Key_PersonalCalling_Flag==1&&GettheOnlineMembersDone==FALSE)
     {
       GetNoOnlineMembersCount++;
-      if(GetNoOnlineMembersCount>2*5)
+      if(GetNoOnlineMembersCount>2*7)
       {
 #if 1
         ApiPocCmd_WritCommand(PocComm_UserListInfo,0,0);
