@@ -558,7 +558,7 @@ void ApiGpsCmd_100msRenew(void)//决定什么时候发送什么数据
                 switch(GpsFunDrvObj.PositionSystem.GbSys.State.ucStep)
                 {
                 case 0x00://ucStep=0表示设备登录
-                  if(GpsFunDrvObj.PositionSystem.GbSys.LoginInfo.ucParam.Msg.Bits.bLoginSuccess==OFF)//
+                  if(GpsFunDrvObj.PositionSystem.GbSys.LoginInfo.ucParam.Msg.Bits.bLoginSuccess==OFF&&ApiGpsServerType!=GpsServerType_ZTE)//
                   {
 #if 1//测试不注册鉴权，直接发送位置信息
 #ifdef BEIDOU//使用外置北斗
