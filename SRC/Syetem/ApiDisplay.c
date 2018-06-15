@@ -282,6 +282,34 @@ void api_lcd_pwr_on_hint7(u8 *CharData)
 	//MCU_LCD_BACKLIGTH(OFF);
 	api_disp_all_screen_refresh();// 全屏统一刷新
 }
+void api_lcd_pwr_on_hint8(u8 *CharData)
+{
+	DISP_CHAR stCharInfo;
+	stCharInfo.DispType  = DISP_IDCNASC816;
+	//stCharInfo.DispAddX  = 0;
+	stCharInfo.DispAddY  = 0x02;
+	stCharInfo.DispAddX  = 0x09;//一行16个英文字符
+        stCharInfo.DispLenth = LCD_DISP_LEN_MAX;
+        
+	api_disp_char_output(stCharInfo,CharData);
+
+	//MCU_LCD_BACKLIGTH(OFF);
+	api_disp_all_screen_refresh();// 全屏统一刷新
+}
+void api_lcd_pwr_on_hint9(u8 *CharData)
+{
+	DISP_CHAR stCharInfo;
+	stCharInfo.DispType  = DISP_IDCNASC816;
+	//stCharInfo.DispAddX  = 0;
+	stCharInfo.DispAddY  = 0x00;
+	stCharInfo.DispAddX  = 11;//一行16个英文字符
+        stCharInfo.DispLenth = LCD_DISP_LEN_MAX;
+        
+	api_disp_char_output(stCharInfo,CharData);
+
+	//MCU_LCD_BACKLIGTH(OFF);
+	api_disp_all_screen_refresh();// 全屏统一刷新
+}
 /*******************************************************************************
 * Description	: 刷新屏幕数据显示
 * Input		: void

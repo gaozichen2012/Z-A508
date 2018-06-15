@@ -51,6 +51,8 @@ extern void api_lcd_pwr_on_hint4(u8 *CharData);//UNICODEœ‘ æ
 extern void api_lcd_pwr_on_hint5(u8 *CharData);//≤Àµ•“≥”“…œΩ«–Ú∫≈
 extern void api_lcd_pwr_on_hint6(u8 *CharData);
 extern void api_lcd_pwr_on_hint7(u8 *CharData);
+extern void api_lcd_pwr_on_hint8(u8 *CharData);
+extern void api_lcd_pwr_on_hint9(u8 *CharData);
 extern void api_diap_ico_pos_get(DISP_ICO *pIcoInfo, u16 IcoID);
 extern void api_disp_ico_output(DISP_ICO IcoInfo, u8 *IcoData);
 

@@ -1,6 +1,7 @@
 #ifndef __APIKEYBOARD_H
 #define __APIKEYBOARD_H
 #include "DrvKeyboard.h"
+extern u8 xinhao_test_flag;
 extern u8 *ucQuitPersonalCalling;
 extern s8 GroupCallingNum;
 extern s8 PersonalCallingNum;

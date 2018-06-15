@@ -255,6 +255,10 @@ static void DEL_100msProcess(void)
     ApiBeidou_Get_location_Information();
 #else
     ApiAtCmd_Get_location_Information();
+    if(xinhao_test_flag==0xFF)
+    {
+      sou_xing_count_for_display();
+    }
 #endif
     ApiAtCmd_Get_DateTime_Information();
     ApiGpsCmd_100msRenew();
@@ -301,82 +305,95 @@ static void DEL_500msProcess(void)			//delay 500ms process server
       KEY_4Count=0;
     }
 /******进入群组模式5秒显示时间*******************/
-    if(POC_GetAllGroupNameDone_Flag==TRUE&&
-       MenuMode_Flag==0&&
-       POC_EnterPersonalCalling_Flag==0&&
-       POC_QuitPersonalCalling_Flag==0&&
-       POC_AtEnterPersonalCalling_Flag==0&&
-       POC_AtQuitPersonalCalling_Flag==0&&
-       KEY_4_Flag==FALSE&&
-       KeyDownUpChoose_GroupOrUser_Flag==0)
+    if(xinhao_test_flag==0xFF)
     {
-      ShowTimeCount++;
-      if(ShowTimeCount>2*5)
-      {
-        ShowTime_Flag=TRUE;
-        ShowTimeCount=11;
-        if(Data_Time0()<=0x09&&Data_Time1()<=0x09)
-        {
-          ShowTimeBuf1[0]='0';
-          COML_HexToAsc(Data_Time0(),ShowTimeBuf1+1);
-          ShowTimeBuf1[2]=':';
-          ShowTimeBuf1[3]='0';
-          COML_HexToAsc(Data_Time1(),ShowTimeBuf1+4);
-        }
-        else if(Data_Time0()<=0x09&&Data_Time1()>0x09)
-        {
-          ShowTimeBuf1[0]='0';
-          COML_HexToAsc(Data_Time0(),ShowTimeBuf1+1);
-          ShowTimeBuf1[2]=':';
-          COML_HexToAsc(Data_Time1(),ShowTimeBuf1+3);
-          COML_StringReverse(2,ShowTimeBuf1+3);
-        }
-        else if(Data_Time0()>0x09&&Data_Time1()<=0x09)
-        {
-          COML_HexToAsc(Data_Time0(),ShowTimeBuf1);
-          COML_StringReverse(2,ShowTimeBuf1);
-          ShowTimeBuf1[2]=':';
-          ShowTimeBuf1[3]='0';
-          COML_HexToAsc(Data_Time1(),ShowTimeBuf1+4);
-        }
-        else//
-        {
-          COML_HexToAsc(Data_Time0(),ShowTimeBuf1);
-          COML_StringReverse(2,ShowTimeBuf1);
-          ShowTimeBuf1[2]=':';
-          COML_HexToAsc(Data_Time1(),ShowTimeBuf1+3);
-          COML_StringReverse(2,ShowTimeBuf1+3);
-        }
-        ShowTimeBuf1[5]='\0';
-        api_disp_icoid_output( eICO_IDSCANOff, TRUE, TRUE);//
-        api_lcd_pwr_on_hint7(ShowTimeBuf1);
-      }
+      
     }
     else
     {
-      ShowTime_Flag=FALSE;
-      ShowTimeCount=0;
-      if(MenuMode_Flag!=1)
+      if(POC_GetAllGroupNameDone_Flag==TRUE&&
+         MenuMode_Flag==0&&
+         POC_EnterPersonalCalling_Flag==0&&
+         POC_QuitPersonalCalling_Flag==0&&
+         POC_AtEnterPersonalCalling_Flag==0&&
+         POC_AtQuitPersonalCalling_Flag==0&&
+         KEY_4_Flag==FALSE&&
+         KeyDownUpChoose_GroupOrUser_Flag==0)
       {
-        if(NetworkType_2Gor3G_Flag==3)
-          api_disp_icoid_output( eICO_IDEmergency, TRUE, TRUE);//3G图标
-        else
-          api_disp_icoid_output( eICO_IDPOWERL, TRUE, TRUE);//图标：2G
-        if(VoiceType_FreehandOrHandset_Flag==0)
-          api_disp_icoid_output( eICO_IDTemper, TRUE, TRUE);//免提模式
-        else
-          api_disp_icoid_output( eICO_IDMONITER, TRUE, TRUE);//听筒模式图标
-        if(PersonCallIco_Flag==0)
-          api_disp_icoid_output( eICO_IDPOWERM, TRUE, TRUE);//显示组呼图标
-        else
-          api_disp_icoid_output( eICO_IDPOWERH, TRUE, TRUE);//显示个呼图标
-        if(KeyDownUpChoose_GroupOrUser_Flag==0)
-          api_disp_icoid_output( eICO_IDMESSAGEOff, TRUE, TRUE);//空图标-与选对应
-        else
-          api_disp_icoid_output( eICO_IDLOCKED, TRUE, TRUE);//选
+        ShowTimeCount++;
+        if(ShowTimeCount>2*5)
+        {
+          ShowTime_Flag=TRUE;
+          ShowTimeCount=11;
+          if(Data_Time0()<=0x09&&Data_Time1()<=0x09)
+          {
+            ShowTimeBuf1[0]='0';
+            COML_HexToAsc(Data_Time0(),ShowTimeBuf1+1);
+            ShowTimeBuf1[2]=':';
+            ShowTimeBuf1[3]='0';
+            COML_HexToAsc(Data_Time1(),ShowTimeBuf1+4);
+          }
+          else if(Data_Time0()<=0x09&&Data_Time1()>0x09)
+          {
+            ShowTimeBuf1[0]='0';
+            COML_HexToAsc(Data_Time0(),ShowTimeBuf1+1);
+            ShowTimeBuf1[2]=':';
+            COML_HexToAsc(Data_Time1(),ShowTimeBuf1+3);
+            COML_StringReverse(2,ShowTimeBuf1+3);
+          }
+          else if(Data_Time0()>0x09&&Data_Time1()<=0x09)
+          {
+            COML_HexToAsc(Data_Time0(),ShowTimeBuf1);
+            COML_StringReverse(2,ShowTimeBuf1);
+            ShowTimeBuf1[2]=':';
+            ShowTimeBuf1[3]='0';
+            COML_HexToAsc(Data_Time1(),ShowTimeBuf1+4);
+          }
+          else//
+          {
+            COML_HexToAsc(Data_Time0(),ShowTimeBuf1);
+            COML_StringReverse(2,ShowTimeBuf1);
+            ShowTimeBuf1[2]=':';
+            COML_HexToAsc(Data_Time1(),ShowTimeBuf1+3);
+            COML_StringReverse(2,ShowTimeBuf1+3);
+          }
+          ShowTimeBuf1[5]='\0';
+          api_disp_icoid_output( eICO_IDSCANOff, TRUE, TRUE);//
+          api_lcd_pwr_on_hint7(ShowTimeBuf1);
+        }
       }
-
+      else
+      {
+        ShowTime_Flag=FALSE;
+        ShowTimeCount=0;
+        if(xinhao_test_flag==0xFF)
+        {
+        }
+        else
+        {
+          if(MenuMode_Flag!=1)
+          {
+            if(NetworkType_2Gor3G_Flag==3)
+              api_disp_icoid_output( eICO_IDEmergency, TRUE, TRUE);//3G图标
+            else
+              api_disp_icoid_output( eICO_IDPOWERL, TRUE, TRUE);//图标：2G
+            if(VoiceType_FreehandOrHandset_Flag==0)
+              api_disp_icoid_output( eICO_IDTemper, TRUE, TRUE);//免提模式
+            else
+              api_disp_icoid_output( eICO_IDMONITER, TRUE, TRUE);//听筒模式图标
+            if(PersonCallIco_Flag==0)
+              api_disp_icoid_output( eICO_IDPOWERM, TRUE, TRUE);//显示组呼图标
+            else
+              api_disp_icoid_output( eICO_IDPOWERH, TRUE, TRUE);//显示个呼图标
+            if(KeyDownUpChoose_GroupOrUser_Flag==0)
+              api_disp_icoid_output( eICO_IDMESSAGEOff, TRUE, TRUE);//空图标-与选对应
+            else
+              api_disp_icoid_output( eICO_IDLOCKED, TRUE, TRUE);//选
+          }
+        }
+      }
     }
+
     
 /*****5秒喇叭开启则关闭喇叭**************/
     if(ApiAtCmd_ZTTS_Flag==TRUE)
@@ -653,7 +670,16 @@ static void DEL_500msProcess(void)			//delay 500ms process server
               ApiAtCmd_WritCommand(ATCOMM6_CSQ, (void*)0, 0);
             }
           }
-          HDRCSQSignalIcons();
+          
+          if(xinhao_test_flag==0xFF)
+          {
+            csq_value_for_display();
+          }
+          else
+          {
+            HDRCSQSignalIcons();
+          }
+          
       }
    // }
 

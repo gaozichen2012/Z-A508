@@ -758,3 +758,48 @@ void HDRCSQSignalIcons(void)
   }
 
 }
+
+void csq_value_for_display(void)
+{
+  u8 csq_value_buf[5];
+  csq_value_buf[0]=0;
+  csq_value_buf[1]=0;
+  csq_value_buf[2]=0;
+  csq_value_buf[3]=0;
+  csq_value_buf[4]=0;
+  if(HDRCSQValue==0)
+  {
+    api_lcd_pwr_on_hint("信号天线:0");//
+  }
+  else
+  {
+    COML_DecToAsc(HDRCSQValue,csq_value_buf);
+    COML_StringReverse(strlen((char const *)csq_value_buf),csq_value_buf);
+    api_lcd_pwr_on_hint("信号天线:");//
+    api_lcd_pwr_on_hint8("      ");//5
+    api_lcd_pwr_on_hint8(csq_value_buf);//5
+  }
+}
+
+
+void sou_xing_count_for_display(void)
+{
+  u8 sou_xing_count_buf[5];
+  sou_xing_count_buf[0]=0;
+  sou_xing_count_buf[1]=0;
+  sou_xing_count_buf[2]=0;
+  sou_xing_count_buf[3]=0;
+  sou_xing_count_buf[4]=0;
+  if(AtCmdDrvobj.NetState.SouXingConut==0)
+  {
+    api_lcd_pwr_on_hint3("GPS搜星数: 0");//
+  }
+  else
+  {
+    COML_DecToAsc(AtCmdDrvobj.NetState.SouXingConut,sou_xing_count_buf);
+    COML_StringReverse(strlen((char const *)sou_xing_count_buf),sou_xing_count_buf);
+    api_lcd_pwr_on_hint3("GPS搜星数:");//
+    api_lcd_pwr_on_hint9("  ");//5
+    api_lcd_pwr_on_hint9(sou_xing_count_buf);//5
+  }
+}

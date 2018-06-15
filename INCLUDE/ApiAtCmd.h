@@ -35,6 +35,10 @@ extern bool PositionInfoSendToATPORT_RedLed_Flag;
 extern bool PositionInfoSendToATPORT_InfoDisplay_Flag;
 extern bool ApiAtCmd_WritCommand(AtCommType id, u8 *buf, u16 len);
 extern bool ApiAtCmd_PlayVoice(AtVoiceType id, u8 *buf, u8 len);
+
+extern void csq_value_for_display(void);
+extern void sou_xing_count_for_display(void);
+
 extern void HDRCSQSignalIcons(void);
 extern void ApiAtCmd_100msRenew(void);
 extern void ApiCaretCmd_10msRenew(void);

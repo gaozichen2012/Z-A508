@@ -37,6 +37,7 @@ bool UpDownSwitching_Flag=FALSE;
 bool get_online_user_list_num_flag=FALSE;
 bool get_online_user_list_num_for_key_flag=FALSE;
 bool huo_qu_zhong_flag=FALSE;
+u8 xinhao_test_flag=0;
 static void GeHuTest(u32 KeyID);
 
 void Keyboard_Test(void)
@@ -65,11 +66,10 @@ void Keyboard_Test(void)
     }
     break;
   case 0x00000080://4
-    TestNum3++;
-    if(TestNum3>=KeyCountNum)
-    {
-      TestNum3=0;
     NumberKeyboardPressDown_flag=TRUE;
+    if(xinhao_test_flag==0x09)//按294进入测试信号模式
+    {
+      xinhao_test_flag=0x04;
     }
     break;
   case 0x00000200://6
@@ -89,11 +89,10 @@ void Keyboard_Test(void)
     }
      break;
   case 0x00008000://9
-    TestNum6++;
-    if(TestNum6>=KeyCountNum)
-    {
-      TestNum6=0;
     NumberKeyboardPressDown_flag=TRUE;
+    if(xinhao_test_flag==0x02)//按294进入测试信号模式
+    {
+      xinhao_test_flag=0x09;
     }
     break;
   case 0x00010000://dn
@@ -553,11 +552,15 @@ void Keyboard_Test(void)
 
     break;   
   case 0x00000004://2
-    TestNum7++;
-    if(TestNum7>=KeyCountNum)
-    {
-      TestNum7=0;
     NumberKeyboardPressDown_flag=TRUE;
+    if(LockingState_Flag==TRUE)
+    {}
+    else
+    {
+      if(xinhao_test_flag==0x00)//按294进入测试信号模式
+      {
+        xinhao_test_flag=0x02;
+      }
     }
     break;  
   case 0x00080000://*
@@ -608,6 +611,10 @@ void Keyboard_Test(void)
       else
       {
         NumberKeyboardPressDown_flag=TRUE;
+        if(xinhao_test_flag==0x04)//按294进入测试信号模式
+        {
+          xinhao_test_flag=0xFF;
+        }
       }
       TestNum12=0;
     }
@@ -750,6 +757,28 @@ void Keyboard_Test(void)
    
     break;
   case 0x00400000://cancel
+    if(xinhao_test_flag==0xFF)
+    {
+      api_lcd_pwr_on_hint("                ");
+      api_lcd_pwr_on_hint3("                ");
+      if(NetworkType_2Gor3G_Flag==3)
+        api_disp_icoid_output( eICO_IDEmergency, TRUE, TRUE);//3G图标
+      else
+        api_disp_icoid_output( eICO_IDPOWERL, TRUE, TRUE);//图标：2G
+      if(VoiceType_FreehandOrHandset_Flag==0)
+        api_disp_icoid_output( eICO_IDTemper, TRUE, TRUE);//免提模式
+      else
+        api_disp_icoid_output( eICO_IDMONITER, TRUE, TRUE);//听筒模式图标
+      if(PersonCallIco_Flag==0)
+        api_disp_icoid_output( eICO_IDPOWERM, TRUE, TRUE);//显示组呼图标
+      else
+        api_disp_icoid_output( eICO_IDPOWERH, TRUE, TRUE);//显示个呼图标
+      if(KeyDownUpChoose_GroupOrUser_Flag==0)
+        api_disp_icoid_output( eICO_IDMESSAGEOff, TRUE, TRUE);//空图标-与选对应
+      else
+        api_disp_icoid_output( eICO_IDLOCKED, TRUE, TRUE);//选
+    }
+    xinhao_test_flag=0x00;
     NumberKeyboardPressDown_flag=TRUE;
     if(LockingState_Flag==TRUE)
     {}
