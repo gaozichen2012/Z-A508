@@ -486,7 +486,7 @@ void ApiGpsCmd_100msRenew(void)//决定什么时候发送什么数据
 {
   if(GetTaskId()==Task_Start)//处于初始状态
   {
-    if(OFF != ApiAtCmd_tcp_state())
+    if(FALSE != ApiAtCmd_tcp_state())
     {
       if(GpsCmd_GbWritCommand(GPSCOMM_Logout, (void *)0, 0) == TRUE)
       {
@@ -506,7 +506,7 @@ void ApiGpsCmd_100msRenew(void)//决定什么时候发送什么数据
              &&(GpsFunDrvObj.PositionSystem.GbSys.State.Msg.Bits.bGeneralAck == 0x00))//如果没有收到命令
           {
             GpsFunDrvObj.usPulseTimer = (GpsFunDrvObj.GpsPar.Gps.PulseTime * 10);//将脉冲定时设为一个值
-            if(OFF != ApiAtCmd_tcp_state())//疑问，当TCP连接正常工作时
+            if(FALSE != ApiAtCmd_tcp_state())//疑问，当TCP连接正常工作时
             {
               if(GpsFunDrvObj.PositionSystem.GbSys.State.Msg.Bits.bAuthenticatied != OFF)//认证正确时
               {
@@ -522,7 +522,7 @@ void ApiGpsCmd_100msRenew(void)//决定什么时候发送什么数据
         if((GpsFunDrvObj.usReportTimer) == 0x00)//报告时间=0时
         {
           //GpsFunDrvObj.usReportTimer =(GpsFunDrvObj.GpsPar.Acc.OnReportTime);//将报告时间设为一个值
-          if(OFF != ApiAtCmd_tcp_state())//疑问，当TCP连接正常工作时
+          if(FALSE != ApiAtCmd_tcp_state())//疑问，当TCP连接正常工作时
           {
             if(GpsFunDrvObj.PositionSystem.GbSys.State.Msg.Bits.bGeneralAck != 0x00)//如果是通用应答
             {
@@ -638,7 +638,7 @@ void ApiGpsCmd_100msRenew(void)//决定什么时候发送什么数据
         }
         else//如果usReportTimer报告时间≠0，usReportTimer减减
         {
-          if(OFF != ApiAtCmd_tcp_state())
+          if(FALSE != ApiAtCmd_tcp_state())
           {
             if(GpsFunDrvObj.PositionSystem.GbSys.State.ucStep == 0x00)
             {

@@ -31,7 +31,7 @@ const u8 *ucCheckTcp = "at^pocsockstat=";//检查TCP Ip是否连接正常
 //u8 *ucRxCheckTcp = "^POCSOCKSTAT: 1";//TCP连接正常下发指令
 const u8 *ucSetIp = "at^POCSETUPUDP=0";//设置TCP连接1 UDP:0
 const u8 *ucSendTcp = "at^POCSENDUDP=0,";//at^pocsendudp=0,123.56.80.107,6969,0x
-const u8 *ucRxCheckTcp = "^POCSOCKSTAT: 0";//TCP连接正常下发指令
+const u8 *ucRxCheckTcp = "^POCSOCKSTAT: 2";//TCP连接正常下发指令
 const u8 *ucZpppOpen = "at^pocnetopen";//设置PPP连接
 const u8 *ucCheckPPP = "AT^POCNETOPEN?";//检查PPP连接是否正常工作
 const u8 *ucRxCheckPppOpen = "^POCNETOPEN:1";
@@ -63,7 +63,6 @@ typedef struct{
       }Bits;
       u16 Byte;
     }Msg;
-
     struct{
       u8 Buf[21];//存放AT收到的经纬度信息
       u8 BufLen;//接收经纬度信息的数据长度
@@ -90,6 +89,9 @@ typedef struct{
     u8 HDRCSQLen;
     u8 CSQBuf[2];
     u8 CSQLen;
+    bool PppOk;
+    bool Tcp;
+    bool TcpOk;
   }NetState;
 }AtCmdDrv;
 
@@ -207,7 +209,7 @@ void ApiAtCmd_100msRenew(void)
     {
       if(PositionInfoSendToATPORT_SetPPP_Flag==TRUE)//如果定位成功(串口收到[经纬度])，则登录部标登录IP、心跳、位置
       {
-        if(AtCmdDrvobj.NetState.Msg.Bits.bPppOk == OFF)//如果PPP未连接上
+        if(AtCmdDrvobj.NetState.PppOk == FALSE)//如果PPP未连接上
         {
           if(ApiAtCmd_WritCommand(ATCOMM11_ZpppOpen, (void*)0, 0) == TRUE)//pocnetopen
           {
@@ -217,16 +219,14 @@ void ApiAtCmd_100msRenew(void)
         }
         else//PPP连接上了
         {
-          //if()//如果部标定位打开
-          {
-            if(AtCmdDrvobj.NetState.Msg.Bits.bTcpOk == OFF)//查询后返回的TCP状态
+            if(AtCmdDrvobj.NetState.TcpOk == FALSE)//查询后返回的TCP状态
             {
-              if(AtCmdDrvobj.NetState.Msg.Bits.bTcp == OFF)//如果TCP是关闭的
+              if(AtCmdDrvobj.NetState.Tcp == FALSE)//如果TCP是关闭的
               {
-                AtCmd_NetParamCode();//获取IP地址
+               // AtCmd_NetParamCode();//获取IP地址
                 if(ApiAtCmd_WritCommand(ATCOMM9_SetIp, (void*)AtCmdDrvobj.NetState.Buf, AtCmdDrvobj.NetState.Len) == TRUE)//设置IP
                 {
-                  AtCmdDrvobj.NetState.Msg.Bits.bTcp = ON;
+                  AtCmdDrvobj.NetState.Tcp = TRUE;
                 }
               }
               else//如果TCP是打开的，则检测TCP连接是否正常
@@ -236,7 +236,6 @@ void ApiAtCmd_100msRenew(void)
                 {}
               }
             }
-          }
         }
       }
     }
@@ -301,19 +300,19 @@ void ApiCaretCmd_10msRenew(void)
     {
       BootProcess_PPPCFG_Flag=1;
     }
-    if(AtCmdDrvobj.NetState.Msg.Bits.bPppOk == OFF)//如果PPP连接状态为未连接
+    if(AtCmdDrvobj.NetState.PppOk == FALSE)//如果PPP连接状态为未连接
     {
       ucRet = memcmp(pBuf, ucRxCheckPppOpen, 13);
       if(ucRet == 0x00)
       {
-        AtCmdDrvobj.NetState.Msg.Bits.bPppOk = ON;
+        AtCmdDrvobj.NetState.PppOk = TRUE;
       }
       else
       {
         ucRet = memcmp(pBuf, ucRxCheckPppClose, 13);//strlen(ucRxTcpDataHeadInfo));
         if(ucRet == 0x00)
         {
-          AtCmdDrvobj.NetState.Msg.Bits.bPppOk = OFF;
+          AtCmdDrvobj.NetState.PppOk = FALSE;
         }
       }
     }
@@ -322,21 +321,21 @@ void ApiCaretCmd_10msRenew(void)
       ucRet = memcmp(pBuf, ucRxCheckPppClose, 13);//strlen(ucRxTcpDataHeadInfo));
       if(ucRet == 0x00)
       {
-        AtCmdDrvobj.NetState.Msg.Bits.bPppOk = OFF;//连接后断开
+        AtCmdDrvobj.NetState.PppOk = FALSE;//连接后断开
       }
       else//如果PPP连接状态正常
       {
         ucRet = memcmp(pBuf, ucRxCheckTcp, 13);//strlen(ucRxTcpDataHeadInfo));
         if(ucRet == 0x00)
         {
-          ucRet = memcmp(pBuf+10, ucRxCheckTcp+10, 2);//strlen(ucRxTcpDataHeadInfo));
+          ucRet = memcmp(pBuf, ucRxCheckTcp, 15);//strlen(ucRxTcpDataHeadInfo));
           if(ucRet == 0x00)
           {
-            AtCmdDrvobj.NetState.Msg.Bits.bTcpOk = ON;
+            AtCmdDrvobj.NetState.TcpOk = TRUE;
           }
           else
           {
-            AtCmdDrvobj.NetState.Msg.Bits.bTcpOk = OFF;
+            AtCmdDrvobj.NetState.TcpOk = FALSE;
           }
         }
       }
@@ -659,14 +658,14 @@ static void AtCmd_NetParamCode(void)//获取TCP IP地址
   AtCmdDrvobj.NetState.Len=TcpIpLen+TcpPortLen+1;
 }
 
-u16 ApiAtCmd_tcp_state(void)
+bool ApiAtCmd_tcp_state(void)
 {
-	return AtCmdDrvobj.NetState.Msg.Bits.bTcpOk;
+	return AtCmdDrvobj.NetState.TcpOk;
 }
 
-u16 ApiAtCmd_Ppp_state(void)
+bool ApiAtCmd_Ppp_state(void)
 {
-	return AtCmdDrvobj.NetState.Msg.Bits.bPppOk;
+	return AtCmdDrvobj.NetState.PppOk;
 }
 u32  CHAR_TO_Digital(u8 * pBuf, u8 Len)
 {
