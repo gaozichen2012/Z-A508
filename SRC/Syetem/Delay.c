@@ -415,7 +415,7 @@ static void DEL_500msProcess(void)			//delay 500ms process server
     if(key_warning_flag==TRUE)
     {
       key_warning_flag_count++;
-      if(key_top_value==0x11)//如果此值为0x11，则报警音为永久报警
+      if(key_top_value==11)//如果此值为11，则报警音为永久报警
       {
         key_warning_flag_count=0;
       }
@@ -436,13 +436,13 @@ static void DEL_500msProcess(void)			//delay 500ms process server
     if(key_warning_bubiao_flag==TRUE)
     {
       key_warning_bubiao_flag_count++;
-      if(key_top_value==0x11)//如果此值为0x11，则报警音为永久报警
+      if(key_top_value==11)//如果此值为11，则报警音为永久报警
       {
         key_warning_bubiao_flag_count=0;
       }
       else
       {
-        if(key_warning_bubiao_flag_count>=2*10)
+        if(key_warning_bubiao_flag_count>=2*15)
         {
           key_warning_bubiao_flag=FALSE;
           key_warning_bubiao_flag_count=0;
