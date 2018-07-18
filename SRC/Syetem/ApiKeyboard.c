@@ -971,8 +971,8 @@ void Keyboard_Test(void)
           KeyUpDownCount=0;
         }
         key_warning_flag=FALSE;//按返回键报警标志位清零
+        key_warning_bubiao_flag=FALSE;//按返回键部标报警标志位清零
       }
-
     }
     break;  
   default:

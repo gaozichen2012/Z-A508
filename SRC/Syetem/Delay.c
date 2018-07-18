@@ -43,6 +43,7 @@ u8 ApiAtCmd_ZTTSCount=0;
 u8 ShowTimeCount=0;
 u8 huo_qu_zhong_flag_count=0;
 u8 key_warning_flag_count=0;
+u8 key_warning_bubiao_flag_count=0;
 //u8 UpgradeNoATReturn_Count=0;
 bool LockingState_Flag=FALSE;
 u8 BacklightTimeCount;//=10;//背光灯时间(需要设置进入eeprom)
@@ -410,19 +411,43 @@ static void DEL_500msProcess(void)			//delay 500ms process server
       ApiAtCmd_ZTTSCount=0;
     }
 
-/**********报警键报警响10秒取消标志位**********************************/
+/**********报警键报警响(2*key_top_value)秒取消标志位，部标上报标志10s取消标志位**********************************/
     if(key_warning_flag==TRUE)
     {
       key_warning_flag_count++;
-      if(key_warning_flag_count>=2*10)
+      if(key_top_value==0x11)//如果此值为0x11，则报警音为永久报警
       {
         key_warning_flag_count=0;
-        key_warning_flag=FALSE;
+      }
+      else
+      {
+        if(key_warning_flag_count>=2*(2*key_top_value))
+        {
+          key_warning_flag_count=0;
+          key_warning_flag=FALSE;
+        }
       }
     }
     else
     {
       key_warning_flag_count=0;
+    }
+    
+    if(key_warning_bubiao_flag==TRUE)
+    {
+      key_warning_bubiao_flag_count++;
+      if(key_top_value==0x11)//如果此值为0x11，则报警音为永久报警
+      {
+        key_warning_bubiao_flag_count=0;
+      }
+      else
+      {
+        if(key_warning_bubiao_flag_count>=2*10)
+        {
+          key_warning_bubiao_flag=FALSE;
+          key_warning_bubiao_flag_count=0;
+        }
+      }
     }
 /*******获取群组数丢失处理*******************/
     if(POC_GetAllGroupNameDone_Flag==TRUE&&get_group_list_loss_flag==TRUE)

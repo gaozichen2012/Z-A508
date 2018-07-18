@@ -25,6 +25,7 @@ u8 TaskStartDeleteDelay5=0;
 u8 TaskStartDeleteDelay6=0;
 #endif
 u8 key_warning_flag=FALSE;
+u8 key_warning_bubiao_flag=FALSE;
 u8 *ucStartPTT                  = "0B0000";
 u8 *ucEndPTT                    = "0C0000";
 
@@ -409,6 +410,7 @@ void Task_RunNormalOperation(void)
   {
 #if 1//测试部标报警功能
     key_warning_flag=TRUE;
+    key_warning_bubiao_flag=TRUE;
 #else
     switch(AlarmCount)
     {

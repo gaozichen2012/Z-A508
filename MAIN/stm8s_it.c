@@ -229,7 +229,7 @@ INTERRUPT_HANDLER(SPI_IRQHandler, 10)
   */
 INTERRUPT_HANDLER(TIM1_UPD_OVF_TRG_BRK_IRQHandler, 11)
 {
-  if(key_warning_flag==TRUE)
+  if(key_warning_flag==TRUE&&key_top_value!=0x00)//当报警标志=1，且写频参数：报警时间≠0，则报警
   {
     tone_count++;
     if(tone_count>=7)
@@ -258,8 +258,6 @@ INTERRUPT_HANDLER(TIM1_CAP_COM_IRQHandler, 12)
   /* In order to detect unexpected events during development,
      it is recommended to set a breakpoint on the following instruction.
   */
-  
- 
 }
 
 #if defined (STM8S903) || defined (STM8AF622x)

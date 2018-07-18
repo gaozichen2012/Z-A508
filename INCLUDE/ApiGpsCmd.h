@@ -11,6 +11,7 @@ typedef enum{
 extern void GetIPPORT(void);
 extern u8 TcpIpBuf[15];
 extern u8 TcpPortBuf[5];
+extern u8 key_top_value;
 
 extern GpsServerType ApiGpsServerType;
 extern void ApiGpsCmd_PowerOnInitial(void);

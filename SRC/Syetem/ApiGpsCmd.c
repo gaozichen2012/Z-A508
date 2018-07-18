@@ -5,6 +5,7 @@
 u8 ReportTimerRead[1];
 u8 ReportTimerSET=0;
 u8 Key3_PlayValue=0;
+u8 key_top_value=0;
 u8 Test1=0;
 u8 SendGpsLoginInfoCount=0;
 u8 TcpIpBuf[15];
@@ -335,6 +336,7 @@ static void pack_data(u8 *pBuf, u16 ucLen);//消息包封装
 static u8 COMLHexArray2String(u8 * buf1,u8 Len1,u8 * buf2);//16进制数组转字符串
 void ApiGpsCmd_PowerOnInitial(void)//bubiao
 {
+  
   u16 i;
   u8 j,k;
   u8 TerminalIDLen=0;
@@ -346,8 +348,10 @@ void ApiGpsCmd_PowerOnInitial(void)//bubiao
   FILE_Read2(adr.Adr+87,1,ReportTimerRead);//GPS上报时间位
   ReportTimerSET=(ReportTimerRead[0]-0x0e)*5-1;//当设置成5的时候，上报时间为6s，故减1
   FILE_Read(0,80,ReadBuffer);//80位
-  FILE_Read(598,1,&Key3_PlayValue);//80位
-#if 1//侧键1播报语音类型
+  FILE_Read(598,1,&Key3_PlayValue);//侧键1播报语音类型
+  FILE_Read(602,1,&key_top_value);//顶部键类型的值，现改为报警时间设置
+  
+#if 1//侧键1播报语音类型&顶部键的底层数据（现修改为本地报警时间）
   switch(Key3_PlayValue)
   {
   case 0x00:
@@ -788,7 +792,7 @@ static void GpsCmd_GbDataTransave(GpsCommType GpsComm)//定位信息转换，等会要用到
     break;
   }
   //COML_StringReverse(0x02,GpsFunDrvObj.PositionSystem.GbSys.MsgBody.Param.HeadInfo.stParam.ucMsgID.ucData);//原消息ID反序，屏蔽看是否正序
-  if(key_warning_flag==TRUE)
+  if(key_warning_bubiao_flag==TRUE)
   {
     pPositInfo->stParam.Warning.ucData = 1;//报警标志位
   }
