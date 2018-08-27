@@ -10,8 +10,8 @@ typedef struct {							//mcu version information data struct
 
 static const MCU_VERSION Mcu_Version = {	//mcu vwersion information
 	{"A508"},				//product version
-	{0x20,0x10,0x10,0x03},
-	{0x20,0x18,0x07,0x18},
+	{0x20,0x10,0x10,0x04},
+	{0x20,0x18,0x08,0x27},
 	{"res"},				//4//4byte eeprom version
 	{"res"}
 };
@@ -19,7 +19,7 @@ static const MCU_VERSION Mcu_Version = {	//mcu vwersion information
 void MCU_VERSIONForMenu(void)
 {
   api_lcd_pwr_on_hint3("软件版本:       ");//清屏
-   api_lcd_pwr_on_hint("V2.01.01.003    ");//清屏
+   api_lcd_pwr_on_hint("V2.01.01.004    ");//清屏
 }
 static u8 KCMD_GetMcuVersion(u8* pBuf);
 u8 KCMD_KeyCmdGet(u8 cId,u8 *pBuf)

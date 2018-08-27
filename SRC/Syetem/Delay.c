@@ -7,7 +7,7 @@
 
 
 
-u8 SignalPoorCount=0;
+u16 SignalPoorCount=0;
 u8 WriteFreqTimeCount=0;
 u8 *ucGPSSendToAtPort   ="AT+GPSFUNC=21";
 u8 *ucGPSUploadTime_5s  ="AT+GPSFUNC=1";
@@ -711,15 +711,15 @@ static void DEL_500msProcess(void)			//delay 500ms process server
 /******************************************************************************/
     if(GetTaskId()==Task_NormalOperation)
     {
-      if(HDRCSQValue<=30)
+      if(HDRCSQValue<=28)
       {
         SignalPoorCount++;
         if(SignalPoorCount==20*2||SignalPoorCount==40*2)
         {
           //播报网络信号弱
-          VOICE_SetOutput(ATVOICE_FreePlay,"517fdc7ee14ff753315f",20);
+         // VOICE_SetOutput(ATVOICE_FreePlay,"517fdc7ee14ff753315f",20);
         }
-        if(SignalPoorCount>=60*2)//无信号六十秒，60s重启一次
+        if(SignalPoorCount>=120*2)//无信号六十秒，60s重启一次
         {
           ApiAtCmd_WritCommand(ATCOMM3_GD83Reset,(void*)0, 0);
           SignalPoorCount=0;
